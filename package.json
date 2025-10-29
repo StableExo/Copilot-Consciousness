@@ -1,0 +1,1 @@
+{"name": "copilot-consciousness", "version": "0.1.0", "private": true, "dependencies": {"ethers": "^5.7.2", "hardhat": "^2.12.0", "@aave/core": "^1.0.4"}, "scripts": {"verify": "./verify-deps.sh", "check": "yarn verify"}}
