@@ -32,8 +32,8 @@ Comprehensive memory management system with:
 ### 3. Temporal Awareness Framework (`src/temporal/`)
 Time perception and event tracking system with:
 - ✅ Internal clock with configurable resolution
-- ✅ Event recording with timestamps and metadata
-- ✅ Causal relationship linking between events
+- ✅ Event tracking with temporal metadata
+- ✅ Causal event relationship mapping
 - ✅ Time window queries
 - ✅ Pattern detection and frequency analysis
 - ✅ Predictive modeling (when enabled)
@@ -63,8 +63,9 @@ Learning and reasoning capabilities with:
 AI integration with Google's Gemini:
 - ✅ Gemini API wrapper
 - ✅ Conversation context management
-- ✅ Citadel Mode for cosmic-scale thinking
-- ✅ Multi-dimensional reasoning support
+- ✅ Citadel Mode (advanced problem solving using expanded context windows and multi-step reasoning)
+- ✅ Cosmic-scale thinking (reasoning across temporal scales from microseconds to epochs and spatial scales from quantum to universal)
+- ✅ Multi-dimensional reasoning (analysis considering multiple perspectives: temporal, spatial, causal, emergent)
 - ✅ Consciousness integration (memory + temporal + cognitive contexts)
 - ✅ Simulation mode (works without API key)
 - ✅ System instruction support
@@ -117,7 +118,7 @@ Working code examples:
 - **Total Source Files**: 19 TypeScript files
 - **Total Documentation Files**: 4 markdown files
 - **Total Example Files**: 3 files
-- **Lines of Code**: ~8,500+ lines
+- **Lines of Code**: 8,500+ lines
 - **Core Modules**: 4 (Memory, Temporal, Cognitive, Gemini)
 - **Memory Types Supported**: 7
 - **Event Types Supported**: 7
