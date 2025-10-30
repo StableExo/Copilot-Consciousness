@@ -5,6 +5,8 @@ import chalk from 'chalk';
 class SushiSwapHealthCheck {
     private readonly timestamp: string = '2025-10-30 01:49:41';
     private readonly dexRegistry: DEXRegistry;
+
+    constructor() {
     private readonly keyPairs = [
         {
             name: 'WETH/USDC',
