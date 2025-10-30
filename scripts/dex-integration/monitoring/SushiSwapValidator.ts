@@ -3,6 +3,20 @@ import { ethers } from 'ethers';
 import chalk from 'chalk';
 
 class SushiSwapHealthCheck {
+    private readonly timestamp: string = '2025-10-30 01:49:41';
+    private readonly dexRegistry: DEXRegistry;
+    private readonly keyPairs = [
+        {
+            name: 'WETH/USDC',
+            address: '0x397FF1542f962076d0BFE58eA045FfA2d347ACa0'
+        },
+        {
+            name: 'WETH/USDT',
+            address: '0x06da0fd433C1A5d7a4faa01111c044910A184553'
+        }
+    ];
+
+    constructor() {
     private readonly timestamp: string;
     private readonly dexRegistry: DEXRegistry;
 
@@ -89,6 +103,7 @@ class SushiSwapHealthCheck {
         }
     }
 
+    private async checkKeyPools(sushiswap: any): Promise<boolean> {
     private async checkKeyPairs(sushiswap: any): Promise<boolean> {
         try {
             const provider = new ethers.providers.JsonRpcProvider();
