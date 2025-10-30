@@ -26,6 +26,9 @@ export * from './cognitive';
 // Gemini Citadel integration
 export * from './gemini-citadel';
 
+// AGI-aligned memory and consciousness components
+export * from './agi';
+
 // Utilities
 export * from './utils';
 
