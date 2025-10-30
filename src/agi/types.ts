@@ -2,20 +2,10 @@
  * AGI-aligned memory and consciousness component types
  */
 
-import { Priority } from '../types';
+import { Priority, MemoryType as SystemMemoryType } from '../types';
 
-/**
- * Memory types aligned with AGI consciousness architecture
- */
-export enum MemoryType {
-  SENSORY = 'sensory',
-  WORKING = 'working',
-  SHORT_TERM = 'short_term',
-  LONG_TERM = 'long_term',
-  EPISODIC = 'episodic',
-  SEMANTIC = 'semantic',
-  PROCEDURAL = 'procedural',
-}
+// Re-export MemoryType from system types for consistency
+export { MemoryType } from '../types';
 
 /**
  * Emotional context for memories
@@ -32,10 +22,10 @@ export interface EmotionalContext {
 /**
  * Enhanced memory entry structure for AGI alignment
  */
-export interface MemoryEntry {
+export interface AGIMemoryEntry {
   id: string;
   timestamp: string;
-  type: MemoryType;
+  type: SystemMemoryType;
   content: string;
   associations: string[];
   emotionalContext: EmotionalContext;

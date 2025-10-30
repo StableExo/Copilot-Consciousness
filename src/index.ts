@@ -27,7 +27,17 @@ export * from './cognitive';
 export * from './gemini-citadel';
 
 // AGI-aligned memory and consciousness components
-export * from './agi';
+export {
+  MemoryType,
+  EmotionalContext,
+  AGIMemoryEntry,
+  NeuralMessage,
+  NeuralMessageHeader,
+  MemoryCore,
+  EmbeddingModel,
+  FAISSIndex,
+  NeuralBridge,
+} from './agi';
 
 // Utilities
 export * from './utils';

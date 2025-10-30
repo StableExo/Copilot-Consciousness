@@ -2,7 +2,7 @@
  * Memory Core with FAISS indexing for AGI-aligned consciousness
  */
 
-import { MemoryEntry } from './types';
+import { AGIMemoryEntry } from './types';
 
 /**
  * Interface for vector embeddings (e.g., from SentenceTransformer)
@@ -29,7 +29,7 @@ export class MemoryCore {
   private index: FAISSIndex | null;
   private mapping: Map<string, string>;
   private embedding: EmbeddingModel | null;
-  private memories: Map<string, MemoryEntry>;
+  private memories: Map<string, AGIMemoryEntry>;
   private dimension: number;
 
   /**
@@ -57,7 +57,7 @@ export class MemoryCore {
    * @param memory - Memory entry to store
    * @returns Promise that resolves when the memory is stored
    */
-  async store(memory: MemoryEntry): Promise<void> {
+  async store(memory: AGIMemoryEntry): Promise<void> {
     // Store the memory
     this.memories.set(memory.id, memory);
     
@@ -79,7 +79,7 @@ export class MemoryCore {
    * @param limit - Maximum number of results to return (default: 5)
    * @returns Promise that resolves to array of matching memory entries
    */
-  async search(query: string, limit: number = 5): Promise<MemoryEntry[]> {
+  async search(query: string, limit: number = 5): Promise<AGIMemoryEntry[]> {
     // If we have embedding and index, use vector search
     if (this.embedding && this.index) {
       const queryVector = await this.embedding.encode(query);
@@ -88,12 +88,12 @@ export class MemoryCore {
       // Convert results to memory entries
       return results
         .map(result => this.memories.get(result.id))
-        .filter((mem): mem is MemoryEntry => mem !== undefined);
+        .filter((mem): mem is AGIMemoryEntry => mem !== undefined);
     }
     
     // Fallback: simple text matching
     const queryLower = query.toLowerCase();
-    const matches: Array<{ memory: MemoryEntry; score: number }> = [];
+    const matches: Array<{ memory: AGIMemoryEntry; score: number }> = [];
     
     for (const memory of this.memories.values()) {
       const contentLower = memory.content.toLowerCase();
@@ -117,7 +117,7 @@ export class MemoryCore {
    * @param id - Memory ID
    * @returns Memory entry or undefined if not found
    */
-  getMemory(id: string): MemoryEntry | undefined {
+  getMemory(id: string): AGIMemoryEntry | undefined {
     return this.memories.get(id);
   }
 
@@ -126,7 +126,7 @@ export class MemoryCore {
    * 
    * @returns Array of all memory entries
    */
-  getAllMemories(): MemoryEntry[] {
+  getAllMemories(): AGIMemoryEntry[] {
     return Array.from(this.memories.values());
   }
 
