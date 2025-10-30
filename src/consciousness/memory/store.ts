@@ -1,6 +1,6 @@
 import { MemoryEntry, MemoryStore, MemoryQuery } from './types';
-import { MemoryType, UUID } from '../types';
-import { generateUUID } from '../utils/uuid';
+import { MemoryType, UUID } from '../../types';
+import { generateUUID } from '../../utils/uuid';
 
 /**
  * In-memory implementation of the memory store

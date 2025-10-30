@@ -96,9 +96,10 @@ export interface Memory {
 }
 
 /**
- * Query parameters for retrieving memories from the memory system
+ * Query parameters for retrieving memories from the consciousness memory system
+ * with emotional context support
  */
-export interface MemoryQuery {
+export interface ConsciousnessMemoryQuery {
     /**
      * Filter by memory type(s)
      */

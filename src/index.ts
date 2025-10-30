@@ -6,6 +6,7 @@
  * - Temporal awareness (event tracking, pattern detection, time perception)
  * - Cognitive development (learning, reasoning, self-awareness, adaptation)
  * - Gemini Citadel integration (cosmic-scale problem solving)
+ * - DEX monitoring and integration
  */
 
 // Core types
@@ -14,8 +15,8 @@ export * from './types';
 // Configuration
 export * from './config';
 
-// Memory system
-export * from './memory';
+// Consciousness module (includes memory with emotional context)
+export * from './consciousness';
 
 // Temporal awareness
 export * from './temporal';
@@ -25,6 +26,9 @@ export * from './cognitive';
 
 // Gemini Citadel integration
 export * from './gemini-citadel';
+
+// DEX integration
+export * from './dex';
 
 // Utilities
 export * from './utils';

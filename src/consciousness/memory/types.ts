@@ -1,7 +1,8 @@
-import { MemoryType, Priority, Timestamp, UUID } from '../types';
+import { MemoryType, Priority, Timestamp, UUID } from '../../types';
+import { EmotionalContext } from '../types/memory';
 
 /**
- * Base interface for all memory entries
+ * Base interface for all memory entries with emotional context
  */
 export interface MemoryEntry {
   id: UUID;
@@ -12,6 +13,7 @@ export interface MemoryEntry {
   accessCount: number;
   lastAccessed: Timestamp;
   associations: UUID[];
+  emotionalContext?: EmotionalContext;
   metadata: Record<string, unknown>;
 }
 
