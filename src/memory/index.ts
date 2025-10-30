@@ -1,16 +1,12 @@
 /**
- * Memory System Module
+ * Memory System Module (Backward Compatibility Export)
  * 
- * Provides comprehensive memory management including:
- * - Sensory memory (immediate perception)
- * - Short-term memory (temporary storage)
- * - Working memory (active processing)
- * - Long-term memory (consolidated storage)
- * - Episodic memory (event-based)
- * - Semantic memory (knowledge-based)
- * - Procedural memory (skill-based)
+ * This module re-exports from the new location at src/consciousness/memory/
+ * for backward compatibility.
+ * 
+ * @deprecated Use imports from 'src/consciousness/memory' instead
  */
 
-export * from './types';
-export * from './store';
-export * from './system';
+export * from '../consciousness/memory/types';
+export * from '../consciousness/memory/store';
+export * from '../consciousness/memory/system';
