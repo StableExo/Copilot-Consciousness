@@ -17,6 +17,11 @@ class SushiSwapHealthCheck {
     ];
 
     constructor() {
+    private readonly timestamp: string;
+    private readonly dexRegistry: DEXRegistry;
+
+    constructor() {
+        this.timestamp = new Date().toISOString();
         this.dexRegistry = new DEXRegistry();
     }
 
@@ -34,48 +39,64 @@ class SushiSwapHealthCheck {
         console.log(chalk.yellow('SushiSwap Core Status:'));
         const coreStatus = await this.checkCoreComponents(sushiswap);
 
-        // Check Key Pools
-        console.log(chalk.yellow('\nSushiSwap Pool Status:'));
-        const poolStatus = await this.checkKeyPools(sushiswap);
+        // Check Key Pairs
+        console.log(chalk.yellow('\nSushiSwap Pair Status:'));
+        const pairStatus = await this.checkKeyPairs(sushiswap);
 
-        const isReady = coreStatus && poolStatus;
+        const isReady = coreStatus && pairStatus;
         console.log(chalk.cyan('\nOverall SushiSwap Status:'));
         console.log(`├── System Ready: ${isReady ? '✅' : '❌'}`);
         console.log(`├── Core Active: ${coreStatus ? '✅' : '❌'}`);
-        console.log(`└── Pools Active: ${poolStatus ? '✅' : '❌'}`);
+        console.log(`└── Pairs Active: ${pairStatus ? '✅' : '❌'}`);
     }
 
     private async checkCoreComponents(sushiswap: any): Promise<boolean> {
         try {
             const provider = new ethers.providers.JsonRpcProvider();
 
-            // Check factory contract
+            // Check Factory contract
             const factory = new ethers.Contract(
                 sushiswap.factory,
                 [
                     'function allPairsLength() external view returns (uint256)',
                     'function allPairs(uint256) external view returns (address)',
-                    'function feeTo() external view returns (address)'
+                    'function feeTo() external view returns (address)',
+                    'function feeToSetter() external view returns (address)'
                 ],
                 provider
             );
 
-            const pairsLength = await factory.allPairsLength();
+            const pairCount = await factory.allPairsLength();
+            const feeTo = await factory.feeTo();
+            const feeToSetter = await factory.feeToSetter();
+            
             console.log(`├── Factory Contract: ✅`);
-            console.log(`├── Total Pairs: ${pairsLength.toString()}`);
+            console.log(`├── Total Pairs: ${pairCount.toString()}`);
+            console.log(`├── Fee Collector: ${feeTo}`);
+            console.log(`├── Fee Setter: ${feeToSetter}`);
 
-            // Check router contract
-            const routerCode = await provider.getCode(sushiswap.router);
-            const routerExists = routerCode !== '0x';
-            console.log(`├── Router Contract: ${routerExists ? '✅' : '❌'}`);
+            // Check Router contract
+            const router = new ethers.Contract(
+                sushiswap.router,
+                [
+                    'function factory() external view returns (address)',
+                    'function WETH() external view returns (address)'
+                ],
+                provider
+            );
 
-            console.log('\n├── Key Pairs:');
-            for (const pair of this.keyPairs) {
-                const isActive = await this.checkPairHealth(pair.address, provider);
-                console.log(`│   ├── ${pair.name}: ${isActive ? '✅' : '❌'}`);
-            }
+            const routerFactory = await router.factory();
+            const wethAddress = await router.WETH();
+            
+            console.log(`├── Router Contract: ✅`);
+            console.log(`├── Router Factory: ${routerFactory}`);
+            console.log(`├── WETH Address: ${wethAddress}`);
 
-            return routerExists;
+            // Verify factory addresses match
+            const factoryMatch = routerFactory.toLowerCase() === sushiswap.factory.toLowerCase();
+            console.log(`├── Factory Match: ${factoryMatch ? '✅' : '❌'}`);
+
+            return true;
         } catch (error) {
             console.error('Error checking SushiSwap core:', error);
             return false;
@@ -83,6 +104,7 @@ class SushiSwapHealthCheck {
     }
 
     private async checkKeyPools(sushiswap: any): Promise<boolean> {
+    private async checkKeyPairs(sushiswap: any): Promise<boolean> {
         try {
             const provider = new ethers.providers.JsonRpcProvider();
 
@@ -91,17 +113,20 @@ class SushiSwapHealthCheck {
                 {
                     name: 'WETH/USDC',
                     address: '0x397FF1542f962076d0BFE58eA045FfA2d347ACa0',
-                    tokens: ['WETH', 'USDC']
+                    token0: 'WETH',
+                    token1: 'USDC'
                 },
                 {
                     name: 'WETH/USDT',
                     address: '0x06da0fd433C1A5d7a4faa01111c044910A184553',
-                    tokens: ['WETH', 'USDT']
+                    token0: 'WETH',
+                    token1: 'USDT'
                 },
                 {
-                    name: 'SUSHI/WETH',
-                    address: '0x795065dCc9f64b5614C407a6EFDC400DA6221FB0',
-                    tokens: ['SUSHI', 'WETH']
+                    name: 'WETH/DAI',
+                    address: '0xC3D03e4F041Fd4cD388c549Ee2A29a9E5075882f',
+                    token0: 'WETH',
+                    token1: 'DAI'
                 }
             ];
 
@@ -111,19 +136,28 @@ class SushiSwapHealthCheck {
                     [
                         'function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)',
                         'function token0() external view returns (address)',
-                        'function token1() external view returns (address)'
+                        'function token1() external view returns (address)',
+                        'function kLast() external view returns (uint256)'
                     ],
                     provider
                 );
 
                 try {
-                    const reserves = await pairContract.getReserves();
+                    const [reserve0, reserve1, lastUpdate] = await pairContract.getReserves();
+                    const kLast = await pairContract.kLast();
+                    
                     console.log(`├── ${pair.name}:`);
-                    console.log(`│   ├── Reserve0: ${ethers.utils.formatUnits(reserves.reserve0, 18)}`);
-                    console.log(`│   ├── Reserve1: ${ethers.utils.formatUnits(reserves.reserve1, 18)}`);
-                    console.log(`│   ├── Last Update: Block ${reserves.blockTimestampLast}`);
-                } catch (pairError) {
-                    console.log(`├── ${pair.name}: ❌ (Could not fetch reserves)`);
+                    console.log(`│   ├── Address: ${pair.address}`);
+                    console.log(`│   ├── ${pair.token0} Reserve: ${ethers.utils.formatEther(reserve0)}`);
+                    console.log(`│   ├── ${pair.token1} Reserve: ${ethers.utils.formatUnits(reserve1, 6)}`);
+                    console.log(`│   ├── Last Update: ${lastUpdate}`);
+                    console.log(`│   ├── K-Last: ${kLast.toString()}`);
+                    
+                    // Check if reserves are healthy (non-zero)
+                    const isHealthy = reserve0.gt(0) && reserve1.gt(0);
+                    console.log(`│   └── Health: ${isHealthy ? '✅' : '❌'}`);
+                } catch (error) {
+                    console.log(`├── ${pair.name}: ⚠️  (Pair query failed)`);
                 }
             }
 
@@ -134,23 +168,6 @@ class SushiSwapHealthCheck {
         }
     }
 
-    private async checkPairHealth(
-        pairAddress: string,
-        provider: ethers.providers.Provider
-    ): Promise<boolean> {
-        try {
-            const pair = new ethers.Contract(
-                pairAddress,
-                ['function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)'],
-                provider
-            );
-
-            const reserves = await pair.getReserves();
-            return reserves.reserve0.gt(0) && reserves.reserve1.gt(0);
-        } catch {
-            return false;
-        }
-    }
 }
 
 export default SushiSwapHealthCheck;

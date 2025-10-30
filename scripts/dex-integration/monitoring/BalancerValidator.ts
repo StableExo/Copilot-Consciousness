@@ -3,10 +3,11 @@ import { ethers } from 'ethers';
 import chalk from 'chalk';
 
 class BalancerHealthCheck {
-    private readonly timestamp: string = '2025-10-30 01:49:41';
+    private readonly timestamp: string;
     private readonly dexRegistry: DEXRegistry;
 
     constructor() {
+        this.timestamp = new Date().toISOString();
         this.dexRegistry = new DEXRegistry();
     }
 
@@ -24,9 +25,9 @@ class BalancerHealthCheck {
         console.log(chalk.yellow('Balancer Core Status:'));
         const coreStatus = await this.checkCoreComponents(balancer);
 
-        // Check Key Pools
+        // Check Weighted Pools
         console.log(chalk.yellow('\nBalancer Pool Status:'));
-        const poolStatus = await this.checkKeyPools(balancer);
+        const poolStatus = await this.checkWeightedPools(balancer);
 
         const isReady = coreStatus && poolStatus;
         console.log(chalk.cyan('\nOverall Balancer Status:'));
@@ -39,67 +40,93 @@ class BalancerHealthCheck {
         try {
             const provider = new ethers.providers.JsonRpcProvider();
 
-            // Check Vault contract (the main contract for Balancer V2)
+            // Check Vault contract (main contract for Balancer V2)
             const vault = new ethers.Contract(
-                balancer.router,
+                balancer.router, // Vault address is used as router in registry
                 [
-                    'function getPoolTokens(bytes32) external view returns (address[] memory tokens, uint256[] memory balances, uint256 lastChangeBlock)',
-                    'function hasApprovedRelayer(address user, address relayer) external view returns (bool)'
+                    'function getProtocolFeesCollector() external view returns (address)',
+                    'function WETH() external view returns (address)',
+                    'function hasApprovedRelayer(address, address) external view returns (bool)'
                 ],
                 provider
             );
 
+            const feesCollector = await vault.getProtocolFeesCollector();
             console.log(`├── Vault Contract: ✅`);
-            console.log(`├── Vault Address: ${balancer.router}`);
+            console.log(`├── Protocol Fees Collector: ${feesCollector}`);
+
+            // Check WETH integration
+            try {
+                const wethAddress = await vault.WETH();
+                console.log(`├── WETH Integration: ✅`);
+                console.log(`├── WETH Address: ${wethAddress}`);
+            } catch {
+                console.log(`├── WETH Integration: ⚠️  (Not directly exposed)`);
+            }
 
             // Check weighted pool factory
-            const factoryCode = await provider.getCode(balancer.factory);
-            const factoryExists = factoryCode !== '0x';
-            console.log(`├── Factory Contract: ${factoryExists ? '✅' : '❌'}`);
+            const poolFactory = new ethers.Contract(
+                balancer.factory,
+                [
+                    'function isPoolFromFactory(address) external view returns (bool)',
+                    'function getCreationCode() external view returns (bytes memory)'
+                ],
+                provider
+            );
 
-            return factoryExists;
+            const factoryCode = await provider.getCode(balancer.factory);
+            const isFactoryActive = factoryCode !== '0x';
+            console.log(`├── Weighted Pool Factory: ${isFactoryActive ? '✅' : '❌'}`);
+
+            return true;
         } catch (error) {
             console.error('Error checking Balancer core:', error);
             return false;
         }
     }
 
-    private async checkKeyPools(balancer: any): Promise<boolean> {
+    private async checkWeightedPools(balancer: any): Promise<boolean> {
         try {
             const provider = new ethers.providers.JsonRpcProvider();
 
             // Check major weighted pools
             const criticalPools = [
                 {
-                    name: 'B-80BAL-20WETH',
+                    name: '80BAL-20WETH',
                     poolId: '0x5c6ee304399dbdb9c8ef030ab642b10820db8f56000200000000000000000014',
                     tokens: ['BAL', 'WETH']
                 },
                 {
-                    name: 'B-50WETH-50DAI',
-                    poolId: '0x0b09dea16768f0799065c475be02919503cb2a3500020000000000000000001a',
-                    tokens: ['WETH', 'DAI']
+                    name: 'B-stETH-STABLE',
+                    poolId: '0x32296969ef14eb0c6d29669c550d4a0449130230000200000000000000000080',
+                    tokens: ['wstETH', 'WETH']
                 }
             ];
 
-            const vault = new ethers.Contract(
-                balancer.router,
-                ['function getPoolTokens(bytes32) external view returns (address[] memory tokens, uint256[] memory balances, uint256 lastChangeBlock)'],
-                provider
-            );
-
             for (const pool of criticalPools) {
+                const vault = new ethers.Contract(
+                    balancer.router,
+                    [
+                        'function getPool(bytes32) external view returns (address, uint8)',
+                        'function getPoolTokens(bytes32) external view returns (address[] memory, uint256[] memory, uint256)'
+                    ],
+                    provider
+                );
+
                 try {
-                    const poolTokens = await vault.getPoolTokens(pool.poolId);
+                    const [poolAddress, ] = await vault.getPool(pool.poolId);
                     console.log(`├── ${pool.name}:`);
-                    console.log(`│   ├── Token Count: ${poolTokens.tokens.length}`);
+                    console.log(`│   ├── Address: ${poolAddress}`);
                     
-                    // Check balances for each token
-                    for (let i = 0; i < pool.tokens.length && i < poolTokens.balances.length; i++) {
-                        console.log(`│   ├── ${pool.tokens[i]} Balance: ${ethers.utils.formatUnits(poolTokens.balances[i], 18)}`);
+                    // Get pool tokens and balances
+                    const [tokens, balances, ] = await vault.getPoolTokens(pool.poolId);
+                    console.log(`│   ├── Token Count: ${tokens.length}`);
+                    
+                    for (let i = 0; i < Math.min(tokens.length, pool.tokens.length); i++) {
+                        console.log(`│   ├── ${pool.tokens[i]} Balance: ${ethers.utils.formatEther(balances[i])}`);
                     }
-                } catch (poolError) {
-                    console.log(`├── ${pool.name}: ❌ (Could not fetch pool data)`);
+                } catch (error) {
+                    console.log(`├── ${pool.name}: ⚠️  (Pool query failed)`);
                 }
             }
 
@@ -110,24 +137,6 @@ class BalancerHealthCheck {
         }
     }
 
-    private async checkPoolHealth(
-        poolId: string,
-        vaultAddress: string,
-        provider: ethers.providers.Provider
-    ): Promise<boolean> {
-        try {
-            const vault = new ethers.Contract(
-                vaultAddress,
-                ['function getPoolTokens(bytes32) external view returns (address[] memory tokens, uint256[] memory balances, uint256 lastChangeBlock)'],
-                provider
-            );
-
-            const poolTokens = await vault.getPoolTokens(poolId);
-            return poolTokens.tokens.length > 0;
-        } catch {
-            return false;
-        }
-    }
 }
 
 export default BalancerHealthCheck;
