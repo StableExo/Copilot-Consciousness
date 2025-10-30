@@ -112,11 +112,12 @@ class BalancerHealthCheck {
 
     private async checkPoolHealth(
         poolId: string,
+        vaultAddress: string,
         provider: ethers.providers.Provider
     ): Promise<boolean> {
         try {
             const vault = new ethers.Contract(
-                '0xBA12222222228d8Ba445958a75a0704d566BF2C8',
+                vaultAddress,
                 ['function getPoolTokens(bytes32) external view returns (address[] memory tokens, uint256[] memory balances, uint256 lastChangeBlock)'],
                 provider
             );
