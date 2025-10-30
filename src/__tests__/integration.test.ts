@@ -5,7 +5,7 @@
 import { ConsciousnessSystem } from '../consciousness';
 import { MemorySystem } from '../consciousness/memory';
 import { ConsciousnessCore } from '../consciousness/core';
-import { DEXRegistry, BalancerValidator, DEXMemoryHookImpl } from '../dex';
+import { DEXRegistry, BalancerValidator, DEXMemoryHookImpl, DEXEventType } from '../dex';
 import { EmotionalContext } from '../consciousness/types/memory';
 import { defaultConfig } from '../config';
 import { Priority } from '../types';
@@ -113,9 +113,6 @@ describe('Integration Tests', () => {
     it('should integrate DEX events with memory system', () => {
       const memorySystem = new MemorySystem(defaultConfig.memory);
       const memoryHook = new DEXMemoryHookImpl(memorySystem);
-      
-      // Import DEXEventType for proper type
-      const { DEXEventType } = require('../dex/types');
       
       const event = {
         id: 'test-event',
