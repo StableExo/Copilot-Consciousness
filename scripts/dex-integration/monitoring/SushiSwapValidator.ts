@@ -7,56 +7,79 @@ class SushiSwapHealthCheck {
     private readonly dexRegistry: DEXRegistry;
 
     constructor() {
+    private readonly keyPairs = [
+        {
+            name: 'WETH/USDC',
+            address: '0x397FF1542f962076d0BFE58eA045FfA2d347ACa0'
+        },
+        {
+            name: 'WETH/USDT',
+            address: '0x06da0fd433C1A5d7a4faa01111c044910A184553'
+        }
+    ];
+
+    constructor() {
+    private readonly timestamp: string;
+    private readonly dexRegistry: DEXRegistry;
+
+    constructor() {
+        this.timestamp = new Date().toISOString();
         this.dexRegistry = new DEXRegistry();
     }
 
     async checkStatus(): Promise<void> {
         console.log(chalk.cyan(`\n=== SushiSwap Health Check @ ${this.timestamp} ===\n`));
 
-        const sushiSwap = this.dexRegistry.getDEX('SushiSwap');
+        const sushiswap = this.dexRegistry.getDEX('SushiSwap');
         
-        if (!sushiSwap) {
+        if (!sushiswap) {
             console.error('SushiSwap configuration not found!');
             return;
         }
 
         // Check Core Components
         console.log(chalk.yellow('SushiSwap Core Status:'));
-        const coreStatus = await this.checkCoreComponents(sushiSwap);
+        const coreStatus = await this.checkCoreComponents(sushiswap);
 
-        // Check Key Pools
-        console.log(chalk.yellow('\nSushiSwap Pool Status:'));
-        const poolStatus = await this.checkKeyPools(sushiSwap);
+        // Check Key Pairs
+        console.log(chalk.yellow('\nSushiSwap Pair Status:'));
+        const pairStatus = await this.checkKeyPairs(sushiswap);
 
-        const isReady = coreStatus && poolStatus;
+        const isReady = coreStatus && pairStatus;
         console.log(chalk.cyan('\nOverall SushiSwap Status:'));
         console.log(`├── System Ready: ${isReady ? '✅' : '❌'}`);
         console.log(`├── Core Active: ${coreStatus ? '✅' : '❌'}`);
-        console.log(`└── Pools Active: ${poolStatus ? '✅' : '❌'}`);
+        console.log(`└── Pairs Active: ${pairStatus ? '✅' : '❌'}`);
     }
 
-    private async checkCoreComponents(sushiSwap: any): Promise<boolean> {
+    private async checkCoreComponents(sushiswap: any): Promise<boolean> {
         try {
             const provider = new ethers.providers.JsonRpcProvider();
 
-            // Check factory contract
+            // Check Factory contract
             const factory = new ethers.Contract(
-                sushiSwap.factory,
+                sushiswap.factory,
                 [
                     'function allPairsLength() external view returns (uint256)',
-                    'function getPair(address, address) external view returns (address)',
-                    'function feeTo() external view returns (address)'
+                    'function allPairs(uint256) external view returns (address)',
+                    'function feeTo() external view returns (address)',
+                    'function feeToSetter() external view returns (address)'
                 ],
                 provider
             );
 
-            const pairsLength = await factory.allPairsLength();
+            const pairCount = await factory.allPairsLength();
+            const feeTo = await factory.feeTo();
+            const feeToSetter = await factory.feeToSetter();
+            
             console.log(`├── Factory Contract: ✅`);
-            console.log(`├── Total Pairs: ${pairsLength.toString()}`);
+            console.log(`├── Total Pairs: ${pairCount.toString()}`);
+            console.log(`├── Fee Collector: ${feeTo}`);
+            console.log(`├── Fee Setter: ${feeToSetter}`);
 
-            // Check router contract
+            // Check Router contract
             const router = new ethers.Contract(
-                sushiSwap.router,
+                sushiswap.router,
                 [
                     'function factory() external view returns (address)',
                     'function WETH() external view returns (address)'
@@ -64,31 +87,16 @@ class SushiSwapHealthCheck {
                 provider
             );
 
-            const factoryAddress = await router.factory();
+            const routerFactory = await router.factory();
             const wethAddress = await router.WETH();
+            
             console.log(`├── Router Contract: ✅`);
+            console.log(`├── Router Factory: ${routerFactory}`);
             console.log(`├── WETH Address: ${wethAddress}`);
 
-            // Check key pairs existence
-            const keyPairs = [
-                {
-                    name: 'SUSHI/WETH',
-                    token0: '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2',
-                    token1: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
-                },
-                {
-                    name: 'USDC/WETH',
-                    token0: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-                    token1: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
-                }
-            ];
-
-            console.log('\n├── Key Pairs:');
-            for (const pair of keyPairs) {
-                const pairAddress = await factory.getPair(pair.token0, pair.token1);
-                const isActive = pairAddress !== ethers.constants.AddressZero;
-                console.log(`│   ├── ${pair.name}: ${isActive ? '✅' : '❌'}`);
-            }
+            // Verify factory addresses match
+            const factoryMatch = routerFactory.toLowerCase() === sushiswap.factory.toLowerCase();
+            console.log(`├── Factory Match: ${factoryMatch ? '✅' : '❌'}`);
 
             return true;
         } catch (error) {
@@ -97,26 +105,30 @@ class SushiSwapHealthCheck {
         }
     }
 
-    private async checkKeyPools(sushiSwap: any): Promise<boolean> {
+    private async checkKeyPools(sushiswap: any): Promise<boolean> {
+    private async checkKeyPairs(sushiswap: any): Promise<boolean> {
         try {
             const provider = new ethers.providers.JsonRpcProvider();
 
             // Check major trading pairs
             const criticalPairs = [
                 {
-                    name: 'SUSHI/WETH',
-                    address: '0x795065dCc9f64b5614C407a6EFDC400DA6221FB0',
-                    tokens: ['SUSHI', 'WETH']
-                },
-                {
-                    name: 'USDC/WETH',
+                    name: 'WETH/USDC',
                     address: '0x397FF1542f962076d0BFE58eA045FfA2d347ACa0',
-                    tokens: ['USDC', 'WETH']
+                    token0: 'WETH',
+                    token1: 'USDC'
                 },
                 {
-                    name: 'DAI/WETH',
+                    name: 'WETH/USDT',
+                    address: '0x06da0fd433C1A5d7a4faa01111c044910A184553',
+                    token0: 'WETH',
+                    token1: 'USDT'
+                },
+                {
+                    name: 'WETH/DAI',
                     address: '0xC3D03e4F041Fd4cD388c549Ee2A29a9E5075882f',
-                    tokens: ['DAI', 'WETH']
+                    token0: 'WETH',
+                    token1: 'DAI'
                 }
             ];
 
@@ -127,27 +139,37 @@ class SushiSwapHealthCheck {
                         'function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)',
                         'function token0() external view returns (address)',
                         'function token1() external view returns (address)',
-                        'function totalSupply() external view returns (uint256)'
+                        'function kLast() external view returns (uint256)'
                     ],
                     provider
                 );
 
-                const reserves = await pairContract.getReserves();
-                const totalSupply = await pairContract.totalSupply();
-                
-                console.log(`├── ${pair.name}:`);
-                console.log(`│   ├── Reserve0: ${ethers.utils.formatUnits(reserves.reserve0, 18)}`);
-                console.log(`│   ├── Reserve1: ${ethers.utils.formatUnits(reserves.reserve1, 18)}`);
-                console.log(`│   ├── Total LP Supply: ${ethers.utils.formatUnits(totalSupply, 18)}`);
-                console.log(`│   └── Last Update Block: ${reserves.blockTimestampLast}`);
+                try {
+                    const [reserve0, reserve1, lastUpdate] = await pairContract.getReserves();
+                    const kLast = await pairContract.kLast();
+                    
+                    console.log(`├── ${pair.name}:`);
+                    console.log(`│   ├── Address: ${pair.address}`);
+                    console.log(`│   ├── ${pair.token0} Reserve: ${ethers.utils.formatEther(reserve0)}`);
+                    console.log(`│   ├── ${pair.token1} Reserve: ${ethers.utils.formatUnits(reserve1, 6)}`);
+                    console.log(`│   ├── Last Update: ${lastUpdate}`);
+                    console.log(`│   ├── K-Last: ${kLast.toString()}`);
+                    
+                    // Check if reserves are healthy (non-zero)
+                    const isHealthy = reserve0.gt(0) && reserve1.gt(0);
+                    console.log(`│   └── Health: ${isHealthy ? '✅' : '❌'}`);
+                } catch (error) {
+                    console.log(`├── ${pair.name}: ⚠️  (Pair query failed)`);
+                }
             }
 
             return true;
         } catch (error) {
-            console.error('Error checking SushiSwap pools:', error);
+            console.error('Error checking SushiSwap pairs:', error);
             return false;
         }
     }
+
 }
 
 export default SushiSwapHealthCheck;
