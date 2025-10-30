@@ -153,23 +153,6 @@ class SushiSwapHealthCheck {
         }
     }
 
-    private async checkPairHealth(
-        pairAddress: string,
-        provider: ethers.providers.Provider
-    ): Promise<boolean> {
-        try {
-            const pair = new ethers.Contract(
-                pairAddress,
-                ['function getReserves() external view returns (uint112, uint112, uint32)'],
-                provider
-            );
-
-            const [reserve0, reserve1, ] = await pair.getReserves();
-            return reserve0.gt(0) && reserve1.gt(0);
-        } catch {
-            return false;
-        }
-    }
 }
 
 export default SushiSwapHealthCheck;

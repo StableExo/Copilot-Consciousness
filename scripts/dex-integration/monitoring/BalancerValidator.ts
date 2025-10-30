@@ -137,24 +137,6 @@ class BalancerHealthCheck {
         }
     }
 
-    private async checkPoolHealth(
-        poolId: string,
-        provider: ethers.providers.Provider,
-        vaultAddress: string
-    ): Promise<boolean> {
-        try {
-            const vault = new ethers.Contract(
-                vaultAddress,
-                ['function getPool(bytes32) external view returns (address, uint8)'],
-                provider
-            );
-
-            const [poolAddress, ] = await vault.getPool(poolId);
-            return poolAddress !== ethers.constants.AddressZero;
-        } catch {
-            return false;
-        }
-    }
 }
 
 export default BalancerHealthCheck;
