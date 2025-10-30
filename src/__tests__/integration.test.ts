@@ -114,9 +114,12 @@ describe('Integration Tests', () => {
       const memorySystem = new MemorySystem(defaultConfig.memory);
       const memoryHook = new DEXMemoryHookImpl(memorySystem);
       
+      // Import DEXEventType for proper type
+      const { DEXEventType } = require('../dex/types');
+      
       const event = {
         id: 'test-event',
-        type: 'swap' as any,
+        type: DEXEventType.SWAP,
         dexName: 'Balancer',
         timestamp: Date.now(),
         data: { amount: 100 },
@@ -136,8 +139,12 @@ describe('Integration Tests', () => {
       expect(system).toBeDefined();
       
       system.start();
-      const status = system.getStatus() as any;
-      expect(status.isRunning).toBe(true);
+      const status = system.getStatus();
+      expect(status).toBeDefined();
+      expect(typeof status).toBe('object');
+      if (status && typeof status === 'object' && 'isRunning' in status) {
+        expect(status.isRunning).toBe(true);
+      }
       
       system.stop();
     });

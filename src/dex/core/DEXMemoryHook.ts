@@ -49,41 +49,60 @@ export class DEXMemoryHookImpl implements DEXMemoryHook {
 
     // Filter and map to DEX events
     return memories
-      .filter(memory => {
-        const metadata = memory.metadata as Record<string, unknown>;
-        if (metadata?.category !== 'dex_event') {
-          return false;
-        }
+      .filter(memory => this.isDEXEventMemory(memory, filter))
+      .map(memory => this.extractDEXEvent(memory));
+  }
 
-        if (filter.dexName) {
-          const content = memory.content as Record<string, unknown>;
-          const eventData = content.eventData as Record<string, unknown>;
-          if (eventData?.dexName !== filter.dexName) {
-            return false;
-          }
-        }
+  /**
+   * Check if a memory is a DEX event matching the filter
+   */
+  private isDEXEventMemory(
+    memory: any,
+    filter: { dexName?: string; type?: DEXEventType }
+  ): boolean {
+    const metadata = memory.metadata as Record<string, unknown>;
+    if (metadata?.category !== 'dex_event') {
+      return false;
+    }
 
-        if (filter.type && metadata?.eventType !== filter.type) {
-          return false;
-        }
+    if (filter.dexName) {
+      const eventData = this.extractEventData(memory);
+      if (eventData?.dexName !== filter.dexName) {
+        return false;
+      }
+    }
 
-        return true;
-      })
-      .map(memory => {
-        const content = memory.content as Record<string, unknown>;
-        const eventData = content.eventData as Record<string, unknown>;
-        const metadata = memory.metadata as Record<string, unknown>;
-        
-        return {
-          id: (eventData?.id as string) || memory.id,
-          type: metadata.eventType as DEXEventType,
-          dexName: (eventData?.dexName as string) || '',
-          timestamp: (eventData?.timestamp as number) || memory.timestamp,
-          data: eventData?.data,
-          emotionalContext: memory.emotionalContext,
-          metadata: eventData?.metadata as Record<string, unknown>,
-        };
-      });
+    if (filter.type && metadata?.eventType !== filter.type) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Extract event data from memory content
+   */
+  private extractEventData(memory: any): Record<string, unknown> | null {
+    const content = memory.content as Record<string, unknown>;
+    return (content?.eventData as Record<string, unknown>) || null;
+  }
+
+  /**
+   * Extract a DEX event from a memory entry
+   */
+  private extractDEXEvent(memory: any): DEXEvent {
+    const eventData = this.extractEventData(memory);
+    const metadata = memory.metadata as Record<string, unknown>;
+
+    return {
+      id: (eventData?.id as string) || memory.id,
+      type: metadata.eventType as DEXEventType,
+      dexName: (eventData?.dexName as string) || '',
+      timestamp: (eventData?.timestamp as number) || memory.timestamp,
+      data: eventData?.data,
+      emotionalContext: memory.emotionalContext,
+      metadata: eventData?.metadata as Record<string, unknown>,
+    };
   }
 
   /**
