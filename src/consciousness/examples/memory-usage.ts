@@ -1,6 +1,6 @@
 // Example usage of memory system interfaces
 
-import { Memory, EmotionalContext, MemoryQuery } from '../types';
+import { Memory, EmotionalContext, ConsciousnessMemoryQuery } from '../types';
 
 // Example: Creating an emotional context
 const emotionalContext: EmotionalContext = {
@@ -37,7 +37,7 @@ const memory: Memory = {
 };
 
 // Example: Querying memories
-const query: MemoryQuery = {
+const query: ConsciousnessMemoryQuery = {
     type: 'episodic',
     tags: ['learning'],
     emotionalContext: {
@@ -53,7 +53,7 @@ const query: MemoryQuery = {
 };
 
 // Example: Querying by time range
-const timeRangeQuery: MemoryQuery = {
+const timeRangeQuery: ConsciousnessMemoryQuery = {
     timeRange: {
         start: new Date('2025-01-01'),
         end: new Date('2025-12-31')
@@ -65,7 +65,7 @@ const timeRangeQuery: MemoryQuery = {
 };
 
 // Example: Searching with text
-const searchQuery: MemoryQuery = {
+const searchQuery: ConsciousnessMemoryQuery = {
     searchText: 'consciousness',
     type: ['episodic', 'semantic'],
     limit: 20

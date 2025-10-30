@@ -1,5 +1,5 @@
 import { SystemConfig, EventType, Priority } from './types';
-import { MemorySystem } from './memory';
+import { MemorySystem } from './consciousness/memory';
 import { TemporalAwareness } from './temporal';
 import { CognitiveDevelopment } from './cognitive';
 import { GeminiCitadel } from './gemini-citadel';

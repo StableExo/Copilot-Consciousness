@@ -1,47 +1,77 @@
-// ConsciousnessCore.ts
+/**
+ * ConsciousnessCore.ts
+ * 
+ * Core consciousness framework integrating memory system and emotional states
+ */
 
-// Core consciousness framework
-class ConsciousnessCore {
-    constructor() {
-        this.memorySystem = new MemorySystem();
-        this.emotionalState = new EmotionalState();
-    }
+import { MemorySystem } from '../memory';
+import { EmotionalContext } from '../types/memory';
+import { MemoryConfig } from '../../types';
 
-    // Integration with memory system
-    integrateMemory(data) {
-        this.memorySystem.store(data);
-    }
+/**
+ * Core consciousness framework
+ */
+export class ConsciousnessCore {
+  private memorySystem: MemorySystem;
+  private emotionalState: EmotionalStateModel;
 
-    // Model emotional states
-    modelEmotionalState(state) {
-        this.emotionalState.update(state);
-    }
+  constructor(memoryConfig: MemoryConfig) {
+    this.memorySystem = new MemorySystem(memoryConfig);
+    this.emotionalState = new EmotionalStateModel();
+  }
 
-    // Event-driven architecture
-    onEvent(event, callback) {
-        // Event handling logic
-        callback(event);
+  /**
+   * Integration with memory system
+   */
+  integrateMemory(data: unknown, emotionalContext?: EmotionalContext): string {
+    return this.memorySystem.addShortTermMemory(data, undefined, {}, emotionalContext);
+  }
+
+  /**
+   * Model emotional states
+   */
+  modelEmotionalState(context: EmotionalContext): void {
+    this.emotionalState.update(context);
+  }
+
+  /**
+   * Get current emotional state
+   */
+  getEmotionalState(): EmotionalContext | null {
+    return this.emotionalState.getCurrent();
+  }
+
+  /**
+   * Event-driven architecture
+   */
+  onEvent(event: unknown, callback: (event: unknown) => void): void {
+    // Event handling logic
+    try {
+      callback(event);
+    } catch (error) {
+      // Handle callback errors
     }
+  }
+
+  /**
+   * Get the memory system
+   */
+  getMemorySystem(): MemorySystem {
+    return this.memorySystem;
+  }
 }
 
-// Memory system integration
-class MemorySystem {
-    constructor() {
-        this.memory = [];
-    }
+/**
+ * Emotional state modeling
+ */
+class EmotionalStateModel {
+  private state: EmotionalContext | null = null;
 
-    store(data) {
-        this.memory.push(data);
-    }
-}
+  update(context: EmotionalContext): void {
+    this.state = context;
+  }
 
-// Emotional state modeling
-class EmotionalState {
-    constructor() {
-        this.state = '';
-    }
-
-    update(state) {
-        this.state = state;
-    }
+  getCurrent(): EmotionalContext | null {
+    return this.state;
+  }
 }

@@ -1,7 +1,8 @@
-import { MemoryConfig } from '../types';
+import { MemoryConfig } from '../../types';
 import { MemoryEntry, ConsolidationResult } from './types';
 import { InMemoryStore } from './store';
-import { MemoryType, Priority } from '../types';
+import { MemoryType, Priority } from '../../types';
+import { EmotionalContext } from '../types/memory';
 
 /**
  * Main memory system managing different memory types
@@ -18,13 +19,18 @@ export class MemorySystem {
   /**
    * Add a sensory memory (very short-term)
    */
-  addSensoryMemory(content: unknown, metadata: Record<string, unknown> = {}): string {
+  addSensoryMemory(
+    content: unknown, 
+    metadata: Record<string, unknown> = {},
+    emotionalContext?: EmotionalContext
+  ): string {
     return this.store.store({
       type: MemoryType.SENSORY,
       content,
       timestamp: Date.now(),
       priority: Priority.LOW,
       associations: [],
+      emotionalContext,
       metadata,
     });
   }
@@ -35,7 +41,8 @@ export class MemorySystem {
   addShortTermMemory(
     content: unknown,
     priority: Priority = Priority.MEDIUM,
-    metadata: Record<string, unknown> = {}
+    metadata: Record<string, unknown> = {},
+    emotionalContext?: EmotionalContext
   ): string {
     return this.store.store({
       type: MemoryType.SHORT_TERM,
@@ -43,6 +50,7 @@ export class MemorySystem {
       timestamp: Date.now(),
       priority,
       associations: [],
+      emotionalContext,
       metadata,
     });
   }
@@ -53,7 +61,8 @@ export class MemorySystem {
   addWorkingMemory(
     content: unknown,
     priority: Priority = Priority.HIGH,
-    metadata: Record<string, unknown> = {}
+    metadata: Record<string, unknown> = {},
+    emotionalContext?: EmotionalContext
   ): string {
     // Check working memory capacity
     const workingMemories = this.store.getByType(MemoryType.WORKING);
@@ -74,6 +83,7 @@ export class MemorySystem {
       timestamp: Date.now(),
       priority,
       associations: [],
+      emotionalContext,
       metadata,
     });
   }
@@ -216,6 +226,33 @@ export class MemorySystem {
       total: this.store.getSize(),
       byType,
     };
+  }
+
+  /**
+   * Add a memory for a DEX event
+   */
+  addDEXEventMemory(
+    eventType: string,
+    eventData: unknown,
+    priority: Priority = Priority.HIGH,
+    emotionalContext?: EmotionalContext
+  ): string {
+    return this.store.store({
+      type: MemoryType.EPISODIC,
+      content: {
+        eventType,
+        eventData,
+        source: 'dex',
+      },
+      timestamp: Date.now(),
+      priority,
+      associations: [],
+      emotionalContext,
+      metadata: {
+        category: 'dex_event',
+        eventType,
+      },
+    });
   }
 
   /**
