@@ -45,7 +45,7 @@ export class BalancerValidator extends BaseValidator {
   }
 
   private async checkCoreComponents(
-    balancer: any,
+    balancer: { router: string; factory: string },
     components: ComponentStatus[],
     errors: string[]
   ): Promise<boolean> {
@@ -115,7 +115,7 @@ export class BalancerValidator extends BaseValidator {
   }
 
   private async checkWeightedPools(
-    balancer: any,
+    balancer: { router: string },
     components: ComponentStatus[],
     errors: string[]
   ): Promise<boolean> {
@@ -146,7 +146,7 @@ export class BalancerValidator extends BaseValidator {
 
         try {
           const [poolAddress] = await vault.getPool(pool.poolId);
-          const [tokens, balances] = await vault.getPoolTokens(pool.poolId);
+          const [tokens] = await vault.getPoolTokens(pool.poolId);
           
           components.push({
             name: `Pool: ${pool.name}`,

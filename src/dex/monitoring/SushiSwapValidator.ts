@@ -45,7 +45,7 @@ export class SushiSwapValidator extends BaseValidator {
   }
 
   private async checkCoreComponents(
-    sushiswap: any,
+    sushiswap: { factory: string; router: string },
     components: ComponentStatus[],
     errors: string[]
   ): Promise<boolean> {
@@ -122,7 +122,8 @@ export class SushiSwapValidator extends BaseValidator {
   }
 
   private async checkKeyPairs(
-    sushiswap: any,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    sushiswap: unknown,
     components: ComponentStatus[],
     errors: string[]
   ): Promise<boolean> {
@@ -157,7 +158,6 @@ export class SushiSwapValidator extends BaseValidator {
 
         try {
           const [reserve0, reserve1, lastUpdate] = await pairContract.getReserves();
-          const kLast = await pairContract.kLast();
           
           const isHealthy = reserve0.gt(0) && reserve1.gt(0);
           

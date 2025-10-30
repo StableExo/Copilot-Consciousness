@@ -1,6 +1,5 @@
 import { BaseValidator } from './BaseValidator';
 import { ValidatorStatus, ComponentStatus } from '../types';
-import { ethers } from 'ethers';
 
 /**
  * 1inch DEX validator
@@ -40,7 +39,7 @@ export class OneInchValidator extends BaseValidator {
   }
 
   private async checkAggregatorProtocol(
-    oneInch: any,
+    oneInch: { router: string },
     components: ComponentStatus[],
     errors: string[]
   ): Promise<boolean> {

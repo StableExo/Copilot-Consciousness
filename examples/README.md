@@ -40,6 +40,14 @@ Shows Citadel Mode capabilities:
 - Consciousness integration
 - Gemini API usage (simulated without API key)
 
+### dex-consciousness-integration.ts
+Demonstrates DEX monitoring integration:
+- DEX validators for multiple protocols (Balancer, Curve, SushiSwap, 1inch)
+- Recording DEX events in memory system
+- Emotional context integration
+- Memory search and filtering
+- Consciousness reflection with DEX events
+
 ### memory-management.ts (Coming soon)
 Deep dive into memory systems:
 - Different memory types

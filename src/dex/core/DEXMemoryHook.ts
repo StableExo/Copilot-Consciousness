@@ -50,14 +50,15 @@ export class DEXMemoryHookImpl implements DEXMemoryHook {
     // Filter and map to DEX events
     return memories
       .filter(memory => {
-        const metadata = memory.metadata as any;
+        const metadata = memory.metadata as Record<string, unknown>;
         if (metadata?.category !== 'dex_event') {
           return false;
         }
 
         if (filter.dexName) {
-          const content = memory.content as any;
-          if (content?.dexName !== filter.dexName) {
+          const content = memory.content as Record<string, unknown>;
+          const eventData = content.eventData as Record<string, unknown>;
+          if (eventData?.dexName !== filter.dexName) {
             return false;
           }
         }
@@ -69,17 +70,18 @@ export class DEXMemoryHookImpl implements DEXMemoryHook {
         return true;
       })
       .map(memory => {
-        const content = memory.content as any;
-        const metadata = memory.metadata as any;
+        const content = memory.content as Record<string, unknown>;
+        const eventData = content.eventData as Record<string, unknown>;
+        const metadata = memory.metadata as Record<string, unknown>;
         
         return {
-          id: content.id || memory.id,
-          type: metadata.eventType,
-          dexName: content.dexName,
-          timestamp: memory.timestamp,
-          data: content.eventData,
+          id: (eventData?.id as string) || memory.id,
+          type: metadata.eventType as DEXEventType,
+          dexName: (eventData?.dexName as string) || '',
+          timestamp: (eventData?.timestamp as number) || memory.timestamp,
+          data: eventData?.data,
           emotionalContext: memory.emotionalContext,
-          metadata: content.metadata,
+          metadata: eventData?.metadata as Record<string, unknown>,
         };
       });
   }

@@ -45,7 +45,7 @@ export class CurveValidator extends BaseValidator {
   }
 
   private async checkCoreComponents(
-    curve: any,
+    curve: { factory: string },
     components: ComponentStatus[],
     errors: string[]
   ): Promise<boolean> {
@@ -107,7 +107,8 @@ export class CurveValidator extends BaseValidator {
   }
 
   private async checkKeyPools(
-    curve: any,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    curve: unknown,
     components: ComponentStatus[],
     errors: string[]
   ): Promise<boolean> {
