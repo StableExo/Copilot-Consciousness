@@ -6,6 +6,7 @@ import { ConsciousnessSystem } from '../consciousness';
 import { MemorySystem } from '../consciousness/memory';
 import { ConsciousnessCore } from '../consciousness/core';
 import { DEXRegistry, BalancerValidator, DEXMemoryHookImpl, DEXEventType } from '../dex';
+import { PancakeSwapValidator } from '../dex/monitoring/PancakeSwapValidator';
 import { EmotionalContext } from '../consciousness/types/memory';
 import { defaultConfig } from '../config';
 import { Priority } from '../types';
@@ -108,6 +109,12 @@ describe('Integration Tests', () => {
       const validator = new BalancerValidator();
       expect(validator).toBeDefined();
       expect(validator.getDEXName()).toBe('Balancer');
+    });
+
+    it('should create PancakeSwap validator', () => {
+      const validator = new PancakeSwapValidator();
+      expect(validator).toBeDefined();
+      expect(validator.getDEXName()).toBe('PancakeSwap V3');
     });
 
     it('should integrate DEX events with memory system', () => {
