@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@aave/core": "^0.1.0",
+    "@solana/web3.js": "^1.98.4",
     "ethers": "^5.7.2",
     "hardhat": "^2.12.0"
   },
