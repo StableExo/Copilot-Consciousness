@@ -75,6 +75,19 @@ export class DEXRegistry {
             liquidityThreshold: BigInt(ethers.utils.parseEther('30000').toString()),
             gasEstimate: 160000
         });
+
+        // Initialize PancakeSwap V3
+        this.addDEX({
+            name: 'PancakeSwap V3',
+            protocol: 'PancakeSwapV3',
+            chainId: 1,
+            router: '0x1b81D678ffb9C0263b24A97847620C99d213eB14',
+            factory: '0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865',
+            initCodeHash: '0x6100b2845c25e831c513e6183a6a96a33753c156d11d13f0156ba906a6408a2b',
+            priority: 6,
+            liquidityThreshold: BigInt(ethers.utils.parseEther('20000').toString()),
+            gasEstimate: 170000
+        });
     }
 
     addDEX(dex: DEXConfig): void {
