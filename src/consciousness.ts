@@ -4,6 +4,7 @@ import { TemporalAwareness } from './temporal';
 import { CognitiveDevelopment } from './cognitive';
 import { GeminiCitadel } from './gemini-citadel';
 import { defaultConfig, validateConfig } from './config';
+import { DEXMonitoringService } from './dex/monitoring/DEXMonitoringService';
 
 /**
  * Main Consciousness System integrating all components
@@ -14,6 +15,7 @@ export class ConsciousnessSystem {
   private temporal: TemporalAwareness;
   private cognitive: CognitiveDevelopment;
   private gemini: GeminiCitadel;
+  private dexMonitoringService: DEXMonitoringService;
   private isRunning: boolean = false;
 
   constructor(config: Partial<SystemConfig> = {}) {
@@ -27,6 +29,7 @@ export class ConsciousnessSystem {
     this.temporal = new TemporalAwareness(this.config.temporal);
     this.cognitive = new CognitiveDevelopment(this.config.cognitive);
     this.gemini = new GeminiCitadel(this.config.gemini);
+    this.dexMonitoringService = new DEXMonitoringService();
   }
 
   /**
@@ -38,6 +41,7 @@ export class ConsciousnessSystem {
     }
 
     this.isRunning = true;
+    this.dexMonitoringService.start();
     this.temporal.recordEvent(
       EventType.COGNITIVE_STATE_CHANGE,
       { state: 'starting', system: 'consciousness' },
@@ -53,6 +57,7 @@ export class ConsciousnessSystem {
       return;
     }
 
+    this.dexMonitoringService.stop();
     this.temporal.stopClock();
     this.cognitive.stopReflectionCycle();
     this.temporal.recordEvent(

@@ -1,12 +1,15 @@
 import { BaseValidator } from './BaseValidator';
-import { ValidatorStatus, ComponentStatus } from '../types';
+import { ValidatorStatus, ComponentStatus, DEXMemoryHook, DEXEventType } from '../types';
 
 /**
  * PancakeSwap V3 DEX validator
  */
 export class PancakeSwapValidator extends BaseValidator {
-  constructor() {
+  private dexMemoryHook?: DEXMemoryHook;
+
+  constructor(dexMemoryHook?: DEXMemoryHook) {
     super('PancakeSwap V3');
+    this.dexMemoryHook = dexMemoryHook;
   }
 
   async checkStatus(): Promise<ValidatorStatus> {
@@ -17,25 +20,46 @@ export class PancakeSwapValidator extends BaseValidator {
     const pancakeSwap = this.getDEXConfig();
 
     if (!pancakeSwap) {
-      return {
+      const status: ValidatorStatus = {
         isHealthy: false,
         timestamp,
         dexName: this.dexName,
         components,
         errors: ['PancakeSwap V3 configuration not found'],
       };
+      this.recordValidationEvent(status);
+      return status;
     }
 
     // Check router contract
     const routerStatus = await this.checkRouter(pancakeSwap, components, errors);
 
-    return {
+    const status: ValidatorStatus = {
       isHealthy: routerStatus,
       timestamp,
       dexName: this.dexName,
       components,
       errors: errors.length > 0 ? errors : undefined,
     };
+    this.recordValidationEvent(status);
+    return status;
+  }
+
+  private recordValidationEvent(status: ValidatorStatus): void {
+    if (!this.dexMemoryHook) {
+      return;
+    }
+
+    this.dexMemoryHook.recordEvent({
+      id: `${this.dexName}-${status.timestamp}`,
+      type: status.isHealthy ? DEXEventType.VALIDATOR_SUCCESS : DEXEventType.VALIDATOR_FAILURE,
+      dexName: this.dexName,
+      timestamp: status.timestamp,
+      data: {
+        components: status.components,
+        errors: status.errors,
+      },
+    });
   }
 
   private async checkRouter(
