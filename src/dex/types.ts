@@ -9,16 +9,19 @@ import { EmotionalContext } from '../consciousness/types/memory';
 /**
  * DEX configuration interface
  */
+export type ChainType = 'EVM' | 'Solana';
+
 export interface DEXConfig {
   name: string;
   protocol: string;
-  chainId: number;
+  chainType: ChainType;
+  network: string; // e.g., '1' for EVM, 'mainnet-beta' for Solana
   router: string;
   factory: string;
-  initCodeHash: string;
+  initCodeHash?: string;
   priority: number;
   liquidityThreshold: bigint;
-  gasEstimate: number;
+  gasEstimate?: number;
 }
 
 /**
