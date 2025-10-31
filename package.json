@@ -28,5 +28,6 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "verify": "./verify-deps.sh",
     "check": "npm run verify"
-  }
+  },
+  "type": "module"
 }
