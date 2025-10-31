@@ -138,3 +138,15 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 test-*.js
+
+node_modules
+.env
+coverage
+coverage.json
+typechain
+typechain-types
+
+#Hardhat files
+cache
+artifacts
+
