@@ -105,6 +105,32 @@ export class DEXRegistry {
 
         // Initialize Raydium
         this.addDEX({
+            name: 'Uniswap V2 on Base',
+            protocol: 'UniswapV2',
+            chainType: 'EVM',
+            network: '8453',
+            router: '0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24',
+            factory: '0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6',
+            initCodeHash: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f', // This is the generic Uniswap V2 init code hash, may need to be updated for Base
+            priority: 8,
+            liquidityThreshold: BigInt(ethers.utils.parseEther('10000').toString()),
+            gasEstimate: 150000
+        });
+
+        this.addDEX({
+            name: 'SushiSwap on Base',
+            protocol: 'SushiSwap',
+            chainType: 'EVM',
+            network: '8453',
+            router: '0x804b526e5bf4349819fe2db65349d0825870f8ee',
+            factory: '0xc35dadb65012ec5796536bd9864ed8773abc74c4',
+            initCodeHash: '0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303', // This is the generic SushiSwap init code hash, may need to be updated for Base
+            priority: 9,
+            liquidityThreshold: BigInt(ethers.utils.parseEther('10000').toString()),
+            gasEstimate: 150000
+        });
+
+        this.addDEX({
             name: 'Raydium',
             protocol: 'Raydium',
             chainType: 'Solana',
