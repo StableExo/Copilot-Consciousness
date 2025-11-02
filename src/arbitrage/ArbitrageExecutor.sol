@@ -40,6 +40,12 @@ contract ArbitrageExecutor is IFlashLoanReceiver {
         address[] path2; // e.g., [WETH, DAI]
     }
 
+    struct MultiHopParams {
+        address[] routers;    // Router addresses for each hop
+        address[][] paths;    // Token paths for each hop
+        uint[] minAmounts;    // Minimum output amounts for each hop
+    }
+
     error InvalidInitiator(address actual, address expected);
     error NotOwner(address caller);
 
@@ -73,13 +79,26 @@ contract ArbitrageExecutor is IFlashLoanReceiver {
             revert InvalidInitiator(msg.sender, address(POOL));
         }
 
-        // Decode the arbitrage parameters
-        ArbitrageParams memory tradeParams = abi.decode(params, (ArbitrageParams));
+        // Try to decode as MultiHopParams first
+        if (params.length > 192) { // MultiHop params are larger
+            MultiHopParams memory multiHopParams = abi.decode(params, (MultiHopParams));
+            return executeMultiHopArbitrage(assets[0], amounts[0], premiums[0], multiHopParams);
+        } else {
+            // Fallback to legacy two-hop arbitrage
+            ArbitrageParams memory tradeParams = abi.decode(params, (ArbitrageParams));
+            return executeTwoHopArbitrage(assets[0], amounts[0], premiums[0], tradeParams);
+        }
+    }
 
-        // --- CORE ARBITRAGE LOGIC ---
-        address borrowedAsset = assets[0];
-        uint256 borrowedAmount = amounts[0];
-
+    /**
+     * @notice Execute legacy two-hop arbitrage
+     */
+    function executeTwoHopArbitrage(
+        address borrowedAsset,
+        uint256 borrowedAmount,
+        uint256 premium,
+        ArbitrageParams memory tradeParams
+    ) private returns (bool) {
         // 1. Approve the first DEX to spend the borrowed asset
         IERC20(borrowedAsset).approve(tradeParams.router1, borrowedAmount);
 
@@ -110,7 +129,7 @@ contract ArbitrageExecutor is IFlashLoanReceiver {
 
         // --- PROFIT VERIFICATION & REPAYMENT ---
         uint256 finalAmount = IERC20(borrowedAsset).balanceOf(address(this));
-        uint256 amountOwed = borrowedAmount + premiums[0];
+        uint256 amountOwed = borrowedAmount + premium;
 
         // This is a simplified check. A real implementation would require more robust profit calculation.
         require(finalAmount >= amountOwed, "Arbitrage failed: Not enough funds to repay loan.");
@@ -122,12 +141,96 @@ contract ArbitrageExecutor is IFlashLoanReceiver {
     }
 
     /**
-     * @notice Initiates a flash loan with a specific arbitrage route.
+     * @notice Execute multi-hop arbitrage with variable number of hops
+     */
+    function executeMultiHopArbitrage(
+        address borrowedAsset,
+        uint256 borrowedAmount,
+        uint256 premium,
+        MultiHopParams memory params
+    ) private returns (bool) {
+        require(params.routers.length == params.paths.length, "Router and path length mismatch");
+        require(params.routers.length == params.minAmounts.length, "Router and minAmount length mismatch");
+        require(params.routers.length > 0, "At least one hop required");
+
+        uint256 currentAmount = borrowedAmount;
+        address currentAsset = borrowedAsset;
+
+        // Execute each hop sequentially
+        for (uint i = 0; i < params.routers.length; i++) {
+            address router = params.routers[i];
+            address[] memory path = params.paths[i];
+            uint minAmount = params.minAmounts[i];
+
+            require(path.length >= 2, "Path must have at least 2 tokens");
+            require(path[0] == currentAsset, "Path must start with current asset");
+
+            // Approve router to spend current asset
+            IERC20(currentAsset).approve(router, currentAmount);
+
+            // Execute swap
+            uint[] memory amounts = IUniswapV2Router(router).swapExactTokensForTokens(
+                currentAmount,
+                minAmount,
+                path,
+                address(this),
+                block.timestamp + 60
+            );
+
+            // Update current asset and amount for next hop
+            currentAsset = path[path.length - 1];
+            currentAmount = amounts[amounts.length - 1];
+        }
+
+        // Verify we ended up with the borrowed asset
+        require(currentAsset == borrowedAsset, "Final asset must match borrowed asset");
+
+        // Verify profitability
+        uint256 amountOwed = borrowedAmount + premium;
+        require(currentAmount >= amountOwed, "Arbitrage failed: Not enough funds to repay loan.");
+
+        // Repay the loan + premium
+        IERC20(borrowedAsset).approve(address(POOL), amountOwed);
+
+        return true;
+    }
+
+    /**
+     * @notice Initiates a flash loan with a specific arbitrage route (legacy two-hop).
      * @param asset The address of the asset to borrow.
      * @param amount The amount of the asset to borrow.
      * @param params The encoded parameters for the arbitrage trade.
      */
     function requestFlashLoan(address asset, uint256 amount, ArbitrageParams calldata params) external onlyOwner {
+        address[] memory assets = new address[](1);
+        assets[0] = asset;
+
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = amount;
+
+        uint256[] memory modes = new uint256[](1);
+        modes[0] = 0; // No interest rate for flash loans
+
+        bytes memory encodedParams = abi.encode(params);
+
+        POOL.flashLoan(
+            address(this),
+            assets,
+            amounts,
+            modes,
+            address(this), // Initiator is this contract
+            encodedParams,
+            0
+        );
+    }
+
+    /**
+     * @notice Initiates a flash loan with a multi-hop arbitrage route.
+     * @param asset The address of the asset to borrow.
+     * @param amount The amount of the asset to borrow.
+     * @param params The encoded parameters for the multi-hop arbitrage trade.
+     */
+    function requestMultiHopFlashLoan(address asset, uint256 amount, MultiHopParams calldata params) external onlyOwner {
         address[] memory assets = new address[](1);
         assets[0] = asset;
 
