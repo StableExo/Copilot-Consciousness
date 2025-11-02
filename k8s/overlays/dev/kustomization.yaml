@@ -1,0 +1,43 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: arbitrage-bot
+
+bases:
+  - ../../base
+
+resources:
+  - ../../services/scanner/deployment.yaml
+  - ../../services/pathfinding/deployment.yaml
+  - ../../services/ml/deployment.yaml
+  - ../../services/execution/deployment.yaml
+  - ../../services/analytics/deployment.yaml
+  - ../../services/bridge/deployment.yaml
+  - ../../services/dashboard/deployment.yaml
+
+patchesStrategicMerge:
+  - replica-count.yaml
+
+configMapGenerator:
+  - name: arbitrage-config
+    behavior: merge
+    literals:
+      - ENVIRONMENT=development
+      - LOG_LEVEL=debug
+      - SCAN_INTERVAL=5000
+
+images:
+  - name: arbitrage-bot/scanner
+    newTag: dev
+  - name: arbitrage-bot/pathfinding
+    newTag: dev
+  - name: arbitrage-bot/ml
+    newTag: dev
+  - name: arbitrage-bot/execution
+    newTag: dev
+  - name: arbitrage-bot/analytics
+    newTag: dev
+  - name: arbitrage-bot/bridge
+    newTag: dev
+  - name: arbitrage-bot/dashboard
+    newTag: dev
