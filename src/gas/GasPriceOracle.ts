@@ -2,6 +2,7 @@
  * GasPriceOracle - Real-time gas price tracking system
  * 
  * Fetches gas prices from multiple sources with EIP-1559 support
+ * Now supports multi-chain gas price tracking
  */
 
 import axios from 'axios';
@@ -13,6 +14,7 @@ export interface GasPrice {
   maxPriorityFeePerGas: bigint; // EIP-1559: tip to miner
   baseFee: bigint;            // EIP-1559: current base fee
   timestamp: number;
+  chainId?: number | string;  // Chain identifier
 }
 
 export type GasPriceTier = 'instant' | 'fast' | 'normal' | 'slow';
@@ -269,20 +271,40 @@ export class GasPriceOracle {
     return null;
   }
 
+  // Chain-specific gas price multipliers (relative to Ethereum)
+  private static readonly CHAIN_GAS_MULTIPLIERS: Record<number | string, number> = {
+    1: 1.0,           // Ethereum - baseline
+    56: 0.01,         // BSC - much cheaper
+    137: 0.05,        // Polygon - cheaper
+    43114: 0.1,       // Avalanche - cheaper
+    42161: 0.05,      // Arbitrum - much cheaper (L2)
+    10: 0.05,         // Optimism - much cheaper (L2)
+    8453: 0.05,       // Base - much cheaper (L2)
+    'mainnet-beta': 0.00001 // Solana - extremely cheap
+  };
+
   /**
    * Create fallback gas price
    */
-  private createFallbackGasPrice(): GasPrice {
-    const baseFee = this.fallbackGasPrice;
+  private createFallbackGasPrice(chainId?: number | string): GasPrice {
+    let fallbackPrice = this.fallbackGasPrice;
+    
+    // Adjust for specific chains if provided
+    if (chainId) {
+      const multiplier = GasPriceOracle.CHAIN_GAS_MULTIPLIERS[chainId] || 1.0;
+      fallbackPrice = this.applyMultiplier(this.fallbackGasPrice, multiplier);
+    }
+
     const priorityFee = BigInt(2) * BigInt(10 ** 9);
-    const maxFeePerGas = baseFee * BigInt(2) + priorityFee;
+    const maxFeePerGas = fallbackPrice * BigInt(2) + priorityFee;
 
     return {
       gasPrice: maxFeePerGas,
       maxFeePerGas,
       maxPriorityFeePerGas: priorityFee,
-      baseFee,
-      timestamp: Date.now()
+      baseFee: fallbackPrice,
+      timestamp: Date.now(),
+      chainId
     };
   }
 
@@ -320,5 +342,73 @@ export class GasPriceOracle {
    */
   private applyMultiplier(value: bigint, multiplier: number): bigint {
     return (value * BigInt(Math.floor(multiplier * 1000))) / BigInt(1000);
+  }
+
+  /**
+   * Get gas price for a specific chain
+   * 
+   * Estimates gas price for different chains based on chain characteristics
+   */
+  async getChainGasPrice(chainId: number | string): Promise<GasPrice> {
+    // Get base gas price from current provider (assuming Ethereum mainnet)
+    const basePrice = await this.getCurrentGasPrice('fast');
+
+    // Use shared chain multipliers
+    const multiplier = GasPriceOracle.CHAIN_GAS_MULTIPLIERS[chainId] || 1.0;
+
+    return {
+      gasPrice: this.applyMultiplier(basePrice.gasPrice, multiplier),
+      maxFeePerGas: this.applyMultiplier(basePrice.maxFeePerGas, multiplier),
+      maxPriorityFeePerGas: this.applyMultiplier(basePrice.maxPriorityFeePerGas, multiplier),
+      baseFee: this.applyMultiplier(basePrice.baseFee, multiplier),
+      timestamp: Date.now(),
+      chainId
+    };
+  }
+
+  /**
+   * Get gas prices for multiple chains in parallel
+   */
+  async getMultiChainGasPrices(chainIds: (number | string)[]): Promise<Map<number | string, GasPrice>> {
+    const pricesMap = new Map<number | string, GasPrice>();
+    
+    const pricePromises = chainIds.map(async chainId => {
+      try {
+        const price = await this.getChainGasPrice(chainId);
+        return [chainId, price] as [number | string, GasPrice];
+      } catch (error) {
+        console.warn(`Failed to get gas price for chain ${chainId}:`, error);
+        return [chainId, this.createFallbackGasPrice(chainId)] as [number | string, GasPrice];
+      }
+    });
+
+    const results = await Promise.all(pricePromises);
+    for (const [chainId, price] of results) {
+      pricesMap.set(chainId, price);
+    }
+
+    return pricesMap;
+  }
+
+  /**
+   * Estimate total gas cost for cross-chain path
+   * 
+   * Calculates total gas cost across multiple chains
+   */
+  async estimateCrossChainGasCost(
+    hops: Array<{ chainId: number | string; gasEstimate: number }>
+  ): Promise<bigint> {
+    const chainIds = [...new Set(hops.map(h => h.chainId))];
+    const gasPrices = await this.getMultiChainGasPrices(chainIds);
+
+    let totalCost = BigInt(0);
+    for (const hop of hops) {
+      const gasPrice = gasPrices.get(hop.chainId);
+      if (gasPrice) {
+        totalCost += BigInt(hop.gasEstimate) * gasPrice.gasPrice;
+      }
+    }
+
+    return totalCost;
   }
 }

@@ -1,5 +1,18 @@
 import { SystemConfig } from '../types';
 
+// Export cross-chain configuration
+export * from './cross-chain.config';
+export { default as DEFAULT_CROSS_CHAIN_CONFIG } from './cross-chain.config';
+
+// Export gas configuration
+export * from './gas.config';
+
+// Export realtime configuration
+export * from './realtime.config';
+
+// Export advanced arbitrage configuration
+export * from './advanced-arbitrage.config';
+
 /**
  * Default system configuration
  */
