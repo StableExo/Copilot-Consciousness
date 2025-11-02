@@ -14,6 +14,8 @@ import { GasFilterService } from '../gas/GasFilterService';
 import { CrossChainPathFinder, CrossChainPath } from './CrossChainPathFinder';
 import { BridgeManager } from '../chains/BridgeManager';
 import { PathfindingConfig as CrossChainPathConfig } from '../config/cross-chain.config';
+import { MLOrchestrator } from '../ml/MLOrchestrator';
+import { EnhancedArbitragePath } from '../ml/types';
 
 /**
  * Orchestrator mode - polling, event-driven, or cross-chain
@@ -31,6 +33,8 @@ export class ArbitrageOrchestrator {
   private crossChainPathFinder?: CrossChainPathFinder;
   private bridgeManager?: BridgeManager;
   private crossChainConfig?: CrossChainPathConfig;
+  private mlOrchestrator?: MLOrchestrator;
+  private mlEnabled: boolean = false;
 
   constructor(
     registry: DEXRegistry,
@@ -38,7 +42,8 @@ export class ArbitrageOrchestrator {
     gasPrice: bigint,
     gasFilter?: GasFilterService,
     bridgeManager?: BridgeManager,
-    crossChainConfig?: CrossChainPathConfig
+    crossChainConfig?: CrossChainPathConfig,
+    mlOrchestrator?: MLOrchestrator
   ) {
     this.registry = registry;
     this.config = config;
@@ -48,6 +53,8 @@ export class ArbitrageOrchestrator {
     this.gasFilter = gasFilter;
     this.bridgeManager = bridgeManager;
     this.crossChainConfig = crossChainConfig;
+    this.mlOrchestrator = mlOrchestrator;
+    this.mlEnabled = !!mlOrchestrator;
     
     // Initialize cross-chain pathfinder if bridge manager is provided
     if (bridgeManager && crossChainConfig) {
@@ -62,7 +69,7 @@ export class ArbitrageOrchestrator {
   /**
    * Find profitable arbitrage opportunities for given tokens
    */
-  async findOpportunities(tokens: string[], startAmount: bigint): Promise<ArbitragePath[]> {
+  async findOpportunities(tokens: string[], startAmount: bigint): Promise<ArbitragePath[] | EnhancedArbitragePath[]> {
     // 1. Fetch pool data and build graph
     const edges = await this.dataFetcher.buildGraphEdges(tokens);
     
@@ -96,7 +103,35 @@ export class ArbitrageOrchestrator {
       profitablePaths = gasFilteredPaths;
     }
 
-    // 6. Sort by net profit
+    // 6. Enhance with ML predictions if enabled
+    if (this.mlEnabled && this.mlOrchestrator) {
+      const enhancedPaths = await Promise.all(
+        profitablePaths.map(path => this.mlOrchestrator!.enhanceOpportunity(path))
+      );
+
+      // Filter by ML confidence
+      const mlFilteredPaths = enhancedPaths.filter(path => {
+        if (!path.mlPredictions) return true;
+        return path.mlPredictions.recommendation !== 'SKIP';
+      });
+
+      // Sort by ML confidence and net profit
+      return mlFilteredPaths.sort((a, b) => {
+        const aConfidence = a.mlPredictions?.confidence || 0;
+        const bConfidence = b.mlPredictions?.confidence || 0;
+        
+        // Prioritize by confidence, then by profit
+        if (Math.abs(aConfidence - bConfidence) > 0.1) {
+          return bConfidence - aConfidence;
+        }
+        
+        if (a.netProfit > b.netProfit) return -1;
+        if (a.netProfit < b.netProfit) return 1;
+        return 0;
+      });
+    }
+
+    // 7. Sort by net profit (no ML)
     return profitablePaths.sort((a, b) => {
       if (a.netProfit > b.netProfit) return -1;
       if (a.netProfit < b.netProfit) return 1;
@@ -153,7 +188,9 @@ export class ArbitrageOrchestrator {
       mode: this.mode,
       gasFilterEnabled: !!this.gasFilter,
       queuedOpportunities: this.gasFilter?.getQueuedCount() || 0,
-      missedOpportunities: this.gasFilter?.getMissedCount() || 0
+      missedOpportunities: this.gasFilter?.getMissedCount() || 0,
+      mlEnabled: this.mlEnabled,
+      mlStats: this.mlOrchestrator?.getStats()
     };
   }
 
@@ -297,5 +334,27 @@ export class ArbitrageOrchestrator {
       enabled: true,
       chains: 0 // Placeholder - would calculate from edges
     };
+  }
+
+  /**
+   * Enable ML enhancement
+   */
+  enableML(mlOrchestrator: MLOrchestrator): void {
+    this.mlOrchestrator = mlOrchestrator;
+    this.mlEnabled = true;
+  }
+
+  /**
+   * Disable ML enhancement
+   */
+  disableML(): void {
+    this.mlEnabled = false;
+  }
+
+  /**
+   * Check if ML is enabled
+   */
+  isMLEnabled(): boolean {
+    return this.mlEnabled;
   }
 }
