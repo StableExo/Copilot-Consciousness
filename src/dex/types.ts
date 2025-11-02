@@ -35,6 +35,8 @@ export enum DEXEventType {
   PRICE_CHANGE = 'price_change',
   LIQUIDITY_CHANGE = 'liquidity_change',
   ERROR = 'error',
+  VALIDATOR_SUCCESS = 'validator_success',
+  VALIDATOR_FAILURE = 'validator_failure',
 }
 
 /**

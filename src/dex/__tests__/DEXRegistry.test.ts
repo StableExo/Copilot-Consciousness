@@ -39,7 +39,7 @@ describe('DEXRegistry', () => {
 
   it('should initialize with the correct number of DEXes', () => {
     const allDEXes = registry.getAllDEXes();
-    expect(allDEXes.length).toBe(7);
+    expect(allDEXes.length).toBe(9);
   });
 
   it('should include Raydium in the list of DEXes', () => {
@@ -62,7 +62,7 @@ describe('DEXRegistry', () => {
   it('should validate all DEXes successfully', async () => {
     const isValid = await registry.validateDEXes();
     expect(isValid).toBe(true);
-    expect(getCodeMock).toHaveBeenCalledTimes(6);
+    expect(getCodeMock).toHaveBeenCalledTimes(8);
     expect(getAccountInfoMock).toHaveBeenCalledTimes(1);
   });
 });
