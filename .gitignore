@@ -150,3 +150,25 @@ typechain-types
 cache
 artifacts
 
+
+# Kubernetes secrets and sensitive files
+k8s/**/secrets.env
+k8s/**/secret-*.yaml
+*.kubeconfig
+
+# Docker volumes
+.docker-volumes/
+
+# Local development
+.vscode/
+.idea/
+
+# Backup files
+*.backup
+*.bak
+*.sql.gz
+*.rdb
+
+# Temporary files
+tmp/
+temp/

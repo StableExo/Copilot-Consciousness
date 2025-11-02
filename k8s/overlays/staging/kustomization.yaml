@@ -1,0 +1,47 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: arbitrage-bot
+
+bases:
+  - ../../base
+
+resources:
+  - ../../services/scanner/deployment.yaml
+  - ../../services/pathfinding/deployment.yaml
+  - ../../services/ml/deployment.yaml
+  - ../../services/execution/deployment.yaml
+  - ../../services/analytics/deployment.yaml
+  - ../../services/bridge/deployment.yaml
+  - ../../services/dashboard/deployment.yaml
+  - ../../../infrastructure/rabbitmq/deployment.yaml
+  - ../../../infrastructure/redis/deployment.yaml
+  - ../../../infrastructure/timescaledb/deployment.yaml
+  - ../../../infrastructure/consul/deployment.yaml
+
+patchesStrategicMerge:
+  - replica-count.yaml
+
+configMapGenerator:
+  - name: arbitrage-config
+    behavior: merge
+    literals:
+      - ENVIRONMENT=staging
+      - LOG_LEVEL=info
+      - TARGET_THROUGHPUT=5000
+
+images:
+  - name: arbitrage-bot/scanner
+    newTag: staging
+  - name: arbitrage-bot/pathfinding
+    newTag: staging
+  - name: arbitrage-bot/ml
+    newTag: staging
+  - name: arbitrage-bot/execution
+    newTag: staging
+  - name: arbitrage-bot/analytics
+    newTag: staging
+  - name: arbitrage-bot/bridge
+    newTag: staging
+  - name: arbitrage-bot/dashboard
+    newTag: staging

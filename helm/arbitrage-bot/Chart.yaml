@@ -1,0 +1,17 @@
+apiVersion: v2
+name: arbitrage-bot
+description: A Helm chart for deploying the distributed arbitrage bot system
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - arbitrage
+  - trading
+  - cryptocurrency
+  - kubernetes
+  - microservices
+maintainers:
+  - name: Arbitrage Bot Team
+    email: team@arbitrage.bot
+sources:
+  - https://github.com/StableExo/Copilot-Consciousness

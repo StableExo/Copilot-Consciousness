@@ -1,0 +1,49 @@
+# Production replica counts for high availability
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scanner-deployment
+spec:
+  replicas: 10
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pathfinding-deployment
+spec:
+  replicas: 15
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-deployment
+spec:
+  replicas: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: execution-deployment
+spec:
+  replicas: 8
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analytics-deployment
+spec:
+  replicas: 3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bridge-deployment
+spec:
+  replicas: 3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard-deployment
+spec:
+  replicas: 3

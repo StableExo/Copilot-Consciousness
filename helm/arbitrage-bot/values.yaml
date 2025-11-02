@@ -1,0 +1,46 @@
+# Default values for arbitrage-bot
+global:
+  environment: production
+  region: us-east-1
+  
+namespace: arbitrage-bot
+
+image:
+  registry: docker.io
+  repository: arbitrage-bot
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+services:
+  scanner:
+    replicas: 3
+    minReplicas: 3
+    maxReplicas: 20
+  pathfinding:
+    replicas: 5
+    minReplicas: 5
+    maxReplicas: 30
+  ml:
+    replicas: 2
+    minReplicas: 2
+    maxReplicas: 10
+  execution:
+    replicas: 3
+    minReplicas: 3
+    maxReplicas: 15
+
+monitoring:
+  prometheus:
+    enabled: true
+  grafana:
+    enabled: true
+  jaeger:
+    enabled: true
+
+ingress:
+  enabled: true
+  className: nginx
+
+performance:
+  targetThroughput: 10000
+  maxLatencyMs: 50
