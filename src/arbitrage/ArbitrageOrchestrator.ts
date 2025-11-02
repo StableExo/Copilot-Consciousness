@@ -9,6 +9,7 @@ import { PathFinder } from './PathFinder';
 import { ProfitabilityCalculator } from './ProfitabilityCalculator';
 import { MultiHopDataFetcher } from './MultiHopDataFetcher';
 import { ArbitragePath, PathfindingConfig } from './types';
+import { GasFilterService } from '../gas/GasFilterService';
 
 /**
  * Orchestrator mode - polling or event-driven
@@ -22,17 +23,20 @@ export class ArbitrageOrchestrator {
   private dataFetcher: MultiHopDataFetcher;
   private config: PathfindingConfig;
   private mode: OrchestratorMode = 'polling';
+  private gasFilter?: GasFilterService;
 
   constructor(
     registry: DEXRegistry,
     config: PathfindingConfig,
-    gasPrice: bigint
+    gasPrice: bigint,
+    gasFilter?: GasFilterService
   ) {
     this.registry = registry;
     this.config = config;
     this.pathFinder = new PathFinder(config);
     this.profitCalculator = new ProfitabilityCalculator(gasPrice);
     this.dataFetcher = new MultiHopDataFetcher(registry);
+    this.gasFilter = gasFilter;
   }
 
   /**
@@ -57,11 +61,22 @@ export class ArbitrageOrchestrator {
     }
 
     // 4. Filter paths by profitability
-    const profitablePaths = allPaths.filter(path => 
+    let profitablePaths = allPaths.filter(path => 
       this.profitCalculator.isProfitable(path, this.config.minProfitThreshold)
     );
 
-    // 5. Sort by net profit
+    // 5. Apply gas filter if available
+    if (this.gasFilter) {
+      const gasFilteredPaths: ArbitragePath[] = [];
+      for (const path of profitablePaths) {
+        if (await this.gasFilter.isExecutable(path)) {
+          gasFilteredPaths.push(path);
+        }
+      }
+      profitablePaths = gasFilteredPaths;
+    }
+
+    // 6. Sort by net profit
     return profitablePaths.sort((a, b) => {
       if (a.netProfit > b.netProfit) return -1;
       if (a.netProfit < b.netProfit) return 1;
@@ -115,8 +130,28 @@ export class ArbitrageOrchestrator {
       tokenCount: this.pathFinder.getTokens().length,
       edgeCount: this.pathFinder.getEdgeCount(),
       cachedPools: this.dataFetcher.getCachedPoolCount(),
-      mode: this.mode
+      mode: this.mode,
+      gasFilterEnabled: !!this.gasFilter,
+      queuedOpportunities: this.gasFilter?.getQueuedCount() || 0,
+      missedOpportunities: this.gasFilter?.getMissedCount() || 0
     };
+  }
+
+  /**
+   * Set gas filter
+   */
+  setGasFilter(filter: GasFilterService): void {
+    this.gasFilter = filter;
+  }
+
+  /**
+   * Get queued opportunities that are now executable
+   */
+  async getExecutableQueuedOpportunities(): Promise<ArbitragePath[]> {
+    if (!this.gasFilter) {
+      return [];
+    }
+    return this.gasFilter.getExecutableQueuedOpportunities();
   }
 
   /**
