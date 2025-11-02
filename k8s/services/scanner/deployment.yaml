@@ -19,8 +19,10 @@ spec:
     spec:
       containers:
       - name: scanner
+        # BEST PRACTICE: Use specific version tags in production (e.g., v1.0.0)
+        # Using 'latest' with 'Always' ensures consistent deployments
         image: arbitrage-bot/scanner:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 3001
           name: http

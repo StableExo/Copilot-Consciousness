@@ -56,24 +56,34 @@ class ScannerService {
   async start(): Promise<void> {
     console.log('[Scanner] Starting service...');
 
-    // Connect to RabbitMQ
-    try {
-      this.rabbitmqConnection = await createConnection(this.config.rabbitmqUrl);
-      this.rabbitmqChannel = await this.rabbitmqConnection.createChannel();
-      
-      // Declare opportunity queue
-      await this.rabbitmqChannel.assertQueue('opportunities', {
-        durable: true,
-        arguments: {
-          'x-max-length': 100000,
-          'x-dead-letter-exchange': 'dlx',
-          'x-dead-letter-routing-key': 'opportunities.dead',
-        },
-      });
+    // Connect to RabbitMQ with retry logic
+    let retries = 5;
+    while (retries > 0) {
+      try {
+        this.rabbitmqConnection = await createConnection(this.config.rabbitmqUrl);
+        this.rabbitmqChannel = await this.rabbitmqConnection.createChannel();
+        
+        // Declare opportunity queue
+        await this.rabbitmqChannel.assertQueue('opportunities', {
+          durable: true,
+          arguments: {
+            'x-max-length': 100000,
+            'x-dead-letter-exchange': 'dlx',
+            'x-dead-letter-routing-key': 'opportunities.dead',
+          },
+        });
 
-      console.log('[Scanner] Connected to RabbitMQ');
-    } catch (error) {
-      console.error('[Scanner] Failed to connect to RabbitMQ:', error);
+        console.log('[Scanner] Connected to RabbitMQ');
+        break;
+      } catch (error) {
+        retries--;
+        console.error(`[Scanner] Failed to connect to RabbitMQ (${retries} retries left):`, error);
+        if (retries === 0) {
+          console.error('[Scanner] Could not connect to RabbitMQ after multiple attempts. Exiting.');
+          process.exit(1);
+        }
+        await this.sleep(5000);
+      }
     }
 
     // Connect to Redis

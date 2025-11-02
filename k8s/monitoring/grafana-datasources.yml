@@ -22,8 +22,10 @@ datasources:
     url: timescaledb-service:5432
     database: arbitrage
     user: arbitrage
+    # SECURITY: Use secureJsonData with environment variable or Kubernetes secret
+    # Password should be injected via Grafana provisioning with secret reference
     secureJsonData:
-      password: changeme-in-production
+      password: ${POSTGRES_PASSWORD}
     jsonData:
       sslmode: disable
       timescaledb: true
