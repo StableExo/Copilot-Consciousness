@@ -24,6 +24,9 @@ export class MultiHopDataFetcher {
   private registry: DEXRegistry;
   private providers: Map<string, ethers.providers.Provider>;
   private poolCache: Map<string, PoolData>;
+  private mode: 'polling' | 'event-driven' = 'polling';
+  private cacheTTL: number = 60000; // 1 minute default TTL
+  private cacheTimestamps: Map<string, number> = new Map();
 
   constructor(registry: DEXRegistry) {
     this.registry = registry;
@@ -68,9 +71,9 @@ export class MultiHopDataFetcher {
         return null;
       }
 
-      // Check cache
+      // Check cache with TTL validation
       const cacheKey = `${dex.name}-${poolAddress}`;
-      if (this.poolCache.has(cacheKey)) {
+      if (this.poolCache.has(cacheKey) && this.isCacheValid(cacheKey)) {
         return this.poolCache.get(cacheKey)!;
       }
 
@@ -89,8 +92,9 @@ export class MultiHopDataFetcher {
         reserve1: reserves.reserve1
       };
 
-      // Cache the result
+      // Cache the result with timestamp
       this.poolCache.set(cacheKey, poolData);
+      this.cacheTimestamps.set(cacheKey, Date.now());
 
       return poolData;
     } catch (error) {
@@ -226,6 +230,7 @@ export class MultiHopDataFetcher {
    */
   clearCache(): void {
     this.poolCache.clear();
+    this.cacheTimestamps.clear();
   }
 
   /**
@@ -233,5 +238,69 @@ export class MultiHopDataFetcher {
    */
   getCachedPoolCount(): number {
     return this.poolCache.size;
+  }
+
+  /**
+   * Set data fetcher mode
+   */
+  setMode(mode: 'polling' | 'event-driven'): void {
+    this.mode = mode;
+    
+    // In event-driven mode, use longer cache TTL since data is updated via events
+    if (mode === 'event-driven') {
+      this.cacheTTL = 300000; // 5 minutes
+    } else {
+      this.cacheTTL = 60000; // 1 minute
+    }
+  }
+
+  /**
+   * Get current mode
+   */
+  getMode(): 'polling' | 'event-driven' {
+    return this.mode;
+  }
+
+  /**
+   * Update pool data from real-time event
+   * 
+   * Used in event-driven mode to update cache with fresh data from WebSocket events
+   */
+  updatePoolDataFromEvent(
+    poolAddress: string,
+    dexName: string,
+    token0: string,
+    token1: string,
+    reserve0: bigint,
+    reserve1: bigint
+  ): void {
+    const cacheKey = `${dexName}-${poolAddress}`;
+    
+    const poolData: PoolData = {
+      poolAddress,
+      token0,
+      token1,
+      reserve0,
+      reserve1
+    };
+
+    this.poolCache.set(cacheKey, poolData);
+    this.cacheTimestamps.set(cacheKey, Date.now());
+  }
+
+  /**
+   * Check if cached data is still valid
+   * 
+   * Note: This method performs a Map lookup on every cache validation.
+   * For better performance in high-frequency scenarios, consider storing
+   * the timestamp alongside the cached data in a single object.
+   */
+  private isCacheValid(cacheKey: string): boolean {
+    const timestamp = this.cacheTimestamps.get(cacheKey);
+    if (!timestamp) {
+      return false;
+    }
+
+    return Date.now() - timestamp < this.cacheTTL;
   }
 }
