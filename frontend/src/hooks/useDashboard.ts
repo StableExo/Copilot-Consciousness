@@ -7,7 +7,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { DashboardMetrics, Alert, PerformanceMetrics, ChartData } from '../types';
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 
+  (import.meta.env.PROD ? '' : 'http://localhost:3000'); // Require explicit config in production
 
 export function useDashboard() {
   const [socket, setSocket] = useState<Socket | null>(null);

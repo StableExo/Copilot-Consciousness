@@ -39,13 +39,23 @@ export class TimeSeriesDB {
       console.log(`Host: ${this.config.host}:${this.config.port}`);
       console.log(`Database: ${this.config.database}`);
       
-      // Simulate connection
+      // NOTE: This is a simulated connection for demonstration purposes.
+      // In production, implement actual PostgreSQL/TimescaleDB connection using 'pg' library:
+      // this.pool = new Pool({
+      //   host: this.config.host,
+      //   port: this.config.port,
+      //   database: this.config.database,
+      //   user: this.config.user,
+      //   password: this.config.password
+      // });
+      // await this.pool.query('SELECT 1');
       this.connected = true;
       
       // Create tables if they don't exist
       await this.createTables();
       
-      console.log('TimescaleDB initialized successfully');
+      console.log('TimescaleDB initialized successfully (simulated)');
+      console.log('Note: Implement actual database connection for production use');
     } catch (error) {
       console.error('Failed to initialize TimescaleDB:', error);
       throw error;

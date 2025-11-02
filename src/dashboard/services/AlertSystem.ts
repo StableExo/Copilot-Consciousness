@@ -8,6 +8,7 @@
 import { EventEmitter } from 'events';
 import { Alert, AlertConfig, DashboardMetrics } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
 
 export class AlertSystem extends EventEmitter {
   private config: AlertConfig;
@@ -176,8 +177,6 @@ export class AlertSystem extends EventEmitter {
     }
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const axios = require('axios');
       const message = `🚨 *${alert.type.toUpperCase()}*: ${alert.title}\n\n${alert.message}`;
       
       await axios.post(`https://api.telegram.org/bot${telegram.botToken}/sendMessage`, {
@@ -200,8 +199,6 @@ export class AlertSystem extends EventEmitter {
     }
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const axios = require('axios');
       const color = this.getDiscordColor(alert.type);
       
       await axios.post(discord.webhookUrl, {

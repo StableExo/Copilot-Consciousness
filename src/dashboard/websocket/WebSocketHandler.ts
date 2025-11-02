@@ -27,7 +27,7 @@ export class WebSocketHandler {
   ) {
     this.io = new SocketIOServer(httpServer, {
       cors: {
-        origin: '*', // Configure based on requirements
+        origin: process.env.CORS_ORIGIN || '*', // Configure in production: comma-separated list or '*'
         methods: ['GET', 'POST']
       },
       pingTimeout: 60000,
