@@ -13,6 +13,7 @@ export class AlertSystem extends EventEmitter {
   private config: AlertConfig;
   private alerts: Alert[];
   private maxAlertHistory: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private emailService?: any; // Will be implemented with nodemailer
   private lastMetrics?: DashboardMetrics;
 
@@ -175,6 +176,7 @@ export class AlertSystem extends EventEmitter {
     }
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const axios = require('axios');
       const message = `🚨 *${alert.type.toUpperCase()}*: ${alert.title}\n\n${alert.message}`;
       
@@ -198,6 +200,7 @@ export class AlertSystem extends EventEmitter {
     }
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const axios = require('axios');
       const color = this.getDiscordColor(alert.type);
       

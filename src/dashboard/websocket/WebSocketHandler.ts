@@ -8,7 +8,7 @@ import { Server as SocketIOServer, Socket } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import { MetricsAggregator } from '../services/MetricsAggregator';
 import { AlertSystem } from '../services/AlertSystem';
-import { WebSocketEvent, PerformanceMetrics } from '../types';
+import { PerformanceMetrics } from '../types';
 
 export class WebSocketHandler {
   private io: SocketIOServer;
@@ -66,7 +66,6 @@ export class WebSocketHandler {
    */
   private setupEventHandlers(): void {
     this.io.on('connection', (socket: Socket) => {
-      const startTime = Date.now();
       const clientId = socket.id;
       
       console.log(`Client connected: ${clientId}`);
@@ -193,6 +192,7 @@ export class WebSocketHandler {
   /**
    * Broadcast event to all connected clients
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   broadcast(eventType: string, data: any): void {
     this.io.emit(eventType, data);
   }

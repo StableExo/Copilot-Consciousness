@@ -172,7 +172,7 @@ export class DashboardServer {
     });
 
     // Global error handler
-    this.app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    this.app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
       console.error('Unhandled error:', err);
       
       res.status(500).json({

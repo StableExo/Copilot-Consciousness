@@ -101,7 +101,7 @@ export class TimeSeriesDB {
   /**
    * Store dashboard metrics
    */
-  async storeMetrics(metrics: DashboardMetrics): Promise<void> {
+  async storeMetrics(_metrics: DashboardMetrics): Promise<void> {
     if (!this.connected) {
       console.warn('Database not connected, skipping metrics storage');
       return;
@@ -141,7 +141,7 @@ export class TimeSeriesDB {
   /**
    * Store trade data
    */
-  async storeTrade(trade: LiveTrade): Promise<void> {
+  async storeTrade(_trade: LiveTrade): Promise<void> {
     if (!this.connected) {
       console.warn('Database not connected, skipping trade storage');
       return;
@@ -178,9 +178,9 @@ export class TimeSeriesDB {
    * Query metrics for time range
    */
   async queryMetrics(
-    startTime: number,
-    endTime: number,
-    interval?: string
+    _startTime: number,
+    _endTime: number,
+    _interval?: string
   ): Promise<TimeSeriesData[]> {
     if (!this.connected) {
       console.warn('Database not connected, returning empty data');
@@ -219,9 +219,9 @@ export class TimeSeriesDB {
    * Query trades for time range
    */
   async queryTrades(
-    startTime: number,
-    endTime: number,
-    filters?: { chain?: string; status?: string; type?: string }
+    _startTime: number,
+    _endTime: number,
+    _filters?: { chain?: string; status?: string; type?: string }
   ): Promise<LiveTrade[]> {
     if (!this.connected) {
       console.warn('Database not connected, returning empty data');
@@ -283,8 +283,8 @@ export class TimeSeriesDB {
    * Get aggregated statistics
    */
   async getAggregatedStats(
-    startTime: number,
-    endTime: number
+    _startTime: number,
+    _endTime: number
   ): Promise<{
     totalProfit: string;
     totalTrades: number;

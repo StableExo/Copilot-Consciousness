@@ -5,9 +5,9 @@
  * Calculates derived metrics like Sharpe ratio, ROI, and drawdown
  */
 
-import { GasAnalytics, GasMetrics } from '../../gas/GasAnalytics';
+import { GasAnalytics } from '../../gas/GasAnalytics';
 import { CrossChainAnalytics, AnalyticsSummary } from '../../chains/CrossChainAnalytics';
-import { DashboardMetrics, TimeSeriesData, ChartData } from '../types';
+import { DashboardMetrics, ChartData } from '../types';
 
 export class MetricsAggregator {
   private gasAnalytics: GasAnalytics;
