@@ -39,6 +39,8 @@ export interface ArbitrageHop {
   amountOut: bigint;
   fee: number;
   gasEstimate: number;
+  reserve0?: bigint; // Optional: reserve for price impact calculation
+  reserve1?: bigint; // Optional: reserve for price impact calculation
 }
 
 /**

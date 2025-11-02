@@ -112,7 +112,9 @@ export class PathFinder {
         amountIn: currentAmount,
         amountOut: amountOut,
         fee: edge.fee,
-        gasEstimate: edge.gasEstimate
+        gasEstimate: edge.gasEstimate,
+        reserve0: edge.reserve0,
+        reserve1: edge.reserve1
       };
 
       currentPath.push(hop);

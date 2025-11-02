@@ -80,19 +80,21 @@ contract ArbitrageExecutor is IFlashLoanReceiver {
             revert InvalidInitiator(msg.sender, address(POOL));
         }
 
-        // Check for version byte to determine param type
-        // If first byte is 1, it's MultiHopParams; otherwise it's legacy ArbitrageParams
-        uint8 version = uint8(params[0]);
-        
-        if (version == 1) {
+        // Try to decode as MultiHopParams first
+        // MultiHopParams has a version field at the start, while ArbitrageParams doesn't
+        try {
             MultiHopParams memory multiHopParams = abi.decode(params, (MultiHopParams));
-            require(multiHopParams.version == 1, "Invalid MultiHopParams version");
-            return executeMultiHopArbitrage(assets[0], amounts[0], premiums[0], multiHopParams);
-        } else {
-            // Fallback to legacy two-hop arbitrage
-            ArbitrageParams memory tradeParams = abi.decode(params, (ArbitrageParams));
-            return executeTwoHopArbitrage(assets[0], amounts[0], premiums[0], tradeParams);
+            // If version is 1, it's a valid MultiHopParams
+            if (multiHopParams.version == 1) {
+                return executeMultiHopArbitrage(assets[0], amounts[0], premiums[0], multiHopParams);
+            }
+        } catch {
+            // Decoding as MultiHopParams failed, fall through to legacy
         }
+        
+        // Fallback to legacy two-hop arbitrage
+        ArbitrageParams memory tradeParams = abi.decode(params, (ArbitrageParams));
+        return executeTwoHopArbitrage(assets[0], amounts[0], premiums[0], tradeParams);
     }
 
     /**

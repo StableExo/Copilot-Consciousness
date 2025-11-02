@@ -75,11 +75,21 @@ export class ProfitabilityCalculator {
     let cumulativeSlippage = 0;
     
     for (const hop of hops) {
-      // Base slippage of 0.1% per hop
-      // In production, this should be calculated from actual pool reserves:
-      // slippage = (amountIn / reserve) for more accurate price impact
-      const baseSlippage = 0.001;
-      cumulativeSlippage = cumulativeSlippage + baseSlippage + (cumulativeSlippage * baseSlippage);
+      let hopSlippage: number;
+      
+      // Calculate slippage based on reserves if available
+      if (hop.reserve0 && hop.reserve0 > BigInt(0)) {
+        // Price impact = amountIn / reserve0
+        // This is a simplified model; more sophisticated models exist
+        const impact = Number(hop.amountIn * BigInt(10000) / hop.reserve0) / 10000;
+        hopSlippage = Math.min(impact, 1.0); // Cap at 100%
+      } else {
+        // Fallback to base slippage if reserves not available
+        hopSlippage = 0.001; // 0.1% base slippage per hop
+      }
+      
+      // Compound slippage across hops
+      cumulativeSlippage = cumulativeSlippage + hopSlippage + (cumulativeSlippage * hopSlippage);
     }
     
     return cumulativeSlippage;
