@@ -13,6 +13,9 @@ export * from './realtime.config';
 // Export advanced arbitrage configuration
 export * from './advanced-arbitrage.config';
 
+// Export ML configuration
+export * from './ml.config';
+
 /**
  * Default system configuration
  */
