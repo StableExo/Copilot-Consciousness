@@ -10,12 +10,18 @@ import { ProfitabilityCalculator } from './ProfitabilityCalculator';
 import { MultiHopDataFetcher } from './MultiHopDataFetcher';
 import { ArbitragePath, PathfindingConfig } from './types';
 
+/**
+ * Orchestrator mode - polling or event-driven
+ */
+export type OrchestratorMode = 'polling' | 'event-driven' | 'hybrid';
+
 export class ArbitrageOrchestrator {
   private registry: DEXRegistry;
   private pathFinder: PathFinder;
   private profitCalculator: ProfitabilityCalculator;
   private dataFetcher: MultiHopDataFetcher;
   private config: PathfindingConfig;
+  private mode: OrchestratorMode = 'polling';
 
   constructor(
     registry: DEXRegistry,
@@ -108,7 +114,59 @@ export class ArbitrageOrchestrator {
     return {
       tokenCount: this.pathFinder.getTokens().length,
       edgeCount: this.pathFinder.getEdgeCount(),
-      cachedPools: this.dataFetcher.getCachedPoolCount()
+      cachedPools: this.dataFetcher.getCachedPoolCount(),
+      mode: this.mode
     };
+  }
+
+  /**
+   * Set orchestrator mode
+   */
+  setMode(mode: OrchestratorMode): void {
+    this.mode = mode;
+  }
+
+  /**
+   * Get current mode
+   */
+  getMode(): OrchestratorMode {
+    return this.mode;
+  }
+
+  /**
+   * Handle real-time event trigger
+   * 
+   * Process arbitrage opportunity from real-time event.
+   * This method is called by EventDrivenTrigger when a profitable opportunity is detected.
+   */
+  async handleRealtimeEvent(
+    tokens: string[],
+    startAmount: bigint,
+    poolAddress?: string
+  ): Promise<ArbitragePath[]> {
+    // In event-driven mode, we can skip full graph rebuild if we have specific pool
+    if (this.mode === 'event-driven' && poolAddress) {
+      // Quick path evaluation for specific pool
+      return this.evaluateQuickPath(tokens, startAmount, poolAddress);
+    }
+
+    // Otherwise, use standard opportunity finding
+    return this.findOpportunities(tokens, startAmount);
+  }
+
+  /**
+   * Quick path evaluation for event-driven mode
+   * 
+   * Evaluates paths involving a specific pool without full graph rebuild
+   */
+  private async evaluateQuickPath(
+    tokens: string[],
+    startAmount: bigint,
+    poolAddress: string
+  ): Promise<ArbitragePath[]> {
+    // For now, delegate to standard findOpportunities
+    // In a production system, this could be optimized to only evaluate
+    // paths that include the specific pool that triggered the event
+    return this.findOpportunities(tokens, startAmount);
   }
 }
