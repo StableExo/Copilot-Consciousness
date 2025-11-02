@@ -80,9 +80,11 @@ export class DashboardServer {
    */
   private setupMiddleware(): void {
     // Enable CORS if configured
+    // NOTE: For production, configure specific origins via DashboardConfig
+    // Example: cors: { origin: ['https://dashboard.example.com', 'https://app.example.com'] }
     if (this.config.enableCors) {
       this.app.use(cors({
-        origin: '*',
+        origin: '*', // TODO: Configure specific origins in production via config.cors
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ['Content-Type', 'Authorization']
       }));
