@@ -1,7 +1,7 @@
 /**
  * PathFinder - Graph-based pathfinding for multi-hop arbitrage
  * 
- * Uses a modified Bellman-Ford algorithm to find profitable arbitrage paths
+ * Uses a Depth-First Search (DFS) algorithm to find profitable arbitrage paths
  * across multiple DEXs and token pairs
  */
 

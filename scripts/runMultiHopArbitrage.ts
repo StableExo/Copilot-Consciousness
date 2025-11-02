@@ -65,6 +65,7 @@ async function main() {
 
     // --- 4. Prepare Multi-Hop Execution Parameters ---
     const multiHopParams = {
+      version: 1, // Version byte for forward compatibility
       routers: bestPath.hops.map(hop => {
         const dex = registry.getDEX(hop.dexName);
         return dex ? dex.router : "";

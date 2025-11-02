@@ -75,10 +75,11 @@ export class ProfitabilityCalculator {
     let cumulativeSlippage = 0;
     
     for (const hop of hops) {
-      // Estimate slippage based on trade size relative to liquidity
-      // This is a simplified model
-      const slippagePerHop = 0.001; // 0.1% base slippage per hop
-      cumulativeSlippage = cumulativeSlippage + slippagePerHop + (cumulativeSlippage * slippagePerHop);
+      // Base slippage of 0.1% per hop
+      // In production, this should be calculated from actual pool reserves:
+      // slippage = (amountIn / reserve) for more accurate price impact
+      const baseSlippage = 0.001;
+      cumulativeSlippage = cumulativeSlippage + baseSlippage + (cumulativeSlippage * baseSlippage);
     }
     
     return cumulativeSlippage;

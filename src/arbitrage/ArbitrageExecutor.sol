@@ -41,6 +41,7 @@ contract ArbitrageExecutor is IFlashLoanReceiver {
     }
 
     struct MultiHopParams {
+        uint8 version;        // Version byte for forward compatibility (should be 1)
         address[] routers;    // Router addresses for each hop
         address[][] paths;    // Token paths for each hop
         uint[] minAmounts;    // Minimum output amounts for each hop
@@ -79,9 +80,13 @@ contract ArbitrageExecutor is IFlashLoanReceiver {
             revert InvalidInitiator(msg.sender, address(POOL));
         }
 
-        // Try to decode as MultiHopParams first
-        if (params.length > 192) { // MultiHop params are larger
+        // Check for version byte to determine param type
+        // If first byte is 1, it's MultiHopParams; otherwise it's legacy ArbitrageParams
+        uint8 version = uint8(params[0]);
+        
+        if (version == 1) {
             MultiHopParams memory multiHopParams = abi.decode(params, (MultiHopParams));
+            require(multiHopParams.version == 1, "Invalid MultiHopParams version");
             return executeMultiHopArbitrage(assets[0], amounts[0], premiums[0], multiHopParams);
         } else {
             // Fallback to legacy two-hop arbitrage
