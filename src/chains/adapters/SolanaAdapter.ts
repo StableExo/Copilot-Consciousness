@@ -89,6 +89,10 @@ export class SolanaAdapter extends ChainAdapter {
 
   /**
    * Execute a swap on Solana
+   * 
+   * Note: This is a placeholder implementation. In production, this would integrate
+   * with Solana DEX SDKs like Jupiter or Raydium. The interface is defined to support
+   * the architecture, but actual execution requires DEX-specific SDK integration.
    */
   async executeSwap(
     params: SwapParams,
@@ -98,13 +102,12 @@ export class SolanaAdapter extends ChainAdapter {
       throw new Error('Wallet not configured for swap execution');
     }
 
-    try {
-      // This is a simplified implementation
-      // In production, would integrate with Raydium or other Solana DEX SDKs
-      throw new Error('Solana swap execution not fully implemented - requires DEX-specific SDK');
-    } catch (error) {
-      throw new Error(`Solana swap execution failed: ${error}`);
-    }
+    // TODO: Integrate with Jupiter aggregator or Raydium SDK
+    // Example integration would look like:
+    // const jupiterSwap = await jupiter.exchange({...})
+    // return jupiterSwap.signature
+    
+    throw new Error('Solana swap execution requires DEX-specific SDK integration (e.g., Jupiter, Raydium)');
   }
 
   /**
@@ -185,13 +188,17 @@ export class SolanaAdapter extends ChainAdapter {
     }
   }
 
+  // Solana lamports per signature (base fee)
+  private static readonly LAMPORTS_PER_SIGNATURE = 5000;
+
   /**
    * Get current gas price (priority fee for Solana)
    */
   async getGasPrice(): Promise<bigint> {
     // Solana uses lamports per signature
-    // Base fee is 5000 lamports, can add priority fees
-    return BigInt(5000);
+    // Base fee is typically 5000 lamports, can add priority fees
+    // TODO: Fetch dynamic priority fees from the network
+    return BigInt(SolanaAdapter.LAMPORTS_PER_SIGNATURE);
   }
 
   /**

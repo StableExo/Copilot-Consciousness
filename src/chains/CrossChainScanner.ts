@@ -251,6 +251,9 @@ export class CrossChainScanner {
     return tokenA.toLowerCase() === tokenB.toLowerCase();
   }
 
+  // Minimum profitability threshold as a percentage
+  private static readonly MIN_PROFITABILITY_THRESHOLD = 0.05; // 5%
+
   /**
    * Evaluate if a price discrepancy is profitable after considering costs
    */
@@ -269,7 +272,7 @@ export class CrossChainScanner {
     // - Time value
     
     const discrepancy = Math.abs(priceA - priceB);
-    const minProfitableDiscrepancy = Math.max(priceA, priceB) * 0.05; // 5% minimum
+    const minProfitableDiscrepancy = Math.max(priceA, priceB) * CrossChainScanner.MIN_PROFITABILITY_THRESHOLD;
     
     return discrepancy >= minProfitableDiscrepancy;
   }

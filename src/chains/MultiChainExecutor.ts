@@ -230,6 +230,10 @@ export class MultiChainExecutor {
     const deadline = Math.floor(Date.now() / 1000) + 1200; // 20 minutes
     const minAmountOut = hop.amountOut * BigInt(100 - Math.floor(this.config.slippageTolerance * 100)) / BigInt(100);
 
+    // Note: In production, recipient should be provided via constructor or configuration
+    // Using zero address here would result in token loss - this is a placeholder
+    const recipientAddress = '0x0000000000000000000000000000000000000000';
+    
     const txHash = await adapter.executeSwap(
       {
         tokenIn: hop.tokenIn,
@@ -237,7 +241,7 @@ export class MultiChainExecutor {
         amountIn: hop.amountIn,
         minAmountOut,
         deadline,
-        recipient: '0x0000000000000000000000000000000000000000' // Would use actual wallet
+        recipient: recipientAddress
       },
       hop.poolAddress
     );

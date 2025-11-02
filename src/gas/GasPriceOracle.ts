@@ -271,6 +271,18 @@ export class GasPriceOracle {
     return null;
   }
 
+  // Chain-specific gas price multipliers (relative to Ethereum)
+  private static readonly CHAIN_GAS_MULTIPLIERS: Record<number | string, number> = {
+    1: 1.0,           // Ethereum - baseline
+    56: 0.01,         // BSC - much cheaper
+    137: 0.05,        // Polygon - cheaper
+    43114: 0.1,       // Avalanche - cheaper
+    42161: 0.05,      // Arbitrum - much cheaper (L2)
+    10: 0.05,         // Optimism - much cheaper (L2)
+    8453: 0.05,       // Base - much cheaper (L2)
+    'mainnet-beta': 0.00001 // Solana - extremely cheap
+  };
+
   /**
    * Create fallback gas price
    */
@@ -279,18 +291,7 @@ export class GasPriceOracle {
     
     // Adjust for specific chains if provided
     if (chainId) {
-      const chainMultipliers: Record<number | string, number> = {
-        1: 1.0,
-        56: 0.01,
-        137: 0.05,
-        43114: 0.1,
-        42161: 0.05,
-        10: 0.05,
-        8453: 0.05,
-        'mainnet-beta': 0.00001
-      };
-
-      const multiplier = chainMultipliers[chainId] || 1.0;
+      const multiplier = GasPriceOracle.CHAIN_GAS_MULTIPLIERS[chainId] || 1.0;
       fallbackPrice = this.applyMultiplier(this.fallbackGasPrice, multiplier);
     }
 
@@ -352,19 +353,8 @@ export class GasPriceOracle {
     // Get base gas price from current provider (assuming Ethereum mainnet)
     const basePrice = await this.getCurrentGasPrice('fast');
 
-    // Chain-specific multipliers based on typical gas prices
-    const chainMultipliers: Record<number | string, number> = {
-      1: 1.0,      // Ethereum - baseline
-      56: 0.01,    // BSC - much cheaper
-      137: 0.05,   // Polygon - cheaper
-      43114: 0.1,  // Avalanche - cheaper
-      42161: 0.05, // Arbitrum - much cheaper (L2)
-      10: 0.05,    // Optimism - much cheaper (L2)
-      8453: 0.05,  // Base - much cheaper (L2)
-      'mainnet-beta': 0.00001 // Solana - extremely cheap (in lamports)
-    };
-
-    const multiplier = chainMultipliers[chainId] || 1.0;
+    // Use shared chain multipliers
+    const multiplier = GasPriceOracle.CHAIN_GAS_MULTIPLIERS[chainId] || 1.0;
 
     return {
       gasPrice: this.applyMultiplier(basePrice.gasPrice, multiplier),
