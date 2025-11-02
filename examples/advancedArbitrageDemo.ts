@@ -10,7 +10,7 @@
  */
 
 import { ethers } from 'ethers';
-import { DEXRegistry } from '../scripts/dex-integration/core/DEXRegistry';
+import { DEXRegistry } from '../src/dex/core/DEXRegistry';
 import { 
   AdvancedOrchestrator,
   AdvancedPathFinder,

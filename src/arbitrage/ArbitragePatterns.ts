@@ -42,10 +42,19 @@ export interface PatternMetrics {
 
 export class ArbitragePatterns {
   private patternMetrics: Map<ArbitragePatternType, PatternMetrics>;
+  private flashLoanThreshold: bigint; // Configurable flash loan threshold
 
-  constructor() {
+  constructor(flashLoanThreshold: bigint = BigInt('10000000000000000000')) { // Default 10 ETH
     this.patternMetrics = new Map();
+    this.flashLoanThreshold = flashLoanThreshold;
     this.initializeMetrics();
+  }
+
+  /**
+   * Set flash loan threshold for pattern detection
+   */
+  setFlashLoanThreshold(threshold: bigint): void {
+    this.flashLoanThreshold = threshold;
   }
 
   /**
@@ -262,12 +271,11 @@ export class ArbitragePatterns {
 
   private isFlashLoanCandidate(path: ArbitragePath): boolean {
     // Flash loan is beneficial if:
-    // 1. Required capital is significant (> 10 ETH equivalent)
+    // 1. Required capital is significant (> threshold)
     // 2. Profit margin is good enough to cover flash loan fees
     const startAmount = path.hops[0].amountIn;
-    const flashLoanThreshold = BigInt('10000000000000000000'); // 10 ETH
     
-    if (startAmount < flashLoanThreshold) {
+    if (startAmount < this.flashLoanThreshold) {
       return false;
     }
 

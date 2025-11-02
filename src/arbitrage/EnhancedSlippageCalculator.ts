@@ -45,6 +45,7 @@ export interface SlippageConfig {
 export class EnhancedSlippageCalculator {
   private config: SlippageConfig;
   private curveTypes: Map<string, AMMCurveType>; // poolAddress -> curve type
+  private stableSwapAmplification: number; // Configurable amplification factor
 
   constructor(config: Partial<SlippageConfig> = {}) {
     this.config = {
@@ -53,6 +54,14 @@ export class EnhancedSlippageCalculator {
       maxSafeImpact: config.maxSafeImpact || 3.0 // 3% max safe
     };
     this.curveTypes = new Map();
+    this.stableSwapAmplification = 100; // Default A parameter for stablecoins
+  }
+
+  /**
+   * Set amplification factor for stable swap calculations
+   */
+  setStableSwapAmplification(amplification: number): void {
+    this.stableSwapAmplification = amplification;
   }
 
   /**
@@ -284,10 +293,8 @@ export class EnhancedSlippageCalculator {
 
     // Stable swap has much lower slippage for balanced pools
     // Using simplified model: impact is reduced by amplification factor
-    const amplification = 100; // Typical A parameter for stablecoins
-    
     const baseImpact = (Number(amountIn) / Number(reserveIn)) * 100;
-    const reducedImpact = baseImpact / Math.sqrt(amplification);
+    const reducedImpact = baseImpact / Math.sqrt(this.stableSwapAmplification);
 
     // Apply fee
     const feeMultiplier = BigInt(Math.floor((1 - fee) * 10000));

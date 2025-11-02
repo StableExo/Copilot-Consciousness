@@ -40,6 +40,12 @@ export interface AdvancedPathfindingConfig extends PathfindingConfig {
   strategy?: PathfindingStrategy;
   pruningEnabled?: boolean;
   cacheEnabled?: boolean;
+  strategySelectionThresholds?: {
+    largeGraphEdges?: number;
+    largeGraphTokens?: number;
+    mediumGraphEdges?: number;
+    mediumGraphTokens?: number;
+  };
 }
 
 export class AdvancedPathFinder {
@@ -421,13 +427,20 @@ export class AdvancedPathFinder {
     const edgeCount = this.getEdgeCount();
     const tokenCount = this.tokens.size;
 
+    // Get thresholds from config or use defaults
+    const thresholds = this.config.strategySelectionThresholds || {};
+    const largeEdges = thresholds.largeGraphEdges || 100;
+    const largeTokens = thresholds.largeGraphTokens || 20;
+    const mediumEdges = thresholds.mediumGraphEdges || 50;
+    const mediumTokens = thresholds.mediumGraphTokens || 10;
+
     // For large graphs, use Bellman-Ford (better for detecting all cycles)
-    if (edgeCount > 100 || tokenCount > 20) {
+    if (edgeCount > largeEdges || tokenCount > largeTokens) {
       return 'bellman-ford';
     }
 
     // For medium graphs, use BFS (balanced)
-    if (edgeCount > 50 || tokenCount > 10) {
+    if (edgeCount > mediumEdges || tokenCount > mediumTokens) {
       return 'bfs';
     }
 

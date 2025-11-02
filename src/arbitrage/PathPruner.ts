@@ -156,8 +156,9 @@ export class PathPruner {
     }
 
     // Liquidity score (normalized, assuming max liquidity of 10M)
+    const MAX_LIQUIDITY_REFERENCE = 10000000; // 10M reference for normalization
     const liquidityScore = Math.min(
-      Number(edge.reserve0 + edge.reserve1) / 10000000,
+      Number(edge.reserve0 + edge.reserve1) / MAX_LIQUIDITY_REFERENCE,
       1.0
     );
 
