@@ -208,7 +208,15 @@ export class Layer2Manager {
    * Get mainnet selection as fallback
    */
   private async getMainnetSelection(path: ArbitragePath): Promise<ChainSelection> {
-    const gasCost = path.totalGasCost;
+    // totalGasCost is gas units, need to get current gas price
+    const oracle = this.oracles.get('mainnet');
+    let gasCost = BigInt(path.totalGasCost);
+    
+    if (oracle) {
+      const gasPrice = await oracle.getCurrentGasPrice('normal');
+      gasCost = BigInt(path.totalGasCost) * gasPrice.maxFeePerGas;
+    }
+    
     const netProfit = path.estimatedProfit - gasCost;
 
     return {

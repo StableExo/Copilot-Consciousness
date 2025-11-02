@@ -104,9 +104,9 @@ export class TransactionBuilder {
       const result = await this.provider.call({
         to: tx.to,
         data: tx.data,
-        value: ethers.BigNumber.from(tx.value.toString()),
+        value: tx.value,
         from: from || ethers.constants.AddressZero,
-        gasLimit: ethers.BigNumber.from(tx.gasLimit.toString())
+        gasLimit: tx.gasLimit
       });
 
       // If we got here, the call succeeded

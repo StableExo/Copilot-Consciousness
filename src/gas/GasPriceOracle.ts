@@ -5,7 +5,7 @@
  */
 
 import axios from 'axios';
-import { ethers, BigNumber } from 'ethers';
+import { ethers } from 'ethers';
 
 export interface GasPrice {
   gasPrice: bigint;           // Legacy gas price (for non-EIP-1559)

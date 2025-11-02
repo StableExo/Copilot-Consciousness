@@ -183,10 +183,16 @@ contract ArbitrageExecutorV2 is IFlashLoanReceiver {
             profit = currentAmount - amountOwed;
         }
 
+        // Calculate gas used before event emission for accurate tracking
+        uint256 gasUsedForExecution;
+        unchecked {
+            gasUsedForExecution = gasStart - gasleft();
+        }
+
         // Repay the loan + premium using assembly for gas savings
         _approveAssembly(borrowedAsset, address(POOL), amountOwed);
 
-        emit ArbitrageExecuted(profit, gasleft());
+        emit ArbitrageExecuted(profit, gasUsedForExecution);
 
         return true;
     }
