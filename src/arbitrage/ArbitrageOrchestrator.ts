@@ -2,6 +2,7 @@
  * ArbitrageOrchestrator - Main orchestrator for multi-hop arbitrage
  * 
  * Coordinates pathfinding, data fetching, and profitability calculations
+ * Supports both single-chain and cross-chain arbitrage
  */
 
 import { DEXRegistry } from '../dex/core/DEXRegistry';
@@ -10,11 +11,14 @@ import { ProfitabilityCalculator } from './ProfitabilityCalculator';
 import { MultiHopDataFetcher } from './MultiHopDataFetcher';
 import { ArbitragePath, PathfindingConfig } from './types';
 import { GasFilterService } from '../gas/GasFilterService';
+import { CrossChainPathFinder, CrossChainPath } from './CrossChainPathFinder';
+import { BridgeManager } from '../chains/BridgeManager';
+import { PathfindingConfig as CrossChainPathConfig } from '../config/cross-chain.config';
 
 /**
- * Orchestrator mode - polling or event-driven
+ * Orchestrator mode - polling, event-driven, or cross-chain
  */
-export type OrchestratorMode = 'polling' | 'event-driven' | 'hybrid';
+export type OrchestratorMode = 'polling' | 'event-driven' | 'hybrid' | 'cross-chain';
 
 export class ArbitrageOrchestrator {
   private registry: DEXRegistry;
@@ -24,12 +28,17 @@ export class ArbitrageOrchestrator {
   private config: PathfindingConfig;
   private mode: OrchestratorMode = 'polling';
   private gasFilter?: GasFilterService;
+  private crossChainPathFinder?: CrossChainPathFinder;
+  private bridgeManager?: BridgeManager;
+  private crossChainConfig?: CrossChainPathConfig;
 
   constructor(
     registry: DEXRegistry,
     config: PathfindingConfig,
     gasPrice: bigint,
-    gasFilter?: GasFilterService
+    gasFilter?: GasFilterService,
+    bridgeManager?: BridgeManager,
+    crossChainConfig?: CrossChainPathConfig
   ) {
     this.registry = registry;
     this.config = config;
@@ -37,6 +46,17 @@ export class ArbitrageOrchestrator {
     this.profitCalculator = new ProfitabilityCalculator(gasPrice);
     this.dataFetcher = new MultiHopDataFetcher(registry);
     this.gasFilter = gasFilter;
+    this.bridgeManager = bridgeManager;
+    this.crossChainConfig = crossChainConfig;
+    
+    // Initialize cross-chain pathfinder if bridge manager is provided
+    if (bridgeManager && crossChainConfig) {
+      this.crossChainPathFinder = new CrossChainPathFinder(
+        bridgeManager,
+        crossChainConfig,
+        config
+      );
+    }
   }
 
   /**
@@ -203,5 +223,79 @@ export class ArbitrageOrchestrator {
     // In a production system, this could be optimized to only evaluate
     // paths that include the specific pool that triggered the event
     return this.findOpportunities(tokens, startAmount);
+  }
+
+  /**
+   * Find cross-chain arbitrage opportunities
+   * 
+   * Discovers profitable arbitrage paths across multiple blockchains
+   */
+  async findCrossChainOpportunities(
+    startToken: string,
+    startChain: number | string,
+    startAmount: bigint,
+    maxPaths: number = 10
+  ): Promise<CrossChainPath[]> {
+    if (!this.crossChainPathFinder) {
+      throw new Error('Cross-chain pathfinding not enabled. Provide bridgeManager and crossChainConfig in constructor.');
+    }
+
+    // Find cross-chain paths
+    const paths = await this.crossChainPathFinder.findCrossChainPaths(
+      startToken,
+      startChain,
+      startAmount,
+      maxPaths
+    );
+
+    // Filter by profitability threshold
+    return paths.filter(path => 
+      path.netProfit > this.config.minProfitThreshold
+    );
+  }
+
+  /**
+   * Add pool edge for cross-chain pathfinding
+   */
+  addCrossChainPoolEdge(chainId: number | string, edge: import('./types').PoolEdge): void {
+    if (!this.crossChainPathFinder) {
+      throw new Error('Cross-chain pathfinding not enabled');
+    }
+    this.crossChainPathFinder.addPoolEdge(chainId, edge);
+  }
+
+  /**
+   * Enable cross-chain mode
+   */
+  enableCrossChainMode(bridgeManager: BridgeManager, crossChainConfig: CrossChainPathConfig): void {
+    this.bridgeManager = bridgeManager;
+    this.crossChainConfig = crossChainConfig;
+    this.crossChainPathFinder = new CrossChainPathFinder(
+      bridgeManager,
+      crossChainConfig,
+      this.config
+    );
+    this.mode = 'cross-chain';
+  }
+
+  /**
+   * Check if cross-chain mode is enabled
+   */
+  isCrossChainEnabled(): boolean {
+    return !!this.crossChainPathFinder;
+  }
+
+  /**
+   * Get cross-chain statistics
+   */
+  getCrossChainStats(): { enabled: boolean; chains?: number } {
+    if (!this.crossChainPathFinder) {
+      return { enabled: false };
+    }
+
+    return {
+      enabled: true,
+      chains: 0 // Placeholder - would calculate from edges
+    };
   }
 }
