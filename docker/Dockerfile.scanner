@@ -1,0 +1,35 @@
+# Scanner Service - Monitors DEXs for arbitrage opportunities
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install dependencies
+RUN apk add --no-cache curl
+
+# Copy package files
+COPY package*.json ./
+COPY tsconfig.json ./
+
+# Install dependencies
+RUN npm ci --omit=optional --legacy-peer-deps || npm install --omit=optional --legacy-peer-deps
+
+# Copy source
+COPY src ./src
+
+# Build
+RUN npm run build || mkdir -p dist
+
+# Create non-root user
+RUN addgroup -g 1001 scanner && \
+    adduser -D -u 1001 -G scanner scanner && \
+    chown -R scanner:scanner /app
+
+USER scanner
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:3001/health || exit 1
+
+EXPOSE 3001
+
+CMD ["node", "-r", "ts-node/register", "src/services/scanner.ts"]

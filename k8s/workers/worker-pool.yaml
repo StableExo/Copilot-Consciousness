@@ -1,0 +1,146 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: scanner-worker
+  namespace: arbitrage-bot
+spec:
+  parallelism: 10
+  completions: 100
+  template:
+    metadata:
+      labels:
+        app: scanner-worker
+        worker-type: scanner
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: worker
+        image: arbitrage-bot/scanner:latest
+        env:
+        - name: WORKER_TYPE
+          value: "scanner"
+        - name: RABBITMQ_URL
+          value: "amqp://$(RABBITMQ_USERNAME):$(RABBITMQ_PASSWORD)@rabbitmq-service:5672"
+        - name: REDIS_URL
+          value: "redis://:$(REDIS_PASSWORD)@redis-master-service:6379"
+        envFrom:
+        - configMapRef:
+            name: arbitrage-config
+        - secretRef:
+            name: arbitrage-secrets
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pathfinding-worker
+  namespace: arbitrage-bot
+spec:
+  parallelism: 20
+  completions: 200
+  template:
+    metadata:
+      labels:
+        app: pathfinding-worker
+        worker-type: pathfinding
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: worker
+        image: arbitrage-bot/pathfinding:latest
+        env:
+        - name: WORKER_TYPE
+          value: "pathfinding"
+        - name: RABBITMQ_URL
+          value: "amqp://$(RABBITMQ_USERNAME):$(RABBITMQ_PASSWORD)@rabbitmq-service:5672"
+        - name: REDIS_URL
+          value: "redis://:$(REDIS_PASSWORD)@redis-master-service:6379"
+        envFrom:
+        - configMapRef:
+            name: arbitrage-config
+        - secretRef:
+            name: arbitrage-secrets
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: analytics-worker
+  namespace: arbitrage-bot
+spec:
+  schedule: "*/5 * * * *"  # Every 5 minutes
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: analytics-worker
+            worker-type: analytics
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: worker
+            image: arbitrage-bot/analytics:latest
+            env:
+            - name: WORKER_TYPE
+              value: "analytics"
+            - name: DATABASE_URL
+              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@timescaledb-service:5432/$(POSTGRES_DB)"
+            - name: REDIS_URL
+              value: "redis://:$(REDIS_PASSWORD)@redis-master-service:6379"
+            envFrom:
+            - configMapRef:
+                name: arbitrage-config
+            - secretRef:
+                name: arbitrage-secrets
+            resources:
+              requests:
+                memory: "256Mi"
+                cpu: "250m"
+              limits:
+                memory: "512Mi"
+                cpu: "500m"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cleanup-worker
+  namespace: arbitrage-bot
+spec:
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: cleanup-worker
+            worker-type: maintenance
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: worker
+            image: arbitrage-bot/analytics:latest
+            command: ["node"]
+            args: ["-e", "console.log('Running cleanup tasks...')"]
+            env:
+            - name: WORKER_TYPE
+              value: "cleanup"
+            - name: DATABASE_URL
+              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@timescaledb-service:5432/$(POSTGRES_DB)"
+            envFrom:
+            - configMapRef:
+                name: arbitrage-config
+            - secretRef:
+                name: arbitrage-secrets

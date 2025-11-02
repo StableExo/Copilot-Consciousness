@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pathfinding-deployment
+  namespace: arbitrage-bot
+  labels:
+    app: pathfinding
+    tier: compute
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: pathfinding
+  template:
+    metadata:
+      labels:
+        app: pathfinding
+        tier: compute
+    spec:
+      containers:
+      - name: pathfinding
+        image: arbitrage-bot/pathfinding:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3002
+          name: http
+        env:
+        - name: PORT
+          value: "3002"
+        - name: RABBITMQ_URL
+          value: "amqp://$(RABBITMQ_USERNAME):$(RABBITMQ_PASSWORD)@$(RABBITMQ_HOST):$(RABBITMQ_PORT)"
+        - name: REDIS_URL
+          value: "redis://:$(REDIS_PASSWORD)@$(REDIS_HOST):$(REDIS_PORT)"
+        - name: CONSUL_URL
+          value: "http://$(CONSUL_HOST):$(CONSUL_PORT)"
+        - name: CONCURRENCY
+          valueFrom:
+            configMapKeyRef:
+              name: arbitrage-config
+              key: CONCURRENCY
+        envFrom:
+        - configMapRef:
+            name: arbitrage-config
+        - secretRef:
+            name: arbitrage-secrets
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3002
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3002
+          initialDelaySeconds: 10
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pathfinding-service
+  namespace: arbitrage-bot
+spec:
+  selector:
+    app: pathfinding
+  ports:
+  - protocol: TCP
+    port: 3002
+    targetPort: 3002
+  type: ClusterIP
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: pathfinding-hpa
+  namespace: arbitrage-bot
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: pathfinding-deployment
+  minReplicas: 5
+  maxReplicas: 30
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80

@@ -1,0 +1,151 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: timescaledb
+  namespace: arbitrage-bot
+spec:
+  serviceName: timescaledb-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: timescaledb
+  template:
+    metadata:
+      labels:
+        app: timescaledb
+    spec:
+      containers:
+      - name: timescaledb
+        image: timescale/timescaledb:latest-pg15
+        ports:
+        - containerPort: 5432
+          name: postgres
+        env:
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: arbitrage-config
+              key: POSTGRES_DB
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: arbitrage-secrets
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: arbitrage-secrets
+              key: POSTGRES_PASSWORD
+        - name: TIMESCALEDB_TELEMETRY
+          value: "off"
+        volumeMounts:
+        - name: timescaledb-data
+          mountPath: /var/lib/postgresql/data
+        - name: init-scripts
+          mountPath: /docker-entrypoint-initdb.d
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - arbitrage
+          initialDelaySeconds: 60
+          periodSeconds: 10
+      volumes:
+      - name: init-scripts
+        configMap:
+          name: timescaledb-init
+  volumeClaimTemplates:
+  - metadata:
+      name: timescaledb-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 100Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: timescaledb-service
+  namespace: arbitrage-bot
+spec:
+  selector:
+    app: timescaledb
+  ports:
+  - port: 5432
+    targetPort: 5432
+  clusterIP: None
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: timescaledb-init
+  namespace: arbitrage-bot
+data:
+  init.sql: |
+    -- Enable TimescaleDB extension
+    CREATE EXTENSION IF NOT EXISTS timescaledb;
+
+    -- Opportunities table
+    CREATE TABLE IF NOT EXISTS opportunities (
+      id SERIAL PRIMARY KEY,
+      opportunity_id VARCHAR(255) UNIQUE NOT NULL,
+      chain_id INTEGER NOT NULL,
+      type VARCHAR(50) NOT NULL,
+      profit DECIMAL(20, 8),
+      gas_estimate BIGINT,
+      timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      data JSONB
+    );
+
+    -- Convert to hypertable
+    SELECT create_hypertable('opportunities', 'timestamp', if_not_exists => TRUE);
+
+    -- Create indexes
+    CREATE INDEX IF NOT EXISTS idx_opportunities_chain_id ON opportunities (chain_id, timestamp DESC);
+    CREATE INDEX IF NOT EXISTS idx_opportunities_type ON opportunities (type, timestamp DESC);
+    CREATE INDEX IF NOT EXISTS idx_opportunities_profit ON opportunities (profit DESC);
+
+    -- Executions table
+    CREATE TABLE IF NOT EXISTS executions (
+      id SERIAL PRIMARY KEY,
+      execution_id VARCHAR(255) UNIQUE NOT NULL,
+      opportunity_id VARCHAR(255),
+      chain_id INTEGER NOT NULL,
+      status VARCHAR(50) NOT NULL,
+      tx_hash VARCHAR(255),
+      actual_profit DECIMAL(20, 8),
+      gas_used BIGINT,
+      timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      data JSONB
+    );
+
+    SELECT create_hypertable('executions', 'timestamp', if_not_exists => TRUE);
+
+    CREATE INDEX IF NOT EXISTS idx_executions_chain_id ON executions (chain_id, timestamp DESC);
+    CREATE INDEX IF NOT EXISTS idx_executions_status ON executions (status, timestamp DESC);
+
+    -- Analytics table
+    CREATE TABLE IF NOT EXISTS analytics (
+      id SERIAL PRIMARY KEY,
+      metric_name VARCHAR(100) NOT NULL,
+      metric_value DECIMAL(20, 8),
+      chain_id INTEGER,
+      timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      metadata JSONB
+    );
+
+    SELECT create_hypertable('analytics', 'timestamp', if_not_exists => TRUE);
+
+    -- Retention policy: keep data for 90 days
+    SELECT add_retention_policy('opportunities', INTERVAL '90 days', if_not_exists => TRUE);
+    SELECT add_retention_policy('executions', INTERVAL '90 days', if_not_exists => TRUE);
+    SELECT add_retention_policy('analytics', INTERVAL '180 days', if_not_exists => TRUE);

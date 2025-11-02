@@ -1,0 +1,58 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: arbitrage-bot
+
+bases:
+  - ../../base
+
+resources:
+  - ../../services/scanner/deployment.yaml
+  - ../../services/pathfinding/deployment.yaml
+  - ../../services/ml/deployment.yaml
+  - ../../services/execution/deployment.yaml
+  - ../../services/analytics/deployment.yaml
+  - ../../services/bridge/deployment.yaml
+  - ../../services/dashboard/deployment.yaml
+  - ../../../infrastructure/rabbitmq/deployment.yaml
+  - ../../../infrastructure/redis/deployment.yaml
+  - ../../../infrastructure/timescaledb/deployment.yaml
+  - ../../../infrastructure/consul/deployment.yaml
+  - ../../monitoring/prometheus-deployment.yaml
+  - ../../monitoring/grafana-deployment.yaml
+  - ../../monitoring/jaeger-deployment.yaml
+  - ../../ingress/ingress.yaml
+
+patchesStrategicMerge:
+  - replica-count.yaml
+  - resource-limits.yaml
+
+configMapGenerator:
+  - name: arbitrage-config
+    behavior: merge
+    literals:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=info
+      - TARGET_THROUGHPUT=10000
+
+secretGenerator:
+  - name: arbitrage-secrets
+    behavior: merge
+    envs:
+      - secrets.env
+
+images:
+  - name: arbitrage-bot/scanner
+    newTag: v1.0.0
+  - name: arbitrage-bot/pathfinding
+    newTag: v1.0.0
+  - name: arbitrage-bot/ml
+    newTag: v1.0.0
+  - name: arbitrage-bot/execution
+    newTag: v1.0.0
+  - name: arbitrage-bot/analytics
+    newTag: v1.0.0
+  - name: arbitrage-bot/bridge
+    newTag: v1.0.0
+  - name: arbitrage-bot/dashboard
+    newTag: v1.0.0

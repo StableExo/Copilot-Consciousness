@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: execution-deployment
+  namespace: arbitrage-bot
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: execution
+  template:
+    metadata:
+      labels:
+        app: execution
+    spec:
+      containers:
+      - name: execution
+        image: arbitrage-bot/execution:latest
+        ports:
+        - containerPort: 3004
+        env:
+        - name: PORT
+          value: "3004"
+        - name: RABBITMQ_URL
+          value: "amqp://$(RABBITMQ_USERNAME):$(RABBITMQ_PASSWORD)@$(RABBITMQ_HOST):$(RABBITMQ_PORT)"
+        - name: DATABASE_URL
+          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
+        envFrom:
+        - configMapRef:
+            name: arbitrage-config
+        - secretRef:
+            name: arbitrage-secrets
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: execution-service
+  namespace: arbitrage-bot
+spec:
+  selector:
+    app: execution
+  ports:
+  - port: 3004
+    targetPort: 3004
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: execution-hpa
+  namespace: arbitrage-bot
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: execution-deployment
+  minReplicas: 3
+  maxReplicas: 15
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70

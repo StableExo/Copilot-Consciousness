@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bridge-deployment
+  namespace: arbitrage-bot
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bridge
+  template:
+    metadata:
+      labels:
+        app: bridge
+    spec:
+      containers:
+      - name: bridge
+        image: arbitrage-bot/bridge:latest
+        ports:
+        - containerPort: 3006
+        env:
+        - name: PORT
+          value: "3006"
+        - name: REDIS_URL
+          value: "redis://:$(REDIS_PASSWORD)@$(REDIS_HOST):$(REDIS_PORT)"
+        envFrom:
+        - configMapRef:
+            name: arbitrage-config
+        - secretRef:
+            name: arbitrage-secrets
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bridge-service
+  namespace: arbitrage-bot
+spec:
+  selector:
+    app: bridge
+  ports:
+  - port: 3006
+    targetPort: 3006
