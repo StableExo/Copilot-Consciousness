@@ -65,7 +65,7 @@ export class IntrusionDetectionService extends EventEmitter {
       /(\bUPDATE\b.*\bSET\b)/i,
       /(--|\#|\/\*|\*\/)/,
       /(\bOR\b\s+\d+\s*=\s*\d+)/i,
-      /('|"|;|\||&)/
+      /('.*\bOR\b.*')/i
     ];
 
     // XSS patterns

@@ -190,7 +190,9 @@ export class SecurityMiddleware {
         const result = await this.rateLimitService.checkLimit(scope, identifier);
 
         // Set rate limit headers
-        res.setHeader('X-RateLimit-Limit', result.remaining + result.remaining);
+        const rateLimitConfig = this.rateLimitService['configs'].get(scope);
+        const limit = rateLimitConfig?.maxRequests || 60;
+        res.setHeader('X-RateLimit-Limit', limit);
         res.setHeader('X-RateLimit-Remaining', result.remaining);
         res.setHeader('X-RateLimit-Reset', result.resetTime);
 

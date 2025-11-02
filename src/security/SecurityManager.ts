@@ -245,9 +245,9 @@ export function createDefaultSecurityConfig(): SecurityConfig {
       autoBlockDurationMs: 3600000 // 1 hour
     },
     secrets: {
-      provider: 'LOCAL_ENCRYPTED' as any,
+      provider: 'LOCAL_ENCRYPTED' as const,
       encryptionKey: process.env.SECRETS_ENCRYPTION_KEY
-    },
+    } as SecretsConfig,
     redis: {
       host: process.env.REDIS_HOST || 'localhost',
       port: parseInt(process.env.REDIS_PORT || '6379'),
