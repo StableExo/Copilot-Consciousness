@@ -4,7 +4,7 @@
  */
 
 import express from 'express';
-import { createConnection, Channel, Connection } from 'amqplib';
+import * as amqp from 'amqplib';
 import Redis from 'ioredis';
 
 interface ScannerConfig {
@@ -18,8 +18,8 @@ interface ScannerConfig {
 class ScannerService {
   private app: express.Application;
   private config: ScannerConfig;
-  private rabbitmqConnection?: Connection;
-  private rabbitmqChannel?: Channel;
+  private rabbitmqConnection?: amqp.ChannelModel;
+  private rabbitmqChannel?: amqp.Channel;
   private redis?: Redis;
   private isRunning = false;
 
@@ -60,11 +60,13 @@ class ScannerService {
     let retries = 5;
     while (retries > 0) {
       try {
-        this.rabbitmqConnection = await createConnection(this.config.rabbitmqUrl);
-        this.rabbitmqChannel = await this.rabbitmqConnection.createChannel();
+        const connection = await amqp.connect(this.config.rabbitmqUrl);
+        this.rabbitmqConnection = connection;
+        const channel = await connection.createChannel();
+        this.rabbitmqChannel = channel;
         
         // Declare opportunity queue
-        await this.rabbitmqChannel.assertQueue('opportunities', {
+        await channel.assertQueue('opportunities', {
           durable: true,
           arguments: {
             'x-max-length': 100000,

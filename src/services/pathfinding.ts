@@ -4,7 +4,7 @@
  */
 
 import express from 'express';
-import { createConnection, Channel, Connection, ConsumeMessage } from 'amqplib';
+import * as amqp from 'amqplib';
 import Redis from 'ioredis';
 
 interface PathfindingConfig {
@@ -18,8 +18,8 @@ interface PathfindingConfig {
 class PathfindingService {
   private app: express.Application;
   private config: PathfindingConfig;
-  private rabbitmqConnection?: Connection;
-  private rabbitmqChannel?: Channel;
+  private rabbitmqConnection?: amqp.ChannelModel;
+  private rabbitmqChannel?: amqp.Channel;
   private redis?: Redis;
   private isRunning = false;
   private pathsProcessed = 0;
@@ -56,11 +56,13 @@ class PathfindingService {
 
     // Connect to RabbitMQ
     try {
-      this.rabbitmqConnection = await createConnection(this.config.rabbitmqUrl);
-      this.rabbitmqChannel = await this.rabbitmqConnection.createChannel();
+      const connection = await amqp.connect(this.config.rabbitmqUrl);
+      this.rabbitmqConnection = connection;
+      const channel = await connection.createChannel();
+      this.rabbitmqChannel = channel;
       
-      await this.rabbitmqChannel.assertQueue('opportunities', { durable: true });
-      await this.rabbitmqChannel.assertQueue('paths', {
+      await channel.assertQueue('opportunities', { durable: true });
+      await channel.assertQueue('paths', {
         durable: true,
         arguments: {
           'x-dead-letter-exchange': 'dlx',
@@ -69,10 +71,10 @@ class PathfindingService {
       });
 
       // Set prefetch for load distribution
-      await this.rabbitmqChannel.prefetch(this.config.concurrency);
+      await channel.prefetch(this.config.concurrency);
 
       // Start consuming
-      await this.rabbitmqChannel.consume('opportunities', this.handleOpportunity.bind(this));
+      await channel.consume('opportunities', this.handleOpportunity.bind(this));
 
       console.log('[Pathfinding] Connected to RabbitMQ and consuming messages');
     } catch (error) {
@@ -95,7 +97,7 @@ class PathfindingService {
     });
   }
 
-  private async handleOpportunity(msg: ConsumeMessage | null): Promise<void> {
+  private async handleOpportunity(msg: amqp.ConsumeMessage | null): Promise<void> {
     if (!msg || !this.rabbitmqChannel) return;
 
     try {
