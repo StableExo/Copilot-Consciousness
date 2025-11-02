@@ -117,7 +117,7 @@ export const defaultRealtimeConfig: RealtimeConfig = {
     // },
   ],
   eventFilter: {
-    minLiquidity: BigInt('100000000000000000000000'), // 100,000 tokens (18 decimals)
+    minLiquidity: BigInt('100000000000000000000000'), // 10^23 wei = 100,000 tokens (assuming 18 decimals)
     maxPriceImpact: 0.03, // 3%
     minPriceDelta: 0.001, // 0.1%
   },

@@ -229,11 +229,25 @@ export class EventDrivenTrigger extends EventEmitter {
   }
 
   /**
-   * Get tokens from pool address (simplified implementation)
+   * Get tokens from pool address
+   * 
+   * TODO: This is a simplified implementation that returns common tokens.
+   * In production, this should:
+   * 1. Query the pool contract to get actual token0 and token1 addresses
+   * 2. Cache the result for subsequent calls
+   * 3. Handle errors gracefully
+   * 
+   * Example implementation:
+   * ```
+   * const poolContract = new ethers.Contract(poolAddress, poolABI, provider);
+   * const token0 = await poolContract.token0();
+   * const token1 = await poolContract.token1();
+   * return [token0, token1, commonBaseTokens...];
+   * ```
    */
   private async getTokensFromPool(poolAddress: string): Promise<string[]> {
-    // In production, this would query the pool contract to get token addresses
-    // For now, return a default set of common tokens
+    // Return a default set of common tokens
+    // This enables the system to find arbitrage paths involving these tokens
     return [
       '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
       '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC

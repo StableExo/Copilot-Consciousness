@@ -290,6 +290,10 @@ export class MultiHopDataFetcher {
 
   /**
    * Check if cached data is still valid
+   * 
+   * Note: This method performs a Map lookup on every cache validation.
+   * For better performance in high-frequency scenarios, consider storing
+   * the timestamp alongside the cached data in a single object.
    */
   private isCacheValid(cacheKey: string): boolean {
     const timestamp = this.cacheTimestamps.get(cacheKey);

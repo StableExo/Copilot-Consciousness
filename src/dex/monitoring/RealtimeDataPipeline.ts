@@ -132,9 +132,11 @@ export class RealtimeDataPipeline extends EventEmitter {
   private async filterEvent(event: PoolEvent): Promise<FilteredPoolEvent | null> {
     // Check liquidity threshold for Sync events
     if (event.eventType === 'Sync' && event.reserve0 !== undefined && event.reserve1 !== undefined) {
-      const liquidity = event.reserve0 > event.reserve1 ? event.reserve0 : event.reserve1;
+      // Use sum of both reserves as total liquidity
+      // For more precise calculations, geometric mean (sqrt(reserve0 * reserve1)) could be used
+      const totalLiquidity = event.reserve0 + event.reserve1;
       
-      if (liquidity < this.filterConfig.minLiquidity) {
+      if (totalLiquidity < this.filterConfig.minLiquidity) {
         return null; // Below minimum liquidity
       }
     }

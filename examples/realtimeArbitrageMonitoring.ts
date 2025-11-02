@@ -188,11 +188,19 @@ class RealtimeArbitrageMonitor {
       await this.wsManager.connect();
 
       // Subscribe to pools
-      // In production, you would configure specific pools to monitor
-      // Example pools (replace with actual addresses):
-      const poolsToMonitor = [
-        // '0x...', // WETH/USDC Uniswap V2
-        // '0x...', // WETH/USDT SushiSwap
+      // To configure pools for monitoring:
+      // 1. Identify high-liquidity DEX pools on Ethereum mainnet
+      // 2. Add their contract addresses to the array below
+      // 
+      // Example real addresses (Ethereum mainnet):
+      // - Uniswap V2 WETH/USDC: 0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc
+      // - Uniswap V2 WETH/USDT: 0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852
+      // - SushiSwap WETH/USDC: 0x397FF1542f962076d0BFE58eA045FfA2d347ACa0
+      //
+      // Note: Ensure you have valid WebSocket endpoint URLs configured
+      // in your environment variables before running.
+      const poolsToMonitor: string[] = [
+        // Add pool addresses here for production use
       ];
 
       for (const pool of poolsToMonitor) {

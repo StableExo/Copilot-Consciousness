@@ -343,8 +343,8 @@ export class WebSocketStreamManager extends EventEmitter {
 
     // Close provider connection
     if (this.provider) {
-      await this.provider.removeAllListeners();
-      await this.provider.destroy();
+      this.provider.removeAllListeners();
+      this.provider.destroy();
       this.provider = null;
     }
 
