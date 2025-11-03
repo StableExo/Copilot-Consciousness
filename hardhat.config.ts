@@ -1,21 +1,58 @@
+// hardhat.config.ts
 import { HardhatUserConfig } from "hardhat/config";
-import "@nomiclabs/hardhat-waffle";
 import "@nomiclabs/hardhat-ethers";
-require('dotenv').config();
+import "@nomiclabs/hardhat-etherscan";
+import "hardhat-gas-reporter";
+import "solidity-coverage";
+import * as dotenv from "dotenv";
 
-console.log("BASE_PRIVATE_KEY:", process.env.BASE_PRIVATE_KEY);
+dotenv.config();
 
 const config: HardhatUserConfig = {
-  paths: {
-    sources: "./src/arbitrage",
+  solidity: {
+    version: "0.8.20",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200
+      }
+    }
   },
-  solidity: "0.8.20",
   networks: {
-    base: {
-      url: process.env.BASE_RPC_URL || "https://mainnet.base.org",
-      accounts: process.env.BASE_PRIVATE_KEY ? [process.env.BASE_PRIVATE_KEY] : [],
+    hardhat: {
+      forking: {
+        url: process.env.ETHEREUM_RPC_URL || "",
+        enabled: process.env.FORKING === "true"
+      }
     },
+    goerli: {
+      url: process.env.GOERLI_RPC_URL || "",
+      accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
+    },
+    mainnet: {
+      url: process.env.ETHEREUM_RPC_URL || "",
+      accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
+    },
+    arbitrum: {
+      url: process.env.ARBITRUM_RPC_URL || "",
+      accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
+    },
+    polygon: {
+      url: process.env.POLYGON_RPC_URL || "",
+      accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
+    },
+    base: {
+      url: process.env.BASE_RPC_URL || "",
+      accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
+    }
   },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY || ""
+  },
+  gasReporter: {
+    enabled: process.env.REPORT_GAS === "true",
+    currency: "USD"
+  }
 };
 
 export default config;
