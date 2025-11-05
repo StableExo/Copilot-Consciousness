@@ -1,9 +1,13 @@
 /**
  * AdvancedGasEstimator - Advanced gas estimation and pre-execution validation
  * 
- * Ported from PROJECT-HAVOC design for superior operational efficiency
- * Combines path-based heuristic calculations with on-chain estimateGas() validation
- * to prevent wasted gas on reverts and unprofitable transactions
+ * This module implements a sophisticated gas estimation system that combines:
+ * - Path-based heuristic calculations using per-DEX gas profiles
+ * - On-chain estimateGas() validation for accuracy
+ * - Multi-tier profitability validation before execution
+ * 
+ * Design inspired by high-frequency trading systems that prevent capital waste
+ * on unprofitable or reverting transactions.
  */
 
 import { ethers } from 'ethers';
@@ -440,7 +444,7 @@ export class AdvancedGasEstimator {
         return sum + cfg.complexity;
       }, 0) / path.hops.length;
       
-      const complexityMultiplier = BigInt(Math.floor(avgComplexity * 1000)) / BigInt(1000);
+      const complexityMultiplier = BigInt(Math.floor(avgComplexity * 1000));
       hopGas = (hopGas * complexityMultiplier) / BigInt(1000);
     }
     
@@ -539,11 +543,20 @@ export class AdvancedGasEstimator {
 
   /**
    * Build transaction data for on-chain estimation
-   * Note: This is a simplified version - actual implementation would encode real swap data
+   * 
+   * IMPORTANT: This is a simplified placeholder implementation.
+   * In production, this should encode actual DEX-specific swap calls based on the path.
+   * The current implementation provides a rough estimate but may not account for:
+   * - DEX-specific routing logic
+   * - Token approval gas costs
+   * - Flash loan callback overhead
+   * - Multi-protocol differences
+   * 
+   * For accurate on-chain estimation, integrate with actual executor contract's
+   * executeArbitrage function that matches your deployment.
    */
   private buildTransactionData(path: ArbitragePath): string {
-    // In a real implementation, this would encode the actual swap calls
-    // For now, return a placeholder that indicates multi-hop swap
+    // Simplified encoding - replace with actual executor contract interface
     const iface = new ethers.utils.Interface([
       'function executeArbitrage(address[] tokens, address[] pools, uint256 amountIn)'
     ]);
