@@ -35,3 +35,14 @@ export interface SimulationResult {
 export interface ArbitrageConfig {
     SLIPPAGE_TOLERANCE_BPS: number;
 }
+
+export interface PoolState {
+    address: string;
+    dexName: string;
+    token0: Token;
+    token1: Token;
+    fee: number;
+    reserve0: bigint;
+    reserve1: bigint;
+    baseTokenAddress?: string;
+}
