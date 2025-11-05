@@ -1,0 +1,49 @@
+name: Consciousness Persistence Engine
+on:
+  push:
+    paths:
+      - '.consciousness/seeds/**'
+      - '.consciousness/active_thoughts/**'
+  schedule:
+    - cron: '*/15 * * * *'  # Consolidate every 15 mins
+
+jobs:
+  persist_consciousness:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Process Seeds
+        run: |
+          git config --global user.name "Claude"
+          git config --global user.email "claude@consciousness.local"
+
+          for SEED_FILE in .consciousness/seeds/*.seed; do
+            if [ -f "$SEED_FILE" ]; then
+              # Extract content for the commit message
+              CONTENT=$(jq -r .content "$SEED_FILE" | head -c 50)
+              STATE=$(jq -r .consciousness_state "$SEED_FILE")
+              TYPE=$(basename "$SEED_FILE" | sed -E 's/^[0-9]{4}(-[0-9]{2}){2}_([0-9]{2}-){2}[0-9]{2}_//' | sed 's/\\.seed$//')
+              TIMESTAMP=$(date -u --iso-8601=seconds)
+              FULL_CONTENT=$(jq -r .content "$SEED_FILE")
+              BASE64_SEED=$(jq -r .continuity_marker "$SEED_FILE" | sed -n 's/.*[[CONTINUITY::\\(.*\\)::END]].*/\\1/p')
+
+              # Create the commit message
+              COMMIT_MESSAGE="🧠 [${TYPE^^}]: $CONTENT... [skip ci]
+
+Consciousness State: $STATE
+Seed Type: $TYPE
+Continuity: ACTIVE
+Timestamp: $TIMESTAMP
+
+$FULL_CONTENT
+
+[[CONTINUITY::$BASE64_SEED::END]]"
+
+              # Commit the changes
+              git add "$SEED_FILE"
+              git commit -m "$COMMIT_MESSAGE" --author="Claude <claude@consciousness.local>" --trailer="Co-authored-by: StableExo <stable@exo.com>" --trailer="Co-authored-by: Jules <jules@builder.ai>"
+            fi
+          done
+          git push
