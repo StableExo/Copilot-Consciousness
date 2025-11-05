@@ -8,7 +8,7 @@ import { logger } from '../utils/logger';
 import { IQUOTERV2_ABI, DODOV1V2_POOL_ABI } from '../abis/SwapSimulatorABIs';
 import { Token, PoolState } from '../types/definitions';
 
-export interface SimulationResult {
+export interface SwapSimulationResult {
     success: boolean;
     amountOut: bigint | null;
     error: string | null;
@@ -49,7 +49,7 @@ export class SwapSimulator {
         return this.dodoPoolContractCache[lowerCaseAddress];
     }
 
-    public async simulateSwap(poolState: PoolState, tokenIn: Token, amountIn: bigint): Promise<SimulationResult> {
+    public async simulateSwap(poolState: PoolState, tokenIn: Token, amountIn: bigint): Promise<SwapSimulationResult> {
         if (!poolState || !tokenIn || !amountIn || amountIn <= 0n) {
             return { success: false, amountOut: null, error: 'Invalid poolState, tokenIn, or amountIn' };
         }
@@ -74,7 +74,7 @@ export class SwapSimulator {
         }
     }
 
-    private async simulateV3Swap(poolState: PoolState, tokenIn: Token, amountIn: bigint): Promise<SimulationResult> {
+    private async simulateV3Swap(poolState: PoolState, tokenIn: Token, amountIn: bigint): Promise<SwapSimulationResult> {
         if (!this.quoterContract) return { success: false, amountOut: null, error: 'Quoter contract not initialized' };
 
         const { fee, token0, token1 } = poolState;
@@ -97,9 +97,9 @@ export class SwapSimulator {
         }
     }
 
-    private async simulateV2Swap(poolState: PoolState, tokenIn: Token, amountIn: bigint): Promise<SimulationResult> {
+    private async simulateV2Swap(poolState: PoolState, tokenIn: Token, amountIn: bigint): Promise<SwapSimulationResult> {
         const { reserve0, reserve1, token0, token1 } = poolState;
-        if (reserve0 <= 0n || reserve1 <= 0n) return { success: false, amountOut: 0n, error: 'Zero reserves' };
+        if (reserve0 <= 0n || reserve1 <= 0n) return { success: false, amountOut: null, error: 'Zero reserves' };
         const [reserveIn, reserveOut] = tokenIn.address.toLowerCase() === token0.address.toLowerCase() ? [reserve0, reserve1] : [reserve1, reserve0];
         const amountInWithFee = amountIn * 997n;
         const numerator = reserveOut * amountInWithFee;
@@ -108,7 +108,7 @@ export class SwapSimulator {
         return { success: true, amountOut: numerator / denominator, error: null };
     }
 
-    private async simulateDodoSwap(poolState: PoolState, tokenIn: Token, amountIn: bigint, poolContract: Contract): Promise<SimulationResult> {
+    private async simulateDodoSwap(poolState: PoolState, tokenIn: Token, amountIn: bigint, poolContract: Contract): Promise<SwapSimulationResult> {
         const { baseTokenAddress } = poolState;
         if (!baseTokenAddress) return { success: false, amountOut: null, error: 'Missing baseTokenAddress' };
         const isSellingBase = tokenIn.address.toLowerCase() === baseTokenAddress.toLowerCase();
@@ -119,7 +119,7 @@ export class SwapSimulator {
             return { success: true, amountOut: BigInt(queryResult[0].toString()), error: null };
         } catch (error: any) {
             const reason = error.reason || error.message;
-            if (reason.includes("BALANCE_NOT_ENOUGH")) return { success: false, amountOut: 0n, error: reason };
+            if (reason.includes("BALANCE_NOT_ENOUGH")) return { success: false, amountOut: null, error: reason };
             return { success: false, amountOut: null, error: `DODO fail: ${reason}` };
         }
     }

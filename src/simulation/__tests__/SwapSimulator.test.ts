@@ -2,7 +2,7 @@
  * Tests for SwapSimulator
  */
 import { ethers } from 'ethers';
-import { SwapSimulator, SimulationResult } from '../SwapSimulator';
+import { SwapSimulator, SwapSimulationResult } from '../SwapSimulator';
 import { PoolState, Token } from '../../types/definitions';
 
 // Create a proper mock provider that extends BaseProvider
@@ -441,7 +441,7 @@ describe('SwapSimulator', () => {
             const result = await simulator.simulateSwap(poolState, token0, 1000000n);
 
             expect(result.success).toBe(false);
-            expect(result.amountOut).toBe(0n);
+            expect(result.amountOut).toBeNull();
             expect(result.error).toContain('BALANCE_NOT_ENOUGH');
         });
 
