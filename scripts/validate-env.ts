@@ -38,6 +38,19 @@ interface ValidationResult {
   value?: string;
 }
 
+interface NetworkConfig {
+    name: string;
+    chainId: number;
+}
+
+const networkDetails: Record<string, NetworkConfig> = {
+  ETHEREUM_RPC_URL: { name: 'mainnet', chainId: 1 },
+  POLYGON_RPC_URL: { name: 'matic', chainId: 137 },
+  ARBITRUM_RPC_URL: { name: 'arbitrum', chainId: 42161 },
+  BASE_RPC_URL: { name: 'base', chainId: 8453 },
+  OPTIMISM_RPC_URL: { name: 'optimism', chainId: 10 },
+};
+
 const results: ValidationResult[] = [];
 let criticalFailures = 0;
 let warnings = 0;
@@ -82,7 +95,8 @@ async function validateRpcUrl(name: string, category: ValidationResult['category
 
   // Test connection
   try {
-    const provider = new ethers.providers.JsonRpcProvider(url);
+    const network = networkDetails[name];
+    const provider = new ethers.providers.JsonRpcProvider(url, network);
     const blockNumber = await Promise.race([
       provider.getBlockNumber(),
       new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
