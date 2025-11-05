@@ -29,6 +29,7 @@
     "@uniswap/v3-periphery": "^1.4.3",
     "@uniswap/v3-sdk": "^3.11.2",
     "amqplib": "^0.10.3",
+    "async-mutex": "^0.5.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
