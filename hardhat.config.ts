@@ -21,7 +21,7 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       forking: {
-        url: process.env.ETHEREUM_RPC_URL || "",
+        url: process.env.BASE_RPC_URL || "",
         enabled: process.env.FORKING === "true"
       }
     },
@@ -30,7 +30,7 @@ const config: HardhatUserConfig = {
       accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
     },
     mainnet: {
-      url: process.env.ETHEREUM_RPC_URL || "",
+      url: process.env.BASE_RPC_URL || "",
       accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
     },
     arbitrum: {

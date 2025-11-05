@@ -296,7 +296,7 @@ async function validateEnvironment(): Promise<void> {
   log('🔴 CRITICAL Variables (Bot won\'t run without these):', 'red');
   log('─────────────────────────────────────────────────────────────\n');
   
-  await validateRpcUrl('ETHEREUM_RPC_URL', 'CRITICAL');
+  await validateRpcUrl('BASE_RPC_URL', 'CRITICAL');
   validatePrivateKey();
   validateString('NODE_ENV', 'CRITICAL', 'Runtime environment');
   
@@ -310,9 +310,9 @@ async function validateEnvironment(): Promise<void> {
   log('\n🟡 RECOMMENDED Variables (Multi-chain support):', 'yellow');
   log('─────────────────────────────────────────────────────────────\n');
   
+  await validateRpcUrl('ETHEREUM_RPC_URL', 'RECOMMENDED');
   await validateRpcUrl('POLYGON_RPC_URL', 'RECOMMENDED');
   await validateRpcUrl('ARBITRUM_RPC_URL', 'RECOMMENDED');
-  await validateRpcUrl('BASE_RPC_URL', 'RECOMMENDED');
   await validateRpcUrl('OPTIMISM_RPC_URL', 'RECOMMENDED');
   
   // WebSocket endpoints
