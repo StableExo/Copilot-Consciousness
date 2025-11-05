@@ -13,6 +13,7 @@
     "test:watch": "jest --watch",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
+    "validate-env": "ts-node scripts/validate-env.ts",
     "compile": "hardhat compile",
     "deploy": "hardhat run scripts/deploy-executor-v3.ts",
     "deploy:testnet": "hardhat run scripts/deploy-executor-v3.ts --network goerli",
