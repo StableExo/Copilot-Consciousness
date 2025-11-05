@@ -11,12 +11,26 @@ A comprehensive gas optimization system for arbitrage execution, providing 30-50
   - Auto-refresh every 12 seconds
   - Historical caching and prediction
   - Gas price tiers: instant, fast, normal, slow
+  - Updated L2 gas multipliers (Base: 0.0005x, Arbitrum/Optimism: 0.001x)
+
+- **AdvancedGasEstimator**: 🆕 Advanced gas estimation and pre-execution validation
+  - Path-based heuristic gas calculations with per-DEX configurations
+  - On-chain `estimateGas()` validation with automatic fallback
+  - Automatic gas price clamping and buffering (configurable 10-50%)
+  - Pre-execution profitability checks (prevents wasted gas on reverts)
+  - Multi-tier validation (profitability, gas limits, minimum profit, percentage thresholds)
+  - Per-DEX complexity multipliers (Uniswap, SushiSwap, Curve, Balancer, 1inch, PancakeSwap)
+  - Statistics tracking for monitoring and optimization
+  - Ported from PROJECT-HAVOC's proven design
 
 - **TransactionBuilder**: Intelligent transaction construction
   - Automatic EIP-1559 vs legacy selection
   - Pre-simulation to catch failures
   - Configurable gas buffer (default 10%)
   - Retry logic with increasing gas prices
+  - 🆕 Integration with AdvancedGasEstimator for validation
+  - 🆕 `validatePathExecution()` for pre-flight checks
+  - 🆕 `buildValidatedTransaction()` for atomic validate + build
 
 - **Layer2Manager**: Multi-chain execution support
   - Arbitrum, Optimism, Base integration
@@ -54,6 +68,7 @@ import {
   GasPriceOracle, 
   TransactionBuilder, 
   GasFilterService,
+  AdvancedGasEstimator,
   Layer2Manager 
 } from './gas';
 import { gasConfig } from './config/gas.config';
@@ -65,16 +80,81 @@ const oracle = new GasPriceOracle(
 );
 oracle.startAutoRefresh();
 
+// 🆕 Initialize AdvancedGasEstimator
+const advancedEstimator = new AdvancedGasEstimator(provider, oracle, {
+  bufferMultiplier: 1.1,  // 10% buffer
+  maxGasPrice: BigInt(500) * BigInt(10 ** 9),  // 500 gwei max
+  minProfitAfterGas: BigInt(10) * BigInt(10 ** 18),  // 10 tokens min
+  maxGasCostPercentage: 50,  // Gas can't be >50% of profit
+  useOnChainEstimation: true,
+  fallbackToHeuristic: true
+});
+
 const filter = new GasFilterService(oracle, gasConfig.filters);
 const layer2 = new Layer2Manager();
 
-// Use in arbitrage orchestrator
+// Use in arbitrage orchestrator with advanced gas estimation
 const orchestrator = new ArbitrageOrchestrator(
   registry,
   config,
   await oracle.getCurrentGasPrice('normal').then(gp => gp.maxFeePerGas),
-  filter
+  filter,
+  bridgeManager,
+  crossChainConfig,
+  mlOrchestrator,
+  advancedEstimator  // 🆕 Pass advanced estimator
 );
+```
+
+## Advanced Gas Estimation (🆕)
+
+The new AdvancedGasEstimator provides superior gas estimation and pre-execution validation:
+
+```typescript
+// Validate a path before execution
+const validation = await advancedEstimator.validateExecution(
+  path,
+  walletAddress,
+  executorAddress
+);
+
+if (validation.executable) {
+  console.log(`✅ Path is profitable. Net profit: ${validation.netProfit}`);
+  console.log(`   Estimated gas: ${validation.estimatedGas}`);
+  console.log(`   Gas price: ${validation.gasPrice}`);
+  // Execute the arbitrage
+} else {
+  console.log(`❌ Path blocked: ${validation.reason}`);
+  if (validation.warnings.length > 0) {
+    console.log(`   Warnings: ${validation.warnings.join(', ')}`);
+  }
+}
+
+// Get detailed gas breakdown
+const estimation = await advancedEstimator.estimateGasHeuristic(path);
+console.log(`Gas breakdown:
+  Base: ${estimation.breakdown?.baseGas}
+  Per-hop: ${estimation.breakdown?.hopGas}
+  Overhead: ${estimation.breakdown?.overhead}
+  Buffer: ${estimation.breakdown?.buffer}
+  Total: ${estimation.breakdown?.total}
+`);
+
+// Register custom DEX configuration
+advancedEstimator.registerDEXConfig({
+  dexName: 'MyCustomDEX',
+  baseGas: 120000,
+  gasPerHop: 35000,
+  overhead: 21000,
+  complexity: 1.3
+});
+
+// View statistics
+const stats = advancedEstimator.getStats();
+console.log(`Total estimations: ${stats.totalEstimations}`);
+console.log(`On-chain: ${stats.onChainEstimations}`);
+console.log(`Heuristic: ${stats.heuristicEstimations}`);
+console.log(`Blocked opportunities: ${stats.blockedOpportunities}`);
 ```
 
 ## Gas Strategies
