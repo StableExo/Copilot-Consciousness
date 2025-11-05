@@ -18,6 +18,12 @@ import { ethers, Signer, providers } from 'ethers';
 import { Mutex } from 'async-mutex';
 import { logger } from '../utils/logger'; // Assuming you have a logger utility
 
+// Error patterns for nonce-related issues
+const NONCE_ERROR_PATTERNS = {
+  CODE: 'NONCE_EXPIRED',
+  MESSAGES: ['nonce too low', 'invalid nonce', 'replacement transaction underpriced'],
+} as const;
+
 // Define a specific error type for nonce-related issues
 export class NonceError extends Error {
   constructor(message: string) {
@@ -27,7 +33,7 @@ export class NonceError extends Error {
 }
 
 export class NonceManager extends Signer {
-  public address: string;
+  private _address?: string;
   private currentNonce: number = -1;
   private readonly mutex = new Mutex();
 
@@ -38,27 +44,38 @@ export class NonceManager extends Signer {
     }
     // Provider is defined on Signer base class
     ethers.utils.defineReadOnly(this, 'provider', signer.provider);
-    this.address = ''; // Will be set in an async factory or initializer
   }
 
   // Connect the async constructor pattern
   static async create(signer: Signer): Promise<NonceManager> {
     const manager = new NonceManager(signer);
-    manager.address = await signer.getAddress();
-    logger.debug(`[NonceManager] Instance created for address: ${manager.address}`);
+    manager._address = await signer.getAddress();
+    logger.debug(`[NonceManager] Instance created for address: ${manager._address}`);
     return manager;
   }
 
   async getAddress(): Promise<string> {
-    return this.address;
+    if (!this._address) {
+      this._address = await this.signer.getAddress();
+    }
+    return this._address;
+  }
+
+  get address(): string {
+    if (!this._address) {
+      throw new Error('Address not initialized. Use NonceManager.create() or call getAddress() first.');
+    }
+    return this._address;
   }
 
   connect(provider: providers.Provider): NonceManager {
     const newSigner = this.signer.connect(provider);
     // State (nonce) is not carried over, which is standard for `connect`
     const newManager = new NonceManager(newSigner);
-    // copy address
-    newManager.address = this.address;
+    // copy address if already initialized
+    if (this._address) {
+      newManager._address = this._address;
+    }
     return newManager;
   }
 
@@ -101,15 +118,31 @@ export class NonceManager extends Signer {
       return txResponse;
     } catch (error: any) {
       logger.error(`${functionSig} Error sending transaction via underlying signer: ${error.message}`);
-      const message = error.message?.toLowerCase() || '';
-      const code = error.code;
-      if (code === 'NONCE_EXPIRED' || message.includes('nonce too low') || message.includes('invalid nonce')) {
+      
+      // Check if this is a nonce-related error
+      if (this.isNonceError(error)) {
         logger.warn(`${functionSig} Nonce error detected during send, triggering resync...`);
         // Do not await resync; let the error propagate up immediately
         this.resyncNonce().catch(resyncErr => logger.error(`${functionSig} Background resync failed: ${resyncErr.message}`));
       }
       throw error;
     }
+  }
+
+  /**
+   * Checks if an error is nonce-related
+   */
+  private isNonceError(error: any): boolean {
+    const message = error.message?.toLowerCase() || '';
+    const code = error.code;
+    
+    // Check error code
+    if (code === NONCE_ERROR_PATTERNS.CODE) {
+      return true;
+    }
+    
+    // Check error message patterns
+    return NONCE_ERROR_PATTERNS.MESSAGES.some(pattern => message.includes(pattern));
   }
   
   /**
