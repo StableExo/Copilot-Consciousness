@@ -10,13 +10,46 @@ dotenv.config();
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.20",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200
+    compilers: [
+      {
+        version: "0.8.20",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200
+          }
+        }
+      },
+      {
+        version: "0.7.6",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200
+          }
+        }
+      }
+    ],
+    overrides: {
+      "contracts/FlashSwapV2.sol": {
+        version: "0.7.6",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200
+          }
+        }
+      },
+      "contracts/interfaces/IUniswapV2Router02.sol": {
+        version: "0.7.6"
+      },
+      "contracts/interfaces/IDODOV1V2Pool.sol": {
+        version: "0.7.6"
       }
     }
+  },
+  paths: {
+    sources: "./contracts"
   },
   networks: {
     hardhat: {
@@ -43,6 +76,10 @@ const config: HardhatUserConfig = {
     },
     base: {
       url: process.env.BASE_RPC_URL || "",
+      accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
+    },
+    baseSepolia: {
+      url: process.env.BASE_SEPOLIA_RPC_URL || "https://sepolia.base.org",
       accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
     }
   },
