@@ -2,11 +2,13 @@
  * TransactionBuilder - Intelligent transaction construction with gas optimization
  * 
  * Automatically selects EIP-1559 vs legacy, estimates gas, and simulates transactions
+ * Now integrated with AdvancedGasEstimator for pre-execution validation
  */
 
 import { ethers } from 'ethers';
 import { GasPriceOracle, GasPriceTier } from './GasPriceOracle';
 import { ArbitragePath } from '../arbitrage/types';
+import { AdvancedGasEstimator, ValidationResult } from './AdvancedGasEstimator';
 
 export type GasStrategy = 'aggressive' | 'normal' | 'economical';
 
@@ -39,10 +41,16 @@ export class TransactionBuilder {
   private provider: ethers.providers.JsonRpcProvider;
   private oracle: GasPriceOracle;
   private gasBuffer: number = 1.1; // 10% buffer on gas estimates
+  private advancedEstimator?: AdvancedGasEstimator;
 
-  constructor(provider: ethers.providers.JsonRpcProvider, oracle: GasPriceOracle) {
+  constructor(
+    provider: ethers.providers.JsonRpcProvider, 
+    oracle: GasPriceOracle,
+    advancedEstimator?: AdvancedGasEstimator
+  ) {
     this.provider = provider;
     this.oracle = oracle;
+    this.advancedEstimator = advancedEstimator;
   }
 
   /**
@@ -266,5 +274,57 @@ export class TransactionBuilder {
    */
   getGasBuffer(): number {
     return this.gasBuffer;
+  }
+
+  /**
+   * Validate path execution with advanced gas estimation
+   * Uses AdvancedGasEstimator if available, otherwise performs basic checks
+   */
+  async validatePathExecution(
+    path: ArbitragePath,
+    executorAddress?: string,
+    from?: string
+  ): Promise<ValidationResult> {
+    if (this.advancedEstimator) {
+      return this.advancedEstimator.validateExecution(path, from, executorAddress);
+    }
+
+    // Fallback to basic validation
+    const gasPrice = await this.oracle.getCurrentGasPrice('normal');
+    const gasCost = BigInt(path.totalGasCost) * gasPrice.maxFeePerGas;
+    const netProfit = path.estimatedProfit - gasCost;
+
+    return {
+      valid: true,
+      executable: netProfit > BigInt(0),
+      reason: netProfit > BigInt(0) ? undefined : 'Unprofitable after gas costs',
+      estimatedGas: BigInt(path.totalGasCost),
+      gasPrice: gasPrice.maxFeePerGas,
+      netProfit,
+      warnings: []
+    };
+  }
+
+  /**
+   * Build and validate transaction in one call
+   * Returns null if validation fails
+   */
+  async buildValidatedTransaction(
+    path: ArbitragePath,
+    strategy: GasStrategy = 'normal',
+    options: BuildTransactionOptions = {},
+    executorAddress?: string
+  ): Promise<{ tx: Transaction; validation: ValidationResult } | null> {
+    // First validate
+    const validation = await this.validatePathExecution(path, executorAddress, options.from);
+
+    if (!validation.executable) {
+      return null;
+    }
+
+    // Build transaction
+    const tx = await this.buildTransaction(path, strategy, options);
+
+    return { tx, validation };
   }
 }

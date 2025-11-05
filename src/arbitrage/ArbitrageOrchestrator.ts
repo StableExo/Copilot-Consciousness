@@ -3,6 +3,7 @@
  * 
  * Coordinates pathfinding, data fetching, and profitability calculations
  * Supports both single-chain and cross-chain arbitrage
+ * Now includes advanced gas estimation and pre-execution validation
  */
 
 import { DEXRegistry } from '../dex/core/DEXRegistry';
@@ -11,6 +12,7 @@ import { ProfitabilityCalculator } from './ProfitabilityCalculator';
 import { MultiHopDataFetcher } from './MultiHopDataFetcher';
 import { ArbitragePath, PathfindingConfig } from './types';
 import { GasFilterService } from '../gas/GasFilterService';
+import { AdvancedGasEstimator } from '../gas/AdvancedGasEstimator';
 import { CrossChainPathFinder, CrossChainPath } from './CrossChainPathFinder';
 import { BridgeManager } from '../chains/BridgeManager';
 import { PathfindingConfig as CrossChainPathConfig } from '../config/cross-chain.config';
@@ -30,11 +32,21 @@ export class ArbitrageOrchestrator {
   private config: PathfindingConfig;
   private mode: OrchestratorMode = 'polling';
   private gasFilter?: GasFilterService;
+  private advancedGasEstimator?: AdvancedGasEstimator;
   private crossChainPathFinder?: CrossChainPathFinder;
   private bridgeManager?: BridgeManager;
   private crossChainConfig?: CrossChainPathConfig;
   private mlOrchestrator?: MLOrchestrator;
   private mlEnabled: boolean = false;
+  
+  // Statistics for monitoring
+  private stats = {
+    totalOpportunitiesFound: 0,
+    profitableBeforeGas: 0,
+    profitableAfterGas: 0,
+    blockedByGasValidation: 0,
+    blockedByMLFilter: 0
+  };
 
   constructor(
     registry: DEXRegistry,
@@ -43,7 +55,8 @@ export class ArbitrageOrchestrator {
     gasFilter?: GasFilterService,
     bridgeManager?: BridgeManager,
     crossChainConfig?: CrossChainPathConfig,
-    mlOrchestrator?: MLOrchestrator
+    mlOrchestrator?: MLOrchestrator,
+    advancedGasEstimator?: AdvancedGasEstimator
   ) {
     this.registry = registry;
     this.config = config;
@@ -51,6 +64,7 @@ export class ArbitrageOrchestrator {
     this.profitCalculator = new ProfitabilityCalculator(gasPrice);
     this.dataFetcher = new MultiHopDataFetcher(registry);
     this.gasFilter = gasFilter;
+    this.advancedGasEstimator = advancedGasEstimator;
     this.bridgeManager = bridgeManager;
     this.crossChainConfig = crossChainConfig;
     this.mlOrchestrator = mlOrchestrator;
@@ -87,13 +101,35 @@ export class ArbitrageOrchestrator {
       allPaths.push(...paths);
     }
 
+    this.stats.totalOpportunitiesFound += allPaths.length;
+
     // 4. Filter paths by profitability
     let profitablePaths = allPaths.filter(path => 
       this.profitCalculator.isProfitable(path, this.config.minProfitThreshold)
     );
 
-    // 5. Apply gas filter if available
-    if (this.gasFilter) {
+    this.stats.profitableBeforeGas += profitablePaths.length;
+
+    // 5. Apply advanced gas validation if available
+    if (this.advancedGasEstimator) {
+      const validatedPaths: ArbitragePath[] = [];
+      
+      for (const path of profitablePaths) {
+        const validation = await this.advancedGasEstimator.validateExecution(path);
+        
+        if (validation.executable) {
+          validatedPaths.push(path);
+        } else {
+          // Log rejection reason for monitoring
+          console.debug(`Path blocked by gas validation: ${validation.reason}`);
+          this.stats.blockedByGasValidation++;
+        }
+      }
+      
+      profitablePaths = validatedPaths;
+      this.stats.profitableAfterGas += profitablePaths.length;
+    } else if (this.gasFilter) {
+      // Fallback to legacy gas filter if advanced estimator not available
       const gasFilteredPaths: ArbitragePath[] = [];
       for (const path of profitablePaths) {
         if (await this.gasFilter.isExecutable(path)) {
@@ -101,6 +137,7 @@ export class ArbitrageOrchestrator {
         }
       }
       profitablePaths = gasFilteredPaths;
+      this.stats.profitableAfterGas += profitablePaths.length;
     }
 
     // 6. Enhance with ML predictions if enabled
@@ -112,7 +149,11 @@ export class ArbitrageOrchestrator {
       // Filter by ML confidence
       const mlFilteredPaths = enhancedPaths.filter(path => {
         if (!path.mlPredictions) return true;
-        return path.mlPredictions.recommendation !== 'SKIP';
+        const shouldSkip = path.mlPredictions.recommendation === 'SKIP';
+        if (shouldSkip) {
+          this.stats.blockedByMLFilter++;
+        }
+        return !shouldSkip;
       });
 
       // Sort by ML confidence and net profit
@@ -187,10 +228,17 @@ export class ArbitrageOrchestrator {
       cachedPools: this.dataFetcher.getCachedPoolCount(),
       mode: this.mode,
       gasFilterEnabled: !!this.gasFilter,
+      advancedGasEstimatorEnabled: !!this.advancedGasEstimator,
       queuedOpportunities: this.gasFilter?.getQueuedCount() || 0,
       missedOpportunities: this.gasFilter?.getMissedCount() || 0,
+      totalOpportunitiesFound: this.stats.totalOpportunitiesFound,
+      profitableBeforeGas: this.stats.profitableBeforeGas,
+      profitableAfterGas: this.stats.profitableAfterGas,
+      blockedByGasValidation: this.stats.blockedByGasValidation,
+      blockedByMLFilter: this.stats.blockedByMLFilter,
       mlEnabled: this.mlEnabled,
-      mlStats: this.mlOrchestrator?.getStats()
+      mlStats: this.mlOrchestrator?.getStats(),
+      advancedGasEstimatorStats: this.advancedGasEstimator?.getStats()
     };
   }
 
@@ -356,5 +404,32 @@ export class ArbitrageOrchestrator {
    */
   isMLEnabled(): boolean {
     return this.mlEnabled;
+  }
+
+  /**
+   * Reset statistics counters
+   */
+  resetStats(): void {
+    this.stats = {
+      totalOpportunitiesFound: 0,
+      profitableBeforeGas: 0,
+      profitableAfterGas: 0,
+      blockedByGasValidation: 0,
+      blockedByMLFilter: 0
+    };
+  }
+
+  /**
+   * Get advanced gas estimator if available
+   */
+  getAdvancedGasEstimator(): AdvancedGasEstimator | undefined {
+    return this.advancedGasEstimator;
+  }
+
+  /**
+   * Set advanced gas estimator
+   */
+  setAdvancedGasEstimator(estimator: AdvancedGasEstimator): void {
+    this.advancedGasEstimator = estimator;
   }
 }

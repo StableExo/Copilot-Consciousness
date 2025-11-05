@@ -31,3 +31,11 @@ export {
   ArbitrageExecution,
   GasReport
 } from './GasAnalytics';
+export {
+  AdvancedGasEstimator,
+  DEXGasConfig,
+  GasEstimationConfig,
+  GasEstimationResult,
+  GasBreakdown,
+  ValidationResult
+} from './AdvancedGasEstimator';

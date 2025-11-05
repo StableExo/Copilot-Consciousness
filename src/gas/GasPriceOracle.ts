@@ -272,14 +272,15 @@ export class GasPriceOracle {
   }
 
   // Chain-specific gas price multipliers (relative to Ethereum)
+  // Updated with realistic market conditions (as of 2025)
   private static readonly CHAIN_GAS_MULTIPLIERS: Record<number | string, number> = {
     1: 1.0,           // Ethereum - baseline
-    56: 0.01,         // BSC - much cheaper
-    137: 0.05,        // Polygon - cheaper
-    43114: 0.1,       // Avalanche - cheaper
-    42161: 0.05,      // Arbitrum - much cheaper (L2)
-    10: 0.05,         // Optimism - much cheaper (L2)
-    8453: 0.05,       // Base - much cheaper (L2)
+    56: 0.015,        // BSC - much cheaper (~3-5 gwei typical)
+    137: 0.02,        // Polygon - cheaper (~50-200 gwei but much cheaper in USD)
+    43114: 0.05,      // Avalanche - cheaper
+    42161: 0.001,     // Arbitrum - extremely cheap L2 (~0.01-0.1 gwei)
+    10: 0.001,        // Optimism - extremely cheap L2 (~0.01-0.1 gwei)
+    8453: 0.0005,     // Base - extremely cheap L2 (~0.001-0.05 gwei, often <$0.01 per tx)
     'mainnet-beta': 0.00001 // Solana - extremely cheap
   };
 
