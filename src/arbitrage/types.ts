@@ -55,6 +55,8 @@ export interface ArbitragePath {
   netProfit: bigint;
   totalFees: number;
   slippageImpact: number;
+  flashLoanProvider?: FlashLoanProvider; // Optional: Flash loan provider for this path
+  flashLoanConfig?: FlashLoanConfig; // Optional: Flash loan configuration
 }
 
 /**
@@ -78,4 +80,92 @@ export interface ProfitabilityResult {
   netProfit: bigint;
   roi: number; // Return on investment as percentage
   slippageImpact: number;
+  breakdown?: DetailedProfitBreakdown; // Optional detailed breakdown
+  meetsThreshold?: boolean; // Optional threshold check
+}
+
+/**
+ * Flash loan provider type
+ */
+export type FlashLoanProvider = 'aave' | 'uniswapv3';
+
+/**
+ * Flash loan configuration for different providers
+ */
+export interface FlashLoanConfig {
+  provider: FlashLoanProvider;
+  feePercentage: number; // Fee as decimal (e.g., 0.0009 for 0.09%)
+  poolFee?: number; // For UniswapV3, the pool fee tier (e.g., 0.003 for 0.3%)
+}
+
+/**
+ * Token price information from oracle
+ */
+export interface TokenPrice {
+  tokenAddress: string;
+  symbol: string;
+  priceUSD: bigint; // Price in USD with 18 decimals
+  decimals: number;
+  timestamp: number;
+}
+
+/**
+ * Detailed profit breakdown with all cost components
+ */
+export interface DetailedProfitBreakdown {
+  initialAmount: bigint;          // Starting amount
+  finalAmount: bigint;            // Final amount after all swaps
+  grossProfit: bigint;            // finalAmount - initialAmount
+  flashLoanFee: bigint;           // Flash loan fee in borrow token
+  swapFees: bigint;               // Total DEX swap fees
+  totalFees: bigint;              // flashLoanFee + swapFees
+  gasCostWei: bigint;             // Gas cost in wei (smallest ETH unit)
+  gasCostInToken: bigint;         // Gas cost in borrow token denomination
+  gasCostInETH: bigint;           // Gas cost in wei (same as gasCostWei)
+  netProfit: bigint;              // After all costs (grossProfit - totalFees - gasCostInToken)
+  netProfitNative: bigint;        // Net profit in native currency (ETH/WETH)
+  netProfitUSD: bigint;           // Net profit in USD (18 decimals)
+  profitPercentage: number;       // Percentage gain
+  roi: number;                    // Return on investment percentage
+  meetsThreshold: boolean;        // Whether profit meets threshold
+  profitable: boolean;            // Whether netProfit > 0
+}
+
+/**
+ * Per-token-pair minimum profit thresholds
+ * Key format: "TOKEN1/TOKEN2" (alphabetically sorted)
+ */
+export type ProfitThresholds = {
+  [pair: string]: bigint;
+};
+
+/**
+ * Price oracle interface for token price conversions
+ */
+export interface PriceOracle {
+  /**
+   * Get price of token in USD
+   */
+  getTokenPriceUSD(tokenAddress: string): Promise<bigint>;
+  
+  /**
+   * Convert amount from one token to another
+   */
+  convertTokenAmount(
+    fromToken: string,
+    toToken: string,
+    amount: bigint,
+    fromDecimals: number,
+    toDecimals: number
+  ): Promise<bigint>;
+  
+  /**
+   * Get ETH price in USD
+   */
+  getETHPriceUSD(): Promise<bigint>;
+  
+  /**
+   * Update token price (for testing/manual updates)
+   */
+  updatePrice?(tokenAddress: string, priceUSD: bigint, decimals: number): void;
 }
