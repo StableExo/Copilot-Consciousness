@@ -45,6 +45,12 @@ interface IFlashLoanReceiver { // Aave V3 Flash Loan Receiver interface
 
 // --- Contract Definition ---
 // --- VERSION v4.0 (FlashSwapV2) --- Adapted for Base Network. Simplified profit distribution - all profits go to owner.
+// 
+// NOTE: Compilation may show warnings from @openzeppelin/contracts v3.4.2-solc-0.7 ReentrancyGuard 
+// about constructor visibility. This is expected and safe - it's a deprecation warning in the 
+// OpenZeppelin library itself (not our code). The warning will be resolved when upgrading to 
+// OpenZeppelin v4+ in the future (requires Solidity 0.8+).
+//
 contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyGuard {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
@@ -88,7 +94,7 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
 
 
     // --- Modifiers ---
-    modifier onlyOwner() { require(msg.sender == owner || tx.origin == owner, "FS:NA"); _; }
+    modifier onlyOwner() { require(msg.sender == owner, "FS:NA"); _; }
 
 
     // --- Constructor ---
@@ -402,7 +408,7 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
                 // The IDODOV1V2Pool interface needs to match the specific DODO pool type.
                 // You'll likely need to call sellBase() or buyBase() depending on the trade direction for this step.
                 // Example implementation (requires correct IDODOV1V2Pool interface):
-                IDODOV1V2Pool dodoPool = IDODOV1V2Pool(step.pool);
+                // IDODOV1V2Pool dodoPool = IDODOV1V2Pool(step.pool); // Commented out - unused while DODO is disabled
                 // You might need pool-specific logic or functions like baseToken()/quoteToken() if available in your interface
                 // or pass base/quote tokens in the SwapStep struct if the interface is generic.
                 // For now, keeping the revert as in the original code until DODO execution is fully tackled in Phase 2.
