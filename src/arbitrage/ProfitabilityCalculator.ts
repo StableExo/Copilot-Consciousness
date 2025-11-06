@@ -59,7 +59,8 @@ export class ProfitabilityCalculator {
     this.gasPrice = gasPrice;
     this.slippageTolerance = slippageTolerance;
     this.priceOracle = priceOracle;
-    this.thresholds = customThresholds || { ...DEFAULT_THRESHOLDS };
+    // Merge custom thresholds with defaults
+    this.thresholds = { ...DEFAULT_THRESHOLDS, ...customThresholds };
   }
 
   /**
