@@ -173,9 +173,15 @@ export class ProfitabilityCalculator {
         borrowTokenDecimals
       );
     } else {
-      // Fallback: assume 1 ETH = 3000 USD, convert accordingly
+      // Fallback: assume 1 ETH = 3000 USD, 1 USDC = 1 USD
+      // Convert wei to ETH, then to USD, then to token units
       // This is a simplified fallback when no oracle is available
-      gasCostInToken = (gasCostWei * BigInt(3000)) / BigInt(10 ** 18);
+      // gasCostInToken = (gasCostWei / 10^18) * 3000 * (10^borrowTokenDecimals)
+      // Simplified: gasCostInToken ≈ gasCostWei * 3000 / (10^18)
+      // For 6-decimal tokens like USDC: gasCostWei * 3000 / 10^12
+      const ethToUsd = BigInt(3000);
+      const weiToToken = gasCostWei * ethToUsd / BigInt(10 ** (18 - borrowTokenDecimals));
+      gasCostInToken = weiToToken;
     }
     
     // Net profit after all costs

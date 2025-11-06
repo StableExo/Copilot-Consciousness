@@ -119,9 +119,9 @@ export interface DetailedProfitBreakdown {
   flashLoanFee: bigint;           // Flash loan fee in borrow token
   swapFees: bigint;               // Total DEX swap fees
   totalFees: bigint;              // flashLoanFee + swapFees
-  gasCostWei: bigint;             // Gas cost in wei
+  gasCostWei: bigint;             // Gas cost in wei (smallest ETH unit)
   gasCostInToken: bigint;         // Gas cost in borrow token denomination
-  gasCostInETH: bigint;           // Gas cost in ETH
+  gasCostInETH: bigint;           // Gas cost in wei (same as gasCostWei)
   netProfit: bigint;              // After all costs (grossProfit - totalFees - gasCostInToken)
   netProfitNative: bigint;        // Net profit in native currency (ETH/WETH)
   netProfitUSD: bigint;           // Net profit in USD (18 decimals)

@@ -167,7 +167,7 @@ async function main() {
       tokenIn: USDC,
       tokenOut: WETH,
       amountIn: BigInt('300000000000'), // 300,000 USDC
-      amountOut: BigInt('160000000000000000000'), // 160 WETH (profitable)
+      amountOut: BigInt('105000000000000000000'), // 105 WETH (5% profit - more realistic)
       fee: 0.003, // 0.3%
       gasEstimate: 150000,
       reserve0: BigInt('3000000000000'), // 3M USDC reserve
@@ -179,9 +179,9 @@ async function main() {
     hops: profitableHops,
     startToken: WETH,
     endToken: WETH,
-    estimatedProfit: BigInt('60000000000000000000'), // 60 WETH gross
+    estimatedProfit: BigInt('5000000000000000000'), // 5 WETH gross profit
     totalGasCost: BigInt(0),
-    netProfit: BigInt('60000000000000000000'),
+    netProfit: BigInt('5000000000000000000'),
     totalFees: 0.006,
     slippageImpact: 0.002,
     flashLoanProvider: 'aave',

@@ -137,7 +137,8 @@ export class SimplePriceOracle implements PriceOracle {
    * Get ETH price in USD with 18 decimals
    */
   async getETHPriceUSD(): Promise<bigint> {
-    return await this.getTokenPriceUSD('ETH');
+    // Use lowercase 'eth' to match the key in DEFAULT_PRICES
+    return await this.getTokenPriceUSD('eth');
   }
   
   /**
