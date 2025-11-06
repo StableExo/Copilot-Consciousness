@@ -15,6 +15,9 @@ import { ethers } from 'ethers';
 import dotenv from 'dotenv';
 import { EventEmitter } from 'events';
 import { logger } from './utils/logger';
+import { validateAndLogConfig } from './utils/configValidator';
+import { initializeComponents, shutdownComponents, InitializedComponents } from './core/initializer';
+import { HealthCheckServer } from './monitoring/healthCheck';
 import { DEXRegistry } from './dex/core/DEXRegistry';
 import { AdvancedOrchestrator } from './arbitrage/AdvancedOrchestrator';
 import { IntegratedArbitrageOrchestrator } from './execution/IntegratedArbitrageOrchestrator';
@@ -31,6 +34,9 @@ import { ArbitrageConfig } from './types/definitions';
 
 // Load environment variables
 dotenv.config();
+
+// Flag to use new initializer pattern (can be toggled via env var)
+const USE_NEW_INITIALIZER = process.env.USE_NEW_INITIALIZER === 'true';
 
 /**
  * Bot Configuration Interface
@@ -471,21 +477,265 @@ class ArbitrageBot extends EventEmitter {
 }
 
 /**
+ * New Bot class using the initializer pattern
+ */
+class EnhancedArbitrageBot extends EventEmitter {
+  private components?: InitializedComponents;
+  private healthCheckServer: HealthCheckServer;
+  private scanInterval?: NodeJS.Timeout;
+  private isRunning: boolean = false;
+  private shuttingDown: boolean = false;
+  
+  // Statistics
+  private stats = {
+    startTime: Date.now(),
+    cyclesCompleted: 0,
+    opportunitiesFound: 0,
+    tradesExecuted: 0,
+    totalProfit: BigInt(0),
+    errors: 0,
+  };
+  
+  constructor() {
+    super();
+    this.healthCheckServer = new HealthCheckServer();
+  }
+  
+  /**
+   * Initialize all components using the new initializer
+   */
+  async initialize(): Promise<void> {
+    logger.info('═══════════════════════════════════════════════════════════', 'MAIN');
+    logger.info('  AGI ARBITRAGE BOT - Starting (New Initializer)', 'MAIN');
+    logger.info('═══════════════════════════════════════════════════════════', 'MAIN');
+    
+    // Validate configuration
+    const config = validateAndLogConfig(logger);
+    
+    // Initialize all components
+    this.components = await initializeComponents(config);
+    
+    // Set components for health check server
+    this.healthCheckServer.setComponents(this.components);
+    
+    // Start health check server
+    await this.healthCheckServer.start();
+    
+    // Set up event listeners
+    this.setupEventListeners();
+  }
+  
+  /**
+   * Set up event listeners
+   */
+  private setupEventListeners(): void {
+    if (!this.components) return;
+    
+    // Set up integrated orchestrator events if available
+    if (this.components.integratedOrchestrator) {
+      this.components.integratedOrchestrator.on('opportunity_found', (_opportunity) => {
+        this.stats.opportunitiesFound++;
+        logger.info(`Opportunity found (#${this.stats.opportunitiesFound})`, 'ARBITRAGE');
+      });
+      
+      this.components.integratedOrchestrator.on('execution_started', (context) => {
+        logger.info(`Execution started: ${context.id}`, 'ARBITRAGE');
+      });
+      
+      this.components.integratedOrchestrator.on('execution_completed', (result) => {
+        this.stats.tradesExecuted++;
+        if (result.profit) {
+          this.stats.totalProfit += result.profit;
+          logger.info(`Trade executed successfully. Profit: ${ethers.utils.formatEther(result.profit)} ETH`, 'ARBITRAGE');
+        }
+        this.healthCheckServer.updateStats(this.stats);
+      });
+      
+      this.components.integratedOrchestrator.on('execution_failed', (error) => {
+        this.stats.errors++;
+        logger.error(`Execution failed: ${error.message}`, 'ARBITRAGE');
+      });
+    }
+    
+    // Set up health monitor events
+    if (this.components.healthMonitor) {
+      this.components.healthMonitor.on('alert', (alert) => {
+        logger.warn(`Health alert: ${alert.message}`, 'HEALTH');
+      });
+    }
+  }
+  
+  /**
+   * Main scanning loop
+   */
+  private async scanCycle(): Promise<void> {
+    if (this.shuttingDown || !this.components) return;
+    
+    try {
+      this.stats.cyclesCompleted++;
+      
+      // Define tokens to scan
+      const tokens = [
+        '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
+        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
+        '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
+      ];
+      
+      const startAmount = BigInt(ethers.utils.parseEther('1.0').toString());
+      
+      // Find opportunities
+      const paths = await this.components.advancedOrchestrator.findOpportunities(tokens, startAmount);
+      
+      if (paths && paths.length > 0) {
+        this.stats.opportunitiesFound += paths.length;
+        logger.info(`Found ${paths.length} potential opportunities in cycle ${this.stats.cyclesCompleted}`, 'ARBITRAGE');
+        
+        if (!this.components.config.dryRun && this.components.integratedOrchestrator && paths.length > 0) {
+          const bestPath = paths[0];
+          logger.info('Processing best opportunity...', 'ARBITRAGE');
+          logger.info(`  Estimated profit: ${ethers.utils.formatEther(bestPath.netProfit.toString())} ETH`, 'ARBITRAGE');
+          logger.info(`  Gas cost: ${ethers.utils.formatEther(bestPath.totalGasCost.toString())} ETH`, 'ARBITRAGE');
+          logger.info(`  Hops: ${bestPath.hops.length}`, 'ARBITRAGE');
+        } else if (this.components.config.dryRun && paths.length > 0) {
+          const bestPath = paths[0];
+          logger.info('[DRY RUN] Best opportunity:', 'ARBITRAGE');
+          logger.info(`  Estimated profit: ${ethers.utils.formatEther(bestPath.netProfit.toString())} ETH`, 'ARBITRAGE');
+          logger.info(`  Gas cost: ${ethers.utils.formatEther(bestPath.totalGasCost.toString())} ETH`, 'ARBITRAGE');
+          logger.info(`  Hops: ${bestPath.hops.length}`, 'ARBITRAGE');
+        }
+      }
+      
+      // Update health check stats
+      this.healthCheckServer.updateStats(this.stats);
+      
+      // Log periodic status
+      if (this.stats.cyclesCompleted % 100 === 0) {
+        this.logStatus();
+      }
+    } catch (error) {
+      this.stats.errors++;
+      logger.error(`Error in scan cycle: ${error}`, 'ARBITRAGE');
+      this.emit('scan_error', error);
+    }
+  }
+  
+  /**
+   * Start the bot
+   */
+  async start(): Promise<void> {
+    if (this.isRunning) {
+      logger.warn('Bot is already running', 'MAIN');
+      return;
+    }
+    
+    await this.initialize();
+    
+    this.isRunning = true;
+    this.emit('started');
+    
+    const scanInterval = this.components?.config.scanInterval || 1000;
+    logger.info(`Starting scan loop with ${scanInterval}ms interval...`, 'MAIN');
+    
+    // Run first scan immediately
+    await this.scanCycle();
+    
+    // Set up interval for continuous scanning
+    this.scanInterval = setInterval(async () => {
+      await this.scanCycle();
+    }, scanInterval);
+    
+    logger.info('Bot is now running and scanning for opportunities', 'MAIN');
+  }
+  
+  /**
+   * Gracefully shutdown the bot
+   */
+  async shutdown(): Promise<void> {
+    if (this.shuttingDown) {
+      logger.warn('Shutdown already in progress', 'MAIN');
+      return;
+    }
+    
+    this.shuttingDown = true;
+    
+    // Stop scanning
+    if (this.scanInterval) {
+      clearInterval(this.scanInterval);
+      this.scanInterval = undefined;
+    }
+    
+    // Stop health check server
+    await this.healthCheckServer.stop();
+    
+    // Shutdown components
+    if (this.components) {
+      await shutdownComponents(this.components);
+    }
+    
+    // Log final statistics
+    this.logStatus();
+    
+    this.isRunning = false;
+    this.emit('shutdown');
+    
+    logger.info('Bot shutdown complete', 'MAIN');
+  }
+  
+  /**
+   * Log current status
+   */
+  private logStatus(): void {
+    const uptime = Date.now() - this.stats.startTime;
+    const uptimeSeconds = Math.floor(uptime / 1000);
+    const uptimeMinutes = Math.floor(uptimeSeconds / 60);
+    
+    logger.info('─────────────────────────────────────────────────────────', 'STATUS');
+    logger.info('BOT STATUS', 'STATUS');
+    logger.info('─────────────────────────────────────────────────────────', 'STATUS');
+    logger.info(`Uptime: ${uptimeMinutes}m ${uptimeSeconds % 60}s`, 'STATUS');
+    logger.info(`Cycles completed: ${this.stats.cyclesCompleted}`, 'STATUS');
+    logger.info(`Opportunities found: ${this.stats.opportunitiesFound}`, 'STATUS');
+    logger.info(`Trades executed: ${this.stats.tradesExecuted}`, 'STATUS');
+    logger.info(`Total profit: ${ethers.utils.formatEther(this.stats.totalProfit)} ETH`, 'STATUS');
+    logger.info(`Errors: ${this.stats.errors}`, 'STATUS');
+    logger.info('─────────────────────────────────────────────────────────', 'STATUS');
+  }
+  
+  /**
+   * Get current bot statistics
+   */
+  getStats() {
+    return {
+      ...this.stats,
+      uptime: Date.now() - this.stats.startTime,
+      isRunning: this.isRunning,
+    };
+  }
+}
+
+/**
  * Main execution function
  */
 async function main() {
-  let bot: ArbitrageBot | undefined;
+  let bot: ArbitrageBot | EnhancedArbitrageBot | undefined;
   
   try {
-    // Load configuration
-    const config = loadConfig();
-    
-    // Create bot instance
-    bot = new ArbitrageBot(config);
+    // Choose which initializer pattern to use
+    if (USE_NEW_INITIALIZER) {
+      logger.info('Using new initializer pattern', 'MAIN');
+      bot = new EnhancedArbitrageBot();
+    } else {
+      logger.info('Using legacy initializer pattern', 'MAIN');
+      // Load configuration
+      const config = loadConfig();
+      
+      // Create bot instance
+      bot = new ArbitrageBot(config);
+    }
     
     // Set up graceful shutdown handlers
     const shutdownHandler = async (signal: string) => {
-      logger.info(`Received ${signal} - initiating graceful shutdown...`);
+      logger.info(`Received ${signal} - initiating graceful shutdown...`, 'MAIN');
       if (bot) {
         await bot.shutdown();
       }
@@ -498,8 +748,8 @@ async function main() {
     
     // Handle uncaught errors
     process.on('uncaughtException', (error) => {
-      logger.error(`Uncaught exception: ${error.message}`);
-      logger.error(error.stack || '');
+      logger.error(`Uncaught exception: ${error.message}`, 'MAIN');
+      logger.error(error.stack || '', 'MAIN');
       if (bot) {
         bot.shutdown().then(() => process.exit(1));
       } else {
@@ -508,7 +758,7 @@ async function main() {
     });
     
     process.on('unhandledRejection', (reason, promise) => {
-      logger.error(`Unhandled rejection at: ${promise}, reason: ${reason}`);
+      logger.error(`Unhandled rejection at: ${promise}, reason: ${reason}`, 'MAIN');
       if (bot) {
         bot.shutdown().then(() => process.exit(1));
       } else {
@@ -520,12 +770,12 @@ async function main() {
     await bot.start();
     
     // Keep process alive
-    logger.info('Bot is running. Press Ctrl+C to stop.');
+    logger.info('Bot is running. Press Ctrl+C to stop.', 'MAIN');
     
   } catch (error) {
-    logger.error(`Fatal error: ${error}`);
+    logger.error(`Fatal error: ${error}`, 'MAIN');
     if (error instanceof Error) {
-      logger.error(error.stack || '');
+      logger.error(error.stack || '', 'MAIN');
     }
     
     if (bot) {
@@ -537,7 +787,7 @@ async function main() {
 }
 
 // Export for testing and module usage
-export { ArbitrageBot, BotConfig, loadConfig };
+export { ArbitrageBot, EnhancedArbitrageBot, BotConfig, loadConfig };
 
 // Run if executed directly
 if (require.main === module) {
