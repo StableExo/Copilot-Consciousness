@@ -279,7 +279,7 @@ class ArbitrageBot extends EventEmitter {
   private setupEventListeners(): void {
     // Set up integrated orchestrator events if available
     if (this.integratedOrchestrator) {
-      this.integratedOrchestrator.on('opportunity_found', (opportunity) => {
+      this.integratedOrchestrator.on('opportunity_found', (_opportunity) => {
         this.stats.opportunitiesFound++;
         logger.info(`Opportunity found (#${this.stats.opportunitiesFound})`);
       });
