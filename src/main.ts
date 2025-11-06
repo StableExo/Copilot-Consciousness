@@ -330,7 +330,7 @@ class ArbitrageBot extends EventEmitter {
         '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
       ];
       
-      const startAmount = BigInt(ethers.utils.parseEther('1.0').toString());
+      const startAmount = ethers.utils.parseEther('1.0').toBigInt();
       
       // Find opportunities using advanced orchestrator
       const paths = await this.advancedOrchestrator.findOpportunities(tokens, startAmount);
@@ -581,7 +581,7 @@ class EnhancedArbitrageBot extends EventEmitter {
         '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
       ];
       
-      const startAmount = BigInt(ethers.utils.parseEther('1.0').toString());
+      const startAmount = ethers.utils.parseEther('1.0').toBigInt();
       
       // Find opportunities
       const paths = await this.components.advancedOrchestrator.findOpportunities(tokens, startAmount);

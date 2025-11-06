@@ -110,9 +110,10 @@ async function initializeWallet(
     const balanceEth = ethers.utils.formatEther(balance);
     logger.info(`✓ Wallet balance: ${balanceEth} ETH`, 'INIT');
     
+    const MIN_BALANCE_ETH = '0.01';
     if (balance.eq(0)) {
       logger.warn('⚠ Wallet balance is 0 - bot will not be able to execute trades', 'INIT');
-    } else if (balance.lt(ethers.utils.parseEther('0.01'))) {
+    } else if (balance.lt(ethers.utils.parseEther(MIN_BALANCE_ETH))) {
       logger.warn(
         `⚠ Low wallet balance (${balanceEth} ETH) - may not be sufficient for trading`,
         'INIT'

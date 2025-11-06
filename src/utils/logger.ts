@@ -97,8 +97,10 @@ class Logger {
   }
 
   private rotateLogFile(): void {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
-    const logFileName = `arbitrage-bot-${timestamp}.log`;
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0];
+    const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+    const logFileName = `arbitrage-bot-${dateStr}-${timeStr}.log`;
     this.currentLogFile = path.join(this.config.logDir, logFileName);
     this.currentLogSize = 0;
 

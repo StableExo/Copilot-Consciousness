@@ -8,6 +8,7 @@
 
 import express, { Request, Response } from 'express';
 import { Server } from 'http';
+import * as os from 'os';
 import { logger } from '../utils/logger';
 import { InitializedComponents } from '../core/initializer';
 
@@ -235,9 +236,10 @@ export class HealthCheckServer {
     }
 
     // Calculate success rate
+    const totalExecutions = this.stats.tradesExecuted + (this.stats.errors || 0);
     const successRate =
-      this.stats.tradesExecuted > 0
-        ? (this.stats.tradesExecuted / (this.stats.tradesExecuted + 0)) * 100
+      totalExecutions > 0
+        ? (this.stats.tradesExecuted / totalExecutions) * 100
         : 0;
 
     return {
@@ -251,7 +253,7 @@ export class HealthCheckServer {
           percentUsed: (usedMem / totalMem) * 100,
         },
         cpu: {
-          loadAverage: [0, 0, 0], // Not available in Node.js on all platforms
+          loadAverage: os.loadavg(),
         },
       },
       arbitrage: {
