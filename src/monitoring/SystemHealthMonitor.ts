@@ -28,7 +28,7 @@ import {
 export interface MonitoredComponent {
   name: string;
   checkHealth(): Promise<HealthStatus>;
-  getMetrics?(): Promise<Record<string, number>>;
+  getMetrics?(): Promise<Record<string, number | bigint | string>>;
 }
 
 /**
@@ -127,13 +127,13 @@ export class SystemHealthMonitor extends EventEmitter {
     
     // Initial health check
     this.performHealthCheck().catch(error => {
-      logger.error('[SystemHealthMonitor] Initial health check failed:', error);
+      logger.error(`[SystemHealthMonitor] Initial health check failed: ${error instanceof Error ? error.message : String(error)}`);
     });
     
     // Schedule periodic checks
     this.monitoringInterval = setInterval(() => {
       this.performHealthCheck().catch(error => {
-        logger.error('[SystemHealthMonitor] Health check failed:', error);
+        logger.error(`[SystemHealthMonitor] Health check failed: ${error instanceof Error ? error.message : String(error)}`);
       });
     }, this.config.interval);
   }
@@ -206,7 +206,7 @@ export class SystemHealthMonitor extends EventEmitter {
 
     try {
       // Check health with timeout
-      const status = await Promise.race([
+      const status = await Promise.race<HealthStatus>([
         component.checkHealth(),
         new Promise<HealthStatus>((_, reject) =>
           setTimeout(() => reject(new Error('Health check timeout')), this.config.timeout)
@@ -227,7 +227,7 @@ export class SystemHealthMonitor extends EventEmitter {
           const customMetrics = await component.getMetrics();
           metrics.metrics = customMetrics;
         } catch (error) {
-          logger.error(`[SystemHealthMonitor] Failed to get metrics for ${name}:`, error);
+          logger.error(`[SystemHealthMonitor] Failed to get metrics for ${name}: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
       
@@ -244,7 +244,7 @@ export class SystemHealthMonitor extends EventEmitter {
       }
       
     } catch (error) {
-      logger.error(`[SystemHealthMonitor] Health check failed for ${name}:`, error);
+      logger.error(`[SystemHealthMonitor] Health check failed for ${name}: ${error instanceof Error ? error.message : String(error)}`);
       
       // Update error metrics
       metrics.status = HealthStatus.UNHEALTHY;
@@ -351,7 +351,7 @@ export class SystemHealthMonitor extends EventEmitter {
         overallStatus = HealthStatus.CRITICAL;
         break;
       }
-      if (component.status === HealthStatus.UNHEALTHY && overallStatus !== HealthStatus.CRITICAL) {
+      if (component.status === HealthStatus.UNHEALTHY) {
         overallStatus = HealthStatus.UNHEALTHY;
       } else if (component.status === HealthStatus.DEGRADED && overallStatus === HealthStatus.HEALTHY) {
         overallStatus = HealthStatus.DEGRADED;

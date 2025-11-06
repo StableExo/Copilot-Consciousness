@@ -272,7 +272,7 @@ export class ErrorRecovery {
       };
       
     } catch (error) {
-      logger.error(`[ErrorRecovery] Nonce resync failed:`, error);
+      logger.error(`[ErrorRecovery] Nonce resync failed: ${error instanceof Error ? error.message : String(error)}`);
       return this.createFailedRecovery(
         action.strategy,
         error instanceof Error ? error.message : 'Nonce resync failed'
@@ -342,7 +342,7 @@ export class ErrorRecovery {
       };
       
     } catch (error) {
-      logger.error(`[ErrorRecovery] Gas adjustment failed:`, error);
+      logger.error(`[ErrorRecovery] Gas adjustment failed: ${error instanceof Error ? error.message : String(error)}`);
       return this.createFailedRecovery(
         action.strategy,
         error instanceof Error ? error.message : 'Gas adjustment failed'

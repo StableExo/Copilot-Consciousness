@@ -209,7 +209,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
     });
     
     this.healthMonitor.on('anomaly-detected', (anomaly: any) => {
-      logger.warn('[IntegratedOrchestrator] Anomaly detected:', anomaly);
+      logger.warn(`[IntegratedOrchestrator] Anomaly detected: ${JSON.stringify(anomaly)}`);
       this.emit('anomaly-detected', anomaly);
     });
     
@@ -274,7 +274,14 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
           return HealthStatus.UNHEALTHY;
         }
       },
-      getMetrics: async () => this.executor.getStats()
+      getMetrics: async () => {
+        const stats = this.executor.getStats();
+        return {
+          totalTransactions: stats.totalTransactions,
+          successfulTransactions: stats.successfulTransactions,
+          failedTransactions: stats.failedTransactions
+        };
+      }
     });
   }
 
@@ -685,7 +692,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
       };
 
     } catch (error) {
-      logger.error(`[IntegratedOrchestrator] Execution error for ${context.id}:`, error);
+      logger.error(`[IntegratedOrchestrator] Execution error for ${context.id}: ${error instanceof Error ? error.message : String(error)}`);
       
       return {
         success: false,

@@ -168,7 +168,7 @@ export interface ComponentHealthMetrics {
   errorRate: number;
   successRate: number;
   avgResponseTime: number;
-  metrics: Record<string, number>;
+  metrics: Record<string, number | bigint | string>;
   issues: string[];
 }
 

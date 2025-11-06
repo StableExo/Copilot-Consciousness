@@ -162,7 +162,7 @@ export class TransactionExecutor {
 
     } catch (error) {
       this.stats.failedTransactions++;
-      logger.error(`[TransactionExecutor] Execution failed:`, error);
+      logger.error(`[TransactionExecutor] Execution failed: ${error instanceof Error ? error.message : String(error)}`);
 
       return this.createFailedResult(
         TransactionStatus.FAILED,
@@ -283,7 +283,7 @@ export class TransactionExecutor {
       return null;
 
     } catch (error) {
-      logger.error('[TransactionExecutor] Failed to build transaction params:', error);
+      logger.error(`[TransactionExecutor] Failed to build transaction params: ${error instanceof Error ? error.message : String(error)}`);
       return null;
     }
   }
@@ -325,7 +325,7 @@ export class TransactionExecutor {
       };
 
     } catch (error) {
-      logger.error('[TransactionExecutor] Gas estimation failed:', error);
+      logger.error(`[TransactionExecutor] Gas estimation failed: ${error instanceof Error ? error.message : String(error)}`);
       return {
         success: false,
         estimatedGas: BigInt(0),
@@ -355,7 +355,7 @@ export class TransactionExecutor {
       return price;
 
     } catch (error) {
-      logger.error('[TransactionExecutor] Failed to get gas price:', error);
+      logger.error(`[TransactionExecutor] Failed to get gas price: ${error instanceof Error ? error.message : String(error)}`);
       // Fallback to a safe default
       return BigInt(50) * BigInt(10 ** 9); // 50 gwei
     }
@@ -470,12 +470,12 @@ export class TransactionExecutor {
       logger.info(`[TransactionExecutor] Monitoring transaction ${txResponse.hash}`);
 
       // Wait for confirmation with timeout
-      const receipt = await Promise.race([
-        txResponse.wait(this.confirmations),
+      const receipt = await Promise.race<providers.TransactionReceipt>([
+        txResponse.wait(this.confirmations) as Promise<providers.TransactionReceipt>,
         new Promise<providers.TransactionReceipt>((_, reject) =>
           setTimeout(() => reject(new Error('Confirmation timeout')), this.confirmationTimeout)
         )
-      ]) as providers.TransactionReceipt;
+      ]);
 
       info.confirmedAt = Date.now();
       info.blockNumber = receipt.blockNumber;
@@ -492,7 +492,7 @@ export class TransactionExecutor {
       }
 
     } catch (error) {
-      logger.error(`[TransactionExecutor] Transaction monitoring failed:`, error);
+      logger.error(`[TransactionExecutor] Transaction monitoring failed: ${error instanceof Error ? error.message : String(error)}`);
       info.status = TransactionStatus.FAILED;
     }
 

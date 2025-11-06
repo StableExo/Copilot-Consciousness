@@ -143,7 +143,7 @@ export class ExecutionPipeline extends EventEmitter {
       
       return result;
     } catch (error) {
-      logger.error(`Pipeline execution failed for ${context.id}:`, error);
+      logger.error(`Pipeline execution failed for ${context.id}: ${error instanceof Error ? error.message : String(error)}`);
       
       const failedResult: CheckpointResult = {
         success: false,
@@ -297,7 +297,7 @@ export class ExecutionPipeline extends EventEmitter {
 
       return result;
     } catch (error) {
-      logger.error(`Error executing stage ${stage}:`, error);
+      logger.error(`Error executing stage ${stage}: ${error instanceof Error ? error.message : String(error)}`);
       
       return {
         success: false,
@@ -423,7 +423,7 @@ export class ExecutionPipeline extends EventEmitter {
       try {
         await this.persistence.save(context);
       } catch (error) {
-        logger.error(`Failed to persist state for ${context.id}:`, error);
+        logger.error(`Failed to persist state for ${context.id}: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
   }
@@ -452,7 +452,7 @@ export class ExecutionPipeline extends EventEmitter {
     timeoutMs: number,
     timeoutMessage: string
   ): Promise<T> {
-    return Promise.race([
+    return Promise.race<T>([
       promise,
       new Promise<T>((_, reject) =>
         setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs)
