@@ -94,7 +94,7 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
 
 
     // --- Modifiers ---
-    modifier onlyOwner() { require(msg.sender == owner || tx.origin == owner, "FS:NA"); _; }
+    modifier onlyOwner() { require(msg.sender == owner, "FS:NA"); _; }
 
 
     // --- Constructor ---
