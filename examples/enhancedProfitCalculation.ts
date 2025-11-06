@@ -63,6 +63,8 @@ async function printBreakdown(
   console.log(`\nPath: ${path.hops.length} hops`);
   
   path.hops.forEach((hop, index) => {
+    // Note: For multi-token paths, this uses borrowTokenDecimals for display
+    // In reality, each hop may have different token decimals
     console.log(`  ${index + 1}. ${hop.dexName}: ${formatTokenAmount(hop.amountIn, borrowTokenDecimals)} → ${formatTokenAmount(hop.amountOut, borrowTokenDecimals)} (Fee: ${hop.fee * 100}%)`);
   });
   

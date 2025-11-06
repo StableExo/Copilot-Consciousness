@@ -176,6 +176,8 @@ export class ProfitabilityCalculator {
       // Fallback: assume 1 ETH = 3000 USD, 1 USDC = 1 USD
       // Convert wei to ETH, then to USD, then to token units
       // This is a simplified fallback when no oracle is available
+      // NOTE: The ETH price ($3000) is hardcoded and may need periodic updates
+      // for accuracy. Consider providing a price oracle for production use.
       // gasCostInToken = (gasCostWei / 10^18) * 3000 * (10^borrowTokenDecimals)
       // Simplified: gasCostInToken ≈ gasCostWei * 3000 / (10^18)
       // For 6-decimal tokens like USDC: gasCostWei * 3000 / 10^12
@@ -211,13 +213,13 @@ export class ProfitabilityCalculator {
     }
     
     // Calculate profit percentage and ROI
+    // Note: profitPercentage and roi are the same value - both represent
+    // the percentage return on the initial investment
     const profitPercentage = initialAmount > BigInt(0)
       ? Number((netProfit * BigInt(10000)) / initialAmount) / 100
       : 0;
     
-    const roi = initialAmount > BigInt(0)
-      ? Number((netProfit * BigInt(10000)) / initialAmount) / 100
-      : 0;
+    const roi = profitPercentage; // ROI and profit percentage are identical
     
     // Check if meets threshold
     const threshold = this.getThresholdForPair(borrowToken, path.endToken);
