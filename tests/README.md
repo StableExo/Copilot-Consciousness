@@ -26,6 +26,9 @@ python3 scripts/smoke_test_axioncitadel.py
 
 # Comprehensive test suite - full validation (26 tests)
 python3 tests/test_axioncitadel_integration.py
+
+# MEV component test suite - focused MEV testing (32 tests)
+python3 tests/test_mev_components.py
 ```
 
 ## Test Suite Overview
@@ -63,6 +66,37 @@ Quick health check that validates:
 ### 3. Comprehensive Test Suite (`tests/test_axioncitadel_integration.py`)
 
 Full validation suite with 26 tests:
+
+### 4. MEV Component Test Suite (`tests/test_mev_components.py`)
+
+**NEW**: Focused test suite specifically for MEV components after installing dependencies.
+
+**Purpose**: Test MEV models and sensors that were previously skipped due to missing dependencies (web3, numpy, pandas, scikit-learn).
+
+**Results:**
+- Total tests: 32
+- Success rate: 100% ✅
+
+**Test Categories:**
+- Import Tests (6) - All MEV components can be imported
+- Instantiation Tests (4) - All MEV components can be created
+- Enum Validation (3) - TransactionType enum structure
+- MEV Risk Model Tests (4) - Risk calculation and calibration
+- Profit Calculator Tests (4) - MEV-aware profit calculation
+- Sensor Hub Tests (3) - MEV sensor orchestration
+- Searcher Density Sensor Tests (2) - Bot activity detection
+- Dependency Validation (4) - numpy, web3, pandas, sklearn
+- Integration Tests (2) - Component interactions
+
+**Run standalone:**
+```bash
+python3 tests/test_mev_components.py
+```
+
+**Run with unittest:**
+```bash
+python3 -m unittest tests.test_mev_components -v
+```
 
 #### Import Tests (7 tests)
 - Execution Layer (AdvancedProfitCalculator, FlashSwapExecutor, TransactionManager)
@@ -194,7 +228,8 @@ For detailed test results and analysis, see:
 ```
 tests/
 ├── __init__.py                          # Test package initialization
-└── test_axioncitadel_integration.py     # Comprehensive test suite (26 tests)
+├── test_axioncitadel_integration.py     # Comprehensive test suite (26 tests)
+└── test_mev_components.py               # MEV component test suite (32 tests) ✨ NEW
 
 scripts/
 ├── check_axioncitadel_deps.py           # Dependency analysis tool
