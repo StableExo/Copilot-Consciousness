@@ -6,7 +6,6 @@
  */
 
 import * as fs from 'fs';
-import * as path from 'path';
 import csv from 'csv-parser';
 
 interface LogEntry {
@@ -120,7 +119,7 @@ if (require.main === module) {
   const outputPath = process.argv[3] || 'mev-risk-calibration.json';
 
   calibrateMEVRisk(logPath, outputPath)
-    .then((report) => {
+    .then(() => {
       console.log('\nCalibration complete!');
       process.exit(0);
     })
