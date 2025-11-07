@@ -17,5 +17,6 @@ export {
     DexType,
     ArbitrageOpportunity,
     ArbitragePath,
-    Config
+    Config,
+    UINT24_MAX
 } from './types';

@@ -12,7 +12,8 @@ import {
     SimulationResult,
     ArbitrageOpportunity,
     Config,
-    DexType
+    DexType,
+    UINT24_MAX
 } from './types';
 
 /**
@@ -183,8 +184,8 @@ export class SushiV3Builder {
      * @throws Error if fee is invalid
      */
     private static validateFee(fee: number): void {
-        if (typeof fee !== 'number' || fee < 0 || fee > 16777215) {
-            throw new Error('SushiV3Builder: Fee must be a valid uint24 (0 to 16777215)');
+        if (typeof fee !== 'number' || fee < 0 || fee > UINT24_MAX) {
+            throw new Error(`SushiV3Builder: Fee must be a valid uint24 (0 to ${UINT24_MAX})`);
         }
     }
 

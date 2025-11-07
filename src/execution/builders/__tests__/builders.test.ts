@@ -11,7 +11,8 @@ import {
     ArbitrageOpportunity,
     SimulationResult,
     Config,
-    DexType
+    DexType,
+    UINT24_MAX
 } from '../index';
 
 describe('Transaction Parameter Builders', () => {
@@ -209,7 +210,7 @@ describe('Transaction Parameter Builders', () => {
                         poolAddress: mockPoolA,
                         tokenIn: mockTokenA,
                         tokenOut: mockTokenB,
-                        fee: 16777216 // uint24 max is 16777215
+                        fee: UINT24_MAX + 1 // uint24 max is 16777215, so 16777216 should fail validation
                     }
                 ]
             };

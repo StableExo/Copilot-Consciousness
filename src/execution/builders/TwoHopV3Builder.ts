@@ -12,7 +12,8 @@ import {
     SimulationResult,
     ArbitrageOpportunity,
     ArbitragePath,
-    Config
+    Config,
+    UINT24_MAX
 } from './types';
 
 /**
@@ -244,8 +245,8 @@ export class TwoHopV3Builder {
      * @throws Error if fee is invalid
      */
     private static validateFee(fee: number): void {
-        if (typeof fee !== 'number' || fee < 0 || fee > 16777215) {
-            throw new Error('TwoHopV3Builder: Fee must be a valid uint24 (0 to 16777215)');
+        if (typeof fee !== 'number' || fee < 0 || fee > UINT24_MAX) {
+            throw new Error(`TwoHopV3Builder: Fee must be a valid uint24 (0 to ${UINT24_MAX})`);
         }
     }
 

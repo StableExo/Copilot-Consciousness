@@ -11,7 +11,8 @@ import {
     BuildResult,
     SimulationResult,
     ArbitrageOpportunity,
-    Config
+    Config,
+    UINT24_MAX
 } from './types';
 
 /**
@@ -79,9 +80,10 @@ export class TriangularBuilder {
                 simulationResult.hop1AmountOutSimulated,
                 config.SLIPPAGE_TOLERANCE_BPS
             );
-            // Intermediate hop - use simulated amount with slippage
+            // Intermediate hop - estimate based on first hop output with slippage
+            // This is a conservative estimate; actual amount may vary based on pool state
             minAmountOutHop2 = this.calculateMinAmountOut(
-                simulationResult.hop1AmountOutSimulated, // Approximation
+                simulationResult.hop1AmountOutSimulated,
                 config.SLIPPAGE_TOLERANCE_BPS
             );
             minAmountOutHop3 = this.calculateMinAmountOut(
@@ -213,8 +215,8 @@ export class TriangularBuilder {
      * @throws Error if fee is invalid
      */
     private static validateFee(fee: number): void {
-        if (typeof fee !== 'number' || fee < 0 || fee > 16777215) {
-            throw new Error('TriangularBuilder: Fee must be a valid uint24 (0 to 16777215)');
+        if (typeof fee !== 'number' || fee < 0 || fee > UINT24_MAX) {
+            throw new Error(`TriangularBuilder: Fee must be a valid uint24 (0 to ${UINT24_MAX})`);
         }
     }
 

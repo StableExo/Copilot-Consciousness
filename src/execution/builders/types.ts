@@ -1,4 +1,13 @@
 /**
+ * Shared constants for transaction parameter builders
+ */
+
+/**
+ * Maximum value for uint24 fee encoding (2^24 - 1)
+ */
+export const UINT24_MAX = 16777215;
+
+/**
  * BuildResult interface that defines the structure for the result of a build.
  * @interface BuildResult
  * @property {object} params - The encoded parameters for the transaction.

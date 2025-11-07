@@ -13,7 +13,8 @@ import {
     SwapStep,
     DexType,
     ArbitrageOpportunity,
-    Config
+    Config,
+    UINT24_MAX
 } from './types';
 
 /**
@@ -111,7 +112,8 @@ export class AavePathBuilder {
                 minOut = this.calculateMinAmountOut(expectedOut, config.SLIPPAGE_TOLERANCE_BPS);
             }
 
-            // DODO requires minOut > 0 adjustment
+            // DODO requires minOut > 0 due to contract validation
+            // DODO's V2 pools revert on zero minOut, so we ensure at least 1 wei
             if (dexType === DexType.DODO && minOut === 0n) {
                 minOut = 1n;
             }
@@ -231,8 +233,8 @@ export class AavePathBuilder {
      * @throws Error if fee is invalid
      */
     private static validateFee(fee: number): void {
-        if (typeof fee !== 'number' || fee < 0 || fee > 16777215) {
-            throw new Error('AavePathBuilder: Fee must be a valid uint24 (0 to 16777215)');
+        if (typeof fee !== 'number' || fee < 0 || fee > UINT24_MAX) {
+            throw new Error(`AavePathBuilder: Fee must be a valid uint24 (0 to ${UINT24_MAX})`);
         }
     }
 
