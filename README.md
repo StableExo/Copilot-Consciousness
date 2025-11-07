@@ -36,6 +36,15 @@ A comprehensive AI consciousness development system featuring advanced memory sy
 - **Conversation Management**: Maintain context across interactions
 - **Evolutionary Optimization**: Advanced problem-solving capabilities
 
+### 🛡️ MEV Risk Intelligence Suite
+- **Real-Time MEV Sensors**: Monitor mempool congestion and searcher density
+- **Game-Theoretic Risk Models**: Quantify MEV leakage using proven models from AxionCitadel
+- **MEV-Aware Profit Calculation**: Adjust arbitrage profits for frontrunning risk
+- **ML Pipeline Integration**: MEV risk as features for LSTM and opportunity scoring
+- **Calibration Tools**: Historical accuracy analysis and parameter tuning
+
+See [MEV Intelligence Suite Documentation](./docs/MEV_INTELLIGENCE_SUITE.md) for details.
+
 ## Installation
 
 ```bash

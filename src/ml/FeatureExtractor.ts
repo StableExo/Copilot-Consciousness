@@ -2,11 +2,12 @@
  * FeatureExtractor - Transform raw market data into ML-ready features
  * 
  * Extracts features including price momentum, volume metrics, liquidity ratios,
- * gas trends, volatility measures, and time-based patterns.
+ * gas trends, volatility measures, time-based patterns, and MEV risk indicators.
  */
 
 import { PriceDataPoint, MarketFeatures, FeatureImportance } from './types';
 import { ArbitragePath } from '../arbitrage/types';
+import { MEVRiskParams } from '../mev/types/TransactionType';
 
 export interface FeatureExtractionOptions {
   windows: {
@@ -44,7 +45,8 @@ export class FeatureExtractor {
    */
   async extractFeatures(
     priceHistory: PriceDataPoint[],
-    currentTime: number
+    currentTime: number,
+    mevRiskParams?: MEVRiskParams
   ): Promise<MarketFeatures> {
     if (priceHistory.length === 0) {
       throw new Error('Price history is empty');
@@ -61,6 +63,7 @@ export class FeatureExtractor {
     const gasFeatures = this.extractGasFeatures(sortedHistory);
     const volatilityFeatures = this.extractVolatilityFeatures(sortedHistory);
     const timeFeatures = this.extractTimeFeatures(currentTime);
+    const mevFeatures = this.extractMEVFeatures(mevRiskParams);
 
     const features: MarketFeatures = {
       ...momentumFeatures,
@@ -69,6 +72,7 @@ export class FeatureExtractor {
       ...gasFeatures,
       ...volatilityFeatures,
       ...timeFeatures,
+      ...mevFeatures,
     };
 
     // Normalize if enabled
@@ -308,6 +312,32 @@ export class FeatureExtractor {
   }
 
   /**
+   * Extract MEV-related features
+   */
+  private extractMEVFeatures(
+    mevRiskParams?: MEVRiskParams
+  ): Pick<MarketFeatures, 'mempoolCongestion' | 'searcherDensity' | 'mevRiskScore'> {
+    if (!mevRiskParams) {
+      return {
+        mempoolCongestion: undefined,
+        searcherDensity: undefined,
+        mevRiskScore: undefined,
+      };
+    }
+
+    // Calculate composite MEV risk score
+    const mevRiskScore = 
+      (mevRiskParams.mempoolCongestion * 0.4 + 
+       mevRiskParams.searcherDensity * 0.6);
+
+    return {
+      mempoolCongestion: mevRiskParams.mempoolCongestion,
+      searcherDensity: mevRiskParams.searcherDensity,
+      mevRiskScore,
+    };
+  }
+
+  /**
    * Calculate standard deviation
    */
   private calculateStandardDeviation(values: number[]): number {
@@ -340,6 +370,10 @@ export class FeatureExtractor {
       atr: this.normalizeValue(features.atr, 0, 100),
       hourOfDay: features.hourOfDay / 24,
       dayOfWeek: features.dayOfWeek / 7,
+      // MEV features are already 0-1 normalized from sensors
+      mempoolCongestion: features.mempoolCongestion,
+      searcherDensity: features.searcherDensity,
+      mevRiskScore: features.mevRiskScore,
     };
   }
 
@@ -440,6 +474,9 @@ export class FeatureExtractor {
       atr: 0,
       hourOfDay: 0,
       dayOfWeek: 0,
+      mempoolCongestion: undefined,
+      searcherDensity: undefined,
+      mevRiskScore: undefined,
     };
 
     return { ...defaultFeatures, ...features };
