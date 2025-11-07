@@ -53,6 +53,11 @@ export interface MarketFeatures {
   hourOfDay: number;
   dayOfWeek: number;
   
+  // MEV features (from AxionCitadel integration)
+  mempoolCongestion?: number;
+  searcherDensity?: number;
+  mevRiskScore?: number;
+  
   // Cross-chain features
   priceCorrelation?: number;
 }
