@@ -20,7 +20,6 @@ import time
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from src.mev.sensors import get_mempool_congestion, detect_searcher_density
 from src.mev.profit_calculator import ProfitCalculator, TransactionType
 
 

@@ -1,0 +1,101 @@
+{
+  "documents": [
+    {
+      "path": "docs/MEV_INTELLIGENCE_SUITE.md",
+      "title": "MEV_INTELLIGENCE_SUITE",
+      "size": 7963,
+      "lines": 273
+    },
+    {
+      "path": "docs/MISSION_5_ARCHITECTURE.md",
+      "title": "MISSION_5_ARCHITECTURE",
+      "size": 17061,
+      "lines": 414
+    },
+    {
+      "path": "docs/ML_SYSTEM_GUIDE.md",
+      "title": "ML_SYSTEM_GUIDE",
+      "size": 13628,
+      "lines": 568
+    },
+    {
+      "path": "docs/INTEGRATION_FROM_AXIONCITADEL.md",
+      "title": "INTEGRATION_FROM_AXIONCITADEL",
+      "size": 9971,
+      "lines": 345
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "title": "ARCHITECTURE",
+      "size": 6023,
+      "lines": 250
+    },
+    {
+      "path": "docs/REALTIME_MONITORING.md",
+      "title": "REALTIME_MONITORING",
+      "size": 10409,
+      "lines": 368
+    },
+    {
+      "path": "docs/MAIN_RUNNER.md",
+      "title": "MAIN_RUNNER",
+      "size": 7606,
+      "lines": 296
+    },
+    {
+      "path": "docs/GAS_OPTIMIZATION_DEVELOPER_GUIDE.md",
+      "title": "GAS_OPTIMIZATION_DEVELOPER_GUIDE",
+      "size": 14691,
+      "lines": 573
+    },
+    {
+      "path": "docs/MISSION_5_EXECUTION_ENGINE.md",
+      "title": "MISSION_5_EXECUTION_ENGINE",
+      "size": 10755,
+      "lines": 378
+    },
+    {
+      "path": "docs/SECURITY_GUIDE.md",
+      "title": "SECURITY_GUIDE",
+      "size": 14862,
+      "lines": 628
+    },
+    {
+      "path": "docs/GAS_OPTIMIZATION_GUIDE.md",
+      "title": "GAS_OPTIMIZATION_GUIDE",
+      "size": 11600,
+      "lines": 410
+    },
+    {
+      "path": "docs/ADVANCED_ARBITRAGE.md",
+      "title": "ADVANCED_ARBITRAGE",
+      "size": 12329,
+      "lines": 473
+    },
+    {
+      "path": "docs/API.md",
+      "title": "API",
+      "size": 8891,
+      "lines": 406
+    },
+    {
+      "path": "docs/FLASHSWAP_V2_DOCUMENTATION.md",
+      "title": "FLASHSWAP_V2_DOCUMENTATION",
+      "size": 9852,
+      "lines": 332
+    },
+    {
+      "path": "docs/ARBITRAGE_ENGINES.md",
+      "title": "ARBITRAGE_ENGINES",
+      "size": 5230,
+      "lines": 195
+    },
+    {
+      "path": "docs/GETTING_STARTED.md",
+      "title": "GETTING_STARTED",
+      "size": 3323,
+      "lines": 131
+    }
+  ],
+  "metadata": {}
+}
