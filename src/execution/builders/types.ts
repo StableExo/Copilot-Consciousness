@@ -1,11 +1,11 @@
 /**
  * BuildResult interface that defines the structure for the result of a build.
  * @interface BuildResult
- * @property {Object} params - The parameters used in the build.
- * @property {string} typeString - The type as a string.
- * @property {string} borrowTokenAddress - The address of the borrow token.
+ * @property {object} params - The encoded parameters for the transaction.
+ * @property {string} typeString - The ABI type string for encoding.
+ * @property {string} borrowTokenAddress - The address of the token being borrowed.
  */
-interface BuildResult {
+export interface BuildResult {
     params: object;
     typeString: string;
     borrowTokenAddress: string;
@@ -14,45 +14,72 @@ interface BuildResult {
 /**
  * SimulationResult interface that defines the structure for the result of a simulation.
  * @interface SimulationResult
- * @property {number} initialAmount - The initial amount before the simulation.
- * @property {number} hop1AmountOutSimulated - The amount out after the first hop in the simulation.
- * @property {number} finalAmountSimulated - The final amount after the simulation.
+ * @property {bigint} initialAmount - The initial borrow amount (1n for gas estimation).
+ * @property {bigint} hop1AmountOutSimulated - The amount out after the first hop in the simulation.
+ * @property {bigint} finalAmountSimulated - The final amount after all hops in the simulation.
  */
-interface SimulationResult {
-    initialAmount: number;
-    hop1AmountOutSimulated: number;
-    finalAmountSimulated: number;
+export interface SimulationResult {
+    initialAmount: bigint;
+    hop1AmountOutSimulated: bigint;
+    finalAmountSimulated: bigint;
 }
 
 /**
- * SwapStep interface defining the steps for Aave paths.
+ * SwapStep interface defining the steps for multi-hop arbitrage paths.
  * @interface SwapStep
- * @property {string} dexType - The type of DEX used.
- * @property {string} pool - The liquidity pool used for the swap.
- * @property {string} tokenIn - The token that is being swapped in.
- * @property {string} tokenOut - The token that is being swapped out.
- * @property {number} minOut - The minimum amount of output tokens.
- * @property {number} fee - The fee for the swap.
+ * @property {number} dexType - The DEX type enum (0=UniV3, 1=Sushi, 2=DODO).
+ * @property {string} pool - The liquidity pool address used for the swap.
+ * @property {string} tokenIn - The address of the token being swapped in.
+ * @property {string} tokenOut - The address of the token being swapped out.
+ * @property {bigint} minOut - The minimum amount of output tokens (slippage protection).
+ * @property {number} fee - The pool fee tier (e.g., 3000 for 0.3%, 500 for 0.05%).
  */
-interface SwapStep {
-    dexType: string;
+export interface SwapStep {
+    dexType: number;
     pool: string;
     tokenIn: string;
     tokenOut: string;
-    minOut: number;
+    minOut: bigint;
     fee: number;
 }
 
 /**
- * DEX Types
- * @typedef {"Uniswap"|"SushiSwap"|"PancakeSwap"} DexType - The supported DEX types.
+ * DEX Type Enum
+ * Maps DEX names to numeric identifiers for contract encoding.
  */
-type DexType = "Uniswap" | "SushiSwap" | "PancakeSwap";
+export enum DexType {
+    UniswapV3 = 0,
+    SushiSwap = 1,
+    DODO = 2
+}
 
 /**
- * Callback Types
- * @typedef {Function} CallbackType - The callback function types used in transaction builders.
+ * Arbitrage Opportunity interface
  */
-type CallbackType = () => void;
+export interface ArbitrageOpportunity {
+    type: 'spatial' | 'triangular' | 'multi-hop';
+    path: ArbitragePath[];
+    borrowToken: string;
+    expectedProfit: bigint;
+}
 
-export { BuildResult, SimulationResult, SwapStep, DexType, CallbackType };
+/**
+ * Arbitrage Path step
+ */
+export interface ArbitragePath {
+    dexName: string;
+    poolAddress: string;
+    tokenIn: string;
+    tokenOut: string;
+    fee: number;
+    token0?: string;
+    token1?: string;
+}
+
+/**
+ * Configuration interface
+ */
+export interface Config {
+    SLIPPAGE_TOLERANCE_BPS: number;
+    [key: string]: unknown;
+}

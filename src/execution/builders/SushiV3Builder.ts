@@ -1,27 +1,28 @@
 /**
- * TriangularBuilder
+ * SushiV3Builder
  * 
- * Builds parameters for three-token cyclic arbitrage (A → B → C → A).
- * Handles three-hop UniswapV3 paths with callback type encoding.
+ * Builds SushiSwap V3 specific parameters for arbitrage execution.
+ * Handles Sushi V3 fee structures and pool interactions.
  * 
- * Based on HAVOC's core/tx/builders/triangularBuilder.js
+ * Based on HAVOC's core/tx/builders/sushiV3Builder.js
  */
 
 import {
     BuildResult,
     SimulationResult,
     ArbitrageOpportunity,
-    Config
+    Config,
+    DexType
 } from './types';
 
 /**
- * TriangularBuilder class for building triangular arbitrage parameters
+ * SushiV3Builder class for building SushiSwap V3 arbitrage parameters
  */
-export class TriangularBuilder {
+export class SushiV3Builder {
     /**
-     * Build parameters for three-token cyclic arbitrage
+     * Build parameters for SushiSwap V3 arbitrage
      * 
-     * @param opportunity - The triangular arbitrage opportunity to execute
+     * @param opportunity - The SushiSwap V3 arbitrage opportunity to execute
      * @param simulationResult - Results from simulation (gas estimation or real execution)
      * @param config - Configuration with slippage tolerance
      * @param titheRecipient - Address to receive profit share
@@ -38,19 +39,13 @@ export class TriangularBuilder {
         // Validate inputs
         this.validateInputs(opportunity, simulationResult, config, titheRecipient);
 
-        // Ensure we have exactly 3 hops for triangular arbitrage
-        if (opportunity.path.length !== 3) {
-            throw new Error('TriangularBuilder: Opportunity must have exactly 3 hops for triangular arbitrage');
+        // Ensure we have at least 2 hops
+        if (opportunity.path.length < 2) {
+            throw new Error('SushiV3Builder: Opportunity must have at least 2 hops');
         }
 
         const hop1 = opportunity.path[0];
         const hop2 = opportunity.path[1];
-        const hop3 = opportunity.path[2];
-
-        // Validate cyclic path (final output returns to initial input)
-        if (hop3.tokenOut.toLowerCase() !== hop1.tokenIn.toLowerCase()) {
-            throw new Error('TriangularBuilder: Invalid triangular path - final token must match initial token');
-        }
 
         // Detect if this is a minimal gas estimation simulation
         const isMinimalGasEstimateSim = (
@@ -58,33 +53,21 @@ export class TriangularBuilder {
             simulationResult.hop1AmountOutSimulated === 1n
         );
 
-        // Validate profit for real execution
-        if (!isMinimalGasEstimateSim && simulationResult.finalAmountSimulated <= simulationResult.initialAmount) {
-            throw new Error('TriangularBuilder: Final amount must exceed initial amount for profitable arbitrage');
-        }
-
-        // Calculate minOut values for each hop
+        // Calculate minOut values
         let minAmountOutHop1: bigint;
         let minAmountOutHop2: bigint;
-        let minAmountOutHop3: bigint;
 
         if (isMinimalGasEstimateSim) {
             // For gas estimation, use 0% slippage
             minAmountOutHop1 = simulationResult.hop1AmountOutSimulated;
-            minAmountOutHop2 = 1n; // Intermediate hop
-            minAmountOutHop3 = simulationResult.finalAmountSimulated;
+            minAmountOutHop2 = simulationResult.finalAmountSimulated;
         } else {
             // For real execution, apply configured slippage tolerance
             minAmountOutHop1 = this.calculateMinAmountOut(
                 simulationResult.hop1AmountOutSimulated,
                 config.SLIPPAGE_TOLERANCE_BPS
             );
-            // Intermediate hop - use simulated amount with slippage
             minAmountOutHop2 = this.calculateMinAmountOut(
-                simulationResult.hop1AmountOutSimulated, // Approximation
-                config.SLIPPAGE_TOLERANCE_BPS
-            );
-            minAmountOutHop3 = this.calculateMinAmountOut(
                 simulationResult.finalAmountSimulated,
                 config.SLIPPAGE_TOLERANCE_BPS
             );
@@ -93,48 +76,35 @@ export class TriangularBuilder {
         // Validate minOut > 0 for real execution
         if (!isMinimalGasEstimateSim) {
             if (minAmountOutHop1 <= 0n) {
-                throw new Error('TriangularBuilder: minAmountOutHop1 must be > 0 for real execution');
+                throw new Error('SushiV3Builder: minAmountOutHop1 must be > 0 for real execution');
             }
             if (minAmountOutHop2 <= 0n) {
-                throw new Error('TriangularBuilder: minAmountOutHop2 must be > 0 for real execution');
-            }
-            if (minAmountOutHop3 <= 0n) {
-                throw new Error('TriangularBuilder: minAmountOutHop3 must be > 0 for real execution');
+                throw new Error('SushiV3Builder: minAmountOutHop2 must be > 0 for real execution');
             }
         }
 
-        // Validate fees are valid uint24
+        // Validate fees are valid uint24 (SushiSwap V3 uses same fee structure as Uniswap V3)
         this.validateFee(hop1.fee);
         this.validateFee(hop2.fee);
-        this.validateFee(hop3.fee);
 
-        // Build callback parameters for triangular arbitrage
-        const callbackParams = {
+        // Build SushiSwap V3 specific parameters
+        const params = {
             pool1: hop1.poolAddress,
             pool2: hop2.poolAddress,
-            pool3: hop3.poolAddress,
             fee1: hop1.fee,
             fee2: hop2.fee,
-            fee3: hop3.fee,
-            tokenA: hop1.tokenIn,
-            tokenB: hop1.tokenOut,
-            tokenC: hop2.tokenOut,
+            tokenIn: hop1.tokenIn,
+            tokenIntermediate: hop1.tokenOut,
+            tokenOut: hop2.tokenOut,
+            borrowAmount: simulationResult.initialAmount,
             minAmountOutHop1,
             minAmountOutHop2,
-            minAmountOutHop3,
             titheRecipient,
-            callbackType: 1 // Triangular arbitrage callback type
-        };
-
-        // Construct the main parameters object
-        const params = {
-            pool: hop1.poolAddress,
-            borrowAmount: simulationResult.initialAmount,
-            callbackParams
+            dexType: DexType.SushiSwap
         };
 
         // Define the ABI type string for encoding
-        const typeString = 'tuple(address pool, uint256 borrowAmount, tuple(address pool1, address pool2, address pool3, uint24 fee1, uint24 fee2, uint24 fee3, address tokenA, address tokenB, address tokenC, uint256 minAmountOutHop1, uint256 minAmountOutHop2, uint256 minAmountOutHop3, address titheRecipient, uint8 callbackType) callbackParams)';
+        const typeString = 'tuple(address pool1, address pool2, uint24 fee1, uint24 fee2, address tokenIn, address tokenIntermediate, address tokenOut, uint256 borrowAmount, uint256 minAmountOutHop1, uint256 minAmountOutHop2, address titheRecipient, uint8 dexType)';
 
         return {
             params,
@@ -167,42 +137,42 @@ export class TriangularBuilder {
     ): void {
         // Validate opportunity
         if (!opportunity || !opportunity.path || opportunity.path.length === 0) {
-            throw new Error('TriangularBuilder: Invalid opportunity - path is required');
+            throw new Error('SushiV3Builder: Invalid opportunity - path is required');
         }
 
         if (!opportunity.borrowToken || !this.isValidAddress(opportunity.borrowToken)) {
-            throw new Error('TriangularBuilder: Invalid borrow token address');
+            throw new Error('SushiV3Builder: Invalid borrow token address');
         }
 
         // Validate simulation result
         if (!simulationResult) {
-            throw new Error('TriangularBuilder: SimulationResult is required');
+            throw new Error('SushiV3Builder: SimulationResult is required');
         }
 
         if (typeof simulationResult.initialAmount !== 'bigint') {
-            throw new Error('TriangularBuilder: initialAmount must be bigint');
+            throw new Error('SushiV3Builder: initialAmount must be bigint');
         }
 
         if (typeof simulationResult.hop1AmountOutSimulated !== 'bigint') {
-            throw new Error('TriangularBuilder: hop1AmountOutSimulated must be bigint');
+            throw new Error('SushiV3Builder: hop1AmountOutSimulated must be bigint');
         }
 
         if (typeof simulationResult.finalAmountSimulated !== 'bigint') {
-            throw new Error('TriangularBuilder: finalAmountSimulated must be bigint');
+            throw new Error('SushiV3Builder: finalAmountSimulated must be bigint');
         }
 
         // Validate config
         if (!config || typeof config.SLIPPAGE_TOLERANCE_BPS !== 'number') {
-            throw new Error('TriangularBuilder: Invalid config - SLIPPAGE_TOLERANCE_BPS is required');
+            throw new Error('SushiV3Builder: Invalid config - SLIPPAGE_TOLERANCE_BPS is required');
         }
 
         if (config.SLIPPAGE_TOLERANCE_BPS < 0 || config.SLIPPAGE_TOLERANCE_BPS > 10000) {
-            throw new Error('TriangularBuilder: SLIPPAGE_TOLERANCE_BPS must be between 0 and 10000');
+            throw new Error('SushiV3Builder: SLIPPAGE_TOLERANCE_BPS must be between 0 and 10000');
         }
 
         // Validate tithe recipient
         if (!this.isValidAddress(titheRecipient)) {
-            throw new Error('TriangularBuilder: Invalid tithe recipient address');
+            throw new Error('SushiV3Builder: Invalid tithe recipient address');
         }
     }
 
@@ -214,7 +184,7 @@ export class TriangularBuilder {
      */
     private static validateFee(fee: number): void {
         if (typeof fee !== 'number' || fee < 0 || fee > 16777215) {
-            throw new Error('TriangularBuilder: Fee must be a valid uint24 (0 to 16777215)');
+            throw new Error('SushiV3Builder: Fee must be a valid uint24 (0 to 16777215)');
         }
     }
 
