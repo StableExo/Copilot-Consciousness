@@ -1,0 +1,54 @@
+{
+  "arbitrum": {
+    "chainId": 42161,
+    "name": "Arbitrum One",
+    "rpcUrl": "https://arb1.arbitrum.io/rpc",
+    "explorer": "https://arbiscan.io",
+    "nativeCurrency": {
+      "name": "Ethereum",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "blockTime": 0.25,
+    "gasLimit": 30000000
+  },
+  "ethereum": {
+    "chainId": 1,
+    "name": "Ethereum Mainnet",
+    "rpcUrl": "https://eth-mainnet.alchemyapi.io/v2",
+    "explorer": "https://etherscan.io",
+    "nativeCurrency": {
+      "name": "Ethereum",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "blockTime": 12,
+    "gasLimit": 30000000
+  },
+  "polygon": {
+    "chainId": 137,
+    "name": "Polygon",
+    "rpcUrl": "https://polygon-rpc.com",
+    "explorer": "https://polygonscan.com",
+    "nativeCurrency": {
+      "name": "MATIC",
+      "symbol": "MATIC",
+      "decimals": 18
+    },
+    "blockTime": 2,
+    "gasLimit": 30000000
+  },
+  "base": {
+    "chainId": 8453,
+    "name": "Base",
+    "rpcUrl": "https://mainnet.base.org",
+    "explorer": "https://basescan.org",
+    "nativeCurrency": {
+      "name": "Ethereum",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "blockTime": 2,
+    "gasLimit": 30000000
+  }
+}
