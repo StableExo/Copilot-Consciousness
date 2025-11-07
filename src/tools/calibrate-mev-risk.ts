@@ -79,6 +79,18 @@ export async function calibrateMEVRisk(
   console.log('MAE:', mae.toFixed(6));
   console.log('RMSE:', rmse.toFixed(6));
 
+  // Calculate suggested parameter adjustments based on bias
+  // If bias > 0, we're overestimating, so decrease baseRisk
+  // If bias < 0, we're underestimating, so increase baseRisk
+  const currentBaseRisk = 0.001; // Default from MEVRiskModel
+  const currentAlpha = 0.15; // Default valueSensitivity
+  
+  // Adjust baseRisk proportionally to bias (with dampening factor)
+  const suggestedBaseRisk = Math.max(0.0001, currentBaseRisk * (1 - meanBias * 10));
+  
+  // Adjust alpha based on MAE (if error is high, increase sensitivity)
+  const suggestedAlpha = Math.max(0.1, Math.min(0.9, currentAlpha * (1 + mae)));
+
   // Create calibration report
   const report: CalibrationReport = {
     calibrated_at: new Date().toISOString(),
@@ -86,8 +98,8 @@ export async function calibrateMEVRisk(
     avg_bias: parseFloat(meanBias.toFixed(6)),
     mae: parseFloat(mae.toFixed(6)),
     rmse: parseFloat(rmse.toFixed(6)),
-    suggested_base_risk: 0.04, // Placeholder
-    suggested_alpha: 0.65, // Placeholder
+    suggested_base_risk: parseFloat(suggestedBaseRisk.toFixed(6)),
+    suggested_alpha: parseFloat(suggestedAlpha.toFixed(6)),
   };
 
   // Write calibration report to JSON file

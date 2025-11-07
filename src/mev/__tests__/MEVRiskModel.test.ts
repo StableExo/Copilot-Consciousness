@@ -14,56 +14,56 @@ describe('MEVRiskModel', () => {
 
   describe('calculateRisk', () => {
     it('should calculate basic risk for arbitrage transaction', () => {
-      const risk = riskModel.calculateRisk(1.0, 0.01, TransactionType.ARBITRAGE, 0.5);
+      const risk = riskModel.calculateRisk(1.0, TransactionType.ARBITRAGE, 0.5);
       expect(risk).toBeGreaterThan(0);
       expect(risk).toBeLessThan(1.0);
     });
 
     it('should return higher risk for front-runnable transactions', () => {
-      const arbRisk = riskModel.calculateRisk(1.0, 0.01, TransactionType.ARBITRAGE, 0.5);
-      const frontrunRisk = riskModel.calculateRisk(1.0, 0.01, TransactionType.FRONT_RUNNABLE, 0.5);
+      const arbRisk = riskModel.calculateRisk(1.0, TransactionType.ARBITRAGE, 0.5);
+      const frontrunRisk = riskModel.calculateRisk(1.0, TransactionType.FRONT_RUNNABLE, 0.5);
       expect(frontrunRisk).toBeGreaterThan(arbRisk);
     });
 
     it('should return lower risk for liquidity provision', () => {
-      const arbRisk = riskModel.calculateRisk(1.0, 0.01, TransactionType.ARBITRAGE, 0.5);
-      const lpRisk = riskModel.calculateRisk(1.0, 0.01, TransactionType.LIQUIDITY_PROVISION, 0.5);
+      const arbRisk = riskModel.calculateRisk(1.0, TransactionType.ARBITRAGE, 0.5);
+      const lpRisk = riskModel.calculateRisk(1.0, TransactionType.LIQUIDITY_PROVISION, 0.5);
       expect(lpRisk).toBeLessThan(arbRisk);
     });
 
     it('should increase risk with higher transaction value', () => {
-      const lowValueRisk = riskModel.calculateRisk(0.1, 0.01, TransactionType.ARBITRAGE, 0.5);
-      const highValueRisk = riskModel.calculateRisk(10.0, 0.01, TransactionType.ARBITRAGE, 0.5);
+      const lowValueRisk = riskModel.calculateRisk(0.1, TransactionType.ARBITRAGE, 0.5);
+      const highValueRisk = riskModel.calculateRisk(10.0, TransactionType.ARBITRAGE, 0.5);
       expect(highValueRisk).toBeGreaterThan(lowValueRisk);
     });
 
     it('should increase risk with higher mempool congestion', () => {
-      const lowCongestionRisk = riskModel.calculateRisk(1.0, 0.01, TransactionType.ARBITRAGE, 0.1);
-      const highCongestionRisk = riskModel.calculateRisk(1.0, 0.01, TransactionType.ARBITRAGE, 0.9);
+      const lowCongestionRisk = riskModel.calculateRisk(1.0, TransactionType.ARBITRAGE, 0.1);
+      const highCongestionRisk = riskModel.calculateRisk(1.0, TransactionType.ARBITRAGE, 0.9);
       // Note: Higher congestion can actually decrease risk in the model due to the formula
       expect(lowCongestionRisk).toBeGreaterThan(0);
       expect(highCongestionRisk).toBeGreaterThan(0);
     });
 
     it('should cap risk at 95% of transaction value', () => {
-      const risk = riskModel.calculateRisk(0.001, 0.01, TransactionType.FRONT_RUNNABLE, 0.5);
+      const risk = riskModel.calculateRisk(0.001, TransactionType.FRONT_RUNNABLE, 0.5);
       expect(risk).toBeLessThanOrEqual(0.001 * 0.95);
     });
 
     it('should handle zero transaction value', () => {
-      const risk = riskModel.calculateRisk(0, 0.01, TransactionType.ARBITRAGE, 0.5);
+      const risk = riskModel.calculateRisk(0, TransactionType.ARBITRAGE, 0.5);
       expect(risk).toBeGreaterThan(0);
     });
 
     it('should not return negative risk', () => {
-      const risk = riskModel.calculateRisk(1.0, 0.01, TransactionType.LIQUIDITY_PROVISION, 0.1);
+      const risk = riskModel.calculateRisk(1.0, TransactionType.LIQUIDITY_PROVISION, 0.1);
       expect(risk).toBeGreaterThanOrEqual(0);
     });
   });
 
   describe('calculateDetailedRisk', () => {
     it('should return detailed risk metrics', () => {
-      const result = riskModel.calculateDetailedRisk(1.0, 0.01, TransactionType.ARBITRAGE, 0.5);
+      const result = riskModel.calculateDetailedRisk(1.0, TransactionType.ARBITRAGE, 0.5);
       expect(result).toHaveProperty('riskEth');
       expect(result).toHaveProperty('riskRatio');
       expect(result).toHaveProperty('frontrunProbability');
@@ -72,12 +72,12 @@ describe('MEVRiskModel', () => {
     });
 
     it('should calculate risk ratio correctly', () => {
-      const result = riskModel.calculateDetailedRisk(10.0, 0.01, TransactionType.ARBITRAGE, 0.5);
+      const result = riskModel.calculateDetailedRisk(10.0, TransactionType.ARBITRAGE, 0.5);
       expect(result.riskRatio).toBe(result.riskEth / 10.0);
     });
 
     it('should handle zero transaction value in detailed calculation', () => {
-      const result = riskModel.calculateDetailedRisk(0, 0.01, TransactionType.ARBITRAGE, 0.5);
+      const result = riskModel.calculateDetailedRisk(0, TransactionType.ARBITRAGE, 0.5);
       expect(result.riskRatio).toBe(0);
     });
   });

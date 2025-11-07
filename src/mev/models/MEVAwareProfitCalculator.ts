@@ -40,7 +40,6 @@ export class MEVAwareProfitCalculator {
     // Calculate MEV leakage risk
     const mevRisk = this.riskModel.calculateRisk(
       txValue,
-      gasCost, // Using gas_cost as proxy for gas_price
       txType,
       mempoolCongestion
     );

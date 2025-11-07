@@ -40,14 +40,12 @@ export class MEVRiskModel {
    * Calculate MEV leakage risk using game-theoretic model
    * 
    * @param txValue - Transaction value in ETH
-   * @param gasPrice - Gas price (not used in current formula, kept for API compatibility)
    * @param txType - Type of transaction
    * @param mempoolCongestion - Mempool congestion score (0-1 scale)
    * @returns MEV risk in ETH
    */
   calculateRisk(
     txValue: number,
-    gasPrice: number,
     txType: TransactionType,
     mempoolCongestion: number
   ): number {
@@ -75,7 +73,6 @@ export class MEVRiskModel {
    */
   calculateDetailedRisk(
     txValue: number,
-    gasPrice: number,
     txType: TransactionType,
     mempoolCongestion: number
   ): MEVRiskResult {

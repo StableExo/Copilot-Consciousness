@@ -48,16 +48,16 @@ export class SearcherDensitySensor {
 
     // Initialize MEV contract addresses (checksummed)
     const contracts = mevContracts || Object.values(DEFAULT_MEV_CONTRACTS);
-    this.mevContracts = new Set(
-      contracts.map((addr) => {
-        try {
-          return ethers.utils.getAddress(addr);
-        } catch {
-          // If checksum fails, use the address as-is (it will be normalized later)
-          return addr.toLowerCase();
-        }
-      })
-    );
+    this.mevContracts = new Set();
+    
+    // Only add valid checksummed addresses
+    for (const addr of contracts) {
+      try {
+        this.mevContracts.add(ethers.utils.getAddress(addr));
+      } catch (error) {
+        console.warn(`Invalid MEV contract address ignored: ${addr}`);
+      }
+    }
   }
 
   /**
@@ -120,8 +120,16 @@ export class SearcherDensitySensor {
         totalTxCount += block.transactions.length;
 
         for (const tx of block.transactions) {
-          if (tx.to && this.mevContracts.has(ethers.utils.getAddress(tx.to))) {
-            mevTxCount++;
+          if (tx.to) {
+            try {
+              const checksummedTo = ethers.utils.getAddress(tx.to);
+              if (this.mevContracts.has(checksummedTo)) {
+                mevTxCount++;
+              }
+            } catch {
+              // Skip malformed addresses
+              continue;
+            }
           }
         }
       }
@@ -209,7 +217,13 @@ export class SearcherDensitySensor {
 
         for (const tx of block.transactions) {
           if (tx.from && tx.gasPrice && tx.gasPrice.toNumber() > highGasThreshold) {
-            botAddresses.add(ethers.utils.getAddress(tx.from));
+            try {
+              const checksummedFrom = ethers.utils.getAddress(tx.from);
+              botAddresses.add(checksummedFrom);
+            } catch {
+              // Skip malformed addresses
+              continue;
+            }
           }
         }
       }
