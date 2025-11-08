@@ -366,6 +366,191 @@ class TestIntegration(unittest.TestCase):
         self.assertLess(profit['mev_risk'], profit['gross_profit'])
         self.assertGreater(profit['risk_ratio'], 0)
         self.assertLess(profit['risk_ratio'], 1.0)
+    
+    def test_high_value_flash_loan_scenario(self):
+        """Test high-value flash loan scenario"""
+        calculator = ProfitCalculator()
+        
+        # High-value flash loan scenario
+        profit = calculator.calculate_profit(
+            revenue=50.0,
+            gas_cost=0.5,
+            tx_value=45.0,
+            tx_type=TransactionType.FLASH_LOAN,
+            mempool_congestion=0.7
+        )
+        
+        self.assertGreater(profit['gross_profit'], 0)
+        self.assertGreater(profit['mev_risk'], 0)
+        self.assertLess(profit['adjusted_profit'], profit['gross_profit'])
+    
+    def test_liquidity_provision_low_risk(self):
+        """Test that liquidity provision has lower MEV risk"""
+        calculator = ProfitCalculator()
+        
+        params = {
+            'revenue': 2.0,
+            'gas_cost': 0.1,
+            'tx_value': 1.5,
+            'mempool_congestion': 0.5
+        }
+        
+        # Compare liquidity provision to arbitrage
+        lp_profit = calculator.calculate_profit(**params, tx_type=TransactionType.LIQUIDITY_PROVISION)
+        arb_profit = calculator.calculate_profit(**params, tx_type=TransactionType.ARBITRAGE)
+        
+        # LP should have lower MEV risk than arbitrage
+        self.assertLess(lp_profit['mev_risk'], arb_profit['mev_risk'])
+        self.assertGreater(lp_profit['adjusted_profit'], arb_profit['adjusted_profit'])
+    
+    def test_extreme_congestion_impact(self):
+        """Test extreme mempool congestion impact"""
+        calculator = ProfitCalculator()
+        
+        params = {
+            'revenue': 1.5,
+            'gas_cost': 0.05,
+            'tx_value': 1.0,
+            'tx_type': TransactionType.ARBITRAGE
+        }
+        
+        # Test extreme congestion levels
+        low_congestion = calculator.calculate_profit(**params, mempool_congestion=0.01)
+        high_congestion = calculator.calculate_profit(**params, mempool_congestion=0.99)
+        
+        # Both should produce valid results
+        self.assertIsNotNone(low_congestion)
+        self.assertIsNotNone(high_congestion)
+        self.assertGreater(low_congestion['adjusted_profit'], 0)
+        self.assertGreater(high_congestion['adjusted_profit'], 0)
+    
+    def test_profitable_vs_unprofitable(self):
+        """Test differentiation between profitable and unprofitable trades"""
+        calculator = ProfitCalculator()
+        
+        # Profitable trade
+        profitable = calculator.calculate_profit(
+            revenue=2.0,
+            gas_cost=0.1,
+            tx_value=1.5,
+            tx_type=TransactionType.ARBITRAGE,
+            mempool_congestion=0.5
+        )
+        
+        # Unprofitable trade (high gas, low revenue)
+        unprofitable = calculator.calculate_profit(
+            revenue=0.1,
+            gas_cost=0.5,
+            tx_value=0.05,
+            tx_type=TransactionType.ARBITRAGE,
+            mempool_congestion=0.5
+        )
+        
+        # Profitable should have positive adjusted profit
+        self.assertGreater(profitable['adjusted_profit'], 0)
+        
+        # Unprofitable should have negative adjusted profit
+        self.assertLess(unprofitable['adjusted_profit'], 0)
+    
+    def test_risk_aware_decision_threshold(self):
+        """Test risk-based decision making with thresholds"""
+        calculator = ProfitCalculator()
+        
+        max_risk_ratio = 0.10  # 10% threshold
+        
+        opportunities = [
+            {'revenue': 0.5, 'gas': 0.02, 'value': 0.3, 'congestion': 0.2},  # Low risk
+            {'revenue': 10.0, 'gas': 0.5, 'value': 8.0, 'congestion': 0.9},  # High risk
+        ]
+        
+        for opp in opportunities:
+            result = calculator.calculate_profit(
+                revenue=opp['revenue'],
+                gas_cost=opp['gas'],
+                tx_value=opp['value'],
+                tx_type=TransactionType.ARBITRAGE,
+                mempool_congestion=opp['congestion']
+            )
+            
+            # Verify risk ratio is calculated
+            self.assertIsInstance(result['risk_ratio'], float)
+            self.assertGreaterEqual(result['risk_ratio'], 0)
+
+
+class TestEdgeCases(unittest.TestCase):
+    """Test edge cases and boundary conditions"""
+    
+    def test_very_small_values(self):
+        """Test with very small transaction values"""
+        calculator = ProfitCalculator()
+        
+        result = calculator.calculate_profit(
+            revenue=0.001,
+            gas_cost=0.0001,
+            tx_value=0.0005,
+            tx_type=TransactionType.ARBITRAGE,
+            mempool_congestion=0.5
+        )
+        
+        self.assertIsNotNone(result)
+        self.assertGreater(result['gross_profit'], 0)
+    
+    def test_very_large_values(self):
+        """Test with very large transaction values"""
+        calculator = ProfitCalculator()
+        
+        result = calculator.calculate_profit(
+            revenue=10000.0,
+            gas_cost=50.0,
+            tx_value=9500.0,
+            tx_type=TransactionType.ARBITRAGE,
+            mempool_congestion=0.5
+        )
+        
+        self.assertIsNotNone(result)
+        self.assertGreater(result['gross_profit'], 0)
+        # Risk should still be capped at 95% of tx_value
+        self.assertLessEqual(result['mev_risk'], 9500.0 * 0.95)
+    
+    def test_equal_revenue_and_gas(self):
+        """Test when revenue equals gas cost"""
+        calculator = ProfitCalculator()
+        
+        result = calculator.calculate_profit(
+            revenue=0.1,
+            gas_cost=0.1,
+            tx_value=0.05,
+            tx_type=TransactionType.ARBITRAGE,
+            mempool_congestion=0.5
+        )
+        
+        # Gross profit should be zero
+        self.assertAlmostEqual(result['gross_profit'], 0.0, places=5)
+        # Adjusted profit should be negative (due to MEV risk)
+        self.assertLess(result['adjusted_profit'], 0)
+    
+    def test_congestion_boundaries(self):
+        """Test congestion at boundary values (0 and 1)"""
+        calculator = ProfitCalculator()
+        
+        params = {
+            'revenue': 1.5,
+            'gas_cost': 0.05,
+            'tx_value': 1.0,
+            'tx_type': TransactionType.ARBITRAGE
+        }
+        
+        # Test with congestion = 0
+        result_zero = calculator.calculate_profit(**params, mempool_congestion=0.0)
+        self.assertIsNotNone(result_zero)
+        
+        # Test with congestion = 1
+        result_one = calculator.calculate_profit(**params, mempool_congestion=1.0)
+        self.assertIsNotNone(result_one)
+        
+        # Both should produce valid results
+        self.assertGreater(result_zero['adjusted_profit'], 0)
+        self.assertGreater(result_one['adjusted_profit'], 0)
 
 
 def main():
