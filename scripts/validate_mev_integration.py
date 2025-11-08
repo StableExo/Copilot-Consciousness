@@ -256,11 +256,11 @@ def check_test_suite(result: ValidationResult):
             result.add_pass()
             result.add_pass()
             
-            if test_count >= 20:
-                print(f"  {Color.GREEN}✅{Color.END} Test coverage is comprehensive (30+ tests)")
+            if test_count >= 30:
+                print(f"  {Color.GREEN}✅{Color.END} Test coverage is comprehensive ({test_count} tests, 30+ required)")
                 result.add_pass()
             else:
-                print(f"  {Color.YELLOW}⚠️{Color.END}  Test coverage could be improved (currently {test_count} tests)")
+                print(f"  {Color.YELLOW}⚠️{Color.END}  Test coverage could be improved (currently {test_count} tests, 30+ recommended)")
                 result.add_warning(f"Test coverage: {test_count} tests (recommended: 30+)")
         
         finally:
