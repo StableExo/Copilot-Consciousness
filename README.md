@@ -40,10 +40,27 @@ A comprehensive AI consciousness development system featuring advanced memory sy
 - **Real-Time MEV Sensors**: Monitor mempool congestion and searcher density
 - **Game-Theoretic Risk Models**: Quantify MEV leakage using proven models from AxionCitadel
 - **MEV-Aware Profit Calculation**: Adjust arbitrage profits for frontrunning risk
+- **Mempool Simulation**: Stress test strategies under various network conditions
+- **Transaction Type Analysis**: Risk assessment for ARBITRAGE, FLASH_LOAN, LIQUIDITY_PROVISION
 - **ML Pipeline Integration**: MEV risk as features for LSTM and opportunity scoring
 - **Calibration Tools**: Historical accuracy analysis and parameter tuning
 
-See [MEV Intelligence Suite Documentation](./docs/MEV_INTELLIGENCE_SUITE.md) for details.
+### 🤖 Advanced Arbitrage Engines
+- **Spatial Arbitrage**: Cross-DEX price difference detection (integrated from AxionCitadel)
+- **Triangular Arbitrage**: Multi-hop circular path optimization
+- **Opportunity Validation**: Comprehensive profitability and risk assessment
+- **Flash Loan Execution**: Capital-free arbitrage with Aave V3 integration
+- **Multi-Chain Support**: Arbitrum, Ethereum, Polygon, Base networks
+- **Path Optimization**: Advanced graph algorithms for efficient routing
+
+### 🔧 Production Infrastructure
+- **Configuration System**: Structured configs for chains, tokens, pools, and protocols
+- **Contract ABIs**: Verified interfaces for Uniswap V3, Aave V3, and ERC20
+- **Smart Contracts**: Production-tested FlashSwapV2 execution contract
+- **Codex Manager**: LlamaIndex-based documentation and knowledge base system
+- **Comprehensive Testing**: Unit tests, integration tests, and realistic scenarios
+
+See [MEV Intelligence Suite Documentation](./docs/MEV_INTELLIGENCE_SUITE.md), [Arbitrage Engines](./docs/ARBITRAGE_ENGINES.md), and [AxionCitadel Integration](./docs/INTEGRATION_FROM_AXIONCITADEL.md) for details.
 
 ## Installation
 
