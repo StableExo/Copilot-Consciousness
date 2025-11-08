@@ -208,8 +208,12 @@ export class PatternRecognitionEngine {
       return null;
     }
 
-    // Check if confidence meets pattern requirement
-    if (this.confidenceToNumber(confidence) < this.confidenceToNumber(pattern.requiredConfidence)) {
+    // Check if confidence meets both pattern requirement AND engine's minimum
+    const engineMinConfidence = this.confidenceToNumber(this.config.minConfidence);
+    const patternMinConfidence = this.confidenceToNumber(pattern.requiredConfidence);
+    const actualConfidence = this.confidenceToNumber(confidence);
+    
+    if (actualConfidence < Math.max(engineMinConfidence, patternMinConfidence)) {
       return null;
     }
 

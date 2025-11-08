@@ -32,15 +32,26 @@ export function weightedSum(
   values: Record<string, number>,
   criteria: ScoringCriterion[]
 ): number {
-  let score = 0;
+  let positiveScore = 0;
+  let negativeScore = 0;
   
   for (const criterion of criteria) {
     const value = values[criterion.name] || 0;
-    const normalizedValue = criterion.type === 'minimize' ? -value : value;
-    score += normalizedValue * criterion.weight;
+    const weightedValue = value * criterion.weight;
+    
+    if (criterion.type === 'minimize') {
+      // For minimize criteria, lower values are better
+      // Invert and normalize to positive contribution
+      negativeScore += weightedValue;
+    } else {
+      positiveScore += weightedValue;
+    }
   }
   
-  return score;
+  // Return normalized score (positive contributions minus normalized negative)
+  // Use a normalization factor to keep scores in reasonable range
+  const score = positiveScore / (1 + negativeScore / 100);
+  return Math.max(0, score);
 }
 
 /**
