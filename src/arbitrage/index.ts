@@ -18,3 +18,12 @@ export { EnhancedSlippageCalculator, SlippageConfig, PriceImpact, SlippageResult
 export { PathCache, CacheConfig, CacheStats } from './PathCache';
 export { ArbitragePatterns, ArbitragePatternType, PatternAnalysis, PatternMetrics } from './ArbitragePatterns';
 export { AdvancedOrchestrator, AdvancedOrchestratorConfig, PerformanceComparison } from './AdvancedOrchestrator';
+
+// AxionCitadel Integration - Core Models
+export * from './models';
+
+// AxionCitadel Integration - Arbitrage Engines
+export * from './engines';
+
+// AxionCitadel Integration - Graph Infrastructure
+export * from './graph';
