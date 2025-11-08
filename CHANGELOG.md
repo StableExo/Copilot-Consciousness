@@ -5,6 +5,145 @@ All notable changes to the Copilot-Consciousness project will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.0] - 2025-11-08
+
+### Added - AxionCitadel High-Value Intelligence Systems Integration
+
+This release integrates sophisticated intelligence systems from AxionCitadel into general-purpose AI consciousness capabilities. The integration transforms MEV-specific arbitrage intelligence into domain-agnostic decision-making, pattern recognition, and risk assessment systems.
+
+#### Context-Driven AI Collaboration Framework
+- **Autonomous Goals** (`.consciousness/context/autonomous-goals.ts`)
+  - Goal tracking with progress monitoring and evolution history
+  - Goal hierarchy with parent/child relationships
+  - Priority-based management (Critical, High, Medium, Low, Background)
+  - Automatic completion and status transitions
+  - Metrics tracking per goal
+
+- **Operational Playbook** (`.consciousness/context/operational-playbook.ts`)
+  - Decision-making procedures with multi-step workflows
+  - Risk/reward scoring for alternatives
+  - Confidence calculation based on score separation
+  - Success rate tracking and lessons learned
+  - Recommended playbook selection based on context
+
+- **Architectural Principles** (`.consciousness/context/architectural-principles.ts`)
+  - Principle tracking across 6 categories (Design, Performance, Security, Scalability, Maintainability, Reliability)
+  - Violation recording with severity levels
+  - Exception management with approvals
+  - Evolution history and impact tracking
+  - Compliance metrics and reporting
+
+- **Vision & Mission** (`.consciousness/context/vision-mission.ts`)
+  - Vision statements with time horizons (short/medium/long-term, visionary)
+  - Mission alignment checking with deviation scoring
+  - Strategic objectives with OKR-style key results
+  - Alignment recommendations
+  - Progress tracking
+
+- **Evolution Tracker** (`.consciousness/context/evolution-tracker.ts`)
+  - Capability lifecycle tracking (Planned → In Development → Testing → Deployed → Deprecated)
+  - Maturity level calculation (0-100%)
+  - Usage statistics and success rates
+  - Milestone management with progress tracking
+  - Adaptation event recording
+  - Phase transitions (Initialization → Learning → Optimization → Adaptation → Mastery)
+
+#### Knowledge Management System
+- **Codex Manager** (`.consciousness/knowledge-base/codex-manager.ts`)
+  - Dynamic knowledge base with semantic search
+  - Relevance scoring based on title, content, and tag matches
+  - Category and tag indexing
+  - Importance weighting (0-1 scale)
+  - Reference linking between entries
+  - Access tracking and popularity metrics
+  - Related entry suggestions
+
+- **Pattern Tracker** (`.consciousness/knowledge-base/pattern-tracker.ts`)
+  - Pattern detection across 5 types (Temporal, Behavioral, Correlation, Anomaly, Cyclic)
+  - Automatic pattern discovery from observations
+  - Pattern strength and confidence scoring
+  - Predictive capabilities with probability and timeframe
+  - Occurrence tracking and match scoring
+  - Predictive power calculation
+
+- **Historical Analyzer** (`.consciousness/knowledge-base/historical-analyzer.ts`)
+  - Time series data tracking and analysis
+  - Trend detection with linear regression
+  - Direction classification (Increasing, Decreasing, Stable, Volatile)
+  - Statistical anomaly detection (configurable sensitivity)
+  - Period comparison with significance testing
+  - Insight generation and evidence collection
+
+- **Learning Engine** (`.consciousness/knowledge-base/learning-engine.ts`)
+  - Multiple learning modes (Supervised, Unsupervised, Reinforcement, Transfer)
+  - Learning session management with performance metrics
+  - Skill proficiency system (0-1 scale)
+  - Learning curves tracking improvement over time
+  - Feedback integration (Positive, Negative, Neutral)
+  - Automated learning recommendations
+
+#### Risk Modeling & Assessment Framework
+- **Risk Assessor** (`.consciousness/risk-modeling/risk-assessor.ts`)
+  - Multi-category risk factors (Operational, Strategic, Financial, Technical, Reputational, Compliance)
+  - Configurable aggregation methods (Weighted Average, Max, Bayesian)
+  - Dynamic sensitivity adjustment per category
+  - Risk level classification (Critical, High, Medium, Low, Minimal)
+  - Trend analysis with direction and change rate
+  - Automated recommendation generation
+  - Confidence scoring based on factor consistency
+
+- **Risk Calibrator** (`.consciousness/risk-modeling/risk-calibrator.ts`)
+  - Prediction accuracy tracking with confusion matrix
+  - Bias detection (over-prediction vs under-prediction)
+  - Factor correlation analysis (Pearson correlation)
+  - Predictive power measurement
+  - Automatic parameter adjustment with learning rate control
+  - Calibration confidence based on accuracy and sample size
+
+- **Threshold Manager** (`.consciousness/risk-modeling/threshold-manager.ts`)
+  - Static and dynamic threshold definitions
+  - Multiple operators (Greater Than, Less Than, Equals, Between)
+  - Violation tracking with severity levels (Info, Warning, Critical)
+  - Cooldown management to prevent alert fatigue
+  - Acknowledgment system for violation resolution
+  - Statistical adaptation for dynamic thresholds (mean + N standard deviations)
+  - Historical metric tracking for threshold calculation
+
+- **Risk Models Configuration** (`.consciousness/risk-modeling/risk-models.json`)
+  - Pre-configured risk profiles (default, conservative, aggressive, balanced)
+  - Common risk factors with default weights and thresholds
+  - Calibration settings (min data points, interval, learning rate, target accuracy)
+
+#### Testing & Quality
+- **21 new comprehensive tests** across all systems
+- **100% pass rate** for all consciousness module tests
+- Updated Jest configuration to include `.consciousness` directory
+- Test coverage for:
+  - Goal creation, progress tracking, and evolution
+  - Decision-making with alternatives and confidence
+  - Risk assessment, calibration, and threshold management
+  - Knowledge search, pattern detection, and learning
+  - All core functionality in each system
+
+#### Documentation
+- **INTEGRATION_GUIDE.md** - Comprehensive integration guide with examples
+  - Philosophy: "Adapt, not copy" - transforming MEV logic to general AI consciousness
+  - Detailed component documentation with code examples
+  - Usage patterns for each system
+  - Configuration guide
+  - Testing instructions
+
+### Changed
+- Enhanced Jest configuration to test `.consciousness` modules
+- Extended test coverage to include consciousness framework components
+
+### Technical Notes
+- All systems implemented in TypeScript with full type safety
+- Modular, composable design enabling independent usage
+- Configuration-driven with JSON config files
+- No breaking changes to existing functionality
+- Integration maintains MIT license compatibility
+
 ## [3.2.0] - 2025-11-08
 
 ### Added - AxionCitadel Phase 2: TypeScript Execution Components

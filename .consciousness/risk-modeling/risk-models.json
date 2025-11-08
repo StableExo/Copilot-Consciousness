@@ -1,0 +1,133 @@
+{
+  "models": {
+    "default": {
+      "name": "Default Risk Model",
+      "baseRiskLevel": 0.1,
+      "aggregationMethod": "WEIGHTED_AVERAGE",
+      "dynamicAdjustment": true,
+      "sensitivityFactors": {
+        "OPERATIONAL": 1.0,
+        "STRATEGIC": 0.9,
+        "FINANCIAL": 1.1,
+        "TECHNICAL": 0.8,
+        "REPUTATIONAL": 0.95,
+        "COMPLIANCE": 1.2
+      }
+    },
+    "conservative": {
+      "name": "Conservative Risk Model",
+      "baseRiskLevel": 0.2,
+      "aggregationMethod": "MAX",
+      "dynamicAdjustment": false,
+      "sensitivityFactors": {
+        "OPERATIONAL": 1.3,
+        "STRATEGIC": 1.2,
+        "FINANCIAL": 1.5,
+        "TECHNICAL": 1.1,
+        "REPUTATIONAL": 1.3,
+        "COMPLIANCE": 1.5
+      }
+    },
+    "aggressive": {
+      "name": "Aggressive Risk Model",
+      "baseRiskLevel": 0.05,
+      "aggregationMethod": "WEIGHTED_AVERAGE",
+      "dynamicAdjustment": true,
+      "sensitivityFactors": {
+        "OPERATIONAL": 0.7,
+        "STRATEGIC": 0.6,
+        "FINANCIAL": 0.8,
+        "TECHNICAL": 0.5,
+        "REPUTATIONAL": 0.7,
+        "COMPLIANCE": 0.9
+      }
+    },
+    "balanced": {
+      "name": "Balanced Risk Model",
+      "baseRiskLevel": 0.15,
+      "aggregationMethod": "BAYESIAN",
+      "dynamicAdjustment": true,
+      "sensitivityFactors": {
+        "OPERATIONAL": 1.0,
+        "STRATEGIC": 1.0,
+        "FINANCIAL": 1.0,
+        "TECHNICAL": 1.0,
+        "REPUTATIONAL": 1.0,
+        "COMPLIANCE": 1.0
+      }
+    }
+  },
+  "thresholds": {
+    "riskLevels": {
+      "CRITICAL": 0.8,
+      "HIGH": 0.6,
+      "MEDIUM": 0.4,
+      "LOW": 0.2,
+      "MINIMAL": 0.0
+    },
+    "defaults": {
+      "OPERATIONAL": 0.7,
+      "STRATEGIC": 0.65,
+      "FINANCIAL": 0.75,
+      "TECHNICAL": 0.6,
+      "REPUTATIONAL": 0.7,
+      "COMPLIANCE": 0.8
+    }
+  },
+  "calibration": {
+    "minDataPoints": 50,
+    "calibrationInterval": 86400000,
+    "learningRate": 0.1,
+    "targetAccuracy": 0.85
+  },
+  "commonFactors": [
+    {
+      "name": "System Load",
+      "category": "OPERATIONAL",
+      "defaultWeight": 0.8,
+      "threshold": 0.7
+    },
+    {
+      "name": "Error Rate",
+      "category": "OPERATIONAL",
+      "defaultWeight": 0.9,
+      "threshold": 0.1
+    },
+    {
+      "name": "Response Time",
+      "category": "TECHNICAL",
+      "defaultWeight": 0.7,
+      "threshold": 0.6
+    },
+    {
+      "name": "Resource Availability",
+      "category": "OPERATIONAL",
+      "defaultWeight": 0.85,
+      "threshold": 0.3
+    },
+    {
+      "name": "Security Posture",
+      "category": "COMPLIANCE",
+      "defaultWeight": 0.95,
+      "threshold": 0.2
+    },
+    {
+      "name": "Budget Variance",
+      "category": "FINANCIAL",
+      "defaultWeight": 0.8,
+      "threshold": 0.5
+    },
+    {
+      "name": "Strategic Alignment",
+      "category": "STRATEGIC",
+      "defaultWeight": 0.75,
+      "threshold": 0.4
+    },
+    {
+      "name": "Stakeholder Satisfaction",
+      "category": "REPUTATIONAL",
+      "defaultWeight": 0.8,
+      "threshold": 0.3
+    }
+  ]
+}
