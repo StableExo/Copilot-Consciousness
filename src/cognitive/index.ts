@@ -7,7 +7,10 @@
  * - Self-awareness and reflection
  * - Adaptive behavior
  * - Skill development and assessment
+ * - Ethical review and moral reasoning (Ethics Engine from AGI)
+ * - Harmonic Principle for balanced optimization
  */
 
 export * from './types';
 export * from './development';
+export * from './ethics';
