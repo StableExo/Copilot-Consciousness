@@ -7,6 +7,88 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.3.0] - 2025-11-08
 
+### Added - Multi-Engine Strategy System Integration
+
+This release integrates the sophisticated Multi-Engine Strategy System from AxionCitadel into Copilot-Consciousness, providing advanced spatial reasoning, pattern recognition, and multi-path problem-solving capabilities for cosmic-scale intelligence.
+
+#### Core Strategy Engines
+- **Spatial Reasoning Engine** (`.consciousness/strategy-engines/spatial-reasoning.ts`)
+  - Multi-dimensional problem space analysis across configurable dimensions
+  - Spatial clustering with distance-based algorithms (Euclidean, Manhattan, Chebyshev, Cosine)
+  - Dimensional statistical analysis (min, max, mean, variance, distribution)
+  - Opportunity detection in high-density regions
+  - Cross-dimensional correlation pattern detection
+  - Graph connectivity assessment
+
+- **Multi-Path Explorer** (`.consciousness/strategy-engines/multi-path-explorer.ts`)
+  - Multiple path-finding algorithms (BFS, DFS, Best-First, A*)
+  - Path discovery from initial to goal state
+  - Path validation and feasibility checking
+  - Cyclic dependency detection
+  - Multi-criteria path optimization
+  - Constraint-based filtering
+
+- **Opportunity Scorer & Ranker** (`.consciousness/strategy-engines/opportunity-scorer.ts`)
+  - Multi-criteria evaluation with configurable weights
+  - Multiple scoring methods (Weighted Sum, Weighted Product, TOPSIS)
+  - Expected value calculation with time discounting
+  - Risk-adjusted value computation
+  - Opportunity comparison and ranking
+  - Integration with risk assessment framework
+
+- **Pattern Recognition Engine** (`.consciousness/strategy-engines/pattern-recognition.ts`)
+  - Pattern library management (add, remove, retrieve)
+  - Pattern matching with confidence scoring (LOW, MEDIUM, HIGH, VERY_HIGH)
+  - Pattern learning from execution outcomes
+  - Pattern evolution framework
+  - Pattern composition (sequential, parallel, conditional, hierarchical)
+  - Pattern analytics and trend analysis
+  - Support for 5 pattern categories (STRUCTURAL, BEHAVIORAL, TEMPORAL, SPATIAL, HYBRID)
+
+#### Type System & Utilities
+- Complete type definitions for problem spaces, paths, opportunities, and patterns
+- Distance calculator with 5 metrics and normalization
+- Graph builder with shortest path and cycle detection
+- Multi-criteria scorer with TOPSIS and ranking algorithms
+- Full TypeScript type safety
+
+#### Configuration & Patterns
+- `spatial-config.json` - Spatial reasoning parameters
+- `path-config.json` - Path exploration settings
+- `scoring-config.json` - Opportunity scoring criteria
+- `patterns.json` - Initial library with 10 pre-defined patterns
+
+#### Comprehensive Testing
+- **95 tests total** with **86% code coverage**
+- 20 tests for spatial reasoning
+- 20 tests for multi-path exploration
+- 24 tests for opportunity scoring
+- 31 tests for pattern recognition
+- Statement coverage: 86%
+- Branch coverage: 77.72%
+
+#### Documentation
+- `STRATEGY_ENGINES_GUIDE.md` - Comprehensive overview
+- `SPATIAL_REASONING_GUIDE.md` - Detailed spatial reasoning guide
+- `PATTERN_RECOGNITION_GUIDE.md` - Complete pattern recognition guide
+- Integration examples and best practices
+- Performance optimization guidelines
+- Troubleshooting section
+
+### Changed
+- Enhanced scoring algorithm to properly handle minimize/maximize criteria
+- Updated pattern matching to respect both pattern and engine confidence thresholds
+
+### Technical Details
+- Source: AxionCitadel (https://github.com/metalxalloy/AxionCitadel)
+- Generalized from MEV/DeFi-specific to abstract problem-solving
+- No breaking changes to existing functionality
+- Compatible with Context Framework, Knowledge Base, and Risk Modeling
+
+---
+
+## [3.2.0] - 2025-11-08
+
 ### Added - AxionCitadel High-Value Intelligence Systems Integration
 
 This release integrates sophisticated intelligence systems from AxionCitadel into general-purpose AI consciousness capabilities. The integration transforms MEV-specific arbitrage intelligence into domain-agnostic decision-making, pattern recognition, and risk assessment systems.
