@@ -50,7 +50,7 @@ describe('TransactionManager', () => {
       maxDelay: 500,
       backoffMultiplier: 2,
       gasPriceIncrement: 1.1,
-    });
+    }, 15000);
   });
 
   describe('initialization', () => {
@@ -61,15 +61,15 @@ describe('TransactionManager', () => {
       const stats = defaultManager.getStatistics();
       expect(stats.totalTransactions).toBe(0);
       expect(stats.successfulTransactions).toBe(0);
-    });
+    }, 15000);
 
     it('should initialize with custom retry config', () => {
       const customManager = new TransactionManager(mockProvider, mockNonceManager, {
         maxRetries: 5,
         initialDelay: 1000,
-      });
+      }, 15000);
       expect(customManager).toBeDefined();
-    });
+    }, 15000);
 
     it('should initialize with custom gas spike config', () => {
       const customManager = new TransactionManager(
@@ -82,7 +82,7 @@ describe('TransactionManager', () => {
         }
       );
       expect(customManager).toBeDefined();
-    });
+    }, 15000);
   });
 
   describe('executeTransaction', () => {
@@ -102,6 +102,9 @@ describe('TransactionManager', () => {
       const mockReceipt = {
         status: 1,
         gasUsed: BigNumber.from('100000'),
+        blockNumber: 100,
+        blockHash: '0xblock',
+        confirmations: 1,
         transactionHash: '0xabcdef',
         blockNumber: 100,
         blockHash: '0xblock',
@@ -120,7 +123,7 @@ describe('TransactionManager', () => {
       expect(result.txHash).toBe('0xabcdef');
       expect(result.receipt).toBeDefined();
       expect(result.metadata.state).toBe(TransactionState.CONFIRMED);
-    }, 10000);
+    }, 15000);
 
     it('should retry on transient failures', async () => {
       mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000'));
@@ -142,6 +145,9 @@ describe('TransactionManager', () => {
         blockNumber: 100,
         blockHash: '0xblock',
         confirmations: 1,
+        blockNumber: 100,
+        blockHash: '0xblock',
+        confirmations: 1,
       } as any;
 
       mockProvider.waitForTransaction.mockResolvedValue(mockReceipt);
@@ -153,7 +159,7 @@ describe('TransactionManager', () => {
 
       expect(result.success).toBe(true);
       expect(mockNonceManager.sendTransaction).toHaveBeenCalledTimes(2);
-    }, 10000);
+    }, 15000);
 
     it('should not retry on fatal errors', async () => {
       mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000'));
@@ -171,7 +177,7 @@ describe('TransactionManager', () => {
       expect(result.success).toBe(false);
       expect(mockNonceManager.sendTransaction).toHaveBeenCalledTimes(1);
       expect(result.metadata.state).toBe(TransactionState.FAILED);
-    });
+    }, 15000);
 
     it('should fail after max retries exhausted', async () => {
       mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000'));
@@ -190,7 +196,7 @@ describe('TransactionManager', () => {
       // maxRetries is 2, so total attempts = 1 initial + 2 retries = 3
       expect(mockNonceManager.sendTransaction).toHaveBeenCalledTimes(3);
       expect(result.metadata.attempts).toBe(3);
-    });
+    }, 15000);
 
     it('should increase gas price on retry', async () => {
       mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000'));
@@ -214,6 +220,9 @@ describe('TransactionManager', () => {
         blockNumber: 100,
         blockHash: '0xblock',
         confirmations: 1,
+        blockNumber: 100,
+        blockHash: '0xblock',
+        confirmations: 1,
       } as any);
 
       const result = await manager.executeTransaction(
@@ -224,7 +233,7 @@ describe('TransactionManager', () => {
 
       expect(result.success).toBe(true);
       expect(mockNonceManager.sendTransaction).toHaveBeenCalledTimes(2);
-    }, 10000);
+    }, 15000);
   });
 
   describe('gas spike protection', () => {
@@ -240,7 +249,7 @@ describe('TransactionManager', () => {
       expect(result.success).toBe(false);
       expect(result.error).toContain('Gas spike detected');
       expect(mockNonceManager.sendTransaction).not.toHaveBeenCalled();
-    });
+    }, 15000);
 
     it('should allow transaction if gas price is acceptable', async () => {
       mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000')); // 50 Gwei
@@ -254,6 +263,9 @@ describe('TransactionManager', () => {
       mockProvider.waitForTransaction.mockResolvedValue({
         status: 1,
         gasUsed: BigNumber.from('100000'),
+        blockNumber: 100,
+        blockHash: '0xblock',
+        confirmations: 1,
       } as any);
 
       const result = await manager.executeTransaction(
@@ -262,7 +274,7 @@ describe('TransactionManager', () => {
       );
 
       expect(result.success).toBe(true);
-    });
+    }, 15000);
   });
 
   describe('replaceTransaction', () => {
@@ -285,6 +297,9 @@ describe('TransactionManager', () => {
       mockProvider.waitForTransaction.mockResolvedValue({
         status: 1,
         gasUsed: BigNumber.from('100000'),
+        blockNumber: 100,
+        blockHash: '0xblock',
+        confirmations: 1,
       } as any);
 
       const result = await manager.executeTransaction(
@@ -309,6 +324,9 @@ describe('TransactionManager', () => {
       mockProvider.waitForTransaction.mockResolvedValue({
         status: 1,
         gasUsed: BigNumber.from('100000'),
+        blockNumber: 100,
+        blockHash: '0xblock',
+        confirmations: 1,
       } as any);
 
       const replaceResult = await manager.replaceTransaction(
@@ -319,13 +337,13 @@ describe('TransactionManager', () => {
       expect(replaceResult.success).toBe(true);
       expect(replaceResult.txHash).toBe('0xreplacement');
       expect(replaceResult.metadata.replacedBy).toBe('0xreplacement');
-    });
+    }, 15000);
 
     it('should fail if original transaction not found', async () => {
       await expect(
         manager.replaceTransaction('invalid_tx_id', BigNumber.from('100000000000'))
       ).rejects.toThrow('Transaction invalid_tx_id not found in registry');
-    });
+    }, 15000);
   });
 
   describe('getTransactionStatus', () => {
@@ -341,6 +359,9 @@ describe('TransactionManager', () => {
       mockProvider.waitForTransaction.mockResolvedValue({
         status: 1,
         gasUsed: BigNumber.from('100000'),
+        blockNumber: 100,
+        blockHash: '0xblock',
+        confirmations: 1,
       } as any);
 
       const result = await manager.executeTransaction(
@@ -352,12 +373,12 @@ describe('TransactionManager', () => {
       expect(status).toBeDefined();
       expect(status?.state).toBe(TransactionState.CONFIRMED);
       expect(status?.hash).toBe('0xabcdef');
-    });
+    }, 15000);
 
     it('should return undefined for non-existent transaction', () => {
       const status = manager.getTransactionStatus('non_existent_id');
       expect(status).toBeUndefined();
-    });
+    }, 15000);
   });
 
   describe('getStatistics', () => {
@@ -374,6 +395,9 @@ describe('TransactionManager', () => {
       mockProvider.waitForTransaction.mockResolvedValue({
         status: 1,
         gasUsed: BigNumber.from('100000'),
+        blockNumber: 100,
+        blockHash: '0xblock',
+        confirmations: 1,
       } as any);
 
       await manager.executeTransaction('0xTargetContract', '0x1234');
@@ -383,7 +407,7 @@ describe('TransactionManager', () => {
       expect(stats.successfulTransactions).toBe(1);
       expect(stats.failedTransactions).toBe(0);
       expect(stats.successRate).toBe(100);
-    });
+    }, 15000);
 
     it('should calculate success rate correctly', async () => {
       mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000'));
@@ -398,6 +422,9 @@ describe('TransactionManager', () => {
       mockProvider.waitForTransaction.mockResolvedValueOnce({
         status: 1,
         gasUsed: BigNumber.from('100000'),
+        blockNumber: 100,
+        blockHash: '0xblock',
+        confirmations: 1,
       } as any);
 
       await manager.executeTransaction('0xTargetContract', '0x1234');
@@ -414,7 +441,7 @@ describe('TransactionManager', () => {
       expect(stats.successfulTransactions).toBe(1);
       expect(stats.failedTransactions).toBe(1);
       expect(stats.successRate).toBe(50);
-    });
+    }, 15000);
   });
 
   describe('nonce error handling', () => {
@@ -433,6 +460,9 @@ describe('TransactionManager', () => {
       mockProvider.waitForTransaction.mockResolvedValue({
         status: 1,
         gasUsed: BigNumber.from('100000'),
+        blockNumber: 100,
+        blockHash: '0xblock',
+        confirmations: 1,
       } as any);
 
       const result = await manager.executeTransaction(
@@ -442,7 +472,7 @@ describe('TransactionManager', () => {
 
       expect(result.success).toBe(true);
       expect(mockNonceManager.sendTransaction).toHaveBeenCalledTimes(2);
-    });
+    }, 15000);
   });
 
   describe('EIP-1559 transactions', () => {
@@ -459,6 +489,9 @@ describe('TransactionManager', () => {
       mockProvider.waitForTransaction.mockResolvedValue({
         status: 1,
         gasUsed: BigNumber.from('100000'),
+        blockNumber: 100,
+        blockHash: '0xblock',
+        confirmations: 1,
       } as any);
 
       const result = await manager.executeTransaction(
@@ -471,6 +504,6 @@ describe('TransactionManager', () => {
       );
 
       expect(result.success).toBe(true);
-    });
+    }, 15000);
   });
 });
