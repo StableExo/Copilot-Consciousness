@@ -24,6 +24,8 @@ describe('TransactionManager', () => {
       getTransactionCount: jest.fn(),
       waitForTransaction: jest.fn(),
       getTransaction: jest.fn(),
+      getTransactionReceipt: jest.fn(),
+      getFeeData: jest.fn(),
       send: jest.fn(),
     } as any;
 
@@ -50,7 +52,7 @@ describe('TransactionManager', () => {
       maxDelay: 500,
       backoffMultiplier: 2,
       gasPriceIncrement: 1.1,
-    }, 15000);
+    });
   });
 
   describe('initialization', () => {
@@ -67,7 +69,7 @@ describe('TransactionManager', () => {
       const customManager = new TransactionManager(mockProvider, mockNonceManager, {
         maxRetries: 5,
         initialDelay: 1000,
-      }, 15000);
+      });
       expect(customManager).toBeDefined();
     }, 15000);
 
