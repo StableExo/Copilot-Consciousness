@@ -15,6 +15,7 @@
  */
 
 import { ethers, providers, BigNumber } from 'ethers';
+import { Mutex } from 'async-mutex';
 import { logger } from '../utils/logger';
 import { NonceManager } from './NonceManager';
 
@@ -150,6 +151,13 @@ export class TransactionManager {
   // Gas price history for spike detection
   private gasPriceHistory: Array<{ timestamp: number; gasPrice: BigNumber }>;
   
+  // Nonce management with mutex for thread-safety
+  private nonceMutex = new Mutex();
+  private nonceCache: Map<string, number> = new Map();
+  
+  // Gas history for spike detection
+  private gasHistory: bigint[] = [];
+  
   // Statistics
   private stats = {
     totalTransactions: 0,
@@ -175,6 +183,101 @@ export class TransactionManager {
     this.gasPriceHistory = [];
 
     logger.info('[TransactionManager] Initialized with retry and gas spike protection');
+  }
+
+  /**
+   * Get nonce with mutex for thread-safe handling
+   */
+  async getNonce(address?: string): Promise<number> {
+    const addr = address || await this.nonceManager.getAddress();
+    
+    return this.nonceMutex.runExclusive(async () => {
+      if (this.nonceCache.has(addr)) {
+        const nonce = this.nonceCache.get(addr)!;
+        this.nonceCache.set(addr, nonce + 1);
+        return nonce;
+      }
+
+      const nonce = await this.provider.getTransactionCount(addr, 'pending');
+      this.nonceCache.set(addr, nonce + 1);
+      return nonce;
+    });
+  }
+
+  /**
+   * Reset nonce cache for an address
+   */
+  resetNonce(address?: string): void {
+    if (address) {
+      this.nonceCache.delete(address);
+    } else {
+      this.nonceCache.clear();
+    }
+  }
+
+  /**
+   * Confirm transaction with proper timeout handling
+   */
+  async confirmTransaction(
+    txHash: string,
+    timeout: number = 60000
+  ): Promise<ethers.providers.TransactionReceipt> {
+    const startTime = Date.now();
+
+    while (Date.now() - startTime < timeout) {
+      try {
+        const receipt = await this.provider.getTransactionReceipt(txHash);
+        
+        if (receipt) {
+          if (receipt.status === 1) {
+            return receipt;
+          } else {
+            throw new Error(`Transaction reverted: ${txHash}`);
+          }
+        }
+      } catch (error) {
+        if (error instanceof Error && error.message.includes('reverted')) {
+          throw error;
+        }
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    throw new Error(`Transaction confirmation timeout after ${timeout}ms: ${txHash}`);
+  }
+
+  /**
+   * Detect gas spike with graceful error handling
+   */
+  async detectGasSpike(): Promise<boolean> {
+    try {
+      const feeData = await this.provider.getFeeData();
+      const currentGasPrice = feeData.gasPrice || feeData.maxFeePerGas;
+
+      if (!currentGasPrice) {
+        return false;
+      }
+
+      this.gasHistory.push(currentGasPrice.toBigInt());
+      if (this.gasHistory.length > 100) {
+        this.gasHistory.shift();
+      }
+
+      if (this.gasHistory.length < 10) {
+        return false;
+      }
+
+      const sum = this.gasHistory.reduce((a, b) => a + b, 0n);
+      const average = sum / BigInt(this.gasHistory.length);
+      const threshold = average * 2n;
+
+      return currentGasPrice.toBigInt() > threshold;
+
+    } catch (error) {
+      logger.warn(`[TransactionManager] Gas spike check failed: ${error instanceof Error ? error.message : String(error)}`);
+      return false;
+    }
   }
 
   /**
@@ -497,6 +600,24 @@ export class TransactionManager {
         throw new Error('Original transaction not found');
       }
 
+      // Check if transaction is already mined
+      if (originalTx.blockNumber) {
+        logger.info(`[TransactionManager] Transaction ${metadata.hash} already mined, returning original hash`);
+        return {
+          success: true,
+          txHash: metadata.hash,
+          metadata
+        };
+      }
+
+      // Calculate minimum replacement gas price (10% higher)
+      const originalGasPrice = originalTx.gasPrice || originalTx.maxFeePerGas || BigNumber.from(0);
+      const minReplacementGas = originalGasPrice.mul(110).div(100);
+      
+      const replacementGasPrice = newGasPrice.gt(minReplacementGas)
+        ? newGasPrice
+        : minReplacementGas;
+
       // Build replacement transaction with same nonce but higher gas
       const replacementTx: providers.TransactionRequest = {
         to: originalTx.to!,
@@ -504,8 +625,16 @@ export class TransactionManager {
         gasLimit: originalTx.gasLimit,
         value: originalTx.value,
         nonce: originalTx.nonce,
-        gasPrice: newGasPrice,
+        chainId: originalTx.chainId,
       };
+
+      // Handle EIP-1559 vs legacy transactions
+      if (originalTx.maxFeePerGas) {
+        replacementTx.maxFeePerGas = replacementGasPrice;
+        replacementTx.maxPriorityFeePerGas = originalTx.maxPriorityFeePerGas;
+      } else {
+        replacementTx.gasPrice = replacementGasPrice;
+      }
 
       // Send replacement
       const response = await this.nonceManager.sendTransaction(replacementTx);

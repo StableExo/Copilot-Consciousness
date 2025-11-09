@@ -8,9 +8,6 @@ import { ethers, BigNumber } from 'ethers';
 import { TransactionManager, TransactionState, TransactionOptions } from '../TransactionManager';
 import { NonceManager } from '../NonceManager';
 
-// Mock providers and signers
-jest.mock('ethers');
-
 describe('TransactionManager', () => {
   let manager: TransactionManager;
   let mockProvider: jest.Mocked<ethers.providers.Provider>;
@@ -20,10 +17,16 @@ describe('TransactionManager', () => {
   beforeEach(() => {
     // Create mock provider
     mockProvider = {
-      getGasPrice: jest.fn(),
+      getGasPrice: jest.fn().mockResolvedValue(BigNumber.from('50000000000')),
       getTransactionCount: jest.fn(),
       waitForTransaction: jest.fn(),
       getTransaction: jest.fn(),
+      getTransactionReceipt: jest.fn(),
+      getFeeData: jest.fn().mockResolvedValue({
+        gasPrice: BigNumber.from('50000000000'),
+        maxFeePerGas: BigNumber.from('50000000000'),
+        maxPriorityFeePerGas: BigNumber.from('2000000000'),
+      }),
       send: jest.fn(),
     } as any;
 
@@ -45,12 +48,12 @@ describe('TransactionManager', () => {
 
     // Initialize transaction manager
     manager = new TransactionManager(mockProvider, mockNonceManager, {
-      maxRetries: 2,
-      initialDelay: 100,
-      maxDelay: 500,
-      backoffMultiplier: 2,
+      maxRetries: 1,
+      initialDelay: 10,
+      maxDelay: 50,
+      backoffMultiplier: 1,
       gasPriceIncrement: 1.1,
-    }, 15000);
+    });
   });
 
   describe('initialization', () => {
@@ -67,7 +70,7 @@ describe('TransactionManager', () => {
       const customManager = new TransactionManager(mockProvider, mockNonceManager, {
         maxRetries: 5,
         initialDelay: 1000,
-      }, 15000);
+      });
       expect(customManager).toBeDefined();
     }, 15000);
 
