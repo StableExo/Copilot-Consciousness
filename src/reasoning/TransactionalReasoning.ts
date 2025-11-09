@@ -19,7 +19,7 @@ import {
   TransactionalReasoningConfig,
   ExplorationStats,
 } from './types';
-import { CognitiveState, MemoryType, Priority } from '../types';
+import { MemoryType, Priority } from '../types';
 
 /**
  * Default configuration

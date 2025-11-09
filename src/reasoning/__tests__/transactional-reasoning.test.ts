@@ -132,7 +132,7 @@ describe('TransactionalReasoning', () => {
 
     it('should restore cognitive state after rollback', async () => {
       // Add some initial memory
-      const initialMemoryId = memorySystem.addWorkingMemory(
+      memorySystem.addWorkingMemory(
         { data: 'initial' },
         Priority.HIGH
       );
@@ -375,7 +375,7 @@ describe('TransactionalReasoning', () => {
         return result.success ? (result.result || depth) : depth;
       };
 
-      const finalDepth = await nestedExploration(1);
+      await nestedExploration(1);
 
       // Should stop at maxDepth
       expect(depthReached).toBeLessThanOrEqual(maxDepth);
@@ -384,7 +384,7 @@ describe('TransactionalReasoning', () => {
 
   describe('Memory Integration', () => {
     it('should preserve memory during successful exploration', async () => {
-      const initialMemoryId = memorySystem.addWorkingMemory(
+      memorySystem.addWorkingMemory(
         { data: 'initial' },
         Priority.HIGH
       );
@@ -407,7 +407,7 @@ describe('TransactionalReasoning', () => {
     });
 
     it('should restore memory on failed exploration', async () => {
-      const initialMemoryId = memorySystem.addWorkingMemory(
+      memorySystem.addWorkingMemory(
         { data: 'initial' },
         Priority.HIGH
       );

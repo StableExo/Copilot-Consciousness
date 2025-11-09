@@ -5,7 +5,7 @@
  * of speculative reasoning with automatic rollback on ethical violations.
  */
 
-import { UUID, Timestamp, MemoryType, Priority } from '../types';
+import { UUID, Timestamp } from '../types';
 import { CognitiveState } from '../types';
 import { MemoryEntry } from '../consciousness/memory/types';
 
