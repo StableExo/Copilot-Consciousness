@@ -226,7 +226,7 @@ export class TransactionManager {
 
       return result;
     } catch (error) {
-      logger.error(`[TransactionManager] Transaction ${txId} failed:`, error);
+      logger.error(`[TransactionManager] Transaction ${txId} failed: ${error instanceof Error ? error.message : String(error)}`);
       this.stats.failedTransactions++;
       metadata.state = TransactionState.FAILED;
       metadata.error = error instanceof Error ? error.message : String(error);
@@ -392,7 +392,7 @@ export class TransactionManager {
 
       return receipt;
     } catch (error) {
-      logger.error(`[TransactionManager] Confirmation failed for ${txHash}:`, error);
+      logger.error(`[TransactionManager] Confirmation failed for ${txHash}: ${error instanceof Error ? error.message : String(error)}`);
       throw error;
     }
   }
@@ -441,7 +441,7 @@ export class TransactionManager {
 
       return { safe: true };
     } catch (error) {
-      logger.warn('[TransactionManager] Gas spike check failed:', error);
+      logger.warn(`[TransactionManager] Gas spike check failed: ${error instanceof Error ? error.message : String(error)}`);
       return { safe: true };  // Allow transaction on check failure
     }
   }
@@ -537,7 +537,7 @@ export class TransactionManager {
         throw new Error('Replacement transaction reverted');
       }
     } catch (error) {
-      logger.error(`[TransactionManager] Transaction replacement failed:`, error);
+      logger.error(`[TransactionManager] Transaction replacement failed: ${error instanceof Error ? error.message : String(error)}`);
       metadata.state = TransactionState.FAILED;
       metadata.error = error instanceof Error ? error.message : String(error);
 

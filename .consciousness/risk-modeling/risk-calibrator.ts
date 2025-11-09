@@ -35,12 +35,13 @@ export interface CalibrationConfig {
  * Tunes risk assessment parameters based on historical accuracy
  */
 export class RiskCalibrator {
-  private calibrationHistory: CalibrationData[] = new Map();
+  private calibrationHistory: CalibrationData[] = [];
   private config: CalibrationConfig;
   private lastCalibration: number = 0;
   private parameterAdjustments: Map<string, number> = new Map();
 
   constructor(config?: Partial<CalibrationConfig>) {
+    this.calibrationHistory = [];
     this.config = {
       minDataPoints: 50,
       calibrationInterval: 24 * 60 * 60 * 1000, // 24 hours

@@ -1,52 +1,58 @@
+import { ArbitrageOpportunity } from '../arbitrage/models/ArbitrageOpportunity';
+
 class ProfitCalculator {
     constructor() {
         // Initialize any required properties
     }
 
     // Validate the opportunity
-    validateOpportunity(opportunity) {
+    validateOpportunity(opportunity: ArbitrageOpportunity): boolean {
         // Logic to validate the given opportunity
         return true; // Placeholder return
     }
 
     // Simulate a swap
-    simulateSwap(amount, fromCurrency, toCurrency) {
+    simulateSwap(amount: bigint, fromCurrency: string, toCurrency: string): bigint {
         // Logic for simulating a swap between currencies
-        return { swappedAmount: amount * 1.02 }; // Placeholder logic
+        return amount * BigInt(102) / BigInt(100); // Placeholder logic
     }
 
     // Estimate gas fees
-    estimateGas(transaction) {
+    estimateGas(transaction: any): Promise<bigint> {
         // Logic to estimate gas
-        return 0.001; // Placeholder value for gas estimation
+        return Promise.resolve(BigInt(1000000000000000)); // Placeholder value for gas estimation
     }
 
     // Calculate profit metrics
-    calculateProfitMetrics(initialInvestment, finalValue) {
+    calculateProfitMetrics(initialInvestment: bigint, finalValue: bigint): { profit: bigint; roi: number } {
         const profit = finalValue - initialInvestment;
-        const profitPercentage = (profit / initialInvestment) * 100;
-        return { profit, profitPercentage };
+        const profitPercentage = Number(profit * BigInt(100) / initialInvestment);
+        return { profit, roi: profitPercentage };
     }
 
     // Main function to orchestrate the profit calculation
-    calculateProfit(opportunity) {
+    calculateProfit(opportunity: ArbitrageOpportunity): bigint {
         if (!this.validateOpportunity(opportunity)) {
             throw new Error('Invalid opportunity');
         }
 
-        // Simulate a swap
-        const simulatedSwapResult = this.simulateSwap(opportunity.amount, opportunity.fromCurrency, opportunity.toCurrency);
+        // Use opportunity properties
+        const inputAmount = BigInt(Math.floor(opportunity.inputAmount));
+        
+        // Simulate a swap - placeholder logic
+        const simulatedSwapResult = this.simulateSwap(
+            inputAmount,
+            opportunity.tokenAddresses[0] || '',
+            opportunity.tokenAddresses[opportunity.tokenAddresses.length - 1] || ''
+        );
 
-        // Estimate gas
-        const estimatedGas = this.estimateGas(simulatedSwapResult);
+        // Estimate gas - placeholder
+        const estimatedGas = BigInt(opportunity.estimatedGas || 0);
 
         // Calculate profit metrics
-        const profitMetrics = this.calculateProfitMetrics(opportunity.initialInvestment, simulatedSwapResult.swappedAmount);
+        const profitMetrics = this.calculateProfitMetrics(inputAmount, simulatedSwapResult);
 
-        return {
-            ...profitMetrics,
-            estimatedGas
-        };
+        return profitMetrics.profit - estimatedGas;
     }
 }
 

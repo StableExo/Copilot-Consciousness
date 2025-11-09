@@ -236,7 +236,7 @@ export class HealthCheckServer {
     }
 
     // Calculate success rate
-    const totalExecutions = this.stats.tradesExecuted + (this.stats.errors || 0);
+    const totalExecutions = this.stats.tradesExecuted;
     const successRate =
       totalExecutions > 0
         ? (this.stats.tradesExecuted / totalExecutions) * 100
