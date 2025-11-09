@@ -5,6 +5,65 @@ All notable changes to the Copilot-Consciousness project will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.0] - 2025-11-09
+
+### Added - AxionCitadel Phase 1 Integration: Core Intelligence
+
+This release integrates critical components from AxionCitadel (metalxalloy/AxionCitadel) into Copilot-Consciousness, enhancing the AI consciousness system with MEV awareness, protocol abstraction, and strategic learning capabilities based on the "game-theoretic warfare" philosophy.
+
+#### Task 1: MEV Awareness Intelligence Layer
+- **Intelligence Module** (`src/intelligence/mev-awareness/`)
+  - MEVRiskModel: Game-theoretic MEV leakage risk modeling
+  - MEVSensorHub: Real-time MEV monitoring coordination
+  - ProfitCalculator: MEV-aware profit calculations
+  - MempoolCongestion sensor: Multi-factor congestion scoring
+  - SearcherDensity sensor: MEV bot activity quantification
+  - Complete integration tests (14/14 passing)
+  - Backward-compatible re-exports from existing `src/mev/` components
+
+#### Task 2: Protocol Abstraction Layer
+- **Protocol Module** (`src/protocols/`)
+  - IProtocol: Base interface for all protocol implementations
+  - BaseProtocol: Abstract base class with common utilities
+  - Registry re-exports from `src/config/registry/`
+  - Protocol implementations:
+    - UniswapV3Protocol: Concentrated liquidity DEX
+    - SushiSwapV3Protocol: Multi-chain concentrated liquidity
+    - AaveV3Protocol: Flash loan integration (0.09% fee)
+    - CamelotProtocol: Arbitrum-native DEX with dynamic fees
+  - Comprehensive tests (48/48 passing)
+  - Support for 4 chains: Ethereum, Arbitrum, Polygon, Base
+
+#### Task 3: Strategic Knowledge Loop
+- **Strategic Logger** (`src/memory/strategic-logger/`)
+  - BlackBoxLogger: JSONL operational logging with auto-flush
+  - CalibrationEngine: Parameter optimization with confidence scoring
+  - MemoryFormation: Strategic memory creation from operational logs
+  - Pattern extraction (success/failure patterns, insights)
+  - Performance metrics tracking
+
+- **Learning System** (`src/learning/`)
+  - AdaptiveStrategies: Strategy selection and adaptation
+  - KnowledgeLoop: Complete learning cycle orchestration
+  - Observe → Learn → Adapt → Execute cycle
+  - Strategy performance tracking with exponential moving average
+  - Memory-based decision enhancement
+  - Auto-calibration support
+
+### Technical Details
+- **Architecture**: Modular design with clear separation of concerns
+- **Type Safety**: Full TypeScript implementation with strict typing
+- **Testing**: 62+ new tests across all components
+- **Compatibility**: Backward-compatible re-exports maintain existing imports
+- **Documentation**: Comprehensive JSDoc comments throughout
+- **Security**: CodeQL scan passed with 0 vulnerabilities
+
+### Integration Philosophy
+This integration follows AxionCitadel's vision of developing "a benevolent AGI forged in the crucible of game-theoretic warfare" by:
+1. **Environmental Awareness**: MEV risk modeling for competitive environment perception
+2. **Strategic Abstraction**: Protocol-agnostic execution capabilities
+3. **Continuous Learning**: Operational feedback loop for strategic improvement
+
 ## [3.3.0] - 2025-11-08
 
 ### Added - Multi-Engine Strategy System Integration
