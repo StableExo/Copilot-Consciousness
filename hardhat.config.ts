@@ -3,6 +3,7 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-etherscan";
 import "hardhat-gas-reporter";
+import "hardhat-tracer";
 import "solidity-coverage";
 import * as dotenv from "dotenv";
 
@@ -89,6 +90,10 @@ const config: HardhatUserConfig = {
   gasReporter: {
     enabled: process.env.REPORT_GAS === "true",
     currency: "USD"
+  },
+  tracer: {
+    enabled: true,
+    tasks: ['test', 'node']
   }
 };
 
