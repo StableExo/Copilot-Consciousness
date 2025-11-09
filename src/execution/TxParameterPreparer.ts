@@ -7,8 +7,7 @@
  * including provider detection, builder selection, and validation logic.
  */
 
-import { TransactionBuilder, Provider } from 'some-transaction-library';
-import { isValidTransaction, validateProvider } from './validators';
+import { ethers } from 'ethers';
 
 interface TransactionParameters {
     to: string;
@@ -19,35 +18,43 @@ interface TransactionParameters {
 
 /**
  * Detects the provider used by the application.
- * @returns {Provider} The detected provider instance.
+ * @returns {ethers.providers.Provider} The detected provider instance.
  */
-function detectProvider(): Provider {
+function detectProvider(): ethers.providers.Provider {
     // Logic to detect provider
     // This is a placeholder implementation
-    const provider = new Provider();  // Replace with actual detection logic
+    const provider = new ethers.providers.JsonRpcProvider();  // Replace with actual detection logic
     return provider;
 }
 
 /**
- * Selects the appropriate transaction builder based on the provider.
- * @param {Provider} provider - The provider instance.
- * @returns {TransactionBuilder} The selected transaction builder.
+ * Validates a provider instance.
+ * @param {ethers.providers.Provider} provider - The provider instance.
+ * @returns {boolean} True if valid.
  */
-function selectBuilder(provider: Provider): TransactionBuilder {
-    // Logic to select a builder based on the provider
-    // This is a placeholder implementation
-    return new TransactionBuilder(provider); // Replace with actual builder selection logic
+function validateProvider(provider: ethers.providers.Provider): boolean {
+    // Basic validation
+    return provider !== null && provider !== undefined;
+}
+
+/**
+ * Validates transaction parameters.
+ * @param {TransactionParameters} params - The transaction parameters.
+ * @returns {boolean} True if valid.
+ */
+function isValidTransaction(params: TransactionParameters): boolean {
+    // Basic validation
+    return !!(params.to && ethers.utils.isAddress(params.to));
 }
 
 /**
  * Prepares the transaction parameters.
  * @param {TransactionParameters} params - The transaction parameters.
- * @returns {TransactionBuilder} The transaction builder with prepared parameters.
+ * @returns {ethers.providers.TransactionRequest} The prepared transaction request.
  * @throws {Error} If validation fails.
  */
-function prepareTransaction(params: TransactionParameters): TransactionBuilder {
+function prepareTransaction(params: TransactionParameters): ethers.providers.TransactionRequest {
     const provider = detectProvider();
-    const builder = selectBuilder(provider);
 
     // Validation logic
     if (!validateProvider(provider)) {
@@ -57,17 +64,20 @@ function prepareTransaction(params: TransactionParameters): TransactionBuilder {
         throw new Error('Invalid transaction parameters.');
     }
 
-    // Populate builder with parameters
-    builder.setTo(params.to);
-    builder.setValue(params.value);
+    // Build transaction request
+    const txRequest: ethers.providers.TransactionRequest = {
+        to: params.to,
+        value: params.value,
+    };
+    
     if (params.gasLimit) {
-        builder.setGasLimit(params.gasLimit);
+        txRequest.gasLimit = params.gasLimit;
     }
     if (params.data) {
-        builder.setData(params.data);
+        txRequest.data = params.data;
     }
 
-    return builder;
+    return txRequest;
 }
 
 // Export the prepareTransaction function for use in other modules

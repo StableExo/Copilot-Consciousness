@@ -43,7 +43,7 @@ class SwapSimulator {
             const result = this.performSwap(options);
             return result;
         } catch (error) {
-            return { expectedReturn: 0, slippage: 0, fees: 0, error: error.message };
+            return { expectedReturn: 0, slippage: 0, fees: 0, error: error instanceof Error ? error.message : String(error) };
         }
     }
 

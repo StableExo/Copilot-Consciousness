@@ -121,7 +121,7 @@ export class RPCManager {
         lastRequestTime: 0
       });
 
-      logger.info(`Created new queue for ${rpcUrl}`, config);
+      logger.info(`Created new queue for ${rpcUrl}: ${JSON.stringify(config)}`);
     }
 
     return this.queues.get(rpcUrl)!;
@@ -184,7 +184,7 @@ export class RPCManager {
       oldQueue.clear();
       this.queues.delete(rpcUrl);
       
-      logger.info(`Reconfigured queue for ${rpcUrl}`, newConfig);
+      logger.info(`Reconfigured queue for ${rpcUrl}: ${JSON.stringify(newConfig)}`);
     }
   }
 

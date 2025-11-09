@@ -238,7 +238,7 @@ export class FlashSwapExecutor {
       protocol: step.protocol,
     }));
 
-    logger.debug('[FlashSwapExecutor] Encoded swap steps:', encoded);
+    logger.debug(`[FlashSwapExecutor] Encoded swap steps: ${JSON.stringify(encoded)}`);
 
     // In production: return ethers.utils.defaultAbiCoder.encode(...)
     return JSON.stringify(encoded);  // Placeholder
@@ -453,7 +453,7 @@ export class FlashSwapExecutor {
         swapSteps: arbParams.swapSteps.length,
       };
     } catch (error) {
-      logger.error('[FlashSwapExecutor] Execution failed:', error);
+      logger.error(`[FlashSwapExecutor] Execution failed: ${error instanceof Error ? error.message : String(error)}`);
       this.stats.failedExecutions++;
       
       return {
@@ -495,7 +495,7 @@ export class FlashSwapExecutor {
         swapSteps: arbParams.swapSteps.length,
       };
     } catch (error) {
-      logger.error('[FlashSwapExecutor] Simulation failed:', error);
+      logger.error(`[FlashSwapExecutor] Simulation failed: ${error instanceof Error ? error.message : String(error)}`);
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
