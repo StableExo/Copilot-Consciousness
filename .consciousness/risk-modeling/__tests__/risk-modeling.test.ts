@@ -35,12 +35,12 @@ describe('Risk Modeling', () => {
     it('should perform risk assessment', () => {
       const assessor = new RiskAssessor();
       
-      assessor.registerFactor('Load', RiskCategory.OPERATIONAL, 0.8);
-      assessor.registerFactor('Errors', RiskCategory.TECHNICAL, 0.9);
+      const loadFactor = assessor.registerFactor('Load', RiskCategory.OPERATIONAL, 0.8);
+      const errorsFactor = assessor.registerFactor('Errors', RiskCategory.TECHNICAL, 0.9);
 
       const assessment = assessor.assess('system-1', 'system', {
-        'Load': 0.6,
-        'Errors': 0.3
+        [loadFactor.id]: 0.6,
+        [errorsFactor.id]: 0.3
       });
 
       expect(assessment.targetId).toBe('system-1');

@@ -129,23 +129,23 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
       it('should stop pipeline on stage failure', async () => {
         let stagesExecuted = 0;
 
-        pipeline.registerStage(ExecutionState.DETECTING, async () => {
+        pipeline.registerStage(ExecutionState.DETECTING, async (ctx) => {
           stagesExecuted++;
           return {
             success: true,
             stage: ExecutionState.DETECTING,
             timestamp: Date.now(),
-            context: {} as ExecutionContext
+            context: ctx
           };
         });
 
-        pipeline.registerStage(ExecutionState.VALIDATING, async () => {
+        pipeline.registerStage(ExecutionState.VALIDATING, async (ctx) => {
           stagesExecuted++;
           return {
             success: false,
             stage: ExecutionState.VALIDATING,
             timestamp: Date.now(),
-            context: {} as ExecutionContext,
+            context: ctx,
             errors: [{
               timestamp: Date.now(),
               stage: ExecutionState.VALIDATING,
@@ -156,13 +156,13 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           };
         });
 
-        pipeline.registerStage(ExecutionState.PREPARING, async () => {
+        pipeline.registerStage(ExecutionState.PREPARING, async (ctx) => {
           stagesExecuted++;
           return {
             success: true,
             stage: ExecutionState.PREPARING,
             timestamp: Date.now(),
-            context: {} as ExecutionContext
+            context: ctx
           };
         });
 
@@ -188,27 +188,27 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
         const result = await pipeline.execute(mockOpportunity, mockPath, 3);
 
         expect(result.success).toBe(false);
-        expect(stagesExecuted).toBe(2); // Only detecting and validating
+        expect(stagesExecuted).toBe(3); // Detecting (1) + Validating (1) + Validating retry (1)
       });
 
       it('should retry failed stages when configured', async () => {
         let attemptCount = 0;
 
-        pipeline.registerStage(ExecutionState.DETECTING, async () => ({
+        pipeline.registerStage(ExecutionState.DETECTING, async (ctx) => ({
           success: true,
           stage: ExecutionState.DETECTING,
           timestamp: Date.now(),
-          context: {} as ExecutionContext
+          context: ctx
         }));
 
-        pipeline.registerStage(ExecutionState.VALIDATING, async () => {
+        pipeline.registerStage(ExecutionState.VALIDATING, async (ctx) => {
           attemptCount++;
           if (attemptCount < 2) {
             return {
               success: false,
               stage: ExecutionState.VALIDATING,
               timestamp: Date.now(),
-              context: {} as ExecutionContext,
+              context: ctx,
               errors: [{
                 timestamp: Date.now(),
                 stage: ExecutionState.VALIDATING,
@@ -222,7 +222,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
             success: true,
             stage: ExecutionState.VALIDATING,
             timestamp: Date.now(),
-            context: {} as ExecutionContext
+            context: ctx
           };
         });
 
@@ -846,12 +846,21 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
     it('should handle multiple concurrent executions', async () => {
       const pipeline = new ExecutionPipeline();
 
-      pipeline.registerStage(ExecutionState.DETECTING, async (ctx) => ({
-        success: true,
-        stage: ExecutionState.DETECTING,
-        timestamp: Date.now(),
-        context: ctx
-      }));
+      // Register all required stages
+      const createSuccessHandler = (stage: ExecutionState) => {
+        return async (ctx: ExecutionContext) => ({
+          success: true,
+          stage,
+          timestamp: Date.now(),
+          context: ctx
+        });
+      };
+
+      pipeline.registerStage(ExecutionState.DETECTING, createSuccessHandler(ExecutionState.DETECTING));
+      pipeline.registerStage(ExecutionState.VALIDATING, createSuccessHandler(ExecutionState.VALIDATING));
+      pipeline.registerStage(ExecutionState.PREPARING, createSuccessHandler(ExecutionState.PREPARING));
+      pipeline.registerStage(ExecutionState.EXECUTING, createSuccessHandler(ExecutionState.EXECUTING));
+      pipeline.registerStage(ExecutionState.MONITORING, createSuccessHandler(ExecutionState.MONITORING));
 
       const mockOpportunity: ArbitrageOpportunity = {
         type: 'spatial',
