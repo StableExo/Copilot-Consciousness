@@ -196,9 +196,9 @@ describe('TransactionManager', () => {
       );
 
       expect(result.success).toBe(false);
-      // maxRetries is 2, so total attempts = 1 initial + 2 retries = 3
-      expect(mockNonceManager.sendTransaction).toHaveBeenCalledTimes(3);
-      expect(result.metadata.attempts).toBe(3);
+      // maxRetries is 1 (from beforeEach), so total attempts = 1 initial + 1 retry = 2
+      expect(mockNonceManager.sendTransaction).toHaveBeenCalledTimes(2);
+      expect(result.metadata.attempts).toBe(2);
     }, 15000);
 
     it('should increase gas price on retry', async () => {
