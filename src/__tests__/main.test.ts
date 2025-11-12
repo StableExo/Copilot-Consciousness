@@ -35,6 +35,7 @@ describe('Main Runner', () => {
     });
 
     it('should use BASE_RPC_URL if ETHEREUM_RPC_URL is not set', () => {
+      delete process.env.ETHEREUM_RPC_URL;
       process.env.BASE_RPC_URL = 'https://base-mainnet.example.com';
       process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
       process.env.NODE_ENV = 'test';
