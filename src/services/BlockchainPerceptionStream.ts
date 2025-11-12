@@ -24,7 +24,7 @@ export class BlockchainPerceptionStream {
       };
       console.log(JSON.stringify(logData));
 
-      this.temporalAwareness.recordEvent(EventType.BLOCK, { blockNumber });
+      this.temporalAwareness.recordEvent('NEW_BLOCK' as any, { blockNumber });
       this.memorySystem.addSensoryMemory({
         type: 'NEW_BLOCK',
         blockNumber,

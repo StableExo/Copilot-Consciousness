@@ -112,8 +112,8 @@ function loadConfig(): BotConfig {
     maxGasPrice: BigInt(process.env.MAX_GAS_PRICE || '100') * BigInt(1e9), // Convert from gwei
     maxGasCostPercentage: parseInt(process.env.MAX_GAS_COST_PERCENTAGE || '40'),
     
-    enableMlPredictions: process.env.ENABLE_ML_PREDICTIONS === 'true',
-    enableCrossChain: process.env.ENABLE_CROSS_CHAIN === 'true',
+    enableMlPredictions: process.env.ENABLE_ML_PREDICTIONS ? process.env.ENABLE_ML_PREDICTIONS === 'true' : false,
+    enableCrossChain: process.env.ENABLE_CROSS_CHAIN ? process.env.ENABLE_CROSS_CHAIN === 'true' : false,
     dryRun: process.env.DRY_RUN === 'true' || nodeEnv === 'development',
     
     healthCheckInterval: parseInt(process.env.HEALTH_CHECK_INTERVAL || '30000'),

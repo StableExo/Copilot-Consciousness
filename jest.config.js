@@ -1,14 +1,14 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  roots: ['<rootDir>/src', '<rootDir>/.consciousness', '<rootDir>/tests'],
+  roots: ['<rootDir>/src', '<rootDir>/consciousness', '<rootDir>/tests'],
   testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
   collectCoverageFrom: [
     'src/**/*.ts',
-    '.consciousness/**/*.ts',
+    'consciousness/**/*.ts',
     '!src/**/*.d.ts',
     '!src/**/*.test.ts',
-    '!.consciousness/**/*.test.ts'
+    '!consciousness/**/*.test.ts'
   ],
   coverageDirectory: 'coverage',
   verbose: true,

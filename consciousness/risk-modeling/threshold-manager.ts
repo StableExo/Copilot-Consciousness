@@ -168,8 +168,8 @@ export class ThresholdManager {
       violations = violations.filter(v => v.severity === options.severity);
     }
 
-    if (options.since) {
-      violations = violations.filter(v => v.timestamp >= options.since);
+    if (options.since !== undefined) {
+      violations = violations.filter(v => v.timestamp >= (options.since as number));
     }
 
     violations.sort((a, b) => b.timestamp - a.timestamp);

@@ -674,7 +674,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
         const pipeline = new ExecutionPipeline();
         const recovery = new ErrorRecovery();
 
-        let recoveryTriggered = false;
+        const recoveryTriggered = false;
 
         pipeline.registerStage(ExecutionState.DETECTING, async () => ({
           success: false,
@@ -721,7 +721,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
   describe('End-to-End Scenarios', () => {
     it('should handle complete execution flow (happy path)', async () => {
       const pipeline = new ExecutionPipeline();
-      let executionStages: ExecutionState[] = [];
+      const executionStages: ExecutionState[] = [];
 
       // Setup all stages
       [

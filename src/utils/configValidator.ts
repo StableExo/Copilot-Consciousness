@@ -224,8 +224,6 @@ function validateAddress(address: string, name: string): void {
  * Validate and load configuration from environment variables
  */
 export function validateConfig(): ValidatedConfig {
-  const errors: string[] = [];
-
   try {
     // Determine which RPC URL to use
     let rpcUrl: string;

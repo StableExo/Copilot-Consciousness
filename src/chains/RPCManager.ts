@@ -105,8 +105,8 @@ export class RPCManager {
         logger.debug(`Queue idle for ${rpcUrl}`);
       });
 
-      queue.on('error', (error) => {
-        logger.error(`Queue error for ${rpcUrl}: ${error.message}`);
+      queue.on('next', () => {
+        logger.debug(`Processing next item in queue for ${rpcUrl}`);
       });
 
       this.queues.set(rpcUrl, queue);

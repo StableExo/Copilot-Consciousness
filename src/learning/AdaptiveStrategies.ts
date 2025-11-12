@@ -117,7 +117,7 @@ export class AdaptiveStrategies {
 
     // Boost score if conditions match strategy requirements
     let conditionMatchCount = 0;
-    let totalConditions = Object.keys(strategy.conditions).length;
+    const totalConditions = Object.keys(strategy.conditions).length;
 
     for (const [key, value] of Object.entries(strategy.conditions)) {
       if (currentConditions[key] === value) {

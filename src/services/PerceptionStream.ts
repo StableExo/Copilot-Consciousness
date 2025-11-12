@@ -1,6 +1,5 @@
 // src/services/PerceptionStream.ts
 
-import { ethers } from 'ethers';
 import { provider } from '../utils/providers'; // Note: Adjust this import path to the actual location of your exported Ethers provider
 import { SensoryMemory } from '../../consciousness/sensory_memory';
 import { TemporalAwarenessFramework } from '../../consciousness/temporal_awareness';

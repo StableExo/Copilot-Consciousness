@@ -84,6 +84,13 @@ export interface AdaptationChange {
   reasoning: string;
 }
 
+export interface PhaseTransition {
+  timestamp: number;
+  from: EvolutionPhase;
+  to: EvolutionPhase;
+  reason: string;
+}
+
 /**
  * Evolution Tracking System
  * Monitors and records system evolution and capability development
@@ -93,12 +100,7 @@ export class EvolutionTracker {
   private milestones: Map<string, EvolutionMilestone> = new Map();
   private adaptations: Map<string, AdaptationEvent> = new Map();
   private currentPhase: EvolutionPhase = EvolutionPhase.INITIALIZATION;
-  private phaseTransitions: Array<{
-    timestamp: number;
-    from: EvolutionPhase;
-    to: EvolutionPhase;
-    reason: string;
-  }> = [];
+  private phaseTransitions: PhaseTransition[] = [];
 
   /**
    * Register a new capability
@@ -407,7 +409,7 @@ export class EvolutionTracker {
     milestones: EvolutionMilestone[];
     adaptations: AdaptationEvent[];
     currentPhase: EvolutionPhase;
-    phaseTransitions: typeof this.phaseTransitions;
+    phaseTransitions: PhaseTransition[];
   } {
     return {
       capabilities: Array.from(this.capabilities.values()),
@@ -426,7 +428,7 @@ export class EvolutionTracker {
     milestones: EvolutionMilestone[];
     adaptations: AdaptationEvent[];
     currentPhase: EvolutionPhase;
-    phaseTransitions: typeof this.phaseTransitions;
+    phaseTransitions: PhaseTransition[];
   }): void {
     this.capabilities.clear();
     this.milestones.clear();
