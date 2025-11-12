@@ -64,6 +64,8 @@ describe('Main Runner', () => {
       process.env.ETHEREUM_RPC_URL = 'https://eth-mainnet.example.com';
       process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
       process.env.NODE_ENV = 'test';
+      delete process.env.ENABLE_ML_PREDICTIONS;
+      delete process.env.ENABLE_CROSS_CHAIN;
 
       const config = loadConfig();
 

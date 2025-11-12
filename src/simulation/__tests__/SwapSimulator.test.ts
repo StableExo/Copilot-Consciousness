@@ -2,7 +2,7 @@
  * Tests for SwapSimulator
  */
 import { ethers } from 'ethers';
-import { SwapSimulator, SwapSimulationResult } from '../SwapSimulator';
+import { SwapSimulator } from '../SwapSimulator';
 import { PoolState, Token } from '../../types/definitions';
 
 // Create a proper mock provider that extends BaseProvider
@@ -15,7 +15,7 @@ class MockProvider extends ethers.providers.BaseProvider {
         return { chainId: 1, name: 'mainnet' };
     }
 
-    async perform(method: string, params: any): Promise<any> {
+    async perform(_method: string, _params: any): Promise<any> {
         return null;
     }
 }

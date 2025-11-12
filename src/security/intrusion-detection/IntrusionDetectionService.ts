@@ -63,7 +63,7 @@ export class IntrusionDetectionService extends EventEmitter {
       /(\bDELETE\b.*\bFROM\b)/i,
       /(\bDROP\b.*\bTABLE\b)/i,
       /(\bUPDATE\b.*\bSET\b)/i,
-      /(--|\#|\/\*|\*\/)/,
+      /(--|#|\/\*|\*\/)/,
       /(\bOR\b\s+\d+\s*=\s*\d+)/i,
       /('.*\bOR\b.*')/i
     ];

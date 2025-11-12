@@ -7,7 +7,8 @@
   "license": "MIT",
   "scripts": {
     "start": "node dist/main.js",
-    "dev": "ts-node src/main.ts",
+    "dev": "ts-node src/main.ts > logs/arbitrage.log 2>&1",
+    "dev:kill": "kill $(lsof -t -i:3000)",
     "build": "tsc",
     "test": "jest",
     "test:unit": "jest tests/unit",
@@ -32,7 +33,7 @@
     "deploy:mainnet": "hardhat run scripts/deploy-executor-v3.ts --network mainnet",
     "deploy:flashswapv2": "hardhat run scripts/deployFlashSwapV2.ts --network base",
     "deploy:flashswapv2:testnet": "hardhat run scripts/deployFlashSwapV2.ts --network baseSepolia",
-    "audit:slither": "slither . --fail-medium",
+    "audit:slither": "slither . --fail-level medium",
     "audit:slither:report": "slither . --print human-summary"
   },
   "dependencies": {
@@ -67,7 +68,7 @@
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@nomiclabs/hardhat-etherscan": "^3.1.7",
-    "@openzeppelin/contracts": "^4.9.6",
+    "@openzeppelin/contracts": "^3.4.2",
     "@types/amqplib": "^0.10.1",
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.13",

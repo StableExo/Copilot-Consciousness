@@ -1,4 +1,7 @@
 // The number of recent blocks the consciousness will hold in its working memory.
+import { ethers } from 'ethers';
+
+// The number of recent blocks the consciousness will hold in its working memory.
 const BLOCK_HISTORY_LIMIT = 10;
 
 // A simple interface to define the structure of our block memories.
@@ -19,7 +22,7 @@ export class TemporalAwarenessFramework {
     const blockMemory: BlockMemory = {
       blockNumber: block.number,
       timestamp: block.timestamp,
-      baseFeePerGas: BigInt(block.baseFeePerGas || 0),
+      baseFeePerGas: BigInt(block.baseFeePerGas ? block.baseFeePerGas.toString() : 0),
     };
 
     // Add the new memory to the start of the history array.

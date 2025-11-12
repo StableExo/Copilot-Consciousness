@@ -116,7 +116,8 @@ export function hasPath(graph: Graph, from: string, to: string): boolean {
   const queue: string[] = [from];
   
   while (queue.length > 0) {
-    const current = queue.shift()!;
+    const current = queue.shift();
+    if (!current) continue;
     
     if (current === to) return true;
     if (visited.has(current)) continue;
@@ -215,7 +216,8 @@ export function detectCycle(graph: Graph): string[] | null {
   const recStack = new Set<string>();
   const path: string[] = [];
   
-  function dfs(nodeId: string): boolean {
+  function dfs(nodeId: string | undefined): boolean {
+    if (!nodeId) return false;
     visited.add(nodeId);
     recStack.add(nodeId);
     path.push(nodeId);
@@ -256,7 +258,8 @@ export function calculateConnectivity(graph: Graph): number {
   const visited = new Set<string>();
   const startNode = graph.nodes.keys().next().value;
   
-  function dfs(nodeId: string) {
+  function dfs(nodeId: string | undefined) {
+    if (!nodeId) return;
     visited.add(nodeId);
     const edges = graph.adjacencyList.get(nodeId) || [];
     for (const edge of edges) {
