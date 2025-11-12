@@ -16,9 +16,6 @@ import { ProfitabilityCalculator } from './ProfitabilityCalculator';
 import { MultiHopDataFetcher } from './MultiHopDataFetcher';
 import { ArbitragePath, PathfindingConfig, PoolEdge } from './types';
 import { Stats as ArbitrageOrchestratorStats } from './ArbitrageOrchestrator';
-import { PathfindingMetrics } from './AdvancedPathFinder';
-import { PruningStats } from './PathPruner';
-import { CacheStats } from './PathCache';
 import { PatternMetrics } from './ArbitragePatterns';
 
 /**

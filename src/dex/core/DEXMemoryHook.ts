@@ -1,5 +1,5 @@
 import { DEXMemoryHook, DEXEvent, DEXEventType } from '../types';
-import { MemorySystem, Memory } from '../../consciousness/memory';
+import { MemorySystem, MemoryEntry } from '../../consciousness/memory';
 import { Priority } from '../../types';
 
 /**
@@ -57,7 +57,7 @@ export class DEXMemoryHookImpl implements DEXMemoryHook {
    * Check if a memory is a DEX event matching the filter
    */
   private isDEXEventMemory(
-    memory: Memory,
+    memory: MemoryEntry,
     filter: { dexName?: string; type?: DEXEventType }
   ): boolean {
     const metadata = memory.metadata as Record<string, unknown>;
@@ -82,7 +82,7 @@ export class DEXMemoryHookImpl implements DEXMemoryHook {
   /**
    * Extract event data from memory content
    */
-  private extractEventData(memory: Memory): Record<string, unknown> | null {
+  private extractEventData(memory: MemoryEntry): Record<string, unknown> | null {
     const content = memory.content as Record<string, unknown>;
     return (content?.eventData as Record<string, unknown>) || null;
   }
@@ -90,7 +90,7 @@ export class DEXMemoryHookImpl implements DEXMemoryHook {
   /**
    * Extract a DEX event from a memory entry
    */
-  private extractDEXEvent(memory: Memory): DEXEvent {
+  private extractDEXEvent(memory: MemoryEntry): DEXEvent {
     const eventData = this.extractEventData(memory);
     const metadata = memory.metadata as Record<string, unknown>;
 

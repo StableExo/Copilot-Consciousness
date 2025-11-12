@@ -280,10 +280,45 @@ export interface MultiDEXTransactionParams {
   dexType: 'UniswapV2' | 'UniswapV3' | 'SushiSwap' | 'Curve' | 'Aave' | 'Balancer';
   contractAddress: string;
   functionName: string;
-  params: Record<string, unknown>;
+  params: Record<string, unknown> | UniswapV3TwoHopParams | TriangularFlashSwapParams | AaveFlashLoanParams;
   borrowTokenAddress: string;
   borrowAmount: bigint;
   minAmountOut: bigint;
+}
+
+export interface UniswapV3TwoHopParams {
+  tokenIntermediate: string;
+  feeA: number;
+  feeB: number;
+  amountOutMinimum1: bigint;
+  amountOutMinimum2: bigint;
+  titheRecipient: string;
+}
+
+export interface TriangularFlashSwapParams {
+  tokenA: string;
+  tokenB: string;
+  tokenC: string;
+  fee1: number;
+  fee2: number;
+  fee3: number;
+  amountOutMinimumFinal: bigint;
+  titheRecipient: string;
+}
+
+export interface AavePathStep {
+  pool: string;
+  tokenIn: string;
+  tokenOut: string;
+  fee: number;
+  minOut: bigint;
+  dexType: number;
+}
+
+export interface AaveFlashLoanParams {
+  path: AavePathStep[];
+  initiator: string;
+  titheRecipient: string;
 }
 
 /**

@@ -255,7 +255,16 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
           return HealthStatus.UNHEALTHY;
         }
       },
-      getMetrics: async () => this.gasEstimator.getStats()
+      getMetrics: async () => {
+        const stats = this.gasEstimator.getStats();
+        return {
+          totalEstimations: stats.totalEstimations,
+          onChainEstimations: stats.onChainEstimations,
+          heuristicEstimations: stats.heuristicEstimations,
+          failedEstimations: stats.failedEstimations,
+          blockedOpportunities: stats.blockedOpportunities,
+        };
+      }
     });
     
     // Register transaction executor
