@@ -57,6 +57,7 @@ export interface ArbitragePath {
   slippageImpact: number;
   flashLoanProvider?: FlashLoanProvider; // Optional: Flash loan provider for this path
   flashLoanConfig?: FlashLoanConfig; // Optional: Flash loan configuration
+  patternAnalysis?: import('./ArbitragePatterns').PatternAnalysis;
 }
 
 /**

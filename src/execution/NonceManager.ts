@@ -116,8 +116,9 @@ export class NonceManager extends Signer {
       const txResponse = await this.signer.sendTransaction(populatedTx);
       logger.info(`${functionSig} Underlying signer submitted transaction. Hash: ${txResponse.hash}`);
       return txResponse;
-    } catch (error: any) {
-      logger.error(`${functionSig} Error sending transaction via underlying signer: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`${functionSig} Error sending transaction via underlying signer: ${message}`);
       
       // Check if this is a nonce-related error
       if (this.isNonceError(error)) {
@@ -132,9 +133,13 @@ export class NonceManager extends Signer {
   /**
    * Checks if an error is nonce-related
    */
-  private isNonceError(error: any): boolean {
-    const message = error.message?.toLowerCase() || '';
-    const code = error.code;
+  private isNonceError(error: unknown): boolean {
+    if (typeof error !== 'object' || error === null) {
+      return false;
+    }
+    const err = error as Record<string, unknown>;
+    const message = (err.message as string)?.toLowerCase() || '';
+    const code = err.code;
     
     // Check error code
     if (code === NONCE_ERROR_PATTERNS.CODE) {
@@ -155,9 +160,10 @@ export class NonceManager extends Signer {
       if (!this.provider) throw new Error("Provider not available for nonce initialization.");
       this.currentNonce = await this.provider.getTransactionCount(this.address, 'latest');
       logger.info(`${functionSig} Initial nonce set to: ${this.currentNonce}`);
-    } catch (error: any) {
-      logger.error(`${functionSig} CRITICAL: Failed to initialize nonce: ${error.message}`);
-      throw new NonceError(`Nonce initialization failed: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`${functionSig} CRITICAL: Failed to initialize nonce: ${message}`);
+      throw new NonceError(`Nonce initialization failed: ${message}`);
     }
   }
 
@@ -178,9 +184,10 @@ export class NonceManager extends Signer {
       try {
         if (!this.provider) throw new Error("Provider not available for fetching pending nonce.");
         pendingNonce = await this.provider.getTransactionCount(this.address, 'pending');
-      } catch (fetchError: any) {
-        logger.error(`${functionSig} Error fetching pending transaction count: ${fetchError.message}`);
-        throw new NonceError(`Failed to fetch pending nonce: ${fetchError.message}`);
+      } catch (fetchError: unknown) {
+        const message = fetchError instanceof Error ? fetchError.message : String(fetchError);
+        logger.error(`${functionSig} Error fetching pending transaction count: ${message}`);
+        throw new NonceError(`Failed to fetch pending nonce: ${message}`);
       }
 
       if (pendingNonce > this.currentNonce) {
@@ -210,9 +217,10 @@ export class NonceManager extends Signer {
       this.currentNonce = -1; // Reset internal state
       await this.initialize(); // Re-fetch 'latest' nonce
       logger.info(`${functionSig} Nonce resync completed. New internal nonce: ${this.currentNonce}`);
-    } catch (error: any) {
-      logger.error(`${functionSig} Failed to resync nonce: ${error.message}`);
-      throw new NonceError(`Nonce resynchronization failed: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`${functionSig} Failed to resync nonce: ${message}`);
+      throw new NonceError(`Nonce resynchronization failed: ${message}`);
     } finally {
       release();
       logger.debug(`${functionSig} Mutex released for resyncNonce.`);

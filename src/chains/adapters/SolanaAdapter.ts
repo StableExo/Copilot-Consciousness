@@ -9,7 +9,7 @@ import { ChainAdapter, TokenBalance, SwapEstimate, SwapParams, TokenPrice } from
 
 export class SolanaAdapter extends ChainAdapter {
   chainId: string = 'mainnet-beta';
-  chainType: 'Solana' = 'Solana';
+  readonly chainType = 'Solana';
   private connection: Connection;
   private wallet?: Keypair;
 

@@ -19,7 +19,6 @@ import { TransactionExecutor, TransactionExecutorConfig } from '../execution/Tra
 import { SystemHealthMonitor, MonitoredComponent } from '../monitoring/SystemHealthMonitor';
 import { ErrorRecovery, ErrorRecoveryConfig } from '../recovery/ErrorRecovery';
 import { NonceManager } from '../execution/NonceManager';
-import { ParamBuilder } from '../execution/ParamBuilder';
 import { AdvancedGasEstimator } from '../gas/AdvancedGasEstimator';
 import { GasPriceOracle } from '../gas/GasPriceOracle';
 import { ArbitragePath } from '../arbitrage/types';

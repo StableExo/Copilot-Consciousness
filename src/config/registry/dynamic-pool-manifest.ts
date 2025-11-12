@@ -62,8 +62,8 @@ export class DynamicPoolManager {
       logger.info(`Loaded ${manifest.pools.length} pools for chain ${chainId}`);
       
       return manifest;
-    } catch (error: any) {
-      if (error.code === 'ENOENT') {
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'ENOENT') {
         // Create empty manifest if file doesn't exist
         const manifest: PoolManifest = {
           version: '1.0.0',

@@ -13,7 +13,7 @@
 import { ethers, providers } from 'ethers';
 import { logger } from '../utils/logger';
 import { NonceManager } from './NonceManager';
-import { ParamBuilder } from './ParamBuilder';
+import { buildTwoHopParams, buildTriangularParams, buildAavePathParams } from './ParamBuilder';
 import { AdvancedGasEstimator, GasEstimationResult } from '../gas/AdvancedGasEstimator';
 import { GasPriceOracle } from '../gas/GasPriceOracle';
 import {
@@ -26,6 +26,16 @@ import {
   ExecutionError
 } from '../types/ExecutionTypes';
 import { ArbitrageOpportunity, SimulationResult, ArbitrageConfig } from '../types/definitions';
+
+interface ParamResult {
+  params: Record<string, unknown>;
+  borrowTokenAddress: string;
+  borrowAmount: bigint;
+  typeString: string;
+  contractFunctionName: string;
+  amountOutMinimum2?: bigint;
+  amountOutMinimumFinal?: bigint;
+}
 
 /**
  * Transaction Executor Configuration
@@ -160,9 +170,10 @@ export class TransactionExecutor {
         timestamp: Date.now()
       };
 
-    } catch (error) {
+    } catch (error: unknown) {
       this.stats.failedTransactions++;
-      logger.error(`[TransactionExecutor] Execution failed: ${error instanceof Error ? error.message : String(error)}`);
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`[TransactionExecutor] Execution failed: ${message}`);
 
       return this.createFailedResult(
         TransactionStatus.FAILED,
@@ -218,11 +229,11 @@ export class TransactionExecutor {
       };
 
       // Determine opportunity type and build appropriate parameters
-      let paramResult: any;
+      let paramResult: ParamResult;
 
       if (opportunity.type === 'spatial' && opportunity.path && opportunity.path.length === 2) {
         // Two-hop Uniswap V3 arbitrage
-        paramResult = ParamBuilder.buildTwoHopParams(
+        paramResult = buildTwoHopParams(
           opportunity,
           simulationResult,
           this.arbitrageConfig,
@@ -241,7 +252,7 @@ export class TransactionExecutor {
 
       } else if (opportunity.type === 'triangular') {
         // Triangular arbitrage
-        paramResult = ParamBuilder.buildTriangularParams(
+        paramResult = buildTriangularParams(
           opportunity,
           simulationResult,
           this.arbitrageConfig,
@@ -260,7 +271,7 @@ export class TransactionExecutor {
 
       } else if (opportunity.path && opportunity.path.length > 0) {
         // Multi-hop with Aave flash loan
-        paramResult = ParamBuilder.buildAavePathParams(
+        paramResult = buildAavePathParams(
           opportunity,
           simulationResult,
           this.arbitrageConfig,
@@ -527,7 +538,7 @@ export class TransactionExecutor {
     status: TransactionStatus,
     errorType: string,
     message: string,
-    details?: any
+    details?: unknown
   ): TransactionExecutionResult {
     return {
       success: false,

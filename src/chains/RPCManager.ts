@@ -155,14 +155,15 @@ export class RPCManager {
       logger.debug(`RPC call to ${rpcUrl} completed in ${latency}ms`);
       
       return result as T;
-    } catch (error: any) {
+    } catch (error: unknown) {
       metrics.failedRequests++;
       
-      if (error.name === 'TimeoutError') {
+      if (error instanceof Error && error.name === 'TimeoutError') {
         metrics.timeouts++;
         logger.warn(`RPC call to ${rpcUrl} timed out after ${Date.now() - startTime}ms`);
       } else {
-        logger.error(`RPC call to ${rpcUrl} failed: ${error.message}`);
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        logger.error(`RPC call to ${rpcUrl} failed: ${message}`);
       }
       
       throw error;

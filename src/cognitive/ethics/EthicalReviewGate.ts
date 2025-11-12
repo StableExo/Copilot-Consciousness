@@ -176,7 +176,7 @@ export class EthicalReviewGate {
    * Verifies that the plan follows a structured format (e.g., numbered list)
    */
   private checkPrecision(planText: string): [boolean, string] {
-    if (!planText.trim().match(/^(\d+\.|\-|\*)/)) {
+    if (!planText.trim().match(/^(\d+\.|-|\*)/)) {
       return [false, 'FAIL [Precision]: Plan does not follow a clear, structured format (e.g., a numbered list).'];
     }
     return [true, 'PASS [Precision]'];

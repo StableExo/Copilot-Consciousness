@@ -81,7 +81,7 @@ export interface ExecutionContext {
   priority: ExecutionPriority;
   createdAt: number;
   updatedAt: number;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   
   // Gas information
   estimatedGas?: bigint;
@@ -114,7 +114,7 @@ export interface ExecutionError {
   code?: string;
   recoverable: boolean;
   suggestedStrategy?: RecoveryStrategy;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 /**
@@ -127,7 +127,7 @@ export interface CheckpointResult {
   context: ExecutionContext;
   errors?: ExecutionError[];
   warnings?: string[];
-  metrics?: Record<string, any>;
+  metrics?: Record<string, unknown>;
 }
 
 /**
@@ -198,7 +198,7 @@ export interface SystemAlert {
   message: string;
   timestamp: number;
   acknowledged: boolean;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -280,7 +280,7 @@ export interface MultiDEXTransactionParams {
   dexType: 'UniswapV2' | 'UniswapV3' | 'SushiSwap' | 'Curve' | 'Aave' | 'Balancer';
   contractAddress: string;
   functionName: string;
-  params: any;
+  params: Record<string, unknown>;
   borrowTokenAddress: string;
   borrowAmount: bigint;
   minAmountOut: bigint;
@@ -358,7 +358,7 @@ export interface ExecutionEvent {
   type: ExecutionEventType;
   timestamp: number;
   context: ExecutionContext;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
 }
 
 /**
@@ -403,7 +403,7 @@ export interface StatePersistence {
 /**
  * Atomic Operation Result
  */
-export interface AtomicOperationResult<T = any> {
+export interface AtomicOperationResult<T = unknown> {
   success: boolean;
   data?: T;
   error?: Error;

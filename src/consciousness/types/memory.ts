@@ -47,7 +47,7 @@ export interface Memory {
     /**
      * The actual content/data of the memory
      */
-    content: any;
+    content: unknown;
     
     /**
      * Type or category of the memory (e.g., "episodic", "semantic", "procedural")
@@ -92,7 +92,7 @@ export interface Memory {
     /**
      * Metadata for additional custom properties
      */
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
 }
 
 /**

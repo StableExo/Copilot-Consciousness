@@ -23,7 +23,7 @@ const UNISWAP_V2_ROUTER_ABI = [
 
 export class EVMAdapter extends ChainAdapter {
   chainId: number;
-  chainType: 'EVM' = 'EVM';
+  readonly chainType = 'EVM';
   private provider: ethers.providers.JsonRpcProvider;
   private signer?: ethers.Signer;
 

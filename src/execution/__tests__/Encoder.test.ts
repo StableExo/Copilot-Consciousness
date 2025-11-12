@@ -1,11 +1,11 @@
 /**
- * Tests for TxEncoder
+ * Tests for encodeFlashSwapCall
  */
 
-import { TxEncoder } from '../Encoder';
+import { encodeFlashSwapCall } from '../Encoder';
 import { ethers } from 'ethers';
 
-describe('TxEncoder', () => {
+describe('encodeFlashSwapCall', () => {
     describe('encodeFlashSwapCall', () => {
         it('should encode initiateUniswapV3FlashLoan correctly', () => {
             const params = {
@@ -17,7 +17,7 @@ describe('TxEncoder', () => {
                 titheRecipient: '0x9999999999999999999999999999999999999999'
             };
 
-            const result = TxEncoder.encodeFlashSwapCall('initiateUniswapV3FlashLoan', [params]);
+            const result = encodeFlashSwapCall('initiateUniswapV3FlashLoan', [params]);
 
             expect(result).toBeDefined();
             expect(typeof result).toBe('string');
@@ -50,7 +50,7 @@ describe('TxEncoder', () => {
                 titheRecipient: '0x9999999999999999999999999999999999999999'
             };
 
-            const result = TxEncoder.encodeFlashSwapCall('initiateTriangularFlashSwap', [params]);
+            const result = encodeFlashSwapCall('initiateTriangularFlashSwap', [params]);
 
             expect(result).toBeDefined();
             expect(typeof result).toBe('string');
@@ -96,7 +96,7 @@ describe('TxEncoder', () => {
                 titheRecipient: '0x9999999999999999999999999999999999999999'
             };
 
-            const result = TxEncoder.encodeFlashSwapCall('initiateAaveFlashLoan', [params]);
+            const result = encodeFlashSwapCall('initiateAaveFlashLoan', [params]);
 
             expect(result).toBeDefined();
             expect(typeof result).toBe('string');
@@ -122,25 +122,25 @@ describe('TxEncoder', () => {
 
         it('should throw error when functionName is missing', () => {
             expect(() => {
-                TxEncoder.encodeFlashSwapCall('', [{}]);
+                encodeFlashSwapCall('', [{}]);
             }).toThrow('Missing functionName or invalid functionArgs for encoding.');
         });
 
         it('should throw error when functionArgs is not an array', () => {
             expect(() => {
-                TxEncoder.encodeFlashSwapCall('initiateUniswapV3FlashLoan', null as any);
+                encodeFlashSwapCall('initiateUniswapV3FlashLoan', null as any);
             }).toThrow('Missing functionName or invalid functionArgs for encoding.');
         });
 
         it('should throw error when function does not exist in ABI', () => {
             expect(() => {
-                TxEncoder.encodeFlashSwapCall('nonExistentFunction', [{}]);
+                encodeFlashSwapCall('nonExistentFunction', [{}]);
             }).toThrow('Failed to encode FlashSwap function call for nonExistentFunction');
         });
 
         it('should throw error when function arguments are invalid', () => {
             expect(() => {
-                TxEncoder.encodeFlashSwapCall('initiateUniswapV3FlashLoan', [{ invalidParam: 'test' }]);
+                encodeFlashSwapCall('initiateUniswapV3FlashLoan', [{ invalidParam: 'test' }]);
             }).toThrow('Failed to encode FlashSwap function call for initiateUniswapV3FlashLoan');
         });
     });

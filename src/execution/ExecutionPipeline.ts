@@ -386,7 +386,7 @@ export class ExecutionPipeline extends EventEmitter {
   /**
    * Calculate execution priority based on path metrics
    */
-  private calculatePriority(path: ArbitragePath): any {
+  private calculatePriority(path: ArbitragePath): number {
     // Simple priority calculation based on net profit
     const profit = Number(path.netProfit);
     
@@ -431,7 +431,7 @@ export class ExecutionPipeline extends EventEmitter {
   /**
    * Emit an execution event
    */
-  private emitEvent(type: ExecutionEventType, context: ExecutionContext, data?: any): void {
+  private emitEvent(type: ExecutionEventType, context: ExecutionContext, data?: Record<string, unknown>): void {
     const event: ExecutionEvent = {
       id: `evt_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
       type,

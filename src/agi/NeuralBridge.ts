@@ -161,7 +161,7 @@ export class NeuralBridge {
   createMessage(
     destinationAgent: string,
     intent: string,
-    body: any
+    body: Record<string, unknown>
   ): NeuralMessage {
     const header: NeuralMessageHeader = {
       messageId: generateUUID(),
