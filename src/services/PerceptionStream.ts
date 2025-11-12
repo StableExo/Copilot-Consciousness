@@ -21,26 +21,30 @@ export class PerceptionStream {
     console.log("Listener for new blocks is active.");
   }
 
-  private async handleNewBlock(blockNumber: number) {
-    try {
-      const block = await provider.getBlock(blockNumber);
-      if (!block) return;
+// Inside the PerceptionStream class...
 
-      const blockEvent = {
-        type: 'NEW_BLOCK',
-        payload: {
-          blockNumber: block.number,
-          timestamp: block.timestamp,
-          baseFeePerGas: block.baseFeePerGas?.toString() || '0',
-        }
-      };
+private async handleNewBlock(blockNumber: number) {
+  try {
+    const block = await provider.getBlock(blockNumber);
+    if (!block) return;
 
-      // This is the moment of perception. Feed the event to the cognitive modules.
-      this.sensoryMemory.processSensoryInput(blockEvent);
-      this.temporalFramework.tick(block.timestamp, block.number);
+    // The raw sensory event to be logged.
+    const sensoryEvent = {
+      type: 'NEW_BLOCK',
+      payload: {
+        blockNumber: block.number,
+        timestamp: block.timestamp,
+      }
+    };
 
-    } catch (error) {
-      console.error(`Error processing block ${blockNumber}:`, error);
-    }
+    // 1. Log the raw perception event in Sensory Memory.
+    this.sensoryMemory.processSensoryInput(sensoryEvent);
+
+    // 2. Pass the full block object to the Temporal Framework for memory and analysis.
+    this.temporalFramework.tick(block);
+
+  } catch (error) {
+    console.error(`Error processing block ${blockNumber}:`, error);
   }
+}
 }
