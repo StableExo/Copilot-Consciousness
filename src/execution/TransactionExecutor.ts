@@ -23,7 +23,12 @@ import {
   TransactionStatus,
   TransactionMonitoringInfo,
   MultiDEXTransactionParams,
-  ExecutionError
+  ExecutionError,
+  ExecutionState,
+  UniswapV3TwoHopParams,
+  TriangularFlashSwapParams,
+  AavePathStep,
+  AaveFlashLoanParams
 } from '../types/ExecutionTypes';
 import { ArbitrageOpportunity, SimulationResult, ArbitrageConfig } from '../types/definitions';
 
@@ -247,7 +252,7 @@ export class TransactionExecutor {
           params: paramResult.params,
           borrowTokenAddress: paramResult.borrowTokenAddress,
           borrowAmount: paramResult.borrowAmount,
-          minAmountOut: paramResult.params.amountOutMinimum2
+          minAmountOut: paramResult.params.amountOutMinimum2 as bigint
         };
 
       } else if (opportunity.type === 'triangular') {
@@ -266,7 +271,7 @@ export class TransactionExecutor {
           params: paramResult.params,
           borrowTokenAddress: paramResult.borrowTokenAddress,
           borrowAmount: paramResult.borrowAmount,
-          minAmountOut: paramResult.params.amountOutMinimumFinal
+          minAmountOut: paramResult.params.amountOutMinimumFinal as bigint
         };
 
       } else if (opportunity.path && opportunity.path.length > 0) {
@@ -420,42 +425,68 @@ export class TransactionExecutor {
     iface: ethers.utils.Interface,
     txParams: MultiDEXTransactionParams
   ): string {
-    const functionName = txParams.functionName;
+    const fn = txParams.functionName;
 
-    // Encode params based on function
-    if (functionName === 'initiateAaveFlashLoan') {
-      return iface.encodeFunctionData(functionName, [
-        [txParams.borrowTokenAddress],
-        [txParams.borrowAmount],
+    if (fn === 'initiateAaveFlashLoan') {
+      const p = txParams.params as AaveFlashLoanParams;
+
+      return iface.encodeFunctionData(fn, [
+        [txParams.borrowTokenAddress],            // assets
+        [txParams.borrowAmount],                  // amounts
         ethers.utils.defaultAbiCoder.encode(
-          ['tuple(tuple(address pool, address tokenIn, address tokenOut, uint24 fee, uint256 minOut, uint8 dexType)[] path, address initiator, address titheRecipient)'],
-          [txParams.params]
+          ['tuple(tuple(address pool,address tokenIn,address tokenOut,uint24 fee,uint256 minOut,uint8 dexType)[] path,address initiator,address titheRecipient)'],
+          [[
+            p.path.map((step: AavePathStep) => [
+              step.pool,
+              step.tokenIn,
+              step.tokenOut,
+              step.fee,
+              step.minOut,
+              step.dexType
+            ]),
+            p.initiator,
+            p.titheRecipient
+          ]]
         )
       ]);
-    } else {
-      // Uniswap V3 or triangular
-      const encodedParams = this.encodeParams(txParams);
-      return iface.encodeFunctionData(functionName, [
-        txParams.borrowTokenAddress,
-        txParams.borrowAmount,
-        encodedParams
-      ]);
     }
+
+    const encodedParams = this.encodeParams(txParams);
+    return iface.encodeFunctionData(fn, [
+      txParams.borrowTokenAddress,
+      txParams.borrowAmount,
+      encodedParams
+    ]);
   }
 
-  /**
-   * Encode parameters for transaction
-   */
   private encodeParams(txParams: MultiDEXTransactionParams): string {
     if (txParams.functionName === 'initiateUniswapV3FlashLoan') {
+      const p = txParams.params as UniswapV3TwoHopParams;
       return ethers.utils.defaultAbiCoder.encode(
-        ['tuple(address tokenIntermediate, uint24 feeA, uint24 feeB, uint256 amountOutMinimum1, uint256 amountOutMinimum2, address titheRecipient)'],
-        [txParams.params]
+        ['tuple(address tokenIntermediate,uint24 feeA,uint24 feeB,uint256 amountOutMinimum1,uint256 amountOutMinimum2,address titheRecipient)'],
+        [[
+          p.tokenIntermediate,
+          p.feeA,
+          p.feeB,
+          p.amountOutMinimum1,
+          p.amountOutMinimum2,
+          p.titheRecipient
+        ]]
       );
     } else if (txParams.functionName === 'initiateTriangularFlashSwap') {
+      const p = txParams.params as TriangularFlashSwapParams;
       return ethers.utils.defaultAbiCoder.encode(
-        ['tuple(address tokenA, address tokenB, address tokenC, uint24 fee1, uint24 fee2, uint24 fee3, uint256 amountOutMinimumFinal, address titheRecipient)'],
-        [txParams.params]
+        ['tuple(address tokenA,address tokenB,address tokenC,uint24 fee1,uint24 fee2,uint24 fee3,uint256 amountOutMinimumFinal,address titheRecipient)'],
+        [[
+          p.tokenA,
+          p.tokenB,
+          p.tokenC,
+          p.fee1,
+          p.fee2,
+          p.fee3,
+          p.amountOutMinimumFinal,
+          p.titheRecipient
+        ]]
       );
     }
 
@@ -540,17 +571,26 @@ export class TransactionExecutor {
     message: string,
     details?: unknown
   ): TransactionExecutionResult {
+    const normalizedDetails: Record<string, unknown> | undefined =
+      details === undefined
+        ? undefined
+        : details instanceof Error
+          ? { name: details.name, message: details.message, stack: details.stack }
+          : typeof details === 'object' && details !== null
+            ? details as Record<string, unknown>
+            : { value: details };
+
     return {
       success: false,
       status,
       timestamp: Date.now(),
       error: {
         timestamp: Date.now(),
-        stage: 'EXECUTING' as any,
+        stage: ExecutionState.EXECUTING,
         errorType,
         message,
         recoverable: false,
-        details
+        details: normalizedDetails
       }
     };
   }

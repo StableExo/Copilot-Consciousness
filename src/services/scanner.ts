@@ -18,7 +18,7 @@ interface ScannerConfig {
 class ScannerService {
   private app: express.Application;
   private config: ScannerConfig;
-  private rabbitmqConnection?: amqp.ChannelModel;
+  private rabbitmqConnection?: amqp.Connection;
   private rabbitmqChannel?: amqp.Channel;
   private redis?: Redis;
   private isRunning = false;
