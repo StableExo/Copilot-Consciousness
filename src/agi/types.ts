@@ -50,5 +50,5 @@ export interface NeuralMessageHeader {
  */
 export interface NeuralMessage {
   header: NeuralMessageHeader;
-  body: any;
+  body: Record<string, unknown>;
 }

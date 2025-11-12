@@ -9,25 +9,23 @@ import { ethers } from 'ethers';
 import { logger } from '../utils/logger';
 import { FLASHSWAP_ABI } from '../abis/FlashSwapABI';
 
-export namespace TxEncoder {
-    const flashSwapInterface = new ethers.utils.Interface(FLASHSWAP_ABI);
-    const logPrefix = '[TxEncoder]';
-    logger.debug(`${logPrefix} Initialized with FlashSwap ABI.`);
+const flashSwapInterface = new ethers.utils.Interface(FLASHSWAP_ABI);
+const logPrefix = '[TxEncoder]';
+logger.debug(`${logPrefix} Initialized with FlashSwap ABI.`);
 
-    export function encodeFlashSwapCall(functionName: string, functionArgs: any[]): string {
-        logger.debug(`${logPrefix} Encoding function call data for ${functionName}`);
+export function encodeFlashSwapCall(functionName: string, functionArgs: any[]): string {
+    logger.debug(`${logPrefix} Encoding function call data for ${functionName}`);
 
-        if (!functionName || !Array.isArray(functionArgs)) {
-            throw new Error('Missing functionName or invalid functionArgs for encoding.');
-        }
+    if (!functionName || !Array.isArray(functionArgs)) {
+        throw new Error('Missing functionName or invalid functionArgs for encoding.');
+    }
 
-        try {
-            const calldata = flashSwapInterface.encodeFunctionData(functionName, functionArgs);
-            logger.debug(`${logPrefix} Function call encoded successfully: ${calldata.substring(0, 74)}...`);
-            return calldata;
-        } catch (error: any) {
-            logger.error(`${logPrefix} Failed to encode function call for ${functionName}: ${error.message}`);
-            throw new Error(`Failed to encode FlashSwap function call for ${functionName}: ${error.message}`);
-        }
+    try {
+        const calldata = flashSwapInterface.encodeFunctionData(functionName, functionArgs);
+        logger.debug(`${logPrefix} Function call encoded successfully: ${calldata.substring(0, 74)}...`);
+        return calldata;
+    } catch (error: any) {
+        logger.error(`${logPrefix} Failed to encode function call for ${functionName}: ${error.message}`);
+        throw new Error(`Failed to encode FlashSwap function call for ${functionName}: ${error.message}`);
     }
 }

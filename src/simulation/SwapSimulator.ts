@@ -42,7 +42,7 @@ export class SwapSimulator {
         if (!this.dodoPoolContractCache[lowerCaseAddress]) {
             try {
                 this.dodoPoolContractCache[lowerCaseAddress] = new Contract(poolAddress, DODOV1V2_POOL_ABI, this.provider);
-            } catch (error: any) {
+            } catch (error: unknown) {
                 this.dodoPoolContractCache[lowerCaseAddress] = null;
             }
         }
@@ -60,17 +60,19 @@ export class SwapSimulator {
                     return await this.simulateV3Swap(poolState, tokenIn, amountIn);
                 case 'sushiswap':
                     return await this.simulateV2Swap(poolState, tokenIn, amountIn);
-                case 'dodo':
+                case 'dodo': {
                     const dodoPoolContract = this._getDodoPoolContract(poolState.address);
                     if (!dodoPoolContract) {
                         return { success: false, amountOut: null, error: 'DODO pool contract not initialized' };
                     }
                     return await this.simulateDodoSwap(poolState, tokenIn, amountIn, dodoPoolContract);
+                }
                 default:
                     return { success: false, amountOut: null, error: `Unsupported dex: ${poolState.dexName}` };
             }
-        } catch (error: any) {
-            return { success: false, amountOut: null, error: `Unexpected error during simulation dispatch: ${error.message}` };
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            return { success: false, amountOut: null, error: `Unexpected error during simulation dispatch: ${message}` };
         }
     }
 
@@ -92,8 +94,9 @@ export class SwapSimulator {
             const quoteResult = await this.quoterContract.callStatic.quoteExactInputSingle(params);
             const amountOut = BigInt(quoteResult[0].toString());
             return { success: true, amountOut: amountOut, error: null };
-        } catch (error: any) {
-            return { success: false, amountOut: null, error: `Quoter fail: ${error.reason || error.message}` };
+        } catch (error: unknown) {
+            const reason = (error as { reason?: string }).reason || (error instanceof Error ? error.message : String(error));
+            return { success: false, amountOut: null, error: `Quoter fail: ${reason}` };
         }
     }
 
@@ -117,8 +120,8 @@ export class SwapSimulator {
                 ? await poolContract.callStatic.querySellBase(ethers.constants.AddressZero, amountIn)
                 : await poolContract.callStatic.querySellQuote(ethers.constants.AddressZero, amountIn);
             return { success: true, amountOut: BigInt(queryResult[0].toString()), error: null };
-        } catch (error: any) {
-            const reason = error.reason || error.message;
+        } catch (error: unknown) {
+            const reason = (error as { reason?: string }).reason || (error instanceof Error ? error.message : String(error));
             if (reason.includes("BALANCE_NOT_ENOUGH")) return { success: false, amountOut: null, error: reason };
             return { success: false, amountOut: null, error: `DODO fail: ${reason}` };
         }

@@ -27,6 +27,17 @@ export interface CrossChainPath extends Omit<ArbitragePath, 'hops'> {
   chains: (number | string)[];
 }
 
+interface QueueItem {
+  chain: number | string;
+  token: string;
+  amount: bigint;
+  hops: CrossChainHop[];
+  bridgeCount: number;
+  totalBridgeFees: bigint;
+  totalTime: number;
+  chains: (number | string)[];
+}
+
 export class CrossChainPathFinder {
   private pathFindersByChain: Map<number | string, PathFinder>;
   private bridgeManager: BridgeManager;
@@ -85,17 +96,6 @@ export class CrossChainPathFinder {
     const visited = new Set<string>();
     
     // BFS queue: [currentChain, currentToken, currentAmount, path, bridgeCount]
-    interface QueueItem {
-      chain: number | string;
-      token: string;
-      amount: bigint;
-      hops: CrossChainHop[];
-      bridgeCount: number;
-      totalBridgeFees: bigint;
-      totalTime: number;
-      chains: (number | string)[];
-    }
-
     const queue: QueueItem[] = [{
       chain: startChain,
       token: startToken,
@@ -191,8 +191,8 @@ export class CrossChainPathFinder {
    * Explore swap opportunities on the same chain
    */
   private async exploreSameChainSwaps(
-    current: any,
-    queue: any[]
+    current: QueueItem,
+    queue: QueueItem[]
   ): Promise<void> {
     const edges = this.chainEdges.get(current.chain) || [];
     
@@ -241,8 +241,8 @@ export class CrossChainPathFinder {
    * Explore bridge hops to other chains
    */
   private async exploreBridgeHops(
-    current: any,
-    queue: any[],
+    current: QueueItem,
+    queue: QueueItem[],
     startAmount: bigint
   ): Promise<void> {
     // Don't bridge if amount is too small

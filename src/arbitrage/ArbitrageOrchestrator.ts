@@ -16,13 +16,33 @@ import { AdvancedGasEstimator } from '../gas/AdvancedGasEstimator';
 import { CrossChainPathFinder, CrossChainPath } from './CrossChainPathFinder';
 import { BridgeManager } from '../chains/BridgeManager';
 import { PathfindingConfig as CrossChainPathConfig } from '../config/cross-chain.config';
-import { MLOrchestrator } from '../ml/MLOrchestrator';
+import { MLOrchestrator, OrchestratorStats as MLOrchestratorStats } from '../ml/MLOrchestrator';
 import { EnhancedArbitragePath } from '../ml/types';
+import { GasEstimatorStats } from '../gas/AdvancedGasEstimator';
 
 /**
  * Orchestrator mode - polling, event-driven, or cross-chain
  */
 export type OrchestratorMode = 'polling' | 'event-driven' | 'hybrid' | 'cross-chain';
+
+export interface Stats {
+  tokenCount: number;
+  edgeCount: number;
+  cachedPools: number;
+  mode: OrchestratorMode;
+  gasFilterEnabled: boolean;
+  advancedGasEstimatorEnabled: boolean;
+  queuedOpportunities: number;
+  missedOpportunities: number;
+  totalOpportunitiesFound: number;
+  profitableBeforeGas: number;
+  profitableAfterGas: number;
+  blockedByGasValidation: number;
+  blockedByMLFilter: number;
+  mlEnabled: boolean;
+  mlStats?: MLOrchestratorStats;
+  advancedGasEstimatorStats?: GasEstimatorStats;
+}
 
 export class ArbitrageOrchestrator {
   private registry: DEXRegistry;
@@ -221,7 +241,7 @@ export class ArbitrageOrchestrator {
   /**
    * Get statistics
    */
-  getStats() {
+  getStats(): Stats {
     return {
       tokenCount: this.pathFinder.getTokens().length,
       edgeCount: this.pathFinder.getEdgeCount(),

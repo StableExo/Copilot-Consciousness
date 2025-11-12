@@ -15,6 +15,22 @@ import { ArbitragePatterns, PatternAnalysis } from './ArbitragePatterns';
 import { ProfitabilityCalculator } from './ProfitabilityCalculator';
 import { MultiHopDataFetcher } from './MultiHopDataFetcher';
 import { ArbitragePath, PathfindingConfig, PoolEdge } from './types';
+import { Stats as ArbitrageOrchestratorStats } from './ArbitrageOrchestrator';
+import { PathfindingMetrics } from './AdvancedPathFinder';
+import { PruningStats } from './PathPruner';
+import { CacheStats } from './PathCache';
+import { PatternMetrics } from './ArbitragePatterns';
+
+/**
+ * Advanced orchestrator stats
+ */
+export interface AdvancedOrchestratorStats extends ArbitrageOrchestratorStats {
+  advancedFeaturesEnabled: boolean;
+  pathfindingMetrics?: PathfindingMetrics;
+  pruningStats?: PruningStats;
+  cacheStats?: CacheStats;
+  patternMetrics?: PatternMetrics[];
+}
 
 /**
  * Advanced orchestrator configuration
@@ -236,29 +252,17 @@ export class AdvancedOrchestrator {
   /**
    * Get comprehensive statistics
    */
-  getStats() {
+  getStats(): AdvancedOrchestratorStats {
     const baseStats = this.basicOrchestrator.getStats();
     
-    const advancedStats: any = {
+    const advancedStats: AdvancedOrchestratorStats = {
       ...baseStats,
-      advancedFeaturesEnabled: this.config.enableAdvancedFeatures
+      advancedFeaturesEnabled: this.config.enableAdvancedFeatures,
+      pathfindingMetrics: this.advancedPathFinder?.getMetrics(),
+      pruningStats: this.pathPruner?.getStats(),
+      cacheStats: this.pathCache?.getStats(),
+      patternMetrics: this.patternDetector?.getAllMetrics(),
     };
-
-    if (this.advancedPathFinder) {
-      advancedStats.pathfindingMetrics = this.advancedPathFinder.getMetrics();
-    }
-
-    if (this.pathPruner) {
-      advancedStats.pruningStats = this.pathPruner.getStats();
-    }
-
-    if (this.pathCache) {
-      advancedStats.cacheStats = this.pathCache.getStats();
-    }
-
-    if (this.patternDetector) {
-      advancedStats.patternMetrics = this.patternDetector.getAllMetrics();
-    }
 
     return advancedStats;
   }
@@ -403,7 +407,7 @@ export class AdvancedOrchestrator {
     paths.forEach(path => {
       const analysis = this.patternDetector!.detectPattern(path);
       // Store pattern analysis in path metadata (would need type extension)
-      (path as any).patternAnalysis = analysis;
+      path.patternAnalysis = analysis;
     });
 
     return paths;

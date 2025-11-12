@@ -252,9 +252,11 @@ export class RealtimeDataPipeline extends EventEmitter {
     this.metrics.eventsDropped++;
 
     switch (this.dropStrategy) {
-      case 'oldest':
+      case 'oldest': {
         // Remove oldest low-priority event
-        const oldestLowPriorityIndex = this.eventQueue.findIndex(e => e.priority === 'low');
+        const oldestLowPriorityIndex = this.eventQueue.findIndex(
+          e => e.priority === 'low'
+        );
         if (oldestLowPriorityIndex !== -1) {
           this.eventQueue.splice(oldestLowPriorityIndex, 1);
           this.eventQueue.push(newEvent);
@@ -263,7 +265,7 @@ export class RealtimeDataPipeline extends EventEmitter {
           this.emit('eventDropped', newEvent);
         }
         break;
-
+      }
       case 'newest':
         // Don't add the new event
         this.emit('eventDropped', newEvent);

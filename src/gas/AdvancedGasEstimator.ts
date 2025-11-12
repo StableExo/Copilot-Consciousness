@@ -66,6 +66,14 @@ export interface GasEstimationResult {
   breakdown?: GasBreakdown;
 }
 
+export interface GasEstimatorStats {
+  totalEstimations: number;
+  onChainEstimations: number;
+  heuristicEstimations: number;
+  failedEstimations: number;
+  blockedOpportunities: number;
+}
+
 /**
  * Detailed gas cost breakdown
  */
@@ -605,7 +613,7 @@ export class AdvancedGasEstimator {
   /**
    * Get current statistics
    */
-  getStats() {
+  getStats(): GasEstimatorStats {
     return { ...this.stats };
   }
 

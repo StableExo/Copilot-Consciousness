@@ -2,7 +2,7 @@
  * Tests for ParamBuilder
  */
 
-import { ParamBuilder } from '../ParamBuilder';
+import { buildTwoHopParams, buildTriangularParams, buildAavePathParams } from '../ParamBuilder';
 import { ArbitrageOpportunity, ArbitragePath, SimulationResult, ArbitrageConfig, Pool, Token } from '../../types/definitions';
 
 describe('ParamBuilder', () => {
@@ -61,7 +61,7 @@ describe('ParamBuilder', () => {
                 finalAmount: 1100000000000000000n  // 1.1 tokens (profit)
             };
 
-            const result = ParamBuilder.buildTwoHopParams(opportunity, simulationResult, mockConfig, titheRecipient);
+            const result = buildTwoHopParams(opportunity, simulationResult, mockConfig, titheRecipient);
 
             expect(result.contractFunctionName).toBe('initiateUniswapV3FlashLoan');
             expect(result.borrowTokenAddress).toBe(mockTokenA.address);
@@ -95,7 +95,7 @@ describe('ParamBuilder', () => {
             };
 
             expect(() => {
-                ParamBuilder.buildTwoHopParams(opportunity, simulationResult, mockConfig, titheRecipient);
+                buildTwoHopParams(opportunity, simulationResult, mockConfig, titheRecipient);
             }).toThrow('Invalid spatial opportunity for V3->V3 param build.');
         });
 
@@ -123,7 +123,7 @@ describe('ParamBuilder', () => {
             };
 
             expect(() => {
-                ParamBuilder.buildTwoHopParams(opportunity, simulationResult, mockConfig, titheRecipient);
+                buildTwoHopParams(opportunity, simulationResult, mockConfig, titheRecipient);
             }).toThrow('Invalid spatial opportunity for V3->V3 param build.');
         });
     });
@@ -151,7 +151,7 @@ describe('ParamBuilder', () => {
                 finalAmount: 1100000000000000000n
             };
 
-            const result = ParamBuilder.buildTriangularParams(opportunity, simulationResult, mockConfig, titheRecipient);
+            const result = buildTriangularParams(opportunity, simulationResult, mockConfig, titheRecipient);
 
             expect(result.contractFunctionName).toBe('initiateTriangularFlashSwap');
             expect(result.borrowTokenAddress).toBe(mockTokenA.address);
@@ -183,7 +183,7 @@ describe('ParamBuilder', () => {
             };
 
             expect(() => {
-                ParamBuilder.buildTriangularParams(opportunity, simulationResult, mockConfig, titheRecipient);
+                buildTriangularParams(opportunity, simulationResult, mockConfig, titheRecipient);
             }).toThrow('Invalid triangular opportunity structure.');
         });
 
@@ -209,7 +209,7 @@ describe('ParamBuilder', () => {
             };
 
             expect(() => {
-                ParamBuilder.buildTriangularParams(opportunity, simulationResult, mockConfig, titheRecipient);
+                buildTriangularParams(opportunity, simulationResult, mockConfig, titheRecipient);
             }).toThrow('Invalid triangular opportunity structure.');
         });
     });
@@ -249,7 +249,7 @@ describe('ParamBuilder', () => {
                 finalAmount: 1100000000000000000n
             };
 
-            const result = ParamBuilder.buildAavePathParams(opportunity, simulationResult, mockConfig, initiatorAddress, titheRecipient);
+            const result = buildAavePathParams(opportunity, simulationResult, mockConfig, initiatorAddress, titheRecipient);
 
             expect(result.contractFunctionName).toBe('initiateAaveFlashLoan');
             expect(result.borrowTokenAddress).toBe(mockTokenA.address);
@@ -302,7 +302,7 @@ describe('ParamBuilder', () => {
                 finalAmount: 1100000000000000000n
             };
 
-            const result = ParamBuilder.buildAavePathParams(opportunity, simulationResult, mockConfig, initiatorAddress, titheRecipient);
+            const result = buildAavePathParams(opportunity, simulationResult, mockConfig, initiatorAddress, titheRecipient);
 
             expect(result.params.path[0].dexType).toBe(1); // SushiSwap
             expect(result.params.path[0].fee).toBe(0); // SushiSwap doesn't use fee parameter
@@ -333,7 +333,7 @@ describe('ParamBuilder', () => {
                 finalAmount: 1100000000000000000n
             };
 
-            const result = ParamBuilder.buildAavePathParams(opportunity, simulationResult, mockConfig, initiatorAddress, titheRecipient);
+            const result = buildAavePathParams(opportunity, simulationResult, mockConfig, initiatorAddress, titheRecipient);
 
             expect(result.params.path[0].dexType).toBe(2); // DODO
             expect(result.params.path[0].fee).toBe(0); // DODO doesn't use fee parameter
@@ -355,7 +355,7 @@ describe('ParamBuilder', () => {
             };
 
             expect(() => {
-                ParamBuilder.buildAavePathParams(opportunity, simulationResult, mockConfig, initiatorAddress, titheRecipient);
+                buildAavePathParams(opportunity, simulationResult, mockConfig, initiatorAddress, titheRecipient);
             }).toThrow('Invalid or empty path in opportunity object.');
         });
 
@@ -385,7 +385,7 @@ describe('ParamBuilder', () => {
             };
 
             expect(() => {
-                ParamBuilder.buildAavePathParams(opportunity, simulationResult, mockConfig, initiatorAddress, titheRecipient);
+                buildAavePathParams(opportunity, simulationResult, mockConfig, initiatorAddress, titheRecipient);
             }).toThrow('Unsupported DEX type for path building: unsupportedDEX');
         });
     });
