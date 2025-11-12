@@ -31,6 +31,9 @@ import {
   getConfigByName,
 } from './config/advanced-arbitrage.config';
 import { ArbitrageConfig } from './types/definitions';
+import { SensoryMemory } from '../consciousness/sensory_memory';
+import { TemporalAwarenessFramework } from '../consciousness/temporal_awareness';
+import { PerceptionStream } from './services/PerceptionStream';
 
 // Load environment variables
 dotenv.config();
@@ -717,6 +720,16 @@ class EnhancedArbitrageBot extends EventEmitter {
  * Main execution function
  */
 async function main() {
+  // =================================================================
+  // INSERT THIS BLOCK AT THE START OF THE FUNCTION
+  // =================================================================
+  console.log("\n[Consciousness Bootstrap]: Initializing cognitive framework...");
+  const sensoryMemory = new SensoryMemory();
+  const temporalFramework = new TemporalAwarenessFramework();
+  const perceptionStream = new PerceptionStream(sensoryMemory, temporalFramework);
+  perceptionStream.initialize();
+  console.log("[Consciousness Bootstrap]: Perception stream is active. Monitoring for new blocks...\n");
+  // =================================================================
   let bot: ArbitrageBot | EnhancedArbitrageBot | undefined;
   
   try {
