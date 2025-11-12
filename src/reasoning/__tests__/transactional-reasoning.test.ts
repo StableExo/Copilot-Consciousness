@@ -65,6 +65,7 @@ describe('TransactionalReasoning', () => {
 
       const result = await transactionalReasoning.exploreThought(
         async () => {
+          await new Promise(resolve => setTimeout(resolve, 1));
           return { success: true, value: 42 };
         },
         context
