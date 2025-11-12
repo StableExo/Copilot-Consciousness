@@ -5,6 +5,15 @@ All notable changes to the Copilot-Consciousness project will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.5.0] - 2025-11-11
+
+### Changed
+- **Dependency Pinning**: All dependencies in `package.json` and `frontend/package.json` are now pinned to exact versions to ensure deterministic builds. The `^` has been removed from all versions.
+- **TypeScript and ESLint Unification**: The TypeScript and `@typescript-eslint` versions have been standardized across the root and frontend workspaces to ensure consistency and prevent compatibility issues.
+  - TypeScript is now pinned to `5.3.3`.
+  - `@typescript-eslint` is now pinned to `8.46.4`.
+- **`.npmrc` Configuration**: A `.npmrc` file has been added to enforce exact version saving, strict engine compatibility, and other best practices.
+
 ## [3.4.0] - 2025-11-09
 
 ### Added - AxionCitadel Phase 1 Integration: Core Intelligence
