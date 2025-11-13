@@ -34,11 +34,13 @@
     "deploy:flashswapv2": "hardhat run scripts/deployFlashSwapV2.ts --network base",
     "deploy:flashswapv2:testnet": "hardhat run scripts/deployFlashSwapV2.ts --network baseSepolia",
     "audit:slither": "slither . --fail-level medium",
-    "audit:slither:report": "slither . --print human-summary"
+    "audit:slither:report": "slither . --print human-summary",
+    "audit:prod": "npm audit --omit=dev --audit-level=high"
   },
   "dependencies": {
     "@aave/core-v3": "1.19.3",
-    "@solana/web3.js": "1.98.4",
+    "@solana/web3.js": "1.91.9",
+    "@types/uuid": "8.3.4",
     "@uniswap/sdk-core": "4.0.7",
     "@uniswap/v3-core": "1.0.1",
     "@uniswap/v3-periphery": "1.4.3",
@@ -63,7 +65,8 @@
     "pino-pretty": "13.0.0",
     "qrcode": "1.5.4",
     "socket.io": "4.8.1",
-    "speakeasy": "2.0.0"
+    "speakeasy": "2.0.0",
+    "uuid": "8.3.2"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "2.2.3",
@@ -99,7 +102,7 @@
     "typescript": "5.3.3"
   },
   "engines": {
-    "node": ">=18.0.0",
+    "node": ">=18 <21",
     "npm": ">=9.0.0"
   },
   "overrides": {
