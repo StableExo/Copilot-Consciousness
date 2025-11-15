@@ -18,20 +18,44 @@ async function main() {
     throw new Error("Required DEX configurations not found in the registry.");
   }
 
-  console.log("Deploying ArbitrageExecutor contract...");
-  const ArbitrageExecutorFactory = await ethers.getContractFactory("ArbitrageExecutor");
-  const arbitrageExecutor = await ArbitrageExecutorFactory.deploy(AAVE_POOL_PROVIDER_ADDRESS_BASE);
-  await arbitrageExecutor.deployed();
-  console.log(`ArbitrageExecutor deployed to: ${arbitrageExecutor.address}`);
+  console.log("Connecting to deployed FlashSwapV2 contract...");
+  const flashSwapV2Address = process.env.FLASHSWAP_V2_ADDRESS;
+  if (!flashSwapV2Address) {
+    throw new Error("FLASHSWAP_V2_ADDRESS environment variable is not set");
+  }
+  const FlashSwapV2Factory = await ethers.getContractFactory("FlashSwapV2");
+  const flashSwapV2 = FlashSwapV2Factory.attach(flashSwapV2Address);
+  console.log(`Connected to FlashSwapV2 at: ${flashSwapV2Address}`);
 
   // --- 2. Define Arbitrage Route ---
   // We will attempt to find a price inefficiency between SushiSwap and Uniswap.
   // Route: Borrow DAI, swap DAI for WETH on SushiSwap, swap WETH back for DAI on Uniswap V2.
+  // FlashSwapV2 uses ArbParams with SwapStep[] path
+  // DEX_TYPE_SUSHISWAP = 1, DEX_TYPE_UNISWAP_V3 = 0
+  const DEX_TYPE_SUSHISWAP = 1;
+  
+  const [deployer] = await ethers.getSigners();
+  
   const arbitrageParams = {
-    router1: sushiSwap.router,
-    router2: uniswapV2.router,
-    path1: [DAI_ADDRESS_BASE, WETH_ADDRESS_BASE],
-    path2: [WETH_ADDRESS_BASE, DAI_ADDRESS_BASE],
+    path: [
+      {
+        pool: sushiSwap.router, // SushiSwap router address
+        tokenIn: DAI_ADDRESS_BASE,
+        tokenOut: WETH_ADDRESS_BASE,
+        fee: 3000, // 0.3% fee tier (standard for most pairs)
+        minOut: 0, // Accept any output for intermediate swap
+        dexType: DEX_TYPE_SUSHISWAP
+      },
+      {
+        pool: uniswapV2.router, // Uniswap V2 router address
+        tokenIn: WETH_ADDRESS_BASE,
+        tokenOut: DAI_ADDRESS_BASE,
+        fee: 3000, // 0.3% fee tier
+        minOut: LOAN_AMOUNT, // Minimum output to ensure profitability (at least break-even)
+        dexType: DEX_TYPE_SUSHISWAP // Uniswap V2 is also V2-compatible, use SUSHISWAP type
+      }
+    ],
+    initiator: deployer.address
   };
 
   console.log("Constructed arbitrage parameters:", arbitrageParams);
@@ -42,10 +66,16 @@ async function main() {
   // Note: This requires the deploying account to have funds to pay for gas.
   // In a real-world scenario, you would need to set up a proper Hardhat configuration for the Base network.
   try {
-    const tx = await arbitrageExecutor.requestFlashLoan(
+    // Encode the arbitrage parameters as ArbParams struct
+    const encodedParams = ethers.utils.defaultAbiCoder.encode(
+      ["tuple(tuple(address pool, address tokenIn, address tokenOut, uint24 fee, uint256 minOut, uint8 dexType)[] path, address initiator)"],
+      [arbitrageParams]
+    );
+    
+    const tx = await flashSwapV2.initiateAaveFlashLoan(
       DAI_ADDRESS_BASE,
       LOAN_AMOUNT,
-      arbitrageParams
+      encodedParams
     );
     console.log("Flash loan transaction sent! Hash:", tx.hash);
     const receipt = await tx.wait();

@@ -19,11 +19,14 @@ async function main() {
     throw new Error("Required DEX configurations not found in the registry.");
   }
 
-  console.log("Deploying ArbitrageExecutor contract...");
-  const ArbitrageExecutorFactory = await ethers.getContractFactory("ArbitrageExecutor");
-  const arbitrageExecutor = await ArbitrageExecutorFactory.deploy(AAVE_POOL_PROVIDER_ADDRESS_BASE);
-  await arbitrageExecutor.deployed();
-  console.log(`ArbitrageExecutor deployed to: ${arbitrageExecutor.address}`);
+  console.log("Connecting to deployed FlashSwapV2 contract...");
+  const flashSwapV2Address = process.env.FLASHSWAP_V2_ADDRESS;
+  if (!flashSwapV2Address) {
+    throw new Error("FLASHSWAP_V2_ADDRESS environment variable is not set");
+  }
+  const FlashSwapV2Factory = await ethers.getContractFactory("FlashSwapV2");
+  const flashSwapV2 = FlashSwapV2Factory.attach(flashSwapV2Address);
+  console.log(`Connected to FlashSwapV2 at: ${flashSwapV2Address}`);
 
   // --- 2. Configure Multi-Hop Pathfinding ---
   const pathConfig: PathfindingConfig = {
@@ -64,21 +67,31 @@ async function main() {
     console.log(`  Net Profit: ${ethers.utils.formatEther(bestPath.netProfit.toString())} tokens`);
 
     // --- 4. Prepare Multi-Hop Execution Parameters ---
+    // FlashSwapV2 uses ArbParams with SwapStep[] path
+    const [deployer] = await ethers.getSigners();
+    
     const multiHopParams = {
-      version: 1, // Version byte for forward compatibility
-      routers: bestPath.hops.map(hop => {
+      path: bestPath.hops.map(hop => {
         const dex = registry.getDEX(hop.dexName);
-        return dex ? dex.router : "";
-      }),
-      paths: bestPath.hops.map(hop => {
-        // Each path is an array of token addresses for that hop
-        return [hop.tokenIn, hop.tokenOut];
-      }),
-      minAmounts: bestPath.hops.map(hop => {
+        // Determine DEX type based on DEX name
+        let dexType = 1; // Default to SUSHISWAP (V2-compatible)
+        if (hop.dexName.includes("Uniswap V3")) {
+          dexType = 0; // UNISWAP_V3
+        }
+        
         // Set minimum amount to 95% of expected output (5% slippage tolerance)
         const minAmount = (hop.amountOut * BigInt(95)) / BigInt(100);
-        return minAmount.toString();
-      })
+        
+        return {
+          pool: dex ? dex.router : "",
+          tokenIn: hop.tokenIn,
+          tokenOut: hop.tokenOut,
+          fee: 3000, // 0.3% fee tier (standard)
+          minOut: minAmount.toString(),
+          dexType: dexType
+        };
+      }),
+      initiator: deployer.address
     };
 
     console.log("\nMulti-Hop Route:");
@@ -88,17 +101,21 @@ async function main() {
 
     // --- 5. Execute Multi-Hop Flash Loan ---
     console.log(`\nRequesting multi-hop flash loan...`);
-    console.log("(In production, this would execute the flash loan on-chain)");
 
-    // Uncomment to execute in production:
-    // const tx = await arbitrageExecutor.requestMultiHopFlashLoan(
-    //   bestPath.startToken,
-    //   startAmount.toString(),
-    //   multiHopParams
-    // );
-    // console.log("Flash loan transaction sent! Hash:", tx.hash);
-    // const receipt = await tx.wait();
-    // console.log("Transaction confirmed. Gas used:", receipt.gasUsed.toString());
+    // Encode the arbitrage parameters as ArbParams struct
+    const encodedParams = ethers.utils.defaultAbiCoder.encode(
+      ["tuple(tuple(address pool, address tokenIn, address tokenOut, uint24 fee, uint256 minOut, uint8 dexType)[] path, address initiator)"],
+      [multiHopParams]
+    );
+    
+    const tx = await flashSwapV2.initiateAaveFlashLoan(
+      bestPath.startToken,
+      startAmount.toString(),
+      encodedParams
+    );
+    console.log("Flash loan transaction sent! Hash:", tx.hash);
+    const receipt = await tx.wait();
+    console.log("Transaction confirmed. Gas used:", receipt.gasUsed.toString());
 
     console.log("\nMulti-hop arbitrage workflow complete.");
     console.log("Orchestrator Stats:");
