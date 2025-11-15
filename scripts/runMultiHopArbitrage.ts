@@ -2,14 +2,50 @@ import { ethers } from "hardhat";
 import { DEXRegistry } from "../src/dex/core/DEXRegistry";
 import { ArbitrageOrchestrator, PathfindingConfig } from "../src/arbitrage";
 
+/**
+ * Decode Aave error codes for better debugging
+ * Reference: https://github.com/aave/aave-v3-core/blob/master/contracts/protocol/libraries/helpers/Errors.sol
+ */
+function decodeAaveError(error: any): string {
+  const errorMap: { [key: string]: string } = {
+    '27': 'RESERVE_INACTIVE - The asset is not configured as an active reserve in Aave',
+    '26': 'INVALID_AMOUNT - Amount must be greater than 0',
+    '91': 'FLASHLOAN_DISABLED - Flash loaning for this asset is disabled',
+    '13': 'INVALID_FLASHLOAN_EXECUTOR_RETURN - Invalid return value from flash loan executor',
+    '49': 'INCONSISTENT_FLASHLOAN_PARAMS - Inconsistent flash loan parameters'
+  };
+  
+  const errorString = error?.message || error?.toString() || '';
+  
+  // Try to extract error code from revert message
+  const matches = errorString.match(/execution reverted: (\d+)/);
+  if (matches && matches[1]) {
+    const code = matches[1];
+    return errorMap[code] || `Unknown Aave error code: ${code}`;
+  }
+  
+  return errorString;
+}
+
 async function main() {
   console.log("Starting multi-hop arbitrage script...");
 
   // --- 1. Configuration ---
+  // NOTE: These addresses are for Base Sepolia testnet
+  // For mainnet deployment, update these addresses accordingly
   const AAVE_POOL_PROVIDER_ADDRESS_BASE = "0x2449373414902241E54854737Bed6cF10a97b274";
-  const DAI_ADDRESS_BASE = "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb";
-  const WETH_ADDRESS_BASE = "0x4200000000000000000000000000000000000006";
-  const USDC_ADDRESS_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+  
+  // Base Sepolia Token Addresses
+  // IMPORTANT: Not all tokens may be active on Aave Base Sepolia
+  const WETH_ADDRESS_BASE = "0x4200000000000000000000000000000000000006"; // Most reliable on testnet
+  const DAI_ADDRESS_BASE = "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb"; // May not be active!
+  const USDC_ADDRESS_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"; // May not be active!
+
+  const USDC_ADDRESS_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"; // May not be active!
+  
+  console.log("\n=== TESTNET MODE: Base Sepolia ===");
+  console.log("Using WETH as primary asset (most likely to be active on Aave testnet)");
+  console.log("NOTE: Multi-hop arbitrage requires all pools to exist with sufficient liquidity\n");
 
   const registry = new DEXRegistry();
   const uniswapV2 = registry.getDEX("Uniswap V2 on Base");
@@ -29,9 +65,12 @@ async function main() {
   console.log(`Connected to FlashSwapV2 at: ${flashSwapV2Address}`);
 
   // --- 2. Configure Multi-Hop Pathfinding ---
+  // TESTNET: Use smaller thresholds suitable for testnet liquidity
+  // MAINNET: Increase thresholds for realistic profit requirements
   const pathConfig: PathfindingConfig = {
     maxHops: 4,
-    minProfitThreshold: BigInt(ethers.utils.parseEther("10").toString()),
+    minProfitThreshold: BigInt(ethers.utils.parseEther("0.01").toString()), // TESTNET: 0.01 ETH profit
+    // MAINNET: Increase to 10+ ETH for realistic profitability
     maxSlippage: 0.05,
     gasPrice: BigInt(ethers.utils.parseUnits("50", "gwei").toString())
   };
@@ -39,25 +78,36 @@ async function main() {
   const orchestrator = new ArbitrageOrchestrator(registry, pathConfig, pathConfig.gasPrice);
 
   // --- 3. Find Multi-Hop Arbitrage Opportunities ---
-  const tokens = [DAI_ADDRESS_BASE, WETH_ADDRESS_BASE, USDC_ADDRESS_BASE];
-  const startAmount = BigInt(ethers.utils.parseEther("1000").toString());
+  // TESTNET: Using WETH as the primary token
+  // MAINNET: Include more tokens based on market liquidity
+  const tokens = [WETH_ADDRESS_BASE, DAI_ADDRESS_BASE, USDC_ADDRESS_BASE];
+  const startAmount = BigInt(ethers.utils.parseEther("0.1").toString()); // TESTNET: 0.1 WETH
+  // MAINNET: Increase to 1000+ for realistic trading volumes
 
   console.log("\nSearching for multi-hop arbitrage opportunities...");
-  console.log("Note: This requires actual on-chain data. The example shows the workflow.");
+  console.log("⚠️  NOTE: This is an illustrative example. On testnet:");
+  console.log("  - Liquidity may be insufficient for actual arbitrage");
+  console.log("  - Price feeds may not reflect real market conditions");
+  console.log("  - Some token pairs may not exist");
 
   try {
     const paths = await orchestrator.findOpportunities(tokens, startAmount);
 
     if (paths.length === 0) {
-      console.log("No profitable multi-hop arbitrage opportunities found.");
-      console.log("This could be due to:");
-      console.log("  - Efficient market pricing");
-      console.log("  - High gas costs");
-      console.log("  - Insufficient liquidity");
+      console.log("\n❌ No profitable multi-hop arbitrage opportunities found.");
+      console.log("This is expected on testnet due to:");
+      console.log("  - Limited liquidity in test pools");
+      console.log("  - Efficient market pricing (even on testnets)");
+      console.log("  - High gas costs relative to small test amounts");
+      console.log("\nFor mainnet:");
+      console.log("  1. Increase start amount to 1000+ tokens");
+      console.log("  2. Add more token pairs with confirmed liquidity");
+      console.log("  3. Adjust minProfitThreshold to realistic values");
+      console.log("  4. Monitor mempool for real-time opportunities");
       return;
     }
 
-    console.log(`\nFound ${paths.length} potential arbitrage paths`);
+    console.log(`\n✅ Found ${paths.length} potential arbitrage paths`);
 
     // Get the most profitable path
     const bestPath = paths[0];
@@ -67,19 +117,22 @@ async function main() {
     console.log(`  Net Profit: ${ethers.utils.formatEther(bestPath.netProfit.toString())} tokens`);
 
     // --- 4. Prepare Multi-Hop Execution Parameters ---
-    // FlashSwapV2 uses ArbParams with SwapStep[] path
     const [deployer] = await ethers.getSigners();
+    
+    const DEX_TYPE_SUSHISWAP = 1; // Also used for Uniswap V2 and V2-compatible DEXes
+    const DEX_TYPE_UNISWAP_V3 = 0;
     
     const multiHopParams = {
       path: bestPath.hops.map(hop => {
         const dex = registry.getDEX(hop.dexName);
         // Determine DEX type based on DEX name
-        let dexType = 1; // Default to SUSHISWAP (V2-compatible)
+        let dexType = DEX_TYPE_SUSHISWAP; // Default to V2-compatible
         if (hop.dexName.includes("Uniswap V3")) {
-          dexType = 0; // UNISWAP_V3
+          dexType = DEX_TYPE_UNISWAP_V3;
         }
         
         // Set minimum amount to 95% of expected output (5% slippage tolerance)
+        // TESTNET: Accept higher slippage due to low liquidity
         const minAmount = (hop.amountOut * BigInt(95)) / BigInt(100);
         
         return {
@@ -102,30 +155,61 @@ async function main() {
     // --- 5. Execute Multi-Hop Flash Loan ---
     console.log(`\nRequesting multi-hop flash loan...`);
 
-    // Encode the arbitrage parameters as ArbParams struct
-    const encodedParams = ethers.utils.defaultAbiCoder.encode(
-      ["tuple(tuple(address pool, address tokenIn, address tokenOut, uint24 fee, uint256 minOut, uint8 dexType)[] path, address initiator)"],
-      [multiHopParams]
-    );
-    
-    const tx = await flashSwapV2.initiateAaveFlashLoan(
-      bestPath.startToken,
-      startAmount.toString(),
-      encodedParams
-    );
-    console.log("Flash loan transaction sent! Hash:", tx.hash);
-    const receipt = await tx.wait();
-    console.log("Transaction confirmed. Gas used:", receipt.gasUsed.toString());
+    try {
+      // Encode the arbitrage parameters as ArbParams struct
+      const encodedParams = ethers.utils.defaultAbiCoder.encode(
+        ["tuple(tuple(address pool, address tokenIn, address tokenOut, uint24 fee, uint256 minOut, uint8 dexType)[] path, address initiator)"],
+        [multiHopParams]
+      );
+      
+      console.log("Estimating gas...");
+      try {
+        const gasEstimate = await flashSwapV2.estimateGas.initiateAaveFlashLoan(
+          bestPath.startToken,
+          startAmount.toString(),
+          encodedParams
+        );
+        console.log(`Estimated gas: ${gasEstimate.toString()}`);
+      } catch (gasError: any) {
+        console.error("\n❌ Gas estimation failed!");
+        console.error("Error details:", gasError?.message || gasError);
+        console.error("\nDecoded error:", decodeAaveError(gasError));
+        console.error("\nPossible causes:");
+        console.error("  1. The flash loan asset is not active on Aave (Error 27: RESERVE_INACTIVE)");
+        console.error("  2. One or more pools don't exist or lack liquidity");
+        console.error("  3. Token pair doesn't exist on one of the DEXes");
+        throw gasError;
+      }
+      
+      const tx = await flashSwapV2.initiateAaveFlashLoan(
+        bestPath.startToken,
+        startAmount.toString(),
+        encodedParams
+      );
+      console.log("\n✅ Flash loan transaction sent! Hash:", tx.hash);
+      console.log("Waiting for confirmation...");
+      const receipt = await tx.wait();
+      console.log("✅ Transaction confirmed!");
+      console.log(`Gas used: ${receipt.gasUsed.toString()}`);
 
-    console.log("\nMulti-hop arbitrage workflow complete.");
-    console.log("Orchestrator Stats:");
-    const stats = orchestrator.getStats();
-    console.log(`  Token Count: ${stats.tokenCount}`);
-    console.log(`  Edge Count: ${stats.edgeCount}`);
-    console.log(`  Cached Pools: ${stats.cachedPools}`);
+      console.log("\nMulti-hop arbitrage workflow complete.");
+      console.log("Orchestrator Stats:");
+      const stats = orchestrator.getStats();
+      console.log(`  Token Count: ${stats.tokenCount}`);
+      console.log(`  Edge Count: ${stats.edgeCount}`);
+      console.log(`  Cached Pools: ${stats.cachedPools}`);
+      console.log(`View transaction: https://sepolia.basescan.org/tx/${tx.hash}`);
+    } catch (txError: any) {
+      console.error("\n❌ Transaction failed!");
+      console.error("Error:", txError?.message || txError);
+      console.error("\nDecoded error:", decodeAaveError(txError));
+    }
 
-  } catch (error) {
-    console.error("Error during multi-hop arbitrage:", error);
+  } catch (error: any) {
+    console.error("\n❌ Error during multi-hop arbitrage:");
+    console.error(error?.message || error);
+    console.error("\nDecoded error:", decodeAaveError(error));
+    console.error("\nThis is often expected on testnet. See notes above about testnet limitations.");
   }
 }
 
