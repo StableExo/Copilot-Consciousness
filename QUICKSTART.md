@@ -1,6 +1,38 @@
 # Quick Start Guide - Distributed Arbitrage Bot
 
-## 🚀 Get Started in 5 Minutes
+## 🎯 Base Mainnet FlashSwapV2 (Personal Use)
+
+**For deploying FlashSwapV2 to Base mainnet for personal arbitrage trading:**
+
+```bash
+# 1. Setup environment
+cp .env.example .env
+# Edit .env - add BASE_RPC_URL, WALLET_PRIVATE_KEY, BASESCAN_API_KEY
+
+# 2. Install dependencies
+npm install
+
+# 3. Pre-deployment checklist
+npx hardhat run scripts/preDeploymentChecklist.ts --network base
+
+# 4. Deploy contract
+npx hardhat run scripts/deployFlashSwapV2.ts --network base
+
+# 5. Update .env with deployed address
+echo "FLASHSWAP_V2_ADDRESS=0x..." >> .env
+
+# 6. Dry-run simulation (safe, no gas)
+npx hardhat run scripts/dryRunArbitrage.ts --network base
+
+# 7. Execute first test (0.001 WETH)
+npx hardhat run scripts/runArbitrage.ts --network base
+```
+
+**📚 See [BASE_MAINNET_DEPLOYMENT.md](./BASE_MAINNET_DEPLOYMENT.md) for complete guide**
+
+---
+
+## 🚀 Get Started in 5 Minutes (Distributed System)
 
 ### Local Development (Docker Compose)
 

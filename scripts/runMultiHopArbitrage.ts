@@ -46,11 +46,14 @@ async function main() {
   // Get token addresses
   const WETH_ADDRESS = requireAddress(netName, "weth", 
     `WETH address is required for flash loans on ${network.name}`);
-  const DAI_ADDRESS = addresses.dai || "";
-  const USDC_ADDRESS = addresses.usdc || "";
+  const USDC_ADDRESS = addresses.usdc || ""; // USDC (for Base mainnet)
+  const DAI_ADDRESS = addresses.dai || ""; // DAI (for testnet)
   
   console.log(`\n=== Network: ${network.name} ===`);
   console.log("Using WETH as primary asset (most likely to be active on Aave)");
+  if (network.name === "base") {
+    console.log("⚠️  BASE MAINNET: Using minimal amounts for initial safety test");
+  }
   console.log("NOTE: Multi-hop arbitrage requires all pools to exist with sufficient liquidity\n");
 
   const registry = new DEXRegistry();
@@ -71,12 +74,14 @@ async function main() {
   console.log(`Connected to FlashSwapV2 at: ${flashSwapV2Address}`);
 
   // --- 2. Configure Multi-Hop Pathfinding ---
+  // BASE MAINNET: Use very small thresholds for initial testing
   // TESTNET: Use smaller thresholds suitable for testnet liquidity
-  // MAINNET: Increase thresholds for realistic profit requirements
+  const isBaseMainnet = network.name === "base";
   const pathConfig: PathfindingConfig = {
     maxHops: 4,
-    minProfitThreshold: BigInt(ethers.utils.parseEther("0.01").toString()), // TESTNET: 0.01 ETH profit
-    // MAINNET: Increase to 10+ ETH for realistic profitability
+    minProfitThreshold: isBaseMainnet 
+      ? BigInt(ethers.utils.parseEther("0.0001").toString()) // MAINNET: 0.0001 ETH for initial test
+      : BigInt(ethers.utils.parseEther("0.01").toString()),  // TESTNET: 0.01 ETH
     maxSlippage: 0.05,
     gasPrice: BigInt(ethers.utils.parseUnits("50", "gwei").toString())
   };
@@ -86,16 +91,19 @@ async function main() {
   // --- 3. Find Multi-Hop Arbitrage Opportunities ---
   // Build token list from configured addresses
   const tokens = [WETH_ADDRESS];
-  if (DAI_ADDRESS) tokens.push(DAI_ADDRESS);
   if (USDC_ADDRESS) tokens.push(USDC_ADDRESS);
+  if (DAI_ADDRESS) tokens.push(DAI_ADDRESS);
   
-  const startAmount = BigInt(ethers.utils.parseEther("0.1").toString()); // TESTNET: 0.1 WETH
-  // MAINNET: Increase to 1000+ for realistic trading volumes
+  const startAmount = isBaseMainnet
+    ? BigInt(ethers.utils.parseEther("0.001").toString()) // MAINNET: 0.001 WETH for safety
+    : BigInt(ethers.utils.parseEther("0.1").toString());  // TESTNET: 0.1 WETH
 
   console.log("\nSearching for multi-hop arbitrage opportunities...");
-  console.log(`Available tokens: ${tokens.length} (WETH${DAI_ADDRESS ? ', DAI' : ''}${USDC_ADDRESS ? ', USDC' : ''})`);
+  console.log(`Available tokens: ${tokens.length} (WETH${USDC_ADDRESS ? ', USDC' : ''}${DAI_ADDRESS ? ', DAI' : ''})`);
   
-  if (network.name === "baseSepolia") {
+  if (isBaseMainnet) {
+    console.log("⚠️  BASE MAINNET: Using minimal 0.001 WETH for initial safety test");
+  } else if (network.name === "baseSepolia") {
     console.log("⚠️  NOTE: This is an illustrative example. On testnet:");
     console.log("  - Liquidity may be insufficient for actual arbitrage");
     console.log("  - Price feeds may not reflect real market conditions");
