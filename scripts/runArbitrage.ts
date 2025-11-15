@@ -45,21 +45,30 @@ async function main() {
   // Get token addresses with fallback and validation
   const WETH_ADDRESS = requireAddress(netName, "weth", 
     `WETH address is required for flash loans on ${network.name}`);
-  const DAI_ADDRESS = addresses.dai || ""; // DAI is optional
+  const USDC_ADDRESS = addresses.usdc || ""; // USDC (for Base mainnet WETH/USDC route)
+  const DAI_ADDRESS = addresses.dai || ""; // DAI (for testnet compatibility)
   
   // Flash loan configuration
   // TESTNET: Use small amounts to avoid liquidity issues and reduce gas costs
-  // MAINNET: Increase to profitable amounts (e.g., 1000+ tokens)
+  // MAINNET: Use very small amounts for initial testing, then scale up
   const FLASH_LOAN_ASSET = WETH_ADDRESS; // Use WETH as it's most reliable
-  const LOAN_AMOUNT = ethers.utils.parseUnits("0.1", 18); // TESTNET: 0.1 WETH (~$200 at current prices)
+  // For Base mainnet initial test: 0.001 WETH (~$2-3)
+  // For testnet: 0.1 WETH
+  const isBaseMainnet = network.name === "base";
+  const LOAN_AMOUNT = isBaseMainnet 
+    ? ethers.utils.parseUnits("0.001", 18) // MAINNET: Start with 0.001 WETH for safety
+    : ethers.utils.parseUnits("0.1", 18);   // TESTNET: 0.1 WETH
 
   // MAINNET: Increase to 1000+ for profitable trades
   
   console.log(`\n=== Network: ${network.name} ===`);
   console.log(`Flash Loan Asset: WETH (${FLASH_LOAN_ASSET})`);
   console.log(`Loan Amount: ${ethers.utils.formatUnits(LOAN_AMOUNT, 18)} WETH`);
-  if (network.name === "baseSepolia") {
-    console.log("NOTE: Using small amounts suitable for testnet. Increase for mainnet.\n");
+  if (isBaseMainnet) {
+    console.log("⚠️  BASE MAINNET: Using minimal 0.001 WETH for initial safety test");
+    console.log("   Increase amount after confirming successful execution\n");
+  } else if (network.name === "baseSepolia") {
+    console.log("NOTE: Using amounts suitable for testnet.\n");
   }
 
   const registry = new DEXRegistry();
@@ -84,53 +93,74 @@ async function main() {
   console.log(`Connected to FlashSwapV2 at: ${flashSwapV2Address}`);
 
   // --- 2. Define Arbitrage Route ---
-  // TESTNET ROUTE: Borrow WETH, swap WETH for DAI on one DEX, swap DAI back to WETH on another
-  // MAINNET: Update token addresses and amounts based on actual market opportunities
+  // BASE MAINNET ROUTE: WETH → USDC → WETH (most liquid pair on Base)
+  // TESTNET ROUTE: WETH → DAI → WETH (if DAI available)
   // 
   // FlashSwapV2 DEX Type Constants:
   // DEX_TYPE_UNISWAP_V3 = 0
   // DEX_TYPE_SUSHISWAP = 1 (also used for Uniswap V2 and other V2-compatible DEXes)
   // DEX_TYPE_DODO = 2 (currently disabled)
+  const DEX_TYPE_UNISWAP_V3 = 0;
   const DEX_TYPE_SUSHISWAP = 1;
   
   const [deployer] = await ethers.getSigners();
   
-  // Validate that we have DAI address for the swap
-  if (!DAI_ADDRESS) {
-    console.log("\n⚠️  Warning: DAI address not configured for this network.");
-    console.log("Cannot proceed with WETH → DAI → WETH arbitrage.");
-    console.log("Please add DAI address to config/addresses.ts or adjust the arbitrage route.\n");
-    return;
+  // Select intermediate token based on network
+  let intermediateToken: string;
+  let intermediateTokenName: string;
+  
+  if (isBaseMainnet) {
+    // Base mainnet: Use USDC (most liquid with WETH)
+    if (!USDC_ADDRESS) {
+      console.log("\n❌ Error: USDC address not configured for Base mainnet.");
+      console.log("Cannot proceed with WETH → USDC → WETH arbitrage.\n");
+      return;
+    }
+    intermediateToken = USDC_ADDRESS;
+    intermediateTokenName = "USDC";
+  } else {
+    // Testnet: Use DAI if available, otherwise USDC
+    if (DAI_ADDRESS) {
+      intermediateToken = DAI_ADDRESS;
+      intermediateTokenName = "DAI";
+    } else if (USDC_ADDRESS) {
+      intermediateToken = USDC_ADDRESS;
+      intermediateTokenName = "USDC";
+    } else {
+      console.log("\n⚠️  Warning: Neither DAI nor USDC address configured for this network.");
+      console.log("Cannot proceed with arbitrage.\n");
+      return;
+    }
   }
   
-  // TESTNET: Simple two-hop arbitrage path
-  // For production, use actual price discovery to find profitable routes
+  // Two-hop arbitrage path with proper fee tier for UniV3 on Base
+  // Base uses Uniswap V3 for better capital efficiency
   const arbitrageParams = {
     path: [
       {
-        pool: sushiSwap.router, // SushiSwap router address
+        pool: uniswapV3.router, // Uniswap V3 router (primary on Base)
         tokenIn: FLASH_LOAN_ASSET, // WETH
-        tokenOut: DAI_ADDRESS, // DAI
-        fee: 3000, // 0.3% fee tier (standard for most pairs)
-        minOut: 0, // Accept any output for intermediate swap (TESTNET only!)
-        dexType: DEX_TYPE_SUSHISWAP
+        tokenOut: intermediateToken, // USDC (mainnet) or DAI/USDC (testnet)
+        fee: 500, // 0.05% fee tier (common for stablecoin pairs with WETH on Base)
+        minOut: 0, // Accept any output for intermediate swap (will be improved with price checks)
+        dexType: DEX_TYPE_UNISWAP_V3
       },
       {
-        pool: uniswapV2.router, // Uniswap V2 router address
-        tokenIn: DAI_ADDRESS, // DAI
+        pool: sushiSwap.router, // SushiSwap for the return path (potential arbitrage)
+        tokenIn: intermediateToken, // USDC/DAI
         tokenOut: FLASH_LOAN_ASSET, // Back to WETH
-        fee: 3000, // 0.3% fee tier
+        fee: 3000, // 0.3% fee tier (standard for V2 DEXes)
         minOut: LOAN_AMOUNT, // Minimum output to ensure we can repay the loan
         // MAINNET: Set minOut higher to ensure profitability after fees
-        dexType: DEX_TYPE_SUSHISWAP // Uniswap V2 is V2-compatible, use SUSHISWAP type
+        dexType: DEX_TYPE_SUSHISWAP
       }
     ],
     initiator: deployer.address
   };
 
   console.log("\nArbitrage Route:");
-  console.log(`  Step 1: WETH → DAI via SushiSwap`);
-  console.log(`  Step 2: DAI → WETH via Uniswap V2`);
+  console.log(`  Step 1: WETH → ${intermediateTokenName} via Uniswap V3 (0.05% fee)`);
+  console.log(`  Step 2: ${intermediateTokenName} → WETH via SushiSwap (0.3% fee)`);
   console.log("\nConstructed arbitrage parameters:", JSON.stringify(arbitrageParams, null, 2));
 
   // --- 3. Execute Flash Loan ---
