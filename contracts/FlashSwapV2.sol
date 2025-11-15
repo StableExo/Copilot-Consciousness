@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity =0.7.6; // Match periphery library version
+pragma solidity 0.8.20; // Match periphery library version
 pragma abicoder v2; // Use ABI v2 for complex structs/arrays
 
 // --- Imports ---
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol"; // For safe ERC20 operations
-import "@openzeppelin/contracts/math/SafeMath.sol"; // For safe uint256 math
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol"; // For reentrancy protection
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol"; // For safe ERC20 operations
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol"; // For reentrancy protection
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol"; // UniV3 Router interface
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol"; // UniV3 Pool interface
 import "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3FlashCallback.sol"; // UniV3 Flash Callback interface
@@ -38,8 +37,8 @@ interface IFlashLoanReceiver { // Aave V3 Flash Loan Receiver interface
         bytes calldata params
     ) external returns (bool);
 
-    function ADDRESSES_PROVIDER() external view returns (address);
-    function POOL() external view returns (address);
+    function addressesProvider() external view returns (address);
+    function pool() external view returns (address);
 }
 
 
@@ -53,15 +52,14 @@ interface IFlashLoanReceiver { // Aave V3 Flash Loan Receiver interface
 //
 contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyGuard {
     using SafeERC20 for IERC20;
-    using SafeMath for uint256;
 
     // --- State Variables ---
-    ISwapRouter public immutable SWAP_ROUTER; // Uniswap V3 Swap Router
-    IUniswapV2Router02 public immutable SUSHI_ROUTER; // SushiSwap Router (V2 compatible)
+    ISwapRouter public immutable swapRouter; // Uniswap V3 Swap Router
+    IUniswapV2Router02 public immutable sushiRouter; // SushiSwap Router (V2 compatible)
     address payable public immutable owner; // The contract deployer/owner (receives all profits)
-    address public immutable V3_FACTORY = 0x33128a8fC17869897dcE68Ed026d694621f6FDfD; // Uniswap V3 Factory Address (Base Mainnet)
-    IPool public immutable AAVE_POOL; // Aave V3 Pool contract instance
-    address public immutable AAVE_ADDRESSES_PROVIDER; // Aave Addresses Provider address
+    address public immutable v3Factory = 0x33128a8fC17869897dcE68Ed026d694621f6FDfD; // Uniswap V3 Factory Address (Base Mainnet)
+    IPool public immutable aavePool; // Aave V3 Pool contract instance
+    address public immutable aaveAddressesProvider; // Aave Addresses Provider address
     uint constant DEADLINE_OFFSET = 60; // Swap deadline in seconds from block.timestamp (e.g., 60 seconds)
 
 
@@ -109,20 +107,20 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
         require(_aavePoolAddress != address(0), "FS:IAP");
         require(_aaveAddressesProvider != address(0), "FS:IAAP");
 
-        SWAP_ROUTER = ISwapRouter(_uniswapV3Router);
-        SUSHI_ROUTER = IUniswapV2Router02(_sushiRouter);
-        AAVE_POOL = IPool(_aavePoolAddress);
-        AAVE_ADDRESSES_PROVIDER = _aaveAddressesProvider;
+        swapRouter = ISwapRouter(_uniswapV3Router);
+        sushiRouter = IUniswapV2Router02(_sushiRouter);
+        aavePool = IPool(_aavePoolAddress);
+        aaveAddressesProvider = _aaveAddressesProvider;
         owner = payable(msg.sender); // owner is the deployer, receives the main profit share
     }
 
     // --- Aave IFlashLoanReceiver Interface Implementations ---
-    function ADDRESSES_PROVIDER() external view override returns (address) {
-        return AAVE_ADDRESSES_PROVIDER;
+    function addressesProvider() external view override returns (address) {
+        return aaveAddressesProvider;
     }
 
-    function POOL() external view override returns (address) {
-        return address(AAVE_POOL);
+    function pool() external view override returns (address) {
+        return address(aavePool);
     }
 
     // --- Uniswap V3 Flash Callback ---
@@ -133,7 +131,7 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
 
         PoolAddress.PoolKey memory poolKey = PoolAddress.PoolKey({ token0: decodedData.token0, token1: decodedData.token1, fee: decodedData.fee });
         require(msg.sender == decodedData.poolBorrowedFrom, "FS:CBW");
-        CallbackValidation.verifyCallback(V3_FACTORY, poolKey);
+        CallbackValidation.verifyCallback(v3Factory, poolKey);
 
         address tokenBorrowed;
         uint amountBorrowed;
@@ -145,13 +143,13 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
             tokenBorrowed = decodedData.token1;
             amountBorrowed = decodedData.amount1Borrowed;
             feePaid = fee1;
-            totalAmountToRepay = amountBorrowed.add(feePaid);
+            totalAmountToRepay = amountBorrowed + feePaid;
         } else { // decodedData.amount0Borrowed > 0
             require(decodedData.amount1Borrowed == 0 && decodedData.amount0Borrowed > 0, "FS:BNA");
             tokenBorrowed = decodedData.token0;
             amountBorrowed = decodedData.amount0Borrowed;
             feePaid = fee0;
-            totalAmountToRepay = amountBorrowed.add(feePaid);
+            totalAmountToRepay = amountBorrowed + feePaid;
         }
 
         emit ArbitrageExecution(decodedData.callbackType, tokenBorrowed, amountBorrowed, feePaid);
@@ -173,8 +171,8 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
         // Ensure contract balance is sufficient to repay
         require(currentBalanceBorrowedToken >= totalAmountToRepay, "FS:IFR");
 
-        uint grossProfit = currentBalanceBorrowedToken > amountBorrowed ? currentBalanceBorrowedToken.sub(amountBorrowed) : 0;
-        uint netProfit = currentBalanceBorrowedToken > totalAmountToRepay ? currentBalanceBorrowedToken.sub(totalAmountToRepay) : 0; // Net profit is AFTER repayment amount+fee
+        uint grossProfit = currentBalanceBorrowedToken > amountBorrowed ? currentBalanceBorrowedToken - amountBorrowed : 0;
+        uint netProfit = currentBalanceBorrowedToken > totalAmountToRepay ? currentBalanceBorrowedToken - totalAmountToRepay : 0; // Net profit is AFTER repayment amount+fee
 
         // Repay the flash loan *first*
         IERC20(tokenBorrowed).safeTransfer(msg.sender, totalAmountToRepay);
@@ -200,7 +198,7 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
         address initiator,
         bytes calldata params
     ) external override nonReentrant returns (bool) {
-        require(msg.sender == address(AAVE_POOL), "FS:CBA");
+        require(msg.sender == address(aavePool), "FS:CBA");
         require(initiator == address(this), "FS:IFI"); // Initiator must be this contract
         require(assets.length == 1, "FS:MA"); // Assuming only one asset is borrowed at a time for arbitrage
         require(assets.length == amounts.length && amounts.length == premiums.length, "FS:ALA");
@@ -220,17 +218,17 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
         require(finalAmountReceived > 0, "FS:AZA");
 
         // --- Repay Loan and Handle Profit ---
-        uint totalAmountToRepay = amountBorrowed.add(feePaid);
+        uint totalAmountToRepay = amountBorrowed + feePaid;
         uint currentBalanceBorrowedTokenAfterSwaps = IERC20(tokenBorrowed).balanceOf(address(this));
 
         // Ensure contract balance is sufficient to repay the flash loan + Aave fee
         require(currentBalanceBorrowedTokenAfterSwaps >= totalAmountToRepay, "FS:IFR");
 
-        uint grossProfit = currentBalanceBorrowedTokenAfterSwaps > amountBorrowed ? currentBalanceBorrowedTokenAfterSwaps.sub(amountBorrowed) : 0;
-        uint netProfit = currentBalanceBorrowedTokenAfterSwaps > totalAmountToRepay ? currentBalanceBorrowedTokenAfterSwaps.sub(totalAmountToRepay) : 0; // Net profit is AFTER repayment amount+fee
+        uint grossProfit = currentBalanceBorrowedTokenAfterSwaps > amountBorrowed ? currentBalanceBorrowedTokenAfterSwaps - amountBorrowed : 0;
+        uint netProfit = currentBalanceBorrowedTokenAfterSwaps > totalAmountToRepay ? currentBalanceBorrowedTokenAfterSwaps - totalAmountToRepay : 0; // Net profit is AFTER repayment amount+fee
 
         // Repay the flash loan *first*
-        _approveSpenderIfNeeded(tokenBorrowed, address(AAVE_POOL), totalAmountToRepay); // Approve Aave Pool to pull funds
+        _approveSpenderIfNeeded(tokenBorrowed, address(aavePool), totalAmountToRepay); // Approve Aave Pool to pull funds
         // Aave's flashLoan function automatically handles pulling the repayment amount from this contract
         // No need for an explicit safeTransfer out to Aave here, the require(return == true) in Aave's loan handles it.
         // However, emitting RepaymentSuccess here is fine for logging.
@@ -254,7 +252,7 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
         TwoHopParams memory arbParams = abi.decode(_params, (TwoHopParams));
 
         // Swap 1: Borrowed Token -> Intermediate Token
-        _approveSpenderIfNeeded(_tokenBorrowed, address(SWAP_ROUTER), _amountBorrowed);
+        _approveSpenderIfNeeded(_tokenBorrowed, address(swapRouter), _amountBorrowed);
         uint amountIntermediateReceived = _executeSingleV3Swap(
             1,
             _tokenBorrowed,
@@ -266,7 +264,7 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
         require(amountIntermediateReceived > 0, "FS:S1Z");
 
         // Swap 2: Intermediate Token -> Borrowed Token
-        _approveSpenderIfNeeded(arbParams.tokenIntermediate, address(SWAP_ROUTER), amountIntermediateReceived);
+        _approveSpenderIfNeeded(arbParams.tokenIntermediate, address(swapRouter), amountIntermediateReceived);
         finalAmount = _executeSingleV3Swap(
             2,
             arbParams.tokenIntermediate,
@@ -285,7 +283,7 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
         require(pathParams.tokenA == _tokenA, "FS:TPA");
 
         // Swap 1: Token A -> Token B
-        _approveSpenderIfNeeded(_tokenA, address(SWAP_ROUTER), _amountA);
+        _approveSpenderIfNeeded(_tokenA, address(swapRouter), _amountA);
         uint amountB = _executeSingleV3Swap(
             1,
             _tokenA,
@@ -297,7 +295,7 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
         require(amountB > 0, "FS:TS1Z");
 
         // Swap 2: Token B -> Token C
-        _approveSpenderIfNeeded(pathParams.tokenB, address(SWAP_ROUTER), amountB);
+        _approveSpenderIfNeeded(pathParams.tokenB, address(swapRouter), amountB);
         uint amountC = _executeSingleV3Swap(
             2,
             pathParams.tokenB,
@@ -309,7 +307,7 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
         require(amountC > 0, "FS:TS2Z");
 
         // Swap 3: Token C -> Token A
-        _approveSpenderIfNeeded(pathParams.tokenC, address(SWAP_ROUTER), amountC);
+        _approveSpenderIfNeeded(pathParams.tokenC, address(swapRouter), amountC);
         finalAmount = _executeSingleV3Swap(
             3,
             pathParams.tokenC,
@@ -335,7 +333,7 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
             sqrtPriceLimitX96: 0
         });
 
-        try SWAP_ROUTER.exactInputSingle(swapParams) returns (uint _amountOut) {
+        try swapRouter.exactInputSingle(swapParams) returns (uint _amountOut) {
             amountOut = _amountOut;
             emit SwapExecuted(_swapNumber, DEX_TYPE_UNISWAP_V3, _tokenIn, _tokenOut, _amountIn, amountOut);
         } catch Error(string memory reason) {
@@ -357,9 +355,9 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
 
             address spender = address(0);
             if (step.dexType == DEX_TYPE_UNISWAP_V3) {
-                spender = address(SWAP_ROUTER);
+                spender = address(swapRouter);
             } else if (step.dexType == DEX_TYPE_SUSHISWAP) {
-                 spender = address(SUSHI_ROUTER);
+                 spender = address(sushiRouter);
             }
             // Add condition for Camelot if it uses a router vs direct pool interaction
             // else if (step.dexType == DEX_TYPE_CAMELOT) { ... }
@@ -389,7 +387,7 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
                 path[1] = step.tokenOut;
 
                 // Sushi V2 style swap (swapExactTokensForTokens)
-                try SUSHI_ROUTER.swapExactTokensForTokens(
+                try sushiRouter.swapExactTokensForTokens(
                     amountIn, // Use the current amountIn balance
                     step.minOut, // minOut applies only to the last step, handled in builder
                     path,
@@ -486,13 +484,13 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
     // Initiates a Uniswap V3 flash loan by calling the pool's flash function.
     // This contract acts as the receiver.
     function initiateUniswapV3FlashLoan(
-        CallbackType _callbackType,
-        address _poolAddress, // The V3 pool address
-        uint _amount0, // Amount of token0 to borrow
-        uint _amount1, // Amount of token1 to borrow
-        bytes calldata _params // Encoded parameters for the callback logic (e.g., TwoHopParams or TriangularPathParams)
+        CallbackType callbackType,
+        address poolAddress, // The V3 pool address
+        uint amount0, // Amount of token0 to borrow
+        uint amount1, // Amount of token1 to borrow
+        bytes calldata params // Encoded parameters for the callback logic (e.g., TwoHopParams or TriangularPathParams)
     ) external onlyOwner {
-        IUniswapV3Pool pool = IUniswapV3Pool(_poolAddress);
+        IUniswapV3Pool pool = IUniswapV3Pool(poolAddress);
         address token0 = pool.token0();
         address token1 = pool.token1();
         uint24 fee = pool.fee();
@@ -500,36 +498,36 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
         // Encode data to be passed to uniswapV3FlashCallback
         bytes memory data = abi.encode(
             FlashCallbackData({
-                callbackType: _callbackType,
-                amount0Borrowed: _amount0,
-                amount1Borrowed: _amount1,
+                callbackType: callbackType,
+                amount0Borrowed: amount0,
+                amount1Borrowed: amount1,
                 caller: msg.sender, // Should be 'owner' based on onlyOwner modifier
-                poolBorrowedFrom: _poolAddress,
+                poolBorrowedFrom: poolAddress,
                 token0: token0,
                 token1: token1,
                 fee: fee,
-                params: _params
+                params: params
             })
         );
 
-        emit FlashSwapInitiated(msg.sender, _poolAddress, _callbackType, _amount0, _amount1);
+        emit FlashSwapInitiated(msg.sender, poolAddress, callbackType, amount0, amount1);
 
         // Initiate the flash loan from the V3 pool
-        pool.flash(address(this), _amount0, _amount1, data);
+        pool.flash(address(this), amount0, amount1, data);
     }
 
     // Initiates an Aave V3 flash loan by calling the Aave pool's flashLoan function.
     // This contract acts as the receiver.
     function initiateAaveFlashLoan(
-        address _asset, // The asset to borrow
-        uint _amount, // The amount to borrow
-        bytes calldata _params // Encoded ArbParams struct containing swap path and initiator
+        address asset, // The asset to borrow
+        uint amount, // The amount to borrow
+        bytes calldata params // Encoded ArbParams struct containing swap path and initiator
     ) external onlyOwner {
         address[] memory assets = new address[](1);
-        assets[0] = _asset;
+        assets[0] = asset;
 
         uint256[] memory amounts = new uint256[](1);
-        amounts[0] = _amount;
+        amounts[0] = amount;
 
         uint256[] memory modes = new uint256[](1); // 0 = NoDebt, 1 = Stable, 2 = Variable
         modes[0] = 0; // Arbitrage usually uses NoDebt flash loans
@@ -537,14 +535,14 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
         // The 'params' argument for Aave's flashLoan contains custom data
         // that Aave will pass back to our executeOperation function.
         // This is where we put our encoded ArbParams struct.
-        bytes memory paramsForAave = _params; // Pass the params received from the off-chain caller directly
+        bytes memory paramsForAave = params; // Pass the params received from the off-chain caller directly
 
         // Decode params only for logging the recipient in the event here
         ArbParams memory decodedParamsForEvent = abi.decode(paramsForAave, (ArbParams));
-        emit AaveFlashLoanInitiated(decodedParamsForEvent.initiator, _asset, _amount);
+        emit AaveFlashLoanInitiated(decodedParamsForEvent.initiator, asset, amount);
 
         // Initiate the flash loan from the Aave Pool
-        AAVE_POOL.flashLoan(
+        aavePool.flashLoan(
             address(this), // receiverAddress: This contract
             assets,
             amounts,
@@ -557,19 +555,20 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
 
     // --- Emergency Functions ---
     // Allows owner to withdraw stranded ERC20 tokens
-    function emergencyWithdraw(address _token) external onlyOwner {
-        uint balance = IERC20(_token).balanceOf(address(this));
+    function emergencyWithdraw(address token) external onlyOwner {
+        uint balance = IERC20(token).balanceOf(address(this));
         require(balance > 0, "FS:NW");
-        IERC20(_token).safeTransfer(owner, balance);
-        emit EmergencyWithdrawal(_token, owner, balance);
+        IERC20(token).safeTransfer(owner, balance);
+        emit EmergencyWithdrawal(token, owner, balance);
     }
 
     // Allows owner to withdraw stranded Ether
-    function emergencyWithdrawETH() external onlyOwner {
+    function emergencyWithdrawETH() external onlyOwner nonReentrant {
         uint balance = address(this).balance;
         require(balance > 0, "FS:NWE");
-        payable(owner).transfer(balance); // Use payable(owner) for transfer
         emit EmergencyWithdrawal(address(0), owner, balance);
+        (bool sent, ) = owner.call{value: balance}("");
+        require(sent, "FS:ETF");
     }
 
     // --- Fallback ---
