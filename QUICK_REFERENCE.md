@@ -1,5 +1,41 @@
 # Quick Reference: Running Fixed Arbitrage Scripts
 
+## 📍 Centralized Address Configuration
+
+**All network addresses are now managed in one place:** `config/addresses.ts`
+
+This file is the **single source of truth** for:
+- Core tokens (WETH, USDC, DAI)
+- DEX routers (Uniswap V2/V3, SushiSwap)
+- Aave V3 pools and providers
+- Network-specific example pools
+
+### View Addresses for a Network
+
+```bash
+npx hardhat run scripts/listKnownAddresses.ts --network baseSepolia
+npx hardhat run scripts/listKnownAddresses.ts --network base
+```
+
+### Add Addresses for a New Network
+
+Edit `config/addresses.ts` and add entries to the `ADDRESSES` object:
+
+```typescript
+export const ADDRESSES: Record<NetworkKey, KnownAddresses> = {
+  yourNetwork: {
+    weth: "0x...",
+    usdc: "0x...",
+    // ... other addresses
+  },
+  // ...
+};
+```
+
+All deployment and arbitrage scripts automatically use these addresses based on the `--network` flag.
+
+---
+
 ## ✅ Issue Resolved
 
 **Error:** `execution reverted: 27` on gas estimation  
@@ -99,11 +135,12 @@ All errors include:
 
 ## 📁 Files Changed
 
-1. `scripts/runArbitrage.ts` - WETH support + error handling
-2. `scripts/runMultiHopArbitrage.ts` - WETH support + error handling
-3. `ARBITRAGE_SCRIPT_FIX_SUMMARY.md` - Technical documentation
-4. `PR_SUMMARY.md` - Complete PR summary
-5. This file - Quick reference
+1. `config/addresses.ts` - **NEW**: Centralized address configuration
+2. `scripts/listKnownAddresses.ts` - **NEW**: Helper to view addresses
+3. `scripts/deployFlashSwapV2.ts` - Updated to use centralized config
+4. `scripts/runArbitrage.ts` - Updated to use centralized config + WETH support
+5. `scripts/runMultiHopArbitrage.ts` - Updated to use centralized config + WETH support
+6. `QUICK_REFERENCE.md` - Added address config documentation
 
 ---
 

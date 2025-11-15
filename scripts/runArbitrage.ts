@@ -1,5 +1,6 @@
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
 import { DEXRegistry } from "../src/dex/core/DEXRegistry";
+import { ADDRESSES, NetworkKey, requireAddress } from "../config/addresses";
 
 /**
  * Decode Aave error codes for better debugging
@@ -30,28 +31,36 @@ async function main() {
   console.log("Starting arbitrage script...");
 
   // --- 1. Configuration ---
-  // NOTE: These addresses are for Base Sepolia testnet
-  // For mainnet deployment, update these addresses accordingly
-  const AAVE_POOL_PROVIDER_ADDRESS_BASE = "0x2449373414902241E54854737Bed6cF10a97b274"; // Verified Aave V3 address on Base
+  // Get addresses from centralized config based on current network
+  const netName = network.name as NetworkKey;
+  const addresses = ADDRESSES[netName];
   
-  // Base Sepolia Token Addresses
-  // IMPORTANT: DAI may not be active on Aave Base Sepolia (causes error 27: RESERVE_INACTIVE)
-  // Using WETH is safer for testnet as it's typically always active
-  const WETH_ADDRESS_BASE = "0x4200000000000000000000000000000000000006"; // Canonical Base WETH
-  const DAI_ADDRESS_BASE = "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb"; // May not be active on testnet!
+  if (!addresses) {
+    throw new Error(
+      `No address configuration found for network: ${network.name}\n` +
+      `Please add addresses to config/addresses.ts for this network.`
+    );
+  }
+  
+  // Get token addresses with fallback and validation
+  const WETH_ADDRESS = requireAddress(netName, "weth", 
+    `WETH address is required for flash loans on ${network.name}`);
+  const DAI_ADDRESS = addresses.dai || ""; // DAI is optional
   
   // Flash loan configuration
   // TESTNET: Use small amounts to avoid liquidity issues and reduce gas costs
   // MAINNET: Increase to profitable amounts (e.g., 1000+ tokens)
-  const FLASH_LOAN_ASSET = WETH_ADDRESS_BASE; // Use WETH instead of DAI for testnet
+  const FLASH_LOAN_ASSET = WETH_ADDRESS; // Use WETH as it's most reliable
   const LOAN_AMOUNT = ethers.utils.parseUnits("0.1", 18); // TESTNET: 0.1 WETH (~$200 at current prices)
 
   // MAINNET: Increase to 1000+ for profitable trades
   
-  console.log("\n=== TESTNET MODE: Base Sepolia ===");
-  console.log(`Flash Loan Asset: ${FLASH_LOAN_ASSET === WETH_ADDRESS_BASE ? 'WETH' : 'DAI'}`);
-  console.log(`Loan Amount: ${ethers.utils.formatUnits(LOAN_AMOUNT, 18)} tokens`);
-  console.log("NOTE: Using small amounts suitable for testnet. Increase for mainnet.\n");
+  console.log(`\n=== Network: ${network.name} ===`);
+  console.log(`Flash Loan Asset: WETH (${FLASH_LOAN_ASSET})`);
+  console.log(`Loan Amount: ${ethers.utils.formatUnits(LOAN_AMOUNT, 18)} WETH`);
+  if (network.name === "baseSepolia") {
+    console.log("NOTE: Using small amounts suitable for testnet. Increase for mainnet.\n");
+  }
 
   const registry = new DEXRegistry();
   const uniswapV2 = registry.getDEX("Uniswap V2 on Base");
@@ -86,24 +95,32 @@ async function main() {
   
   const [deployer] = await ethers.getSigners();
   
+  // Validate that we have DAI address for the swap
+  if (!DAI_ADDRESS) {
+    console.log("\n⚠️  Warning: DAI address not configured for this network.");
+    console.log("Cannot proceed with WETH → DAI → WETH arbitrage.");
+    console.log("Please add DAI address to config/addresses.ts or adjust the arbitrage route.\n");
+    return;
+  }
+  
   // TESTNET: Simple two-hop arbitrage path
   // For production, use actual price discovery to find profitable routes
   const arbitrageParams = {
     path: [
       {
         pool: sushiSwap.router, // SushiSwap router address
-        tokenIn: FLASH_LOAN_ASSET, // WETH on testnet
-        tokenOut: DAI_ADDRESS_BASE, // DAI
+        tokenIn: FLASH_LOAN_ASSET, // WETH
+        tokenOut: DAI_ADDRESS, // DAI
         fee: 3000, // 0.3% fee tier (standard for most pairs)
         minOut: 0, // Accept any output for intermediate swap (TESTNET only!)
         dexType: DEX_TYPE_SUSHISWAP
       },
       {
         pool: uniswapV2.router, // Uniswap V2 router address
-        tokenIn: DAI_ADDRESS_BASE, // DAI
+        tokenIn: DAI_ADDRESS, // DAI
         tokenOut: FLASH_LOAN_ASSET, // Back to WETH
         fee: 3000, // 0.3% fee tier
-        minOut: LOAN_AMOUNT, // TESTNET: Minimum output to ensure we can repay the loan
+        minOut: LOAN_AMOUNT, // Minimum output to ensure we can repay the loan
         // MAINNET: Set minOut higher to ensure profitability after fees
         dexType: DEX_TYPE_SUSHISWAP // Uniswap V2 is V2-compatible, use SUSHISWAP type
       }
@@ -112,12 +129,12 @@ async function main() {
   };
 
   console.log("\nArbitrage Route:");
-  console.log(`  Step 1: ${FLASH_LOAN_ASSET === WETH_ADDRESS_BASE ? 'WETH' : 'DAI'} → DAI via SushiSwap`);
-  console.log(`  Step 2: DAI → ${FLASH_LOAN_ASSET === WETH_ADDRESS_BASE ? 'WETH' : 'DAI'} via Uniswap V2`);
+  console.log(`  Step 1: WETH → DAI via SushiSwap`);
+  console.log(`  Step 2: DAI → WETH via Uniswap V2`);
   console.log("\nConstructed arbitrage parameters:", JSON.stringify(arbitrageParams, null, 2));
 
   // --- 3. Execute Flash Loan ---
-  console.log(`\nRequesting flash loan of ${ethers.utils.formatUnits(LOAN_AMOUNT, 18)} ${FLASH_LOAN_ASSET === WETH_ADDRESS_BASE ? 'WETH' : 'DAI'}...`);
+  console.log(`\nRequesting flash loan of ${ethers.utils.formatUnits(LOAN_AMOUNT, 18)} WETH...`);
 
   try {
     // First, try to estimate gas to catch errors before sending transaction

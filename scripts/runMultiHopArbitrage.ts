@@ -1,6 +1,7 @@
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
 import { DEXRegistry } from "../src/dex/core/DEXRegistry";
 import { ArbitrageOrchestrator, PathfindingConfig } from "../src/arbitrage";
+import { ADDRESSES, NetworkKey, requireAddress } from "../config/addresses";
 
 /**
  * Decode Aave error codes for better debugging
@@ -31,18 +32,25 @@ async function main() {
   console.log("Starting multi-hop arbitrage script...");
 
   // --- 1. Configuration ---
-  // NOTE: These addresses are for Base Sepolia testnet
-  // For mainnet deployment, update these addresses accordingly
-  const AAVE_POOL_PROVIDER_ADDRESS_BASE = "0x2449373414902241E54854737Bed6cF10a97b274";
+  // Get addresses from centralized config based on current network
+  const netName = network.name as NetworkKey;
+  const addresses = ADDRESSES[netName];
   
-  // Base Sepolia Token Addresses
-  // IMPORTANT: Not all tokens may be active on Aave Base Sepolia
-  const WETH_ADDRESS_BASE = "0x4200000000000000000000000000000000000006"; // Most reliable on testnet
-  const DAI_ADDRESS_BASE = "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb"; // May not be active!
-  const USDC_ADDRESS_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"; // May not be active!
+  if (!addresses) {
+    throw new Error(
+      `No address configuration found for network: ${network.name}\n` +
+      `Please add addresses to config/addresses.ts for this network.`
+    );
+  }
   
-  console.log("\n=== TESTNET MODE: Base Sepolia ===");
-  console.log("Using WETH as primary asset (most likely to be active on Aave testnet)");
+  // Get token addresses
+  const WETH_ADDRESS = requireAddress(netName, "weth", 
+    `WETH address is required for flash loans on ${network.name}`);
+  const DAI_ADDRESS = addresses.dai || "";
+  const USDC_ADDRESS = addresses.usdc || "";
+  
+  console.log(`\n=== Network: ${network.name} ===`);
+  console.log("Using WETH as primary asset (most likely to be active on Aave)");
   console.log("NOTE: Multi-hop arbitrage requires all pools to exist with sufficient liquidity\n");
 
   const registry = new DEXRegistry();
@@ -76,17 +84,23 @@ async function main() {
   const orchestrator = new ArbitrageOrchestrator(registry, pathConfig, pathConfig.gasPrice);
 
   // --- 3. Find Multi-Hop Arbitrage Opportunities ---
-  // TESTNET: Using WETH as the primary token
-  // MAINNET: Include more tokens based on market liquidity
-  const tokens = [WETH_ADDRESS_BASE, DAI_ADDRESS_BASE, USDC_ADDRESS_BASE];
+  // Build token list from configured addresses
+  const tokens = [WETH_ADDRESS];
+  if (DAI_ADDRESS) tokens.push(DAI_ADDRESS);
+  if (USDC_ADDRESS) tokens.push(USDC_ADDRESS);
+  
   const startAmount = BigInt(ethers.utils.parseEther("0.1").toString()); // TESTNET: 0.1 WETH
   // MAINNET: Increase to 1000+ for realistic trading volumes
 
   console.log("\nSearching for multi-hop arbitrage opportunities...");
-  console.log("⚠️  NOTE: This is an illustrative example. On testnet:");
-  console.log("  - Liquidity may be insufficient for actual arbitrage");
-  console.log("  - Price feeds may not reflect real market conditions");
-  console.log("  - Some token pairs may not exist");
+  console.log(`Available tokens: ${tokens.length} (WETH${DAI_ADDRESS ? ', DAI' : ''}${USDC_ADDRESS ? ', USDC' : ''})`);
+  
+  if (network.name === "baseSepolia") {
+    console.log("⚠️  NOTE: This is an illustrative example. On testnet:");
+    console.log("  - Liquidity may be insufficient for actual arbitrage");
+    console.log("  - Price feeds may not reflect real market conditions");
+    console.log("  - Some token pairs may not exist");
+  }
 
   try {
     const paths = await orchestrator.findOpportunities(tokens, startAmount);
