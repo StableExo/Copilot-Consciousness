@@ -353,9 +353,9 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
 
         for (uint i = 0; i < _path.length; i++) {
             SwapStep memory step = _path[i];
-            uint amountOut;
+            uint amountOut = 0;
 
-            address spender;
+            address spender = address(0);
             if (step.dexType == DEX_TYPE_UNISWAP_V3) {
                 spender = address(SWAP_ROUTER);
             } else if (step.dexType == DEX_TYPE_SUSHISWAP) {
