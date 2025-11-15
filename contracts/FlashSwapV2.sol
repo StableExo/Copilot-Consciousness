@@ -490,10 +490,10 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
         uint amount1, // Amount of token1 to borrow
         bytes calldata params // Encoded parameters for the callback logic (e.g., TwoHopParams or TriangularPathParams)
     ) external onlyOwner {
-        IUniswapV3Pool pool = IUniswapV3Pool(poolAddress);
-        address token0 = pool.token0();
-        address token1 = pool.token1();
-        uint24 fee = pool.fee();
+        IUniswapV3Pool uniswapPool = IUniswapV3Pool(poolAddress);
+        address token0 = uniswapPool.token0();
+        address token1 = uniswapPool.token1();
+        uint24 fee = uniswapPool.fee();
 
         // Encode data to be passed to uniswapV3FlashCallback
         bytes memory data = abi.encode(
@@ -513,7 +513,7 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
         emit FlashSwapInitiated(msg.sender, poolAddress, callbackType, amount0, amount1);
 
         // Initiate the flash loan from the V3 pool
-        pool.flash(address(this), amount0, amount1, data);
+        uniswapPool.flash(address(this), amount0, amount1, data);
     }
 
     // Initiates an Aave V3 flash loan by calling the Aave pool's flashLoan function.
