@@ -33,7 +33,7 @@
     "deploy:mainnet": "hardhat run scripts/deploy-executor-v3.ts --network mainnet",
     "deploy:flashswapv2": "hardhat run scripts/deployFlashSwapV2.ts --network base",
     "deploy:flashswapv2:testnet": "hardhat run scripts/deployFlashSwapV2.ts --network baseSepolia",
-    "audit:slither": "slither . --fail-level medium",
+    "audit:slither": "slither . --fail-medium",
     "audit:slither:report": "slither . --print human-summary",
     "audit:prod": "npm audit --omit=dev --audit-level=high"
   },
@@ -71,7 +71,7 @@
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "2.2.3",
     "@nomiclabs/hardhat-etherscan": "3.1.7",
-    "@openzeppelin/contracts": "3.4.2",
+    "@openzeppelin/contracts": "4.9.3",
     "@types/amqplib": "0.10.1",
     "@types/bcrypt": "5.0.2",
     "@types/cors": "2.8.13",
