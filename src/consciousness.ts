@@ -1,4 +1,14 @@
-import { SystemConfig, EventType, Priority } from './types';
+import { 
+  SystemConfig, 
+  EventType, 
+  Priority, 
+  ProcessInputResult, 
+  ThinkingResult, 
+  CosmicProblemResult, 
+  ReflectionResult, 
+  MaintenanceResult, 
+  StatusResult 
+} from './types';
 import { MemorySystem } from './consciousness/memory';
 import { TemporalAwareness } from './temporal';
 import { CognitiveDevelopment } from './cognitive';
@@ -71,7 +81,7 @@ export class ConsciousnessSystem {
   /**
    * Process external input through all consciousness layers
    */
-  async processInput(input: unknown, metadata: Record<string, unknown> = {}): Promise<unknown> {
+  async processInput(input: unknown, metadata: Record<string, unknown> = {}): Promise<ProcessInputResult> {
     if (!this.isRunning) {
       throw new Error('Consciousness system is not running');
     }
@@ -116,7 +126,7 @@ export class ConsciousnessSystem {
   /**
    * Think about a problem (reasoning + Gemini integration)
    */
-  async think(problem: string, useGemini: boolean = false): Promise<unknown> {
+  async think(problem: string, useGemini: boolean = false): Promise<ThinkingResult> {
     if (!this.isRunning) {
       throw new Error('Consciousness system is not running');
     }
@@ -169,7 +179,7 @@ export class ConsciousnessSystem {
   /**
    * Solve a cosmic-scale problem using Citadel mode
    */
-  async solveCosmicProblem(problem: string): Promise<unknown> {
+  async solveCosmicProblem(problem: string): Promise<CosmicProblemResult> {
     if (!this.isRunning) {
       throw new Error('Consciousness system is not running');
     }
@@ -207,7 +217,7 @@ export class ConsciousnessSystem {
   /**
    * Reflect on consciousness state
    */
-  reflect(): unknown {
+  reflect(): ReflectionResult {
     if (!this.isRunning) {
       throw new Error('Consciousness system is not running');
     }
@@ -244,7 +254,7 @@ export class ConsciousnessSystem {
   /**
    * Perform system maintenance (memory consolidation, etc.)
    */
-  maintain(): unknown {
+  maintain(): MaintenanceResult {
     const consolidationResult = this.memory.consolidate();
     const patterns = this.temporal.detectPatterns();
 
@@ -258,7 +268,7 @@ export class ConsciousnessSystem {
   /**
    * Get comprehensive system status
    */
-  getStatus(): unknown {
+  getStatus(): StatusResult {
     return {
       isRunning: this.isRunning,
       timestamp: this.temporal.getCurrentTime(),

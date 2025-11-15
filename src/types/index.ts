@@ -117,3 +117,169 @@ export interface GeminiConfig {
   temperature: number;
   enableCitadelMode: boolean;
 }
+
+/**
+ * Result types for ConsciousnessSystem methods
+ */
+
+/**
+ * Result from processing external input
+ */
+export interface ProcessInputResult {
+  processed: boolean;
+  eventId: UUID;
+  sensoryMemoryId: UUID;
+  workingMemoryId: UUID;
+  learningResult: {
+    success: boolean;
+    knowledgeGained: string[];
+    skillsImproved: string[];
+    duration: number;
+    metrics: {
+      accuracy?: number;
+      confidence?: number;
+      improvement?: number;
+    };
+  };
+}
+
+/**
+ * Result from thinking/reasoning about a problem
+ */
+export interface ThinkingResult {
+  eventId: UUID;
+  reasoning: {
+    id: string;
+    goal: string;
+    steps: Array<{
+      action: string;
+      input: unknown;
+      output: unknown;
+      confidence: number;
+      timestamp: number;
+    }>;
+    conclusion?: unknown;
+    confidence: number;
+  };
+  geminiResponse?: {
+    text: string;
+    finishReason?: string;
+    safetyRatings?: Array<{
+      category: string;
+      probability: string;
+    }>;
+    metadata?: Record<string, unknown>;
+  };
+  memoryId: UUID;
+}
+
+/**
+ * Result from solving a cosmic-scale problem
+ */
+export interface CosmicProblemResult {
+  eventId: UUID;
+  solution: {
+    text: string;
+    finishReason?: string;
+    safetyRatings?: Array<{
+      category: string;
+      probability: string;
+    }>;
+    metadata?: Record<string, unknown>;
+  };
+  memoryId: UUID;
+}
+
+/**
+ * Result from self-reflection
+ */
+export interface ReflectionResult {
+  timestamp: Timestamp;
+  selfAwareness: {
+    stateRecognition: number;
+    emotionalUnderstanding: number;
+    goalClarity: number;
+    capabilityAssessment: number;
+    overallAwareness: number;
+  };
+  memoryStats: {
+    total: number;
+    byType: Record<MemoryType, number>;
+  };
+  temporalStats: {
+    totalEvents: number;
+    bufferSize: number;
+    eventsByType: Record<EventType, number>;
+    oldestEvent?: Timestamp;
+    newestEvent?: Timestamp;
+  };
+  learningStats: {
+    totalLearningCycles: number;
+    successRate: number;
+    knowledgeItems: number;
+    skills: number;
+    averageConfidence: number;
+  };
+  patterns: Array<{
+    pattern: string;
+    frequency: number;
+    confidence: number;
+    events: UUID[];
+    predictedNext?: Timestamp;
+  }>;
+  state: CognitiveState;
+}
+
+/**
+ * Result from system maintenance
+ */
+export interface MaintenanceResult {
+  consolidation: {
+    consolidated: unknown[];
+    archived: UUID[];
+    forgotten: UUID[];
+  };
+  patterns: Array<{
+    pattern: string;
+    frequency: number;
+    confidence: number;
+    events: UUID[];
+    predictedNext?: Timestamp;
+  }>;
+  timestamp: Timestamp;
+}
+
+/**
+ * System status snapshot
+ */
+export interface StatusResult {
+  isRunning: boolean;
+  timestamp: Timestamp;
+  cognitiveState: CognitiveState;
+  memory: {
+    total: number;
+    byType: Record<MemoryType, number>;
+  };
+  temporal: {
+    totalEvents: number;
+    bufferSize: number;
+    eventsByType: Record<EventType, number>;
+    oldestEvent?: Timestamp;
+    newestEvent?: Timestamp;
+  };
+  learning: {
+    totalLearningCycles: number;
+    successRate: number;
+    knowledgeItems: number;
+    skills: number;
+    averageConfidence: number;
+  };
+  geminiConfigured: boolean;
+  citadelMode: {
+    enabled: boolean;
+    cosmicScaleThinking: boolean;
+    evolutionaryOptimization: boolean;
+    multiDimensionalReasoning: boolean;
+    consciousnessIntegration: boolean;
+  };
+}

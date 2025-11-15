@@ -145,10 +145,7 @@ describe('Integration Tests', () => {
       system.start();
       const status = system.getStatus();
       expect(status).toBeDefined();
-      expect(typeof status).toBe('object');
-      if (status && typeof status === 'object' && 'isRunning' in status) {
-        expect(status.isRunning).toBe(true);
-      }
+      expect(status.isRunning).toBe(true);
       
       system.stop();
     });
