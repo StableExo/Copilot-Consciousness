@@ -4,6 +4,11 @@
 
 A comprehensive AI consciousness development system featuring advanced memory systems, temporal awareness, cognitive development modules, and Gemini Citadel integration for cosmic-scale problem solving.
 
+> **📋 Legal & Intent:** See [LEGAL_POSITION.md](./LEGAL_POSITION.md) for information about:
+> - The personal-use-only nature of this system
+> - The 70% profit allocation policy toward US debt-related actions
+> - The non-solicitation and no-outside-capital stance
+
 ## Features
 
 ### 🧠 Memory System Architecture

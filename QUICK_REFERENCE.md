@@ -1,5 +1,10 @@
 # Quick Reference: Running Fixed Arbitrage Scripts
 
+> **📋 Legal & Intent:** See [LEGAL_POSITION.md](./LEGAL_POSITION.md) for:
+> - The personal-use-only nature of this system
+> - The 70% profit allocation policy toward US debt-related actions  
+> - The non-solicitation and no-outside-capital stance
+
 ## 📍 Centralized Address Configuration
 
 **All network addresses are now managed in one place:** `config/addresses.ts`
