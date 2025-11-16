@@ -1,5 +1,4 @@
 import { ethers, network } from "hardhat";
-import { DEXRegistry } from "../src/dex/core/DEXRegistry";
 import { ADDRESSES, NetworkKey, requireAddress } from "../config/addresses";
 
 /**
@@ -71,17 +70,15 @@ async function main() {
     console.log("NOTE: Using amounts suitable for testnet.\n");
   }
 
-  const registry = new DEXRegistry();
-  const uniswapV2 = registry.getDEX("Uniswap V2 on Base");
-  const sushiSwap = registry.getDEX("SushiSwap on Base");
-
-  if (!uniswapV2 || !sushiSwap) {
-    throw new Error("Required DEX configurations not found in the registry.");
-  }
+  // Get DEX router addresses from centralized config
+  const uniswapV3Router = requireAddress(netName, "uniswapV3Router",
+    `Uniswap V3 router address is required for Base arbitrage on ${network.name}`);
+  const sushiRouter = requireAddress(netName, "sushiRouter",
+    `SushiSwap router address is required for Base arbitrage on ${network.name}`);
 
   console.log("DEX Configurations:");
-  console.log(`  Uniswap V2 Router: ${uniswapV2.router}`);
-  console.log(`  SushiSwap Router: ${sushiSwap.router}`);
+  console.log(`  Uniswap V3 Router: ${uniswapV3Router}`);
+  console.log(`  SushiSwap Router: ${sushiRouter}`);
 
   console.log("\nConnecting to deployed FlashSwapV2 contract...");
   const flashSwapV2Address = process.env.FLASHSWAP_V2_ADDRESS;
@@ -138,7 +135,7 @@ async function main() {
   const arbitrageParams = {
     path: [
       {
-        pool: uniswapV3.router, // Uniswap V3 router (primary on Base)
+        pool: uniswapV3Router, // Uniswap V3 router (primary on Base)
         tokenIn: FLASH_LOAN_ASSET, // WETH
         tokenOut: intermediateToken, // USDC (mainnet) or DAI/USDC (testnet)
         fee: 500, // 0.05% fee tier (common for stablecoin pairs with WETH on Base)
@@ -146,7 +143,7 @@ async function main() {
         dexType: DEX_TYPE_UNISWAP_V3
       },
       {
-        pool: sushiSwap.router, // SushiSwap for the return path (potential arbitrage)
+        pool: sushiRouter, // SushiSwap for the return path (potential arbitrage)
         tokenIn: intermediateToken, // USDC/DAI
         tokenOut: FLASH_LOAN_ASSET, // Back to WETH
         fee: 3000, // 0.3% fee tier (standard for V2 DEXes)
