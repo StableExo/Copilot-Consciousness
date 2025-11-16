@@ -31,6 +31,8 @@ async function main() {
     usdcAddress: configTemplate.tokens.USDC.address,
     targetPools: configTemplate.targetPools.filter((p: any) => p.enabled !== false),
     ...configTemplate.strategy,
+    ...configTemplate.execution,
+    aavePoolAddress: configTemplate.contracts.aaveV3Pool,
     enableMevProtection: configTemplate.mevProtection.enabled,
     mevRiskThreshold: configTemplate.mevProtection.riskThreshold,
   };
@@ -52,7 +54,9 @@ async function main() {
   console.log(`  Target pools: ${config.targetPools.length}`);
   console.log(`  Min profit threshold: ${config.minProfitThresholdEth} ETH`);
   console.log(`  Cycle interval: ${config.cycleIntervalMs}ms`);
-  console.log(`  MEV protection: ${config.enableMevProtection ? 'Enabled' : 'Disabled'}\n`);
+  console.log(`  MEV protection: ${config.enableMevProtection ? 'Enabled' : 'Disabled'}`);
+  console.log(`  Flashloans: ${config.enableFlashLoans ? 'Enabled' : 'Disabled'}`);
+  console.log(`  Multi-DEX: ${config.enableMultiDex ? 'Enabled' : 'Disabled'}\n`);
   
   // Initialize consciousness integration
   const consciousness = new ArbitrageConsciousness(

@@ -15,6 +15,9 @@ import { MEVSensorHub } from '../mev/sensors/MEVSensorHub';
 import { NonceManager } from '../execution/NonceManager';
 import { SimulationService, SimulationConfig } from './SimulationService';
 import { ExecutionMetrics, ExecutionEventType } from './ExecutionMetrics';
+import { FlashLoanExecutor, FlashLoanArbitrageParams } from './FlashLoanExecutor';
+import { MultiDexPathBuilder, ArbitragePath } from './MultiDexPathBuilder';
+import { PoolDataFetcher, PoolConfig } from './PoolDataFetcher';
 
 interface BaseArbitrageConfig {
   // Network configuration
@@ -56,6 +59,13 @@ interface BaseArbitrageConfig {
     dex: string;
     fee: number;
   }>;
+  
+  // Aave configuration
+  aavePoolAddress?: string;
+  
+  // Execution mode
+  enableFlashLoans?: boolean;
+  enableMultiDex?: boolean;
 }
 
 interface OpportunityResult {
@@ -76,6 +86,11 @@ export class BaseArbitrageRunner extends EventEmitter {
   private executionMetrics: ExecutionMetrics;
   private profitCalculator: ProfitCalculator;
   private mevSensorHub: MEVSensorHub;
+  
+  // Live-fire execution components
+  private flashLoanExecutor: FlashLoanExecutor | null = null;
+  private pathBuilder: MultiDexPathBuilder | null = null;
+  private poolDataFetcher: PoolDataFetcher | null = null;
   
   private isRunning: boolean = false;
   private isCycleRunning: boolean = false;
@@ -103,7 +118,7 @@ export class BaseArbitrageRunner extends EventEmitter {
   }
   
   /**
-   * Initialize NonceManager and SimulationService
+   * Initialize NonceManager, SimulationService, and Live-Fire Components
    * Should be called before starting the runner
    */
   async initialize(): Promise<void> {
@@ -123,6 +138,35 @@ export class BaseArbitrageRunner extends EventEmitter {
     
     this.simulationService = new SimulationService(simulationConfig);
     console.log('[BaseArbitrageRunner] ✓ SimulationService initialized');
+    
+    // Initialize live-fire execution components if enabled
+    if (this.config.enableFlashLoans && this.config.aavePoolAddress) {
+      this.flashLoanExecutor = new FlashLoanExecutor({
+        flashSwapAddress: this.config.flashSwapAddress,
+        aavePoolAddress: this.config.aavePoolAddress,
+        provider: this.provider,
+        signer: this.nonceManager, // Use NonceManager as signer for nonce safety
+      });
+      console.log('[BaseArbitrageRunner] ✓ FlashLoanExecutor initialized');
+    }
+    
+    // Initialize multi-DEX path builder if enabled
+    if (this.config.enableMultiDex) {
+      this.pathBuilder = new MultiDexPathBuilder({
+        provider: this.provider,
+        minProfitThresholdEth: this.config.minProfitThresholdEth,
+        maxSlippageBps: 50, // 0.5% max slippage
+        supportedDexs: ['uniswap_v3', 'aerodrome', 'sushiswap'],
+      });
+      console.log('[BaseArbitrageRunner] ✓ MultiDexPathBuilder initialized');
+    }
+    
+    // Initialize pool data fetcher for real on-chain data
+    this.poolDataFetcher = new PoolDataFetcher({
+      provider: this.provider,
+      cacheDurationMs: 12000, // Cache for 12 seconds (1 block on Base)
+    });
+    console.log('[BaseArbitrageRunner] ✓ PoolDataFetcher initialized');
     
     console.log('[BaseArbitrageRunner] Advanced components initialized successfully');
   }
@@ -287,51 +331,142 @@ export class BaseArbitrageRunner extends EventEmitter {
   }
   
   /**
-   * Scan pools for arbitrage opportunities
+   * Scan pools for arbitrage opportunities using real on-chain data
    */
   private async scanForOpportunities(): Promise<OpportunityResult> {
     console.log('[BaseArbitrageRunner] Scanning pools for opportunities...');
     
     try {
-      // Get current prices from target pools
-      const poolPrices = await this.fetchPoolPrices();
-      
-      if (poolPrices.length < 2) {
+      // Ensure pool data fetcher is initialized
+      if (!this.poolDataFetcher) {
+        console.warn('[BaseArbitrageRunner] PoolDataFetcher not initialized');
         return { found: false, executionRecommended: false };
       }
       
-      // Find price discrepancies
-      const bestOpportunity = this.findBestOpportunity(poolPrices);
+      // Fetch real pool data from on-chain
+      const poolConfigs: PoolConfig[] = this.config.targetPools.map((pool) => ({
+        address: pool.address,
+        dex: pool.dex,
+        fee: pool.fee,
+      }));
       
-      if (!bestOpportunity) {
+      const poolData = await this.poolDataFetcher.fetchPools(poolConfigs);
+      
+      if (poolData.length < 2) {
+        console.log('[BaseArbitrageRunner] Insufficient pool data fetched');
         return { found: false, executionRecommended: false };
       }
       
-      // Calculate MEV-adjusted profit
-      const mevRisk = await this.calculateMevRisk(bestOpportunity);
-      const netProfit = bestOpportunity.grossProfit - (bestOpportunity.grossProfit * mevRisk);
+      console.log(`[BaseArbitrageRunner] Fetched ${poolData.length} pools with real data`);
       
-      // Record opportunity found
-      this.executionMetrics.recordEvent(ExecutionEventType.OPPORTUNITY_FOUND, {
-        grossProfit: bestOpportunity.grossProfit,
-        netProfit,
-        mevRisk,
-        pools: bestOpportunity.pools.length
-      });
+      // Use multi-DEX path builder if enabled and available
+      if (this.config.enableMultiDex && this.pathBuilder) {
+        return await this.scanWithMultiDex(poolData);
+      } else {
+        // Fallback to simple spatial arbitrage
+        return await this.scanSimpleSpatial(poolData);
+      }
       
-      return {
-        found: true,
-        profit: netProfit,
-        gasEstimate: bestOpportunity.gasEstimate,
-        mevRisk: mevRisk,
-        pools: bestOpportunity.pools,
-        executionRecommended: netProfit >= this.config.minProfitThresholdEth && mevRisk < this.config.mevRiskThreshold
-      };
-      
-    } catch (error) {
-      console.error('[BaseArbitrageRunner] Error scanning opportunities:', error);
+    } catch (error: any) {
+      console.error('[BaseArbitrageRunner] Error scanning opportunities:', error.message);
       return { found: false, executionRecommended: false };
     }
+  }
+  
+  /**
+   * Scan for opportunities using multi-DEX path builder
+   */
+  private async scanWithMultiDex(poolData: any[]): Promise<OpportunityResult> {
+    if (!this.pathBuilder) {
+      return { found: false, executionRecommended: false };
+    }
+    
+    console.log('[BaseArbitrageRunner] Using MultiDexPathBuilder for advanced opportunity detection...');
+    
+    // Find opportunities using spatial and triangular engines
+    const opportunities = await this.pathBuilder.findOpportunities(poolData);
+    
+    if (opportunities.length === 0) {
+      console.log('[BaseArbitrageRunner] No multi-DEX opportunities found');
+      return { found: false, executionRecommended: false };
+    }
+    
+    console.log(`[BaseArbitrageRunner] Found ${opportunities.length} opportunities`);
+    
+    // Sort by net profit (descending)
+    opportunities.sort((a, b) => {
+      const profitA = b.netProfit || 0;
+      const profitB = a.netProfit || 0;
+      return profitB - profitA;
+    });
+    
+    // Take the best opportunity
+    const bestOpp = opportunities[0];
+    const netProfit = bestOpp.netProfit || 0;
+    const mevRisk = bestOpp.riskScore || 0;
+    
+    // Build executable path
+    const poolMap = new Map(poolData.map((p) => [p.address, p]));
+    const path = this.pathBuilder.buildPath(bestOpp, poolMap);
+    
+    if (!path) {
+      console.warn('[BaseArbitrageRunner] Failed to build executable path');
+      return { found: false, executionRecommended: false };
+    }
+    
+    // Record opportunity found
+    this.executionMetrics.recordEvent(ExecutionEventType.OPPORTUNITY_FOUND, {
+      type: bestOpp.arbType,
+      grossProfit: bestOpp.grossProfit,
+      netProfit,
+      mevRisk,
+      pathSteps: bestOpp.path.length,
+    });
+    
+    return {
+      found: true,
+      profit: netProfit,
+      gasEstimate: path.gasEstimate,
+      mevRisk: mevRisk,
+      pools: bestOpp.path.map((step: any) => ({ pool: step.poolAddress })),
+      executionRecommended: netProfit >= this.config.minProfitThresholdEth && mevRisk < this.config.mevRiskThreshold,
+      arbitragePath: path, // Store the built path for execution
+    } as any;
+  }
+  
+  /**
+   * Scan for simple spatial arbitrage opportunities (fallback)
+   */
+  private async scanSimpleSpatial(poolData: any[]): Promise<OpportunityResult> {
+    console.log('[BaseArbitrageRunner] Using simple spatial arbitrage detection...');
+    
+    // Find price discrepancies
+    const bestOpportunity = this.findBestOpportunity(poolData);
+    
+    if (!bestOpportunity) {
+      return { found: false, executionRecommended: false };
+    }
+    
+    // Calculate MEV-adjusted profit
+    const mevRisk = await this.calculateMevRisk(bestOpportunity);
+    const netProfit = bestOpportunity.grossProfit - (bestOpportunity.grossProfit * mevRisk);
+    
+    // Record opportunity found
+    this.executionMetrics.recordEvent(ExecutionEventType.OPPORTUNITY_FOUND, {
+      grossProfit: bestOpportunity.grossProfit,
+      netProfit,
+      mevRisk,
+      pools: bestOpportunity.pools.length
+    });
+    
+    return {
+      found: true,
+      profit: netProfit,
+      gasEstimate: bestOpportunity.gasEstimate,
+      mevRisk: mevRisk,
+      pools: bestOpportunity.pools,
+      executionRecommended: netProfit >= this.config.minProfitThresholdEth && mevRisk < this.config.mevRiskThreshold
+    };
   }
   
   /**
@@ -425,7 +560,7 @@ export class BaseArbitrageRunner extends EventEmitter {
   }
   
   /**
-   * Execute an arbitrage opportunity with simulation and nonce management
+   * Execute an arbitrage opportunity with flashloans or direct execution
    */
   private async executeArbitrage(opportunity: OpportunityResult): Promise<void> {
     const executionId = `exec_${Date.now()}_${this.cycleCount}`;
@@ -442,117 +577,11 @@ export class BaseArbitrageRunner extends EventEmitter {
       
       this.emit('executionStarted', { executionId, opportunity });
       
-      // Step 1: Load FlashSwapV2 contract
-      // TODO: Load actual contract ABI and address from config
-      console.log(`[BaseArbitrageRunner] [${executionId}] Loading FlashSwapV2 contract...`);
-      const flashSwapAddress = this.config.flashSwapAddress;
-      
-      // Placeholder: In production, would load actual ABI
-      const flashSwapABI = ['function executeArbitrage(address[] calldata path, uint256 amountIn) external'];
-      const flashSwapContract = new ethers.Contract(
-        flashSwapAddress,
-        flashSwapABI,
-        this.nonceManager // Use NonceManager as signer
-      );
-      
-      // Step 2: Prepare transaction parameters
-      console.log(`[BaseArbitrageRunner] [${executionId}] Preparing transaction parameters...`);
-      const poolAddresses = opportunity.pools?.map((p: any) => p.pool) || [];
-      const amountIn = ethers.utils.parseEther(opportunity.profit?.toString() || '0');
-      
-      // Step 3: Run pre-send simulation
-      console.log(`[BaseArbitrageRunner] [${executionId}] Running pre-send simulation...`);
-      this.executionMetrics.recordEvent(ExecutionEventType.SIMULATION_ATTEMPT, {
-        executionId,
-        expectedProfit: opportunity.profit
-      });
-      
-      const simulationResult = await this.simulationService.simulateTransaction({
-        flashSwapContract,
-        methodName: 'executeArbitrage',
-        methodParams: [poolAddresses, amountIn],
-        expectedProfit: opportunity.profit || 0,
-        gasEstimate: opportunity.gasEstimate
-      });
-      
-      if (!simulationResult.success) {
-        console.warn(`[BaseArbitrageRunner] [${executionId}] ✗ Simulation failed:`, simulationResult.reason);
-        
-        this.executionMetrics.recordEvent(ExecutionEventType.SIMULATION_FAILED, {
-          executionId,
-          reason: simulationResult.reason,
-          willRevert: simulationResult.willRevert
-        });
-        
-        this.emit('simulationFailed', {
-          executionId,
-          opportunity,
-          reason: simulationResult.reason,
-          willRevert: simulationResult.willRevert
-        });
-        return;
-      }
-      
-      this.executionMetrics.recordEvent(ExecutionEventType.SIMULATION_SUCCESS, {
-        executionId,
-        estimatedGas: simulationResult.estimatedGas?.toString()
-      });
-      
-      console.log(`[BaseArbitrageRunner] [${executionId}] ✓ Simulation passed`);
-      console.log(`  - Estimated gas: ${simulationResult.estimatedGas?.toString()}`);
-      console.log(`  - Expected profit: ${opportunity.profit} ETH`);
-      
-      // Step 4: Send actual transaction using NonceManager
-      console.log(`[BaseArbitrageRunner] [${executionId}] Sending transaction...`);
-      
-      // NonceManager handles nonce automatically in sendTransaction
-      const txResponse = await flashSwapContract.executeArbitrage(poolAddresses, amountIn, {
-        gasLimit: simulationResult.estimatedGas
-      });
-      
-      console.log(`[BaseArbitrageRunner] [${executionId}] ✓ Transaction submitted: ${txResponse.hash}`);
-      this.executionMetrics.recordEvent(ExecutionEventType.TX_SUBMITTED, {
-        executionId,
-        txHash: txResponse.hash
-      });
-      
-      this.emit('transactionSubmitted', {
-        executionId,
-        txHash: txResponse.hash,
-        opportunity
-      });
-      
-      // Step 5: Wait for confirmation
-      console.log(`[BaseArbitrageRunner] [${executionId}] Waiting for confirmation...`);
-      const receipt = await txResponse.wait(1);
-      
-      if (receipt.status === 1) {
-        console.log(`[BaseArbitrageRunner] [${executionId}] ✓ Transaction confirmed successfully`);
-        
-        const result = {
-          success: true,
-          profit: opportunity.profit,
-          txHash: receipt.transactionHash,
-          gasUsed: receipt.gasUsed,
-          blockNumber: receipt.blockNumber
-        };
-        
-        this.executionMetrics.recordEvent(ExecutionEventType.TX_CONFIRMED, {
-          executionId,
-          txHash: receipt.transactionHash,
-          gasUsed: receipt.gasUsed.toString(),
-          profit: opportunity.profit
-        });
-        
-        this.executionMetrics.recordEvent(ExecutionEventType.OPPORTUNITY_EXECUTED, {
-          executionId,
-          success: true
-        });
-        
-        this.emit('executionComplete', { executionId, result });
-        this.recordExecution(result);
+      // Check if we should use flashloan execution
+      if (this.config.enableFlashLoans && this.flashLoanExecutor && (opportunity as any).arbitragePath) {
+        await this.executeWithFlashLoan(executionId, opportunity);
       } else {
-        throw new Error('Transaction reverted on-chain');
+        await this.executeSimple(executionId, opportunity);
       }
       
     } catch (error: any) {
@@ -590,6 +619,90 @@ export class BaseArbitrageRunner extends EventEmitter {
         });
       }
     }
+  }
+  
+  /**
+   * Execute arbitrage using Aave flashloan
+   */
+  private async executeWithFlashLoan(executionId: string, opportunity: OpportunityResult): Promise<void> {
+    if (!this.flashLoanExecutor) {
+      throw new Error('FlashLoanExecutor not initialized');
+    }
+    
+    const path: ArbitragePath = (opportunity as any).arbitragePath;
+    
+    console.log(`[BaseArbitrageRunner] [${executionId}] Using Aave flashloan execution`);
+    console.log(`  Type: ${path.type}`);
+    console.log(`  Borrow: ${ethers.utils.formatEther(path.borrowAmount)} ${path.borrowToken}`);
+    console.log(`  Steps: ${path.swapSteps.length}`);
+    console.log(`  Expected profit: ${path.netProfit} ETH`);
+    
+    // Prepare flashloan parameters
+    const flashLoanParams: FlashLoanArbitrageParams = {
+      borrowToken: path.borrowToken,
+      borrowAmount: path.borrowAmount,
+      swapPath: path.swapSteps,
+      expectedProfit: path.netProfit,
+      gasEstimate: path.gasEstimate,
+    };
+    
+    // Execute via flashloan
+    const result = await this.flashLoanExecutor.execute(flashLoanParams);
+    
+    if (result.success) {
+      console.log(`[BaseArbitrageRunner] [${executionId}] ✓ Flashloan execution successful!`);
+      console.log(`  TX Hash: ${result.txHash}`);
+      console.log(`  Profit: ${ethers.utils.formatEther(result.profit || '0')} ETH`);
+      console.log(`  Gas Used: ${result.gasUsed?.toString()}`);
+      
+      this.executionMetrics.recordEvent(ExecutionEventType.TX_CONFIRMED, {
+        executionId,
+        txHash: result.txHash,
+        gasUsed: result.gasUsed?.toString(),
+        profit: ethers.utils.formatEther(result.profit || '0'),
+      });
+      
+      this.executionMetrics.recordEvent(ExecutionEventType.OPPORTUNITY_EXECUTED, {
+        executionId,
+        success: true,
+      });
+      
+      this.emit('executionComplete', {
+        executionId,
+        result: {
+          success: true,
+          txHash: result.txHash,
+          profit: ethers.utils.formatEther(result.profit || '0'),
+          gasUsed: result.gasUsed,
+        },
+      });
+      
+      this.recordExecution({
+        success: true,
+        txHash: result.txHash,
+        profit: ethers.utils.formatEther(result.profit || '0'),
+        gasUsed: result.gasUsed,
+      });
+    } else {
+      throw new Error(result.error || 'Flashloan execution failed');
+    }
+  }
+  
+  /**
+   * Execute arbitrage without flashloan (simple direct execution)
+   * This is a fallback for when flashloans are disabled
+   */
+  private async executeSimple(executionId: string, opportunity: OpportunityResult): Promise<void> {
+    console.log(`[BaseArbitrageRunner] [${executionId}] Using simple execution (no flashloan)`);
+    console.warn(`[BaseArbitrageRunner] [${executionId}] Simple execution is not fully implemented - skipping`);
+    
+    // This would implement direct swap execution without flashloans
+    // For now, we skip this as the focus is on flashloan-based execution
+    
+    this.emit('executionSkipped', {
+      executionId,
+      reason: 'Simple execution not implemented',
+    });
   }
   
   /**
