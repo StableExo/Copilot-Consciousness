@@ -93,8 +93,29 @@ FLASHSWAP_V2_ADDRESS=0xYourDeployedContractAddress
 
 ### Step 4: Verify Contract (Optional but Recommended)
 
+Before running verification, ensure you have set `BASESCAN_API_KEY` in your `.env` file:
+
+```bash
+BASESCAN_API_KEY=YOUR_BASESCAN_API_KEY_HERE
+```
+
+You can obtain a free API key from [Basescan](https://basescan.org/myapikey).
+
+Then verify your deployed contract:
+
 ```bash
 npx hardhat verify --network base <CONTRACT_ADDRESS> \
+  0x2626664c2603336E57B271c5C0b26F421741e481 \
+  0x6BDED42c6DA8FBf0d2bA55B2fa120C5e0c8D7891 \
+  0xA238Dd80C259a72e81d7e4664a9801593F98d1c5 \
+  0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D
+```
+
+For the already deployed contract at `0xA96D8f48f5222334dEdf43736097ed7aD653ca88`:
+
+```bash
+npx hardhat verify --network base \
+  0xA96D8f48f5222334dEdf43736097ed7aD653ca88 \
   0x2626664c2603336E57B271c5C0b26F421741e481 \
   0x6BDED42c6DA8FBf0d2bA55B2fa120C5e0c8D7891 \
   0xA238Dd80C259a72e81d7e4664a9801593F98d1c5 \

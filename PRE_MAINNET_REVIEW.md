@@ -86,6 +86,8 @@ This document provides a comprehensive end-to-end review of the FlashSwapV2 arbi
 4. ✅ Use SushiSwap for USDC → WETH (0.3% fee tier)
 5. ✅ Add clear mainnet vs testnet differentiation
 6. ✅ Enhanced error handling and logging
+7. ✅ Replace DEXRegistry with centralized config/addresses.ts for DEX routers
+8. ✅ Fix undefined uniswapV3 reference - now uses uniswapV3Router from config
 
 **Route**: WETH → USDC (UniV3) → WETH (Sushi)
 

@@ -5,7 +5,7 @@
 
 ---
 
-## 🎯 Three-Step Deployment
+## 🎯 Four-Step Deployment
 
 ```bash
 # 1. Deploy Contract
@@ -14,7 +14,14 @@ npx hardhat run scripts/deployFlashSwapV2.ts --network base
 # 2. Set Address in .env
 echo "FLASHSWAP_V2_ADDRESS=<deployed_address>" >> .env
 
-# 3. Test with 0.001 WETH
+# 3. Verify Contract on Basescan (Optional but Recommended)
+npx hardhat verify --network base <deployed_address> \
+  0x2626664c2603336E57B271c5C0b26F421741e481 \
+  0x6BDED42c6DA8FBf0d2bA55B2fa120C5e0c8D7891 \
+  0xA238Dd80C259a72e81d7e4664a9801593F98d1c5 \
+  0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D
+
+# 4. Test with 0.001 WETH
 npx hardhat run scripts/runArbitrage.ts --network base
 ```
 
@@ -28,6 +35,7 @@ npx hardhat run scripts/runArbitrage.ts --network base
 - [ ] Wallet has 0.01+ ETH for deployment gas
 - [ ] `BASE_RPC_URL` set in `.env`
 - [ ] `WALLET_PRIVATE_KEY` set in `.env`
+- [ ] `BASESCAN_API_KEY` set in `.env` (for contract verification)
 - [ ] Reviewed [PRE_MAINNET_REVIEW.md](./PRE_MAINNET_REVIEW.md)
 
 ---
@@ -150,6 +158,13 @@ npx hardhat run scripts/dryRunArbitrage.ts --network base
 
 # Deploy contract
 npx hardhat run scripts/deployFlashSwapV2.ts --network base
+
+# Verify contract on Basescan (requires BASESCAN_API_KEY in .env)
+npx hardhat verify --network base <CONTRACT_ADDRESS> \
+  0x2626664c2603336E57B271c5C0b26F421741e481 \
+  0x6BDED42c6DA8FBf0d2bA55B2fa120C5e0c8D7891 \
+  0xA238Dd80C259a72e81d7e4664a9801593F98d1c5 \
+  0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D
 
 # Execute arbitrage
 npx hardhat run scripts/runArbitrage.ts --network base
