@@ -14,6 +14,7 @@ import { ProfitCalculator, TransactionType } from '../mev/profit_calculator/Prof
 import { MEVSensorHub } from '../mev/sensors/MEVSensorHub';
 import { NonceManager } from '../execution/NonceManager';
 import { SimulationService, SimulationConfig } from './SimulationService';
+import { ExecutionMetrics, ExecutionEventType } from './ExecutionMetrics';
 
 interface BaseArbitrageConfig {
   // Network configuration
@@ -72,6 +73,7 @@ export class BaseArbitrageRunner extends EventEmitter {
   private wallet: ethers.Wallet;
   private nonceManager: NonceManager | null = null;
   private simulationService: SimulationService | null = null;
+  private executionMetrics: ExecutionMetrics;
   private profitCalculator: ProfitCalculator;
   private mevSensorHub: MEVSensorHub;
   
@@ -91,6 +93,9 @@ export class BaseArbitrageRunner extends EventEmitter {
     // Initialize MEV components
     this.profitCalculator = new ProfitCalculator();
     this.mevSensorHub = new MEVSensorHub(this.provider);
+    
+    // Initialize execution metrics
+    this.executionMetrics = new ExecutionMetrics();
     
     console.log('[BaseArbitrageRunner] Initialized for Base mainnet');
     console.log(`[BaseArbitrageRunner] Wallet: ${this.wallet.address}`);
@@ -189,6 +194,11 @@ export class BaseArbitrageRunner extends EventEmitter {
     await this.mevSensorHub.stop();
     
     console.log('[BaseArbitrageRunner] Stopped');
+    
+    // Print final execution metrics summary
+    console.log('\n[BaseArbitrageRunner] Final Execution Metrics:');
+    this.executionMetrics.printSummary();
+    
     this.emit('stopped');
   }
   
@@ -300,6 +310,14 @@ export class BaseArbitrageRunner extends EventEmitter {
       // Calculate MEV-adjusted profit
       const mevRisk = await this.calculateMevRisk(bestOpportunity);
       const netProfit = bestOpportunity.grossProfit - (bestOpportunity.grossProfit * mevRisk);
+      
+      // Record opportunity found
+      this.executionMetrics.recordEvent(ExecutionEventType.OPPORTUNITY_FOUND, {
+        grossProfit: bestOpportunity.grossProfit,
+        netProfit,
+        mevRisk,
+        pools: bestOpportunity.pools.length
+      });
       
       return {
         found: true,
@@ -444,6 +462,11 @@ export class BaseArbitrageRunner extends EventEmitter {
       
       // Step 3: Run pre-send simulation
       console.log(`[BaseArbitrageRunner] [${executionId}] Running pre-send simulation...`);
+      this.executionMetrics.recordEvent(ExecutionEventType.SIMULATION_ATTEMPT, {
+        executionId,
+        expectedProfit: opportunity.profit
+      });
+      
       const simulationResult = await this.simulationService.simulateTransaction({
         flashSwapContract,
         methodName: 'executeArbitrage',
@@ -454,6 +477,13 @@ export class BaseArbitrageRunner extends EventEmitter {
       
       if (!simulationResult.success) {
         console.warn(`[BaseArbitrageRunner] [${executionId}] ✗ Simulation failed:`, simulationResult.reason);
+        
+        this.executionMetrics.recordEvent(ExecutionEventType.SIMULATION_FAILED, {
+          executionId,
+          reason: simulationResult.reason,
+          willRevert: simulationResult.willRevert
+        });
+        
         this.emit('simulationFailed', {
           executionId,
           opportunity,
@@ -462,6 +492,11 @@ export class BaseArbitrageRunner extends EventEmitter {
         });
         return;
       }
+      
+      this.executionMetrics.recordEvent(ExecutionEventType.SIMULATION_SUCCESS, {
+        executionId,
+        estimatedGas: simulationResult.estimatedGas?.toString()
+      });
       
       console.log(`[BaseArbitrageRunner] [${executionId}] ✓ Simulation passed`);
       console.log(`  - Estimated gas: ${simulationResult.estimatedGas?.toString()}`);
@@ -476,6 +511,11 @@ export class BaseArbitrageRunner extends EventEmitter {
       });
       
       console.log(`[BaseArbitrageRunner] [${executionId}] ✓ Transaction submitted: ${txResponse.hash}`);
+      this.executionMetrics.recordEvent(ExecutionEventType.TX_SUBMITTED, {
+        executionId,
+        txHash: txResponse.hash
+      });
+      
       this.emit('transactionSubmitted', {
         executionId,
         txHash: txResponse.hash,
@@ -497,6 +537,18 @@ export class BaseArbitrageRunner extends EventEmitter {
           blockNumber: receipt.blockNumber
         };
         
+        this.executionMetrics.recordEvent(ExecutionEventType.TX_CONFIRMED, {
+          executionId,
+          txHash: receipt.transactionHash,
+          gasUsed: receipt.gasUsed.toString(),
+          profit: opportunity.profit
+        });
+        
+        this.executionMetrics.recordEvent(ExecutionEventType.OPPORTUNITY_EXECUTED, {
+          executionId,
+          success: true
+        });
+        
         this.emit('executionComplete', { executionId, result });
         this.recordExecution(result);
       } else {
@@ -505,6 +557,24 @@ export class BaseArbitrageRunner extends EventEmitter {
       
     } catch (error: any) {
       console.error(`[BaseArbitrageRunner] [${executionId}] ✗ Execution failed:`, error.message);
+      
+      // Determine error type
+      const isRevert = error.message?.toLowerCase().includes('revert');
+      const isNonce = error.message?.toLowerCase().includes('nonce');
+      
+      if (isRevert) {
+        this.executionMetrics.recordEvent(ExecutionEventType.TX_REVERTED, {
+          executionId,
+          error: error.message
+        });
+      } else {
+        this.executionMetrics.recordEvent(ExecutionEventType.TX_FAILED, {
+          executionId,
+          error: error.message,
+          isNonceError: isNonce
+        });
+      }
+      
       this.emit('executionFailed', {
         executionId,
         opportunity,
@@ -512,8 +582,12 @@ export class BaseArbitrageRunner extends EventEmitter {
       });
       
       // Check if this was a nonce error - NonceManager will handle it automatically
-      if (error.message?.toLowerCase().includes('nonce')) {
+      if (isNonce) {
         console.log(`[BaseArbitrageRunner] [${executionId}] Nonce error detected - NonceManager will auto-resync`);
+        this.executionMetrics.recordEvent(ExecutionEventType.NONCE_RESYNC, {
+          executionId,
+          reason: 'automatic_on_error'
+        });
       }
     }
   }
@@ -565,7 +639,15 @@ export class BaseArbitrageRunner extends EventEmitter {
         cycleIntervalMs: this.config.cycleIntervalMs,
         minProfitThresholdEth: this.config.minProfitThresholdEth,
         mevProtectionEnabled: this.config.enableMevProtection
-      }
+      },
+      metrics: this.executionMetrics.getStats()
     };
+  }
+  
+  /**
+   * Get execution metrics
+   */
+  getMetrics(): ExecutionMetrics {
+    return this.executionMetrics;
   }
 }
