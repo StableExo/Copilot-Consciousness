@@ -63,6 +63,14 @@
     "maxConcurrentCycles": 1,
     "cycleTimeoutMs": 60000
   },
+  "execution": {
+    "requireSimulation": true,
+    "maxGasLimit": 1000000,
+    "simulationTimeout": 10000,
+    "maxConcurrentTx": 1,
+    "txRetryAttempts": 3,
+    "txRetryDelayMs": 5000
+  },
   "mevProtection": {
     "enabled": true,
     "riskThreshold": 0.15,
