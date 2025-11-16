@@ -39,6 +39,8 @@ I have completed a comprehensive end-to-end review of your FlashSwapV2 arbitrage
 - ✅ Route: WETH → USDC (Uniswap V3, 0.05%) → WETH (SushiSwap, 0.3%)
 - ✅ Enhanced error handling with Aave error decoder
 - ✅ Clear mainnet vs testnet differentiation
+- ✅ Fixed undefined `uniswapV3` reference - now uses centralized config/addresses.ts
+- ✅ Removed DEXRegistry dependency for more reliable address sourcing
 
 #### `scripts/runMultiHopArbitrage.ts`
 - ✅ Flash loan amount: **0.001 WETH** for Base mainnet
@@ -49,6 +51,12 @@ I have completed a comprehensive end-to-end review of your FlashSwapV2 arbitrage
 - ✅ Already uses centralized address config
 - ✅ Validates all required addresses
 - ✅ Provides verification commands
+
+#### `hardhat.config.ts`
+- ✅ Added Base mainnet (chainId 8453) to etherscan custom chains
+- ✅ Added Base Sepolia testnet (chainId 84532) to etherscan custom chains
+- ✅ Configured Basescan API URLs for contract verification
+- ✅ Uses BASESCAN_API_KEY environment variable
 
 #### `config/addresses.ts`
 - ✅ **All Base mainnet addresses verified**:
@@ -324,9 +332,15 @@ These are **NOT blockers** for deployment:
 ## 📝 Files Changed in This Review
 
 ### Modified
-- `scripts/runArbitrage.ts` - Base mainnet route, 0.001 WETH
+- `scripts/runArbitrage.ts` - Base mainnet route, 0.001 WETH, fixed uniswapV3 reference
 - `scripts/runMultiHopArbitrage.ts` - Base mainnet safety
+- `hardhat.config.ts` - Added Base/Base Sepolia to etherscan custom chains
+- `BASE_MAINNET_DEPLOYMENT.md` - Updated with verification instructions
+- `DEPLOYMENT_QUICK_REFERENCE.md` - Added verification step and BASESCAN_API_KEY requirement
+- `.env.example` - Added BASE_SEPOLIA_RPC_URL
 - `QUICKSTART.md` - Added FlashSwapV2 section
+- `PRE_MAINNET_REVIEW.md` - Updated with script changes
+- `REVIEW_SUMMARY.md` - This document (updated)
 
 ### Created
 - `scripts/preDeploymentChecklist.ts` - Pre-deployment validation
