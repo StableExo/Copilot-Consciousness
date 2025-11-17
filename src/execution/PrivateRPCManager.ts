@@ -26,6 +26,10 @@ import {
   FlashbotsBundle,
   MEVShareOptions,
   RelayStats,
+  BundleSimulationResult,
+  BundleStatus,
+  BuilderReputation,
+  MEVRefund,
 } from './types/PrivateRPCTypes';
 
 /**
@@ -613,6 +617,233 @@ export class PrivateRPCManager {
 
     await Promise.all(checks);
     return results;
+  }
+
+  /**
+   * Simulate a Flashbots bundle before submission (eth_callBundle)
+   * This validates the bundle and estimates profit without submitting
+   */
+  async simulateBundle(
+    bundle: FlashbotsBundle,
+    stateBlockNumber?: number
+  ): Promise<BundleSimulationResult> {
+    const flashbotsRelay = 
+      this.relays.get(PrivateRelayType.FLASHBOTS_PROTECT) ||
+      this.relays.get(PrivateRelayType.MEV_SHARE);
+
+    if (!flashbotsRelay) {
+      return {
+        success: false,
+        error: 'No Flashbots relay configured for simulation',
+      };
+    }
+
+    // Update stats
+    const stats = this.stats.get(flashbotsRelay.type);
+    if (stats) {
+      stats.totalSimulations = (stats.totalSimulations || 0) + 1;
+    }
+
+    try {
+      const provider = new ethers.providers.JsonRpcProvider(flashbotsRelay.endpoint);
+      
+      const payload = {
+        txs: bundle.signedTransactions,
+        blockNumber: stateBlockNumber 
+          ? `0x${stateBlockNumber.toString(16)}`
+          : `0x${bundle.targetBlockNumber.toString(16)}`,
+        stateBlockNumber: stateBlockNumber 
+          ? `0x${stateBlockNumber.toString(16)}`
+          : 'latest',
+        timestamp: bundle.minTimestamp || Math.floor(Date.now() / 1000),
+      };
+
+      const result = await provider.send('eth_callBundle', [payload]);
+
+      // Update successful simulation count
+      if (stats) {
+        stats.successfulSimulations = (stats.successfulSimulations || 0) + 1;
+      }
+
+      logger.info('[PrivateRPCManager] Bundle simulation successful');
+
+      return {
+        success: true,
+        bundleHash: result.bundleHash,
+        bundleGasPrice: result.bundleGasPrice,
+        coinbaseDiff: result.coinbaseDiff,
+        ethSentToCoinbase: result.ethSentToCoinbase,
+        gasFees: result.gasFees,
+        stateBlockNumber: result.stateBlockNumber,
+        totalGasUsed: result.totalGasUsed,
+        results: result.results?.map((tx: any) => ({
+          txHash: tx.txHash,
+          gasUsed: tx.gasUsed,
+          gasPrice: tx.gasPrice,
+          revert: tx.revert,
+          revertReason: tx.revertReason,
+          value: tx.value,
+        })),
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`[PrivateRPCManager] Bundle simulation failed: ${message}`);
+      return {
+        success: false,
+        error: message,
+      };
+    }
+  }
+
+  /**
+   * Cancel a submitted bundle (eth_cancelBundle)
+   * Only works if bundle hasn't been included yet
+   */
+  async cancelBundle(bundleHash: string): Promise<boolean> {
+    const flashbotsRelay = 
+      this.relays.get(PrivateRelayType.FLASHBOTS_PROTECT) ||
+      this.relays.get(PrivateRelayType.MEV_SHARE);
+
+    if (!flashbotsRelay) {
+      logger.error('[PrivateRPCManager] No Flashbots relay configured for cancellation');
+      return false;
+    }
+
+    try {
+      const provider = new ethers.providers.JsonRpcProvider(flashbotsRelay.endpoint);
+      await provider.send('eth_cancelBundle', [{ bundleHash }]);
+
+      // Update stats
+      const stats = this.stats.get(flashbotsRelay.type);
+      if (stats) {
+        stats.totalCancellations = (stats.totalCancellations || 0) + 1;
+      }
+
+      logger.info(`[PrivateRPCManager] Bundle cancelled: ${bundleHash}`);
+      return true;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`[PrivateRPCManager] Bundle cancellation failed: ${message}`);
+      return false;
+    }
+  }
+
+  /**
+   * Get the status of a submitted bundle
+   * Checks if bundle was included and in which block
+   */
+  async getBundleStatus(bundleHash: string): Promise<BundleStatus | null> {
+    const flashbotsRelay = 
+      this.relays.get(PrivateRelayType.FLASHBOTS_PROTECT) ||
+      this.relays.get(PrivateRelayType.MEV_SHARE);
+
+    if (!flashbotsRelay) {
+      logger.error('[PrivateRPCManager] No Flashbots relay configured');
+      return null;
+    }
+
+    try {
+      const provider = new ethers.providers.JsonRpcProvider(flashbotsRelay.endpoint);
+      const result = await provider.send('eth_getBundleStats', [bundleHash]);
+
+      if (!result) {
+        return null;
+      }
+
+      return {
+        isIncluded: result.isIncluded || false,
+        blockNumber: result.blockNumber,
+        timestamp: result.timestamp,
+        txHashes: result.txHashes,
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.warn(`[PrivateRPCManager] Failed to get bundle status: ${message}`);
+      return null;
+    }
+  }
+
+  /**
+   * Submit bundle with simulation validation
+   * Simulates first, then submits if profitable
+   */
+  async submitBundleWithValidation(
+    bundle: FlashbotsBundle,
+    minProfitWei: bigint = 0n
+  ): Promise<PrivateTransactionResult> {
+    // First simulate the bundle
+    logger.info('[PrivateRPCManager] Simulating bundle before submission...');
+    const simulation = await this.simulateBundle(bundle);
+
+    if (!simulation.success) {
+      return {
+        success: false,
+        error: `Bundle simulation failed: ${simulation.error}`,
+      };
+    }
+
+    // Check if any transaction reverted
+    const hasRevert = simulation.results?.some(tx => tx.revert);
+    if (hasRevert) {
+      const revertReasons = simulation.results
+        ?.filter(tx => tx.revert)
+        .map(tx => tx.revertReason)
+        .join(', ');
+      return {
+        success: false,
+        error: `Bundle would revert: ${revertReasons}`,
+      };
+    }
+
+    // Check profitability
+    if (simulation.coinbaseDiff) {
+      const profit = BigInt(simulation.coinbaseDiff);
+      if (profit < minProfitWei) {
+        return {
+          success: false,
+          error: `Insufficient profit: ${profit} wei < ${minProfitWei} wei`,
+        };
+      }
+      logger.info(`[PrivateRPCManager] Bundle profitable: ${profit} wei`);
+    }
+
+    // Simulation passed, submit the bundle
+    logger.info('[PrivateRPCManager] Simulation passed, submitting bundle...');
+    return this.submitFlashbotsBundle(bundle);
+  }
+
+  /**
+   * Wait for bundle inclusion with timeout
+   * Polls bundle status until included or timeout
+   */
+  async waitForBundleInclusion(
+    bundleHash: string,
+    maxBlocks: number = 25,
+    pollIntervalMs: number = 3000
+  ): Promise<BundleStatus | null> {
+    const startBlock = await this.provider.getBlockNumber();
+    const endBlock = startBlock + maxBlocks;
+
+    logger.info(
+      `[PrivateRPCManager] Waiting for bundle ${bundleHash} (max ${maxBlocks} blocks)`
+    );
+
+    while (await this.provider.getBlockNumber() < endBlock) {
+      const status = await this.getBundleStatus(bundleHash);
+      
+      if (status?.isIncluded) {
+        logger.info(
+          `[PrivateRPCManager] Bundle included in block ${status.blockNumber}`
+        );
+        return status;
+      }
+
+      // Wait before polling again
+      await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
+    }
+
+    logger.warn(`[PrivateRPCManager] Bundle not included after ${maxBlocks} blocks`);
+    return null;
   }
 }
 

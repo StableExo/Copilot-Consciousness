@@ -93,6 +93,79 @@ export interface FlashbotsBundle {
   
   /** Reverting transaction hashes (optional) */
   revertingTxHashes?: string[];
+  
+  /** Bundle hash (after submission) */
+  bundleHash?: string;
+}
+
+/**
+ * Bundle simulation result from eth_callBundle
+ */
+export interface BundleSimulationResult {
+  /** Whether the simulation was successful */
+  success: boolean;
+  
+  /** Error message if simulation failed */
+  error?: string;
+  
+  /** Simulated bundle hash */
+  bundleHash?: string;
+  
+  /** Gas used by the bundle */
+  bundleGasPrice?: string;
+  
+  /** Coinbase difference (profit to miner) */
+  coinbaseDiff?: string;
+  
+  /** ETH sent to coinbase */
+  ethSentToCoinbase?: string;
+  
+  /** Gas fees paid */
+  gasFees?: string;
+  
+  /** State block number */
+  stateBlockNumber?: number;
+  
+  /** Total gas used */
+  totalGasUsed?: number;
+  
+  /** Individual transaction results */
+  results?: Array<{
+    /** Transaction hash */
+    txHash?: string;
+    
+    /** Gas used by this transaction */
+    gasUsed?: number;
+    
+    /** Gas price */
+    gasPrice?: string;
+    
+    /** Whether transaction reverted */
+    revert?: boolean;
+    
+    /** Revert reason */
+    revertReason?: string;
+    
+    /** Transaction value */
+    value?: string;
+  }>;
+}
+
+/**
+ * Bundle status from Flashbots relay
+ */
+export interface BundleStatus {
+  /** Whether bundle was included */
+  isIncluded: boolean;
+  
+  /** Block number if included */
+  blockNumber?: number;
+  
+  /** Timestamp when included */
+  timestamp?: number;
+  
+  /** Transaction hashes in bundle */
+  txHashes?: string[];
 }
 
 /**
@@ -112,6 +185,12 @@ export interface MEVShareOptions {
     
     /** Share logs */
     logs?: boolean;
+    
+    /** Share transaction hash */
+    hash?: boolean;
+    
+    /** Share default logs (transfer, swap events) */
+    default_logs?: boolean;
   };
   
   /** Builders to target (empty = all) */
@@ -119,6 +198,12 @@ export interface MEVShareOptions {
   
   /** Maximum block number for inclusion */
   maxBlockNumber?: number;
+  
+  /** Refund configuration */
+  refundConfig?: {
+    /** Percent of MEV to refund (0-100) */
+    percent?: number;
+  };
 }
 
 /**
@@ -223,4 +308,62 @@ export interface RelayStats {
   
   /** Whether relay is currently available */
   isAvailable: boolean;
+  
+  /** Total simulations performed */
+  totalSimulations?: number;
+  
+  /** Successful simulations */
+  successfulSimulations?: number;
+  
+  /** Total bundles cancelled */
+  totalCancellations?: number;
+}
+
+/**
+ * Builder reputation tracking
+ */
+export interface BuilderReputation {
+  /** Builder name/identifier */
+  builder: string;
+  
+  /** Number of successful inclusions */
+  successCount: number;
+  
+  /** Number of failed attempts */
+  failureCount: number;
+  
+  /** Average inclusion time (blocks) */
+  avgInclusionBlocks: number;
+  
+  /** Success rate (0-1) */
+  successRate: number;
+  
+  /** Last used timestamp */
+  lastUsed: Date;
+  
+  /** Whether currently active */
+  isActive: boolean;
+}
+
+/**
+ * MEV refund tracking
+ */
+export interface MEVRefund {
+  /** Transaction hash */
+  txHash: string;
+  
+  /** Bundle hash */
+  bundleHash?: string;
+  
+  /** MEV extracted (in wei) */
+  mevExtracted: string;
+  
+  /** Refund amount (in wei) */
+  refundAmount: string;
+  
+  /** Block number */
+  blockNumber: number;
+  
+  /** Timestamp */
+  timestamp: number;
 }

@@ -6,6 +6,7 @@
  * 
  * Current modules:
  * - mev-awareness: MEV risk modeling, real-time monitoring, profit calculation
+ * - flashbots: Advanced Flashbots integration, bundle optimization, builder reputation
  * 
  * Future modules (Phase 2+):
  * - economic-autonomy: Tithe mechanism, treasury management
@@ -13,3 +14,4 @@
  */
 
 export * from './mev-awareness';
+export * from './flashbots';
