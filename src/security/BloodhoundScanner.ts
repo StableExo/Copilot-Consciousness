@@ -86,7 +86,7 @@ export class BloodhoundScanner extends EventEmitter {
       // API Keys (generic patterns)
       {
         type: 'api_key',
-        pattern: /(?:api[_-]?key|apikey|access[_-]?key|secret[_-]?key)[\s:=]+['""]?([a-zA-Z0-9_\-]{20,})['""]?/gi,
+        pattern: /(?:api[_-]?key|apikey|access[_-]?key|secret[_-]?key)[\s:=]+['""]?([a-zA-Z0-9_-]{20,})['""]?/gi,
         confidence: 0.85,
         severity: 'high',
       },
@@ -110,7 +110,7 @@ export class BloodhoundScanner extends EventEmitter {
       // Bearer Tokens
       {
         type: 'bearer_token',
-        pattern: /bearer\s+[a-zA-Z0-9_\-\.=]+/gi,
+        pattern: /bearer\s+[a-zA-Z0-9_.=]+/gi,
         confidence: 0.85,
         severity: 'high',
       },
@@ -118,7 +118,7 @@ export class BloodhoundScanner extends EventEmitter {
       // Database URLs with credentials
       {
         type: 'database_url',
-        pattern: /(?:postgres|mysql|mongodb):\/\/[^:]+:[^@]+@[^\/]+/gi,
+        pattern: /(?:postgres|mysql|mongodb):\/\/[^:]+:[^@]+@[^/]+/gi,
         confidence: 0.90,
         severity: 'critical',
       },
@@ -126,7 +126,7 @@ export class BloodhoundScanner extends EventEmitter {
       // RPC URLs (may contain sensitive info)
       {
         type: 'rpc_url',
-        pattern: /https?:\/\/[a-zA-Z0-9\-\.]+\.(infura|alchemy|quicknode)\.io\/[a-zA-Z0-9]+/gi,
+        pattern: /https?:\/\/[a-zA-Z0-9-.]+\.(infura|alchemy|quicknode)\.io\/[a-zA-Z0-9]+/gi,
         confidence: 0.80,
         severity: 'medium',
       },
