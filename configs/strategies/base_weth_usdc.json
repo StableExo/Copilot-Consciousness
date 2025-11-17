@@ -54,8 +54,8 @@
     "aaveAddressProvider": "0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D"
   },
   "strategy": {
-    "minProfitThresholdEth": 0.001,
-    "minProfitThresholdUsd": 2.0,
+    "minProfitThresholdEth": 0.0005,
+    "minProfitThresholdUsd": 1.0,
     "maxSlippageBps": 50,
     "maxGasPriceGwei": 0.05,
     "cycleIntervalMs": 12000,
@@ -75,7 +75,7 @@
   },
   "mevProtection": {
     "enabled": true,
-    "riskThreshold": 0.15,
+    "riskThreshold": 0.2,
     "riskParams": {
       "baseRisk": 0.001,
       "valueSensitivity": 0.12,
