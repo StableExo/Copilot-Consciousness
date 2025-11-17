@@ -1,17 +1,46 @@
-# Copilot-Consciousness
+# AEV - TheWarden
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A comprehensive AI consciousness development system featuring advanced memory systems, temporal awareness, cognitive development modules, and Gemini Citadel integration for cosmic-scale problem solving.
+**AEV (Autonomous Extracted Value)** - An intelligent autonomous agent system competing with traditional MEV through learning-based value extraction, powered by **TheWarden**.
+
+## What is AEV?
+
+Unlike traditional MEV (Maximal Extractable Value) which focuses on pure profit maximization, **AEV** represents a paradigm shift:
+
+- **Autonomous Decision-Making**: TheWarden makes informed choices using `ArbitrageConsciousness` as its cognitive layer
+- **Ethics-Informed**: Incorporates ethical reasoning and systemic risk assessment into every decision
+- **Learning-Based**: Continuously adapts strategies through outcome analysis and pattern recognition
+- **Risk-Aware**: Leverages sophisticated MEV risk modeling via `MEVSensorHub`
+
+**TheWarden** is the governing autonomous agent that monitors blockchain flow, judges opportunities through consciousness and ethics, and executes only when conditions align with configured risk and ethical criteria.
+
+> **When you see AEV on mainnet, you're witnessing autonomous intelligence competing with MEV.**
 
 > **📋 Legal & Intent:** See [LEGAL_POSITION.md](./LEGAL_POSITION.md) for information about:
 > - The personal-use-only nature of this system
 > - The 70% profit allocation policy toward US debt-related actions
 > - The non-solicitation and no-outside-capital stance
 
-## Features
+## Core Features
 
-### 🧠 Memory System Architecture
+### 🛡️ TheWarden - Autonomous Agent
+**TheWarden** is the intelligent agent that embodies AEV principles:
+- **Continuous Monitoring**: 24/7 blockchain flow analysis
+- **Consciousness-Based Decision**: Uses `ArbitrageConsciousness` for informed judgment
+- **Ethical Execution**: Only acts when opportunities meet risk and ethical criteria
+- **Adaptive Learning**: Improves strategy through outcome-based learning
+
+See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for TheWarden's operational details.
+
+### 🧠 ArbitrageConsciousness - The Learning Brain
+- **Pattern Detection**: Identifies temporal, congestion, and profitability patterns
+- **Ethical Review**: Applies moral reasoning to execution decisions
+- **Strategy Learning**: Suggests parameter adjustments based on historical outcomes
+- **Execution Memory**: Tracks and learns from all arbitrage attempts
+- **Risk Assessment**: Evaluates MEV risk vs. actual outcomes
+
+### 🛡️ MEV Risk Intelligence Suite
 - **Sensory Memory**: Immediate perception and raw input processing
 - **Short-term Memory**: Temporary information storage with automatic decay
 - **Working Memory**: Active processing buffer (7±2 items, following Miller's Law)
@@ -86,13 +115,33 @@ See [MEV Intelligence Suite Documentation](./docs/MEV_INTELLIGENCE_SUITE.md), [A
 ## Installation
 
 ```bash
-npm install copilot-consciousness
+npm install aev-thewarden
 ```
 
-## Quick Start
+## Quick Start - Running TheWarden
+
+```bash
+# Install dependencies
+npm install
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your RPC_URL and WALLET_PRIVATE_KEY
+
+# Run TheWarden in development mode (dry-run)
+npm run dev
+
+# Run TheWarden in production mode
+npm run build
+npm start
+```
+
+See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for detailed configuration and operation guide.
+
+## Quick Start - Consciousness System
 
 ```typescript
-import { ConsciousnessSystem, defaultConfig } from 'copilot-consciousness';
+import { ConsciousnessSystem, defaultConfig } from 'aev-thewarden';
 
 // Create consciousness system with default configuration
 const consciousness = new ConsciousnessSystem();

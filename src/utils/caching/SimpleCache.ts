@@ -5,7 +5,7 @@
  * with TTL support and async function wrapping.
  */
 
-import logger from '../logger';
+import { logger } from '../logger';
 
 const cacheStore = new Map<string, any>();
 const functionSig = '[SimpleCache]';

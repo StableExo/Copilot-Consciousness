@@ -1,11 +1,21 @@
 /**
  * ArbitrageConsciousness - Integration between arbitrage system and consciousness
  * 
- * Enables the system to:
- * - Learn from arbitrage execution patterns
- * - Detect temporal market patterns
- * - Optimize strategy parameters through cognitive development
- * - Apply ethical reasoning to execution decisions
+ * This is the cognitive/learning layer behind AEV (Autonomous Extracted Value) 
+ * and TheWarden's decision-making process.
+ * 
+ * AEV represents autonomous, learning-based value extraction in MEV space, as opposed 
+ * to traditional algorithmic MEV profit maximization. ArbitrageConsciousness enables 
+ * this by providing:
+ * 
+ * - Learning from arbitrage execution patterns
+ * - Detecting temporal market patterns
+ * - Optimizing strategy parameters through cognitive development
+ * - Applying ethical reasoning to execution decisions
+ * - Risk assessment based on historical outcomes
+ * 
+ * TheWarden uses this class as its "brain" to make informed, adaptive decisions about
+ * which opportunities to execute based on risk, ethics, and long-term strategy.
  */
 
 import { EventEmitter } from 'events';
@@ -63,7 +73,7 @@ export class ArbitrageConsciousness extends EventEmitter {
     this.learningRate = learningRate;
     this.maxHistorySize = maxHistorySize;
     
-    console.log('[ArbitrageConsciousness] Initialized');
+    console.log('[ArbitrageConsciousness] Initialized - AEV cognitive layer active');
     console.log(`  Learning rate: ${learningRate}`);
     console.log(`  Max history size: ${maxHistorySize}`);
   }
@@ -312,6 +322,10 @@ export class ArbitrageConsciousness extends EventEmitter {
   
   /**
    * Apply ethical review to execution decision
+   * 
+   * This is a key component of AEV: TheWarden only executes opportunities
+   * that pass ethical review, considering MEV risk, profit sustainability,
+   * and potential harm to the broader ecosystem.
    */
   ethicalReview(opportunity: any): {
     approved: boolean;

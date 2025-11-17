@@ -1,8 +1,17 @@
-# AGI Arbitrage Bot - Main Runner
+# AEV - TheWarden Main Runner
 
 ## Overview
 
-The AGI Arbitrage Bot is a production-ready cryptocurrency arbitrage system that continuously scans for and executes profitable trading opportunities across multiple DEXes.
+**AEV (Autonomous Extracted Value)** is a production-ready autonomous value extraction system powered by **TheWarden** – an intelligent agent that continuously scans for and executes profitable trading opportunities across multiple DEXes.
+
+Unlike traditional MEV (Maximal Extractable Value) bots that focus purely on profit maximization, AEV represents a new paradigm:
+
+- **Autonomous Decision-Making**: TheWarden uses `ArbitrageConsciousness` to make informed decisions
+- **Ethics-Informed**: Incorporates ethical reasoning and systemic risk assessment
+- **Learning-Based**: Continuously adapts strategies based on outcomes
+- **Risk-Aware**: Leverages `MEVSensorHub` for sophisticated threat intelligence
+
+TheWarden is the governing agent that monitors flow, judges opportunities, and executes only when conditions meet configured risk and ethical criteria.
 
 ## Quick Start
 
@@ -97,33 +106,36 @@ DRY_RUN=false
 
 - `HEALTH_CHECK_INTERVAL` - Health check interval in ms (default: 30000)
 
-## Architecture
-
 ### Core Components
 
-1. **ArbitrageBot** - Main orchestrator class
+1. **TheWarden** - Main autonomous agent orchestrator (implements AEV behavior)
 2. **AdvancedOrchestrator** - Opportunity detection and pathfinding
 3. **IntegratedArbitrageOrchestrator** - Trade execution engine
-4. **SystemHealthMonitor** - Component health monitoring
-5. **GasPriceOracle** - Real-time gas price tracking
-6. **AdvancedGasEstimator** - Gas cost estimation
+4. **ArbitrageConsciousness** - The cognitive/learning layer behind TheWarden's decisions
+5. **MEVSensorHub** - Environmental perception and threat intelligence
+6. **SystemHealthMonitor** - Component health monitoring
+7. **GasPriceOracle** - Real-time gas price tracking
+8. **AdvancedGasEstimator** - Gas cost estimation
 
-### Main Loop
+### Main Loop (AEV Behavior)
 
-The bot operates in a continuous scanning cycle:
+TheWarden operates in a continuous scanning cycle, implementing autonomous MEV-aware behavior:
 
-1. **Scan** - Search for arbitrage opportunities across DEXes
-2. **Evaluate** - Filter opportunities by profitability and gas costs
-3. **Execute** - Execute profitable trades (in production mode)
-4. **Monitor** - Track performance and health metrics
-5. **Repeat** - Continue scanning at configured interval
+1. **Scan** - Search for arbitrage opportunities across DEXes (using `MEVSensorHub` for context)
+2. **Evaluate** - Filter opportunities by profitability, gas costs, and MEV risk (using `ArbitrageConsciousness`)
+3. **Judge** - Apply ethical review and risk assessment
+4. **Execute** - Execute approved trades (in production mode)
+5. **Learn** - Record outcomes and adapt strategies through `ArbitrageConsciousness`
+6. **Repeat** - Continue scanning at configured interval
+
+This loop represents **AEV in action**: autonomous, MEV-aware, risk/ethics-informed arbitrage rather than pure algorithmic extraction.
 
 ### Event System
 
-The bot emits events for monitoring:
+TheWarden emits events for monitoring:
 
-- `started` - Bot has started
-- `shutdown` - Bot is shutting down
+- `started` - TheWarden has started
+- `shutdown` - TheWarden is shutting down
 - `scan_error` - Error during scan cycle
 - `opportunity_found` - Opportunity detected
 - `execution_started` - Trade execution started
@@ -132,9 +144,9 @@ The bot emits events for monitoring:
 
 ## Logging
 
-The bot provides comprehensive logging:
+TheWarden provides comprehensive logging:
 
-- **Startup** - Network connection, wallet balance, component initialization
+- **Startup** - Network connection, wallet balance, component initialization, AEV status
 - **Operations** - Scan cycles, opportunities found, trades executed
 - **Errors** - Failures, retries, recovery actions
 - **Shutdown** - Final statistics, cleanup completion
@@ -148,19 +160,19 @@ The bot provides comprehensive logging:
 
 ## Statistics
 
-The bot tracks key metrics:
+TheWarden tracks key metrics:
 
-- **Uptime** - Time since bot started
+- **Uptime** - Time since TheWarden started
 - **Cycles Completed** - Number of scan cycles
 - **Opportunities Found** - Total opportunities detected
 - **Trades Executed** - Successful trade executions
 - **Total Profit** - Cumulative profit in ETH
 - **Errors** - Error count
 
-Access statistics via the bot instance:
+Access statistics via TheWarden instance:
 
 ```typescript
-const stats = bot.getStats();
+const stats = theWarden.getStats();
 console.log(`Uptime: ${stats.uptime}ms`);
 console.log(`Opportunities: ${stats.opportunitiesFound}`);
 console.log(`Profit: ${ethers.utils.formatEther(stats.totalProfit)} ETH`);
@@ -168,7 +180,7 @@ console.log(`Profit: ${ethers.utils.formatEther(stats.totalProfit)} ETH`);
 
 ## Shutdown
 
-The bot handles graceful shutdown on:
+TheWarden handles graceful shutdown on:
 
 - `SIGINT` (Ctrl+C)
 - `SIGTERM` (Process termination)
@@ -185,7 +197,7 @@ During shutdown:
 
 ## Error Handling
 
-The bot implements robust error handling:
+TheWarden implements robust error handling:
 
 - **Network Errors** - Automatic retry with exponential backoff
 - **RPC Failures** - Provider health monitoring and alerts
@@ -228,20 +240,20 @@ src/
 The main runner exports key components for testing and integration:
 
 ```typescript
-import { ArbitrageBot, BotConfig, loadConfig } from './main';
+import { TheWarden, WardenConfig, loadConfig } from './main';
 
-// Create custom bot instance
-const config: BotConfig = loadConfig();
-const bot = new ArbitrageBot(config);
+// Create custom TheWarden instance
+const config: WardenConfig = loadConfig();
+const theWarden = new TheWarden(config);
 
-// Start bot programmatically
-await bot.start();
+// Start TheWarden programmatically
+await theWarden.start();
 
 // Access statistics
-const stats = bot.getStats();
+const stats = theWarden.getStats();
 
 // Shutdown when done
-await bot.shutdown();
+await theWarden.shutdown();
 ```
 
 ## Security
@@ -260,7 +272,7 @@ await bot.shutdown();
 
 ### Common Issues
 
-**Bot won't start:**
+**TheWarden won't start:**
 - Check RPC_URL is valid and reachable
 - Verify WALLET_PRIVATE_KEY is correctly formatted
 - Ensure wallet has sufficient ETH for gas

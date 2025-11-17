@@ -1,14 +1,19 @@
 /**
- * Main Runner for AGI Arbitrage Bot
+ * Main Runner for AEV (Autonomous Extracted Value) - TheWarden
  * 
- * Production-ready entry point that:
- * - Loads configuration and secrets from environment variables
- * - Initializes core arbitrage components (scanner, executor, monitoring)
- * - Handles async startup and graceful shutdown
- * - Runs continuous arbitrage scanning loop
- * - Provides robust error handling and logging
+ * Production-ready entry point for TheWarden autonomous agent that:
+ * - Implements AEV behavior: autonomous, MEV-aware, ethics-informed arbitrage
+ * - Uses ArbitrageConsciousness as the cognitive decision-making layer
+ * - Monitors flow, judges opportunities, executes strategically
+ * - Continuously learns and adapts through outcome analysis
  * 
- * Based on PROJECT-HAVOC design patterns, updated for modern TypeScript
+ * TheWarden represents a new paradigm in value extraction:
+ * - Not pure MEV profit maximization
+ * - Agent-governed extraction with ethical constraints
+ * - Risk-aware decision making via MEVSensorHub
+ * - Strategic learning through ArbitrageConsciousness
+ * 
+ * Based on PROJECT-HAVOC design patterns and AxionCitadel learnings
  */
 
 import { ethers } from 'ethers';
@@ -42,9 +47,9 @@ dotenv.config();
 const USE_NEW_INITIALIZER = process.env.USE_NEW_INITIALIZER === 'true';
 
 /**
- * Bot Configuration Interface
+ * TheWarden Configuration Interface
  */
-interface BotConfig {
+interface WardenConfig {
   // Network configuration
   rpcUrl: string;
   chainId: number;
@@ -78,7 +83,7 @@ interface BotConfig {
 /**
  * Load and validate configuration from environment variables
  */
-function loadConfig(): BotConfig {
+function loadConfig(): WardenConfig {
   const nodeEnv = process.env.NODE_ENV || 'development';
   
   logger.info(`Loading configuration for environment: ${nodeEnv}`);
@@ -95,7 +100,7 @@ function loadConfig(): BotConfig {
   }
   
   // Optional configuration with defaults
-  const config: BotConfig = {
+  const config: WardenConfig = {
     rpcUrl,
     chainId: parseInt(process.env.CHAIN_ID || '1'),
     walletPrivateKey,
@@ -129,10 +134,17 @@ function loadConfig(): BotConfig {
 }
 
 /**
- * Main Arbitrage Bot Class
+ * TheWarden - Main Autonomous Agent Class
+ * 
+ * Implements AEV (Autonomous Extracted Value) behavior:
+ * - Continuous scan → evaluate → judge → execute → learn cycle
+ * - Uses ArbitrageConsciousness as the cognitive/learning layer
+ * - MEV-aware through MEVSensorHub integration
+ * - Ethics-informed decision making
+ * - Adaptive strategy evolution
  */
-class ArbitrageBot extends EventEmitter {
-  private config: BotConfig;
+class TheWarden extends EventEmitter {
+  private config: WardenConfig;
   private provider: ethers.providers.JsonRpcProvider;
   private wallet: ethers.Wallet;
   private dexRegistry: DEXRegistry;
@@ -153,7 +165,7 @@ class ArbitrageBot extends EventEmitter {
     errors: 0,
   };
   
-  constructor(config: BotConfig) {
+  constructor(config: WardenConfig) {
     super();
     this.config = config;
     
@@ -171,7 +183,7 @@ class ArbitrageBot extends EventEmitter {
       interval: config.healthCheckInterval,
     });
     
-    logger.info('Arbitrage bot initialized');
+    logger.info('TheWarden initialized - AEV mode active');
   }
   
   /**
@@ -377,16 +389,19 @@ class ArbitrageBot extends EventEmitter {
   }
   
   /**
-   * Start the bot's main loop
+   * Start TheWarden's main loop
    */
   async start(): Promise<void> {
     if (this.isRunning) {
-      logger.warn('Bot is already running');
+      logger.warn('TheWarden is already running');
       return;
     }
     
     logger.info('═══════════════════════════════════════════════════════════');
-    logger.info('  AGI ARBITRAGE BOT - Starting');
+    logger.info('  AEV WARDEN.BOT – AUTONOMOUS EXTRACTED VALUE ENGINE');
+    logger.info('═══════════════════════════════════════════════════════════');
+    logger.info('AEV status: ONLINE');
+    logger.info('Role: Warden.bot – monitoring flow, judging opportunities…');
     logger.info('═══════════════════════════════════════════════════════════');
     
     await this.initialize();
@@ -404,11 +419,11 @@ class ArbitrageBot extends EventEmitter {
       await this.scanCycle();
     }, this.config.scanInterval);
     
-    logger.info('Bot is now running and scanning for opportunities');
+    logger.info('TheWarden is now running and scanning for opportunities');
   }
   
   /**
-   * Gracefully shutdown the bot
+   * Gracefully shutdown TheWarden
    */
   async shutdown(): Promise<void> {
     if (this.shuttingDown) {
@@ -417,7 +432,7 @@ class ArbitrageBot extends EventEmitter {
     }
     
     logger.info('═══════════════════════════════════════════════════════════');
-    logger.info('  AGI ARBITRAGE BOT - Shutting Down');
+    logger.info('  AEV WARDEN.BOT - Shutting Down');
     logger.info('═══════════════════════════════════════════════════════════');
     
     this.shuttingDown = true;
@@ -444,11 +459,11 @@ class ArbitrageBot extends EventEmitter {
     this.isRunning = false;
     this.emit('shutdown');
     
-    logger.info('Bot shutdown complete');
+    logger.info('TheWarden shutdown complete');
   }
   
   /**
-   * Log current bot status and statistics
+   * Log current status and statistics
    */
   private logStatus(): void {
     const uptime = Date.now() - this.stats.startTime;
@@ -456,7 +471,7 @@ class ArbitrageBot extends EventEmitter {
     const uptimeMinutes = Math.floor(uptimeSeconds / 60);
     
     logger.info('─────────────────────────────────────────────────────────');
-    logger.info('BOT STATUS');
+    logger.info('THEWARDEN STATUS');
     logger.info('─────────────────────────────────────────────────────────');
     logger.info(`Uptime: ${uptimeMinutes}m ${uptimeSeconds % 60}s`);
     logger.info(`Cycles completed: ${this.stats.cyclesCompleted}`);
@@ -468,7 +483,7 @@ class ArbitrageBot extends EventEmitter {
   }
   
   /**
-   * Get current bot statistics
+   * Get current statistics
    */
   getStats() {
     return {
@@ -480,9 +495,15 @@ class ArbitrageBot extends EventEmitter {
 }
 
 /**
- * New Bot class using the initializer pattern
+ * EnhancedTheWarden - Using the new initializer pattern
+ * 
+ * Implements AEV (Autonomous Extracted Value) behavior with enhanced initialization:
+ * - Continuous scan → evaluate → judge → execute → learn cycle
+ * - Uses ArbitrageConsciousness as the cognitive/learning layer
+ * - MEV-aware through MEVSensorHub integration
+ * - Ethics-informed decision making
  */
-class EnhancedArbitrageBot extends EventEmitter {
+class EnhancedTheWarden extends EventEmitter {
   private components?: InitializedComponents;
   private healthCheckServer: HealthCheckServer;
   private scanInterval?: NodeJS.Timeout;
@@ -509,7 +530,10 @@ class EnhancedArbitrageBot extends EventEmitter {
    */
   async initialize(): Promise<void> {
     logger.info('═══════════════════════════════════════════════════════════', 'MAIN');
-    logger.info('  AGI ARBITRAGE BOT - Starting (New Initializer)', 'MAIN');
+    logger.info('  AEV WARDEN.BOT – AUTONOMOUS EXTRACTED VALUE ENGINE', 'MAIN');
+    logger.info('═══════════════════════════════════════════════════════════', 'MAIN');
+    logger.info('AEV status: ONLINE', 'MAIN');
+    logger.info('Role: Warden.bot – monitoring flow, judging opportunities…', 'MAIN');
     logger.info('═══════════════════════════════════════════════════════════', 'MAIN');
     
     // Validate configuration
@@ -623,11 +647,11 @@ class EnhancedArbitrageBot extends EventEmitter {
   }
   
   /**
-   * Start the bot
+   * Start TheWarden
    */
   async start(): Promise<void> {
     if (this.isRunning) {
-      logger.warn('Bot is already running', 'MAIN');
+      logger.warn('TheWarden is already running', 'MAIN');
       return;
     }
     
@@ -647,11 +671,11 @@ class EnhancedArbitrageBot extends EventEmitter {
       await this.scanCycle();
     }, scanInterval);
     
-    logger.info('Bot is now running and scanning for opportunities', 'MAIN');
+    logger.info('TheWarden is now running and scanning for opportunities', 'MAIN');
   }
   
   /**
-   * Gracefully shutdown the bot
+   * Gracefully shutdown TheWarden
    */
   async shutdown(): Promise<void> {
     if (this.shuttingDown) {
@@ -681,7 +705,7 @@ class EnhancedArbitrageBot extends EventEmitter {
     this.isRunning = false;
     this.emit('shutdown');
     
-    logger.info('Bot shutdown complete', 'MAIN');
+    logger.info('TheWarden shutdown complete', 'MAIN');
   }
   
   /**
@@ -693,7 +717,7 @@ class EnhancedArbitrageBot extends EventEmitter {
     const uptimeMinutes = Math.floor(uptimeSeconds / 60);
     
     logger.info('─────────────────────────────────────────────────────────', 'STATUS');
-    logger.info('BOT STATUS', 'STATUS');
+    logger.info('THEWARDEN STATUS', 'STATUS');
     logger.info('─────────────────────────────────────────────────────────', 'STATUS');
     logger.info(`Uptime: ${uptimeMinutes}m ${uptimeSeconds % 60}s`, 'STATUS');
     logger.info(`Cycles completed: ${this.stats.cyclesCompleted}`, 'STATUS');
@@ -705,7 +729,7 @@ class EnhancedArbitrageBot extends EventEmitter {
   }
   
   /**
-   * Get current bot statistics
+   * Get current statistics
    */
   getStats() {
     return {
@@ -730,27 +754,27 @@ async function main() {
   perceptionStream.initialize();
   console.log("[Consciousness Bootstrap]: Perception stream is active. Monitoring for new blocks...\n");
   // =================================================================
-  let bot: ArbitrageBot | EnhancedArbitrageBot | undefined;
+  let theWarden: TheWarden | EnhancedTheWarden | undefined;
   
   try {
     // Choose which initializer pattern to use
     if (USE_NEW_INITIALIZER) {
       logger.info('Using new initializer pattern', 'MAIN');
-      bot = new EnhancedArbitrageBot();
+      theWarden = new EnhancedTheWarden();
     } else {
       logger.info('Using legacy initializer pattern', 'MAIN');
       // Load configuration
       const config = loadConfig();
       
-      // Create bot instance
-      bot = new ArbitrageBot(config);
+      // Create TheWarden instance
+      theWarden = new TheWarden(config);
     }
     
     // Set up graceful shutdown handlers
     const shutdownHandler = async (signal: string) => {
       logger.info(`Received ${signal} - initiating graceful shutdown...`, 'MAIN');
-      if (bot) {
-        await bot.shutdown();
+      if (theWarden) {
+        await theWarden.shutdown();
       }
       process.exit(0);
     };
@@ -763,8 +787,8 @@ async function main() {
     process.on('uncaughtException', (error) => {
       logger.error(`Uncaught exception: ${error.message}`, 'MAIN');
       logger.error(error.stack || '', 'MAIN');
-      if (bot) {
-        bot.shutdown().then(() => process.exit(1));
+      if (theWarden) {
+        theWarden.shutdown().then(() => process.exit(1));
       } else {
         process.exit(1);
       }
@@ -772,18 +796,18 @@ async function main() {
     
     process.on('unhandledRejection', (reason, promise) => {
       logger.error(`Unhandled rejection at: ${promise}, reason: ${reason}`, 'MAIN');
-      if (bot) {
-        bot.shutdown().then(() => process.exit(1));
+      if (theWarden) {
+        theWarden.shutdown().then(() => process.exit(1));
       } else {
         process.exit(1);
       }
     });
     
-    // Start the bot
-    await bot.start();
+    // Start TheWarden
+    await theWarden.start();
     
     // Keep process alive
-    logger.info('Bot is running. Press Ctrl+C to stop.', 'MAIN');
+    logger.info('TheWarden is running. Press Ctrl+C to stop.', 'MAIN');
     
   } catch (error) {
     logger.error(`Fatal error: ${error}`, 'MAIN');
@@ -791,8 +815,8 @@ async function main() {
       logger.error(error.stack || '', 'MAIN');
     }
     
-    if (bot) {
-      await bot.shutdown();
+    if (theWarden) {
+      await theWarden.shutdown();
     }
     
     process.exit(1);
@@ -800,7 +824,7 @@ async function main() {
 }
 
 // Export for testing and module usage
-export { ArbitrageBot, EnhancedArbitrageBot, BotConfig, loadConfig };
+export { TheWarden, EnhancedTheWarden, WardenConfig, loadConfig };
 
 // Run if executed directly
 if (require.main === module) {
