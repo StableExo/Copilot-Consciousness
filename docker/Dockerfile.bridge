@@ -1,5 +1,5 @@
 # Bridge Service - Handles cross-chain communication
-FROM node:20-alpine
+FROM node:20.11.1-alpine
 
 WORKDIR /app
 

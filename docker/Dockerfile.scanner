@@ -1,5 +1,5 @@
 # Scanner Service - Monitors DEXs for arbitrage opportunities
-FROM node:20-alpine
+FROM node:20.11.1-alpine
 
 WORKDIR /app
 

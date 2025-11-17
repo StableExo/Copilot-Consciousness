@@ -1,5 +1,5 @@
 # Pathfinding Service - Finds optimal arbitrage paths
-FROM node:20-alpine
+FROM node:20.11.1-alpine
 
 WORKDIR /app
 
