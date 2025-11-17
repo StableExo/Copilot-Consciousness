@@ -183,3 +183,9 @@ __pycache__/
 dist/
 build/
 .venv/
+
+# Memory system compiled artifacts (keep JSON/MD data files)
+.memory/**/*.js
+.memory/**/*.js.map
+.memory/**/*.d.ts
+.memory/**/*.d.ts.map
