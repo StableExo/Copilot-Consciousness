@@ -1,8 +1,8 @@
 /**
- * Tests for main runner
+ * Tests for main runner - TheWarden (AEV)
  */
 
-import { loadConfig, ArbitrageBot, BotConfig } from '../main';
+import { loadConfig, TheWarden, WardenConfig } from '../main';
 
 // Mock environment variables
 const originalEnv = process.env;
@@ -143,8 +143,8 @@ describe('Main Runner', () => {
     });
   });
 
-  describe('ArbitrageBot', () => {
-    let config: BotConfig;
+  describe('TheWarden', () => {
+    let config: WardenConfig;
 
     beforeEach(() => {
       config = {
@@ -164,14 +164,14 @@ describe('Main Runner', () => {
       };
     });
 
-    it('should create ArbitrageBot instance', () => {
-      const bot = new ArbitrageBot(config);
-      expect(bot).toBeDefined();
+    it('should create TheWarden instance', () => {
+      const theWarden = new TheWarden(config);
+      expect(theWarden).toBeDefined();
     });
 
     it('should initialize with correct configuration', () => {
-      const bot = new ArbitrageBot(config);
-      const stats = bot.getStats();
+      const theWarden = new TheWarden(config);
+      const stats = theWarden.getStats();
       
       expect(stats.isRunning).toBe(false);
       expect(stats.cyclesCompleted).toBe(0);
@@ -180,22 +180,22 @@ describe('Main Runner', () => {
     });
 
     it('should track statistics correctly', () => {
-      const bot = new ArbitrageBot(config);
-      const stats1 = bot.getStats();
+      const theWarden = new TheWarden(config);
+      const stats1 = theWarden.getStats();
       
       expect(stats1.uptime).toBeGreaterThanOrEqual(0);
       
       // Wait a bit and check uptime increased
       setTimeout(() => {
-        const stats2 = bot.getStats();
+        const stats2 = theWarden.getStats();
         expect(stats2.uptime).toBeGreaterThan(stats1.uptime);
       }, 10);
     });
   });
 
-  describe('Bot Lifecycle', () => {
+  describe('TheWarden Lifecycle', () => {
     it('should emit events during lifecycle', async () => {
-      const config: BotConfig = {
+      const config: WardenConfig = {
         rpcUrl: 'https://eth-mainnet.example.com',
         chainId: 1,
         walletPrivateKey: '0x1234567890123456789012345678901234567890123456789012345678901234',
@@ -211,17 +211,17 @@ describe('Main Runner', () => {
         healthCheckInterval: 30000,
       };
 
-      const bot = new ArbitrageBot(config);
+      const theWarden = new TheWarden(config);
 
       const startedPromise = new Promise((resolve) => {
-        bot.once('started', resolve);
+        theWarden.once('started', resolve);
       });
 
       const shutdownPromise = new Promise((resolve) => {
-        bot.once('shutdown', resolve);
+        theWarden.once('shutdown', resolve);
       });
 
-      // Note: We can't actually start the bot in tests because it requires a real RPC connection
+      // Note: We can't actually start TheWarden in tests because it requires a real RPC connection
       // This test structure shows how events would be tested
       expect(startedPromise).toBeDefined();
       expect(shutdownPromise).toBeDefined();
