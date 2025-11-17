@@ -18,6 +18,18 @@ import { ExecutionMetrics, ExecutionEventType } from './ExecutionMetrics';
 import { FlashLoanExecutor, FlashLoanArbitrageParams } from './FlashLoanExecutor';
 import { MultiDexPathBuilder, ArbitragePath } from './MultiDexPathBuilder';
 import { PoolDataFetcher, PoolConfig } from './PoolDataFetcher';
+import { StrategyRLAgent } from '../ai/StrategyRLAgent';
+import { OpportunityNNScorer } from '../ai/OpportunityNNScorer';
+import { StrategyEvolutionEngine } from '../ai/StrategyEvolutionEngine';
+import { 
+  ExecutionEpisode, 
+  ExecutionState, 
+  ExecutionAction, 
+  ExecutionOutcome, 
+  MEVContext,
+  StrategyParameters,
+  OpportunityFeatures
+} from '../ai/types';
 
 interface BaseArbitrageConfig {
   // Network configuration
@@ -66,6 +78,26 @@ interface BaseArbitrageConfig {
   // Execution mode
   enableFlashLoans?: boolean;
   enableMultiDex?: boolean;
+  
+  // AI/ML configuration
+  enableML?: boolean;
+  enableStrategyEvolution?: boolean;
+  mlConfig?: {
+    rlAgent?: {
+      learningRate?: number;
+      discountFactor?: number;
+      explorationRate?: number;
+    };
+    nnScorer?: {
+      hiddenLayerSize?: number;
+      minConfidenceScore?: number;
+      executionThreshold?: number;
+    };
+    evolution?: {
+      populationSize?: number;
+      mutationRate?: number;
+    };
+  };
 }
 
 interface OpportunityResult {
@@ -91,6 +123,11 @@ export class BaseArbitrageRunner extends EventEmitter {
   private flashLoanExecutor: FlashLoanExecutor | null = null;
   private pathBuilder: MultiDexPathBuilder | null = null;
   private poolDataFetcher: PoolDataFetcher | null = null;
+  
+  // AI/ML components
+  private rlAgent: StrategyRLAgent | null = null;
+  private nnScorer: OpportunityNNScorer | null = null;
+  private evolutionEngine: StrategyEvolutionEngine | null = null;
   
   private isRunning: boolean = false;
   private isCycleRunning: boolean = false;
@@ -167,6 +204,35 @@ export class BaseArbitrageRunner extends EventEmitter {
       cacheDurationMs: 12000, // Cache for 12 seconds (1 block on Base)
     });
     console.log('[BaseArbitrageRunner] ✓ PoolDataFetcher initialized');
+    
+    // Initialize AI/ML components if enabled
+    if (this.config.enableML) {
+      // Initialize RL Agent
+      this.rlAgent = new StrategyRLAgent(this.config.mlConfig?.rlAgent);
+      console.log('[BaseArbitrageRunner] ✓ StrategyRLAgent initialized');
+      
+      // Initialize NN Scorer
+      this.nnScorer = new OpportunityNNScorer(this.config.mlConfig?.nnScorer);
+      console.log('[BaseArbitrageRunner] ✓ OpportunityNNScorer initialized');
+      
+      // Initialize Strategy Evolution Engine if enabled
+      if (this.config.enableStrategyEvolution) {
+        const baseParams: StrategyParameters = {
+          minProfitThreshold: this.config.minProfitThresholdEth,
+          mevRiskSensitivity: this.config.mevRiskThreshold,
+          maxSlippage: 0.005, // 0.5%
+          gasMultiplier: 1.2,
+          executionTimeout: this.config.cycleTimeoutMs,
+          priorityFeeStrategy: 'moderate',
+        };
+        
+        this.evolutionEngine = new StrategyEvolutionEngine(
+          baseParams,
+          this.config.mlConfig?.evolution
+        );
+        console.log('[BaseArbitrageRunner] ✓ StrategyEvolutionEngine initialized');
+      }
+    }
     
     console.log('[BaseArbitrageRunner] Advanced components initialized successfully');
   }
@@ -414,6 +480,20 @@ export class BaseArbitrageRunner extends EventEmitter {
       return { found: false, executionRecommended: false };
     }
     
+    // Use ML scoring if enabled
+    let mlScore = 1.0;
+    let mlRecommendation: 'execute' | 'skip' | 'uncertain' = 'execute';
+    
+    if (this.nnScorer && this.config.enableML) {
+      const features = this.extractOpportunityFeatures(bestOpp, mevRisk, path);
+      const scoringResult = await this.nnScorer.scoreWithDetails(features);
+      mlScore = scoringResult.score;
+      mlRecommendation = scoringResult.recommendation;
+      
+      console.log(`[BaseArbitrageRunner] ML Score: ${(mlScore * 100).toFixed(1)}% - ${mlRecommendation}`);
+      console.log(`[BaseArbitrageRunner] ML Reasoning: ${scoringResult.reasoning}`);
+    }
+    
     // Record opportunity found
     this.executionMetrics.recordEvent(ExecutionEventType.OPPORTUNITY_FOUND, {
       type: bestOpp.arbType,
@@ -421,7 +501,15 @@ export class BaseArbitrageRunner extends EventEmitter {
       netProfit,
       mevRisk,
       pathSteps: bestOpp.path.length,
+      mlScore,
+      mlRecommendation,
     });
+    
+    // Determine execution recommendation (combine traditional and ML signals)
+    const traditionalRecommendation = netProfit >= this.config.minProfitThresholdEth && mevRisk < this.config.mevRiskThreshold;
+    const executionRecommended = this.config.enableML 
+      ? traditionalRecommendation && mlRecommendation === 'execute'
+      : traditionalRecommendation;
     
     return {
       found: true,
@@ -429,8 +517,10 @@ export class BaseArbitrageRunner extends EventEmitter {
       gasEstimate: path.gasEstimate,
       mevRisk: mevRisk,
       pools: bestOpp.path.map((step: any) => ({ pool: step.poolAddress })),
-      executionRecommended: netProfit >= this.config.minProfitThresholdEth && mevRisk < this.config.mevRiskThreshold,
+      executionRecommended,
       arbitragePath: path, // Store the built path for execution
+      mlScore,
+      mlRecommendation,
     } as any;
   }
   
@@ -682,6 +772,14 @@ export class BaseArbitrageRunner extends EventEmitter {
         txHash: result.txHash,
         profit: ethers.utils.formatEther(result.profit || '0'),
         gasUsed: result.gasUsed,
+        opportunity: {
+          ...opportunity,
+          features: this.config.enableML ? this.extractOpportunityFeatures(
+            (opportunity as any).arbitragePath || {},
+            opportunity.mevRisk || 0,
+            path
+          ) : undefined,
+        },
       });
     } else {
       throw new Error(result.error || 'Flashloan execution failed');
@@ -706,9 +804,9 @@ export class BaseArbitrageRunner extends EventEmitter {
   }
   
   /**
-   * Record execution in consciousness memory system
+   * Record execution in consciousness memory system and train ML models
    */
-  private recordExecution(result: any): void {
+  private async recordExecution(result: any): Promise<void> {
     // Integration point with consciousness memory system
     // Would store execution data for learning and pattern detection
     console.log('[BaseArbitrageRunner] Recording execution in consciousness memory');
@@ -719,6 +817,129 @@ export class BaseArbitrageRunner extends EventEmitter {
       cycleNumber: this.cycleCount,
       result
     });
+    
+    // Train ML models if enabled
+    if (this.config.enableML && this.nnScorer && this.rlAgent) {
+      // Train NN scorer on outcome
+      const opportunity = (result as any).opportunity;
+      if (opportunity && opportunity.features) {
+        await this.nnScorer.trainOnOutcome(
+          opportunity.features,
+          result.success && parseFloat(result.profit) > 0
+        );
+      }
+      
+      // Record episode for RL agent
+      const episode = this.createExecutionEpisode(result);
+      if (episode) {
+        await this.rlAgent.recordEpisode(episode);
+      }
+    }
+  }
+  
+  /**
+   * Extract opportunity features for ML scoring
+   */
+  private extractOpportunityFeatures(
+    opportunity: any, 
+    mevRisk: number, 
+    path: ArbitragePath
+  ): OpportunityFeatures {
+    const grossProfit = opportunity.grossProfit || 0;
+    const netProfit = opportunity.netProfit || 0;
+    const gasEstimate = Number(path.gasEstimate || 0);
+    
+    return {
+      grossProfit,
+      netProfit,
+      profitMargin: grossProfit > 0 ? netProfit / grossProfit : 0,
+      roi: netProfit > 0 ? netProfit / (netProfit + gasEstimate * 0.00002) : 0,
+      
+      totalLiquidity: opportunity.totalLiquidity || 1000000,
+      liquidityRatio: opportunity.liquidityRatio || 1.0,
+      poolDepth: opportunity.poolDepth || 500000,
+      
+      mevRisk,
+      competitionLevel: this.mevSensorHub.getDensity() || 0.3,
+      blockCongestion: this.mevSensorHub.getCongestion() || 0.5,
+      
+      hopCount: path.swapSteps?.length || 2,
+      pathComplexity: (path.swapSteps?.length || 2) * (opportunity.arbType === 'triangular' ? 1.5 : 1.0),
+      gasEstimate,
+      
+      volatility: 0.05, // Placeholder - would calculate from price history
+      priceImpact: opportunity.priceImpact || 0.001,
+      timeOfDay: (new Date().getHours() % 24) / 24,
+      
+      similarPathSuccessRate: 0.6, // Placeholder - would query from memory
+      avgHistoricalProfit: 0.05, // Placeholder - would query from memory
+    };
+  }
+  
+  /**
+   * Create execution episode for RL training
+   */
+  private createExecutionEpisode(result: any): ExecutionEpisode | null {
+    const mevConditions = this.mevSensorHub.getCongestion() || 0;
+    const searcherDensity = this.mevSensorHub.getDensity() || 0;
+    
+    const state: ExecutionState = {
+      baseFee: 20, // Would get from provider
+      gasPrice: 25, // Would get from provider
+      congestion: mevConditions,
+      searcherDensity,
+      expectedProfit: parseFloat(result.profit || '0'),
+      pathComplexity: 2,
+      liquidityDepth: 100000,
+      recentSuccessRate: 0.6,
+      avgProfitPerTx: 0.05,
+      recentMEVLoss: 0.01,
+    };
+    
+    const action: ExecutionAction = {
+      executed: result.success,
+      strategyParams: {
+        minProfitThreshold: this.config.minProfitThresholdEth,
+        mevRiskSensitivity: this.config.mevRiskThreshold,
+        maxSlippage: 0.005,
+        gasMultiplier: 1.2,
+        executionTimeout: this.config.cycleTimeoutMs,
+        priorityFeeStrategy: 'moderate',
+      },
+      blockDelay: 0,
+      priorityFee: 0.001,
+    };
+    
+    const outcome: ExecutionOutcome = {
+      success: result.success,
+      actualProfit: parseFloat(result.profit || '0'),
+      gasUsed: result.gasUsed ? Number(result.gasUsed) : 0,
+      mevLoss: 0,
+      slippage: 0.001,
+      executionTime: 2000,
+    };
+    
+    const mevContext: MEVContext = {
+      competitorCount: 5,
+      frontrunRisk: 0.2,
+      backrunRisk: 0.1,
+      sandwichRisk: 0.15,
+      blockPosition: 50,
+    };
+    
+    const reward = outcome.success 
+      ? outcome.actualProfit - (outcome.gasUsed * 0.00002) - outcome.mevLoss
+      : -0.01;
+    
+    return {
+      timestamp: Date.now(),
+      episodeId: `episode_${this.cycleCount}_${Date.now()}`,
+      state,
+      action,
+      outcome,
+      reward,
+      mevContext,
+    };
   }
   
   /**
@@ -753,7 +974,12 @@ export class BaseArbitrageRunner extends EventEmitter {
         minProfitThresholdEth: this.config.minProfitThresholdEth,
         mevProtectionEnabled: this.config.enableMevProtection
       },
-      metrics: this.executionMetrics.getStats()
+      metrics: this.executionMetrics.getStats(),
+      ml: this.config.enableML ? {
+        rlAgentStats: this.rlAgent?.getStatistics(),
+        nnScorerStats: this.nnScorer?.getStatistics(),
+        evolutionStats: this.evolutionEngine?.getStatistics(),
+      } : undefined,
     };
   }
   
@@ -762,5 +988,57 @@ export class BaseArbitrageRunner extends EventEmitter {
    */
   getMetrics(): ExecutionMetrics {
     return this.executionMetrics;
+  }
+  
+  /**
+   * Get strategy suggestions from RL agent
+   * Called periodically to optimize strategy parameters
+   */
+  async getStrategySuggestions(): Promise<any> {
+    if (!this.config.enableML || !this.rlAgent) {
+      return null;
+    }
+    
+    const currentParams: StrategyParameters = {
+      minProfitThreshold: this.config.minProfitThresholdEth,
+      mevRiskSensitivity: this.config.mevRiskThreshold,
+      maxSlippage: 0.005,
+      gasMultiplier: 1.2,
+      executionTimeout: this.config.cycleTimeoutMs,
+      priorityFeeStrategy: 'moderate',
+    };
+    
+    const suggestions = await this.rlAgent.suggestParameters(currentParams);
+    
+    console.log('[BaseArbitrageRunner] Strategy suggestions from RL agent:');
+    console.log(`  Confidence: ${(suggestions.confidence * 100).toFixed(1)}%`);
+    console.log(`  Expected improvement: ${suggestions.expectedImprovement.toFixed(4)}`);
+    console.log(`  Rationale: ${suggestions.rationale}`);
+    
+    return suggestions;
+  }
+  
+  /**
+   * Get evolved strategy variants from evolution engine
+   */
+  async getStrategyVariants(): Promise<any> {
+    if (!this.config.enableML || !this.config.enableStrategyEvolution || !this.evolutionEngine) {
+      return null;
+    }
+    
+    const currentParams: StrategyParameters = {
+      minProfitThreshold: this.config.minProfitThresholdEth,
+      mevRiskSensitivity: this.config.mevRiskThreshold,
+      maxSlippage: 0.005,
+      gasMultiplier: 1.2,
+      executionTimeout: this.config.cycleTimeoutMs,
+      priorityFeeStrategy: 'moderate',
+    };
+    
+    const variants = await this.evolutionEngine.proposeVariants(currentParams);
+    
+    console.log(`[BaseArbitrageRunner] Evolution engine proposed ${variants.length} strategy variants`);
+    
+    return variants;
   }
 }

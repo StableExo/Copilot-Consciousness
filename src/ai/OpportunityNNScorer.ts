@@ -96,7 +96,7 @@ export class OpportunityNNScorer extends EventEmitter {
    * Initialize network weights with Xavier/He initialization
    */
   private initializeWeights(): FeatureWeights {
-    const inputSize = 15; // Number of features in OpportunityFeatures
+    const inputSize = 18; // Number of features in OpportunityFeatures
     const hiddenSize = this.config.hiddenLayerSize;
     
     // Xavier initialization for better gradient flow
