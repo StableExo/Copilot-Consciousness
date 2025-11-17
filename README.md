@@ -85,6 +85,7 @@ See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for TheWarden's operation
 - **Transaction Type Analysis**: Risk assessment for ARBITRAGE, FLASH_LOAN, LIQUIDITY_PROVISION
 - **ML Pipeline Integration**: MEV risk as features for LSTM and opportunity scoring
 - **Calibration Tools**: Historical accuracy analysis and parameter tuning
+- **Private Order-Flow RPCs**: Flashbots Protect, MEV-Share, and builder endpoints to reduce MEV exposure
 
 ### 🤖 Advanced Arbitrage Engines
 - **Spatial Arbitrage**: Cross-DEX price difference detection (integrated from AxionCitadel)
@@ -93,6 +94,15 @@ See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for TheWarden's operation
 - **Flash Loan Execution**: Capital-free arbitrage with Aave V3 integration
 - **Multi-Chain Support**: Arbitrum, Ethereum, Polygon, Base networks
 - **Path Optimization**: Advanced graph algorithms for efficient routing
+
+### 🔒 Private Transaction Submission
+- **Flashbots Protect**: Keep transactions out of public mempool
+- **MEV-Share**: Share MEV revenue while maintaining privacy
+- **Builder RPCs**: Direct routing to block builders for maximum privacy
+- **Multi-Relay Fallback**: Automatic failover between private relays
+- **Privacy Levels**: Configurable privacy (none, basic, enhanced, maximum)
+- **Bundle Support**: Atomic multi-transaction execution
+- **Health Monitoring**: Real-time relay availability tracking
 
 ### 🔧 Production Infrastructure
 - **Configuration System**: Structured configs for chains, tokens, pools, and protocols
@@ -110,7 +120,7 @@ See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for TheWarden's operation
 - **Outcome-Based Learning**: Prediction vs reality comparison for continuous improvement
 - **Production-Tested Utilities**: Battle-hardened price math, caching, networking, and validation from MEV environment
 
-See [MEV Intelligence Suite Documentation](./docs/MEV_INTELLIGENCE_SUITE.md), [Arbitrage Engines](./docs/ARBITRAGE_ENGINES.md), [AxionCitadel Integration](./docs/INTEGRATION_FROM_AXIONCITADEL.md), [Strategic Intelligence Integration](./docs/AXIONCITADEL_STRATEGIC_INTEGRATION.md), [Conscious Knowledge Loop](./docs/CONSCIOUS_KNOWLEDGE_LOOP.md), [Utilities Integration](./docs/AXIONCITADEL_UTILITIES.md), [Autonomous Intelligence Vision](./docs/AUTONOMOUS_INTELLIGENCE_VISION.md), and [Ethics Engine Integration](./docs/ETHICS_ENGINE.md) for details.
+See [MEV Intelligence Suite Documentation](./docs/MEV_INTELLIGENCE_SUITE.md), [Private RPC Documentation](./docs/PRIVATE_RPC.md), [Arbitrage Engines](./docs/ARBITRAGE_ENGINES.md), [AxionCitadel Integration](./docs/INTEGRATION_FROM_AXIONCITADEL.md), [Strategic Intelligence Integration](./docs/AXIONCITADEL_STRATEGIC_INTEGRATION.md), [Conscious Knowledge Loop](./docs/CONSCIOUS_KNOWLEDGE_LOOP.md), [Utilities Integration](./docs/AXIONCITADEL_UTILITIES.md), [Autonomous Intelligence Vision](./docs/AUTONOMOUS_INTELLIGENCE_VISION.md), and [Ethics Engine Integration](./docs/ETHICS_ENGINE.md) for details.
 
 ## Installation
 
