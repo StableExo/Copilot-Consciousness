@@ -2,13 +2,15 @@
 
 Advanced intelligence layer for Flashbots integration based on [Flashbots Documentation](https://docs.flashbots.net/).
 
+> **📖 Understanding MEV Refunds:** For a detailed explanation of how MEV refunds work, see [MEV Refund Explained](./MEV_REFUND_EXPLAINED.md).
+
 ## Overview
 
 The Flashbots Intelligence system provides advanced capabilities for MEV extraction and bundle management:
 
 1. **Bundle Simulation** - Validate bundles before submission
 2. **Builder Reputation** - Track and optimize builder selection
-3. **MEV Refund Monitoring** - Track MEV extraction and refunds
+3. **MEV Refund Monitoring** - Track MEV extraction and refunds (see [detailed guide](./MEV_REFUND_EXPLAINED.md))
 4. **Bundle Optimization** - Analyze and improve bundle profitability
 5. **Inclusion Probability** - Estimate likelihood of bundle inclusion
 
