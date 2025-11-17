@@ -14,11 +14,23 @@
  * - Applying ethical reasoning to execution decisions
  * - Risk assessment based on historical outcomes
  * 
+ * Phase 3 Enhancements:
+ * - Episodic memory for long-term learning
+ * - Adversarial pattern recognition against MEV competitors
+ * - Self-reflection on strategic decisions
+ * - Deep pattern analysis across execution history
+ * 
  * TheWarden uses this class as its "brain" to make informed, adaptive decisions about
  * which opportunities to execute based on risk, ethics, and long-term strategy.
  */
 
 import { EventEmitter } from 'events';
+import {
+  ArbitrageEpisode,
+  AdversarialPattern,
+  StrategyReflection,
+  ConsciousnessSnapshot,
+} from './types/phase3';
 
 export interface ArbitrageExecution {
   timestamp: number;
@@ -65,6 +77,18 @@ export class ArbitrageConsciousness extends EventEmitter {
   private learningRate: number;
   private maxHistorySize: number;
   
+  // Phase 3: Episodic Memory
+  private episodicMemory: Map<string, ArbitrageEpisode> = new Map();
+  private maxEpisodesStored: number = 5000;
+  
+  // Phase 3: Adversarial Pattern Recognition
+  private adversarialPatterns: Map<string, AdversarialPattern> = new Map();
+  
+  // Phase 3: Self-Reflection
+  private reflections: StrategyReflection[] = [];
+  private lastReflectionTime: number = 0;
+  private reflectionInterval: number = 3600000; // 1 hour
+  
   constructor(
     learningRate: number = 0.05,
     maxHistorySize: number = 1000
@@ -76,6 +100,7 @@ export class ArbitrageConsciousness extends EventEmitter {
     console.log('[ArbitrageConsciousness] Initialized - AEV cognitive layer active');
     console.log(`  Learning rate: ${learningRate}`);
     console.log(`  Max history size: ${maxHistorySize}`);
+    console.log(`  Phase 3 enhancements: Episodic Memory, Adversarial Recognition, Self-Reflection`);
   }
   
   /**
@@ -353,6 +378,732 @@ export class ArbitrageConsciousness extends EventEmitter {
     return {
       approved: true,
       reasoning: 'Opportunity meets ethical criteria'
+    };
+  }
+  
+  // ========================================================================
+  // Phase 3: Consciousness Deepening
+  // ========================================================================
+  
+  /**
+   * Record execution as episodic memory
+   * 
+   * Phase 3: MEV experience as episodic memory
+   * Creates rich contextual memory of execution opportunities for deep learning
+   */
+  recordEpisode(
+    opportunity: any,
+    decision: { executed: boolean; reasoning: string },
+    marketState: any,
+    mevContext: any,
+    outcome?: any
+  ): ArbitrageEpisode {
+    const episodeId = `episode_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const episode: ArbitrageEpisode = {
+      episodeId,
+      timestamp: Date.now(),
+      cycleNumber: this.executionHistory.length + 1,
+      
+      marketState: {
+        timestamp: Date.now(),
+        baseFee: marketState.baseFee ?? 0,
+        gasPrice: marketState.gasPrice ?? 0,
+        congestion: marketState.congestion ?? 0,
+        searcherDensity: marketState.searcherDensity ?? 0,
+        blockNumber: marketState.blockNumber ?? 0,
+        volatility: marketState.volatility ?? 0,
+      },
+      
+      opportunity: {
+        profit: opportunity.profit,
+        netProfit: opportunity.netProfit ?? opportunity.profit,
+        pools: opportunity.pools ?? [],
+        path: opportunity.path ?? [],
+        txType: opportunity.txType ?? 'unknown',
+        complexity: opportunity.complexity ?? opportunity.pools?.length ?? 1,
+        liquidityDepth: opportunity.liquidityDepth ?? 0,
+      },
+      
+      mevContext: {
+        mevRisk: mevContext.mevRisk ?? 0,
+        frontrunRisk: mevContext.frontrunRisk ?? 0,
+        sandwichRisk: mevContext.sandwichRisk ?? 0,
+        competitorCount: mevContext.competitorCount ?? 0,
+        recentMEVLoss: mevContext.recentMEVLoss ?? 0,
+      },
+      
+      decision: {
+        executed: decision.executed,
+        decisionRationale: decision.reasoning,
+        ethicalScore: this.calculateEthicalScore(opportunity),
+        riskScore: mevContext.mevRisk ?? 0,
+        confidenceScore: this.calculateConfidenceScore(opportunity, marketState),
+      },
+      
+      outcome: outcome ? {
+        success: outcome.success,
+        txHash: outcome.txHash,
+        gasUsed: outcome.gasUsed,
+        actualProfit: outcome.actualProfit,
+        actualMEVLoss: outcome.actualMEVLoss ?? 0,
+        slippage: outcome.slippage ?? 0,
+        executionTime: outcome.executionTime ?? 0,
+      } : undefined,
+    };
+    
+    // Store in episodic memory
+    this.episodicMemory.set(episodeId, episode);
+    
+    // Trim old episodes if needed
+    if (this.episodicMemory.size > this.maxEpisodesStored) {
+      const sortedEpisodes = Array.from(this.episodicMemory.entries())
+        .sort((a, b) => a[1].timestamp - b[1].timestamp);
+      
+      // Remove oldest 10%
+      const toRemove = Math.floor(this.maxEpisodesStored * 0.1);
+      for (let i = 0; i < toRemove; i++) {
+        this.episodicMemory.delete(sortedEpisodes[i][0]);
+      }
+    }
+    
+    // Analyze for adversarial patterns if executed
+    if (decision.executed && outcome) {
+      this.analyzeAdversarialPatterns([episode]);
+    }
+    
+    // Trigger reflection if interval passed
+    if (Date.now() - this.lastReflectionTime > this.reflectionInterval) {
+      this.reflectOnDecisions();
+    }
+    
+    this.emit('episodeRecorded', episode);
+    
+    return episode;
+  }
+  
+  /**
+   * Analyze adversarial patterns in MEV competition
+   * 
+   * Phase 3: Pattern recognition in adversarial learning
+   * Detects patterns in MEV competitor behavior to improve counter-strategies
+   */
+  async analyzeAdversarialPatterns(episodes: ArbitrageEpisode[]): Promise<void> {
+    if (episodes.length === 0) {
+      episodes = Array.from(this.episodicMemory.values());
+    }
+    
+    // Filter to executed episodes with outcomes
+    const executedEpisodes = episodes.filter(e => e.decision.executed && e.outcome);
+    
+    if (executedEpisodes.length < 10) {
+      return; // Need minimum data
+    }
+    
+    // Detect frontrun patterns
+    await this.detectFrontrunPatterns(executedEpisodes);
+    
+    // Detect sandwich attack patterns
+    await this.detectSandwichPatterns(executedEpisodes);
+    
+    // Detect multi-bot coordination patterns
+    await this.detectCoordinationPatterns(executedEpisodes);
+    
+    this.emit('adversarialPatternsAnalyzed', {
+      patternsDetected: this.adversarialPatterns.size,
+      episodesAnalyzed: executedEpisodes.length,
+    });
+  }
+  
+  /**
+   * Detect frontrun patterns
+   */
+  private async detectFrontrunPatterns(episodes: ArbitrageEpisode[]): Promise<void> {
+    // Episodes where we suffered MEV loss (likely frontrun)
+    const frontrunVictims = episodes.filter(e => 
+      e.outcome && 
+      e.outcome.actualMEVLoss && 
+      e.outcome.actualMEVLoss > 0.01 &&
+      e.mevContext.frontrunRisk > 0.5
+    );
+    
+    if (frontrunVictims.length < 3) return;
+    
+    const patternId = 'frontrun_pattern';
+    const existingPattern = this.adversarialPatterns.get(patternId);
+    
+    const avgMEVLoss = frontrunVictims.reduce((sum, e) => sum + (e.outcome?.actualMEVLoss ?? 0), 0) / frontrunVictims.length;
+    const avgGasBid = frontrunVictims.reduce((sum, e) => sum + e.marketState.gasPrice, 0) / frontrunVictims.length;
+    
+    // Analyze time distribution
+    const timeDistribution = new Map<number, number>();
+    for (const episode of frontrunVictims) {
+      const hour = new Date(episode.timestamp).getHours();
+      timeDistribution.set(hour, (timeDistribution.get(hour) ?? 0) + 1);
+    }
+    
+    if (existingPattern) {
+      existingPattern.occurrences = frontrunVictims.length;
+      existingPattern.lastSeen = Date.now();
+      existingPattern.ourExperience.encounterCount = frontrunVictims.length;
+      existingPattern.ourExperience.avgLossPerEncounter = avgMEVLoss;
+      existingPattern.timeOfDayDistribution = timeDistribution;
+    } else {
+      const pattern: AdversarialPattern = {
+        patternId,
+        detectedAt: Date.now(),
+        type: 'frontrun',
+        description: 'Systematic frontrunning detected in profitable opportunities',
+        confidence: Math.min(0.95, 0.5 + (frontrunVictims.length / 20)),
+        occurrences: frontrunVictims.length,
+        firstSeen: frontrunVictims[0].timestamp,
+        lastSeen: Date.now(),
+        timeOfDayDistribution: timeDistribution,
+        adversaries: {
+          addresses: [], // Would extract from tx data in production
+          avgGasBid,
+          avgCapital: 0,
+          successRate: 0,
+          avgProfitPerTx: avgMEVLoss,
+        },
+        ourExperience: {
+          encounterCount: frontrunVictims.length,
+          lossesIncurred: avgMEVLoss * frontrunVictims.length,
+          successfulCounterCount: 0,
+          avgLossPerEncounter: avgMEVLoss,
+        },
+        counterStrategy: {
+          description: 'Use private transaction pools (Flashbots), increase gas bids selectively',
+          effectiveness: 0.7,
+          costBenefit: 0.6,
+        },
+      };
+      
+      this.adversarialPatterns.set(patternId, pattern);
+      this.emit('adversarialPatternDetected', pattern);
+    }
+  }
+  
+  /**
+   * Detect sandwich attack patterns
+   */
+  private async detectSandwichPatterns(episodes: ArbitrageEpisode[]): Promise<void> {
+    const sandwichVictims = episodes.filter(e =>
+      e.outcome &&
+      e.outcome.slippage &&
+      e.outcome.slippage > 0.05 && // >5% slippage
+      e.mevContext.sandwichRisk > 0.5
+    );
+    
+    if (sandwichVictims.length < 2) return;
+    
+    const patternId = 'sandwich_pattern';
+    const avgSlippage = sandwichVictims.reduce((sum, e) => sum + (e.outcome?.slippage ?? 0), 0) / sandwichVictims.length;
+    
+    const pattern: AdversarialPattern = {
+      patternId,
+      detectedAt: Date.now(),
+      type: 'sandwich',
+      description: `Sandwich attacks detected with ${(avgSlippage * 100).toFixed(1)}% avg slippage`,
+      confidence: Math.min(0.9, 0.4 + (sandwichVictims.length / 10)),
+      occurrences: sandwichVictims.length,
+      firstSeen: sandwichVictims[0].timestamp,
+      lastSeen: Date.now(),
+      timeOfDayDistribution: new Map(),
+      adversaries: {
+        addresses: [],
+        avgGasBid: 0,
+        avgCapital: 0,
+        successRate: 0,
+        avgProfitPerTx: 0,
+      },
+      ourExperience: {
+        encounterCount: sandwichVictims.length,
+        lossesIncurred: 0,
+        successfulCounterCount: 0,
+        avgLossPerEncounter: 0,
+      },
+      counterStrategy: {
+        description: 'Tighten slippage limits, split large trades, use MEV-protected endpoints',
+        effectiveness: 0.8,
+        costBenefit: 0.7,
+      },
+    };
+    
+    this.adversarialPatterns.set(patternId, pattern);
+  }
+  
+  /**
+   * Detect multi-bot coordination patterns
+   */
+  private async detectCoordinationPatterns(episodes: ArbitrageEpisode[]): Promise<void> {
+    // Check for simultaneous high competition
+    const highCompetitionEpisodes = episodes.filter(e =>
+      e.mevContext.competitorCount > 3 &&
+      e.outcome &&
+      !e.outcome.success
+    );
+    
+    if (highCompetitionEpisodes.length > 5) {
+      const pattern: AdversarialPattern = {
+        patternId: 'coordination_pattern',
+        detectedAt: Date.now(),
+        type: 'multi_bot_coordination',
+        description: 'Multiple competing bots detected in same opportunities',
+        confidence: 0.6,
+        occurrences: highCompetitionEpisodes.length,
+        firstSeen: highCompetitionEpisodes[0].timestamp,
+        lastSeen: Date.now(),
+        timeOfDayDistribution: new Map(),
+        adversaries: {
+          addresses: [],
+          avgGasBid: 0,
+          avgCapital: 0,
+          successRate: 0,
+          avgProfitPerTx: 0,
+        },
+        ourExperience: {
+          encounterCount: highCompetitionEpisodes.length,
+          lossesIncurred: 0,
+          successfulCounterCount: 0,
+          avgLossPerEncounter: 0,
+        },
+        counterStrategy: {
+          description: 'Focus on unique opportunities, improve speed, use advanced routing',
+          effectiveness: 0.6,
+          costBenefit: 0.5,
+        },
+      };
+      
+      this.adversarialPatterns.set('coordination_pattern', pattern);
+    }
+  }
+  
+  /**
+   * Self-reflection on strategic decisions
+   * 
+   * Phase 3: Self-reflection on strategic decisions
+   * Analyzes recent performance and generates insights for improvement
+   */
+  async reflectOnDecisions(): Promise<StrategyReflection[]> {
+    const now = Date.now();
+    const periodStart = now - this.reflectionInterval;
+    
+    // Get recent episodes
+    const recentEpisodes = Array.from(this.episodicMemory.values())
+      .filter(e => e.timestamp >= periodStart);
+    
+    if (recentEpisodes.length < 5) {
+      return []; // Not enough data to reflect
+    }
+    
+    // Calculate performance metrics
+    const executed = recentEpisodes.filter(e => e.decision.executed);
+    const withOutcome = executed.filter(e => e.outcome);
+    const successful = withOutcome.filter(e => e.outcome?.success);
+    
+    const totalProfit = successful.reduce((sum, e) => sum + (e.outcome?.actualProfit ?? 0), 0);
+    const totalLoss = withOutcome
+      .filter(e => !e.outcome?.success)
+      .reduce((sum, e) => sum + (e.outcome?.actualMEVLoss ?? 0), 0);
+    
+    const performance = {
+      totalProfit,
+      totalLoss,
+      netProfit: totalProfit - totalLoss,
+      successRate: withOutcome.length > 0 ? successful.length / withOutcome.length : 0,
+      avgProfitPerTx: successful.length > 0 ? totalProfit / successful.length : 0,
+      avgGasEfficiency: this.calculateAvgGasEfficiency(successful),
+      mevLossRate: withOutcome.length > 0 ? totalLoss / (totalProfit + totalLoss) : 0,
+    };
+    
+    // Analyze decision quality
+    const decisionQuality = this.analyzeDecisionQuality(recentEpisodes);
+    
+    // Generate insights
+    const insights = this.generateStrategicInsights(recentEpisodes);
+    
+    // Generate recommendations
+    const recommendations = this.generateImprovementRecommendations(performance, decisionQuality, insights);
+    
+    // Assess learning progress
+    const learningProgress = this.assessLearningProgress();
+    
+    const reflection: StrategyReflection = {
+      reflectionId: `reflection_${now}`,
+      timestamp: now,
+      periodStart,
+      periodEnd: now,
+      executionCount: recentEpisodes.length,
+      performance,
+      decisionQuality,
+      insights,
+      recommendations,
+      learningProgress,
+    };
+    
+    this.reflections.push(reflection);
+    this.lastReflectionTime = now;
+    
+    // Keep only recent reflections
+    if (this.reflections.length > 100) {
+      this.reflections = this.reflections.slice(-100);
+    }
+    
+    this.emit('reflectionComplete', reflection);
+    
+    return [reflection];
+  }
+  
+  /**
+   * Calculate average gas efficiency
+   */
+  private calculateAvgGasEfficiency(episodes: ArbitrageEpisode[]): number {
+    if (episodes.length === 0) return 0;
+    
+    const efficiencies = episodes
+      .filter(e => e.outcome?.gasUsed && e.outcome?.actualProfit)
+      .map(e => (e.outcome!.actualProfit ?? 0) / Number(e.outcome!.gasUsed ?? 1n));
+    
+    return efficiencies.length > 0
+      ? efficiencies.reduce((a, b) => a + b, 0) / efficiencies.length
+      : 0;
+  }
+  
+  /**
+   * Analyze decision quality (precision/recall)
+   */
+  private analyzeDecisionQuality(episodes: ArbitrageEpisode[]): any {
+    // True Positive: Executed and successful
+    const truePositives = episodes.filter(e => e.decision.executed && e.outcome?.success).length;
+    
+    // False Positive: Executed but failed
+    const falsePositives = episodes.filter(e => e.decision.executed && e.outcome && !e.outcome.success).length;
+    
+    // False Negative: Not executed but would have been profitable (estimate)
+    const falseNegatives = episodes.filter(e =>
+      !e.decision.executed &&
+      e.decision.riskScore < 0.5 &&
+      e.opportunity.netProfit > 0.01
+    ).length;
+    
+    // True Negative: Not executed and was right decision (estimate)
+    const trueNegatives = episodes.filter(e =>
+      !e.decision.executed &&
+      (e.decision.riskScore >= 0.5 || e.opportunity.netProfit <= 0.01)
+    ).length;
+    
+    const total = truePositives + falsePositives + falseNegatives + trueNegatives;
+    
+    return {
+      falsePositives,
+      falseNegatives,
+      truePositives,
+      trueNegatives,
+      accuracy: total > 0 ? (truePositives + trueNegatives) / total : 0,
+      precision: (truePositives + falsePositives) > 0 ? truePositives / (truePositives + falsePositives) : 0,
+      recall: (truePositives + falseNegatives) > 0 ? truePositives / (truePositives + falseNegatives) : 0,
+    };
+  }
+  
+  /**
+   * Generate strategic insights from episodes
+   */
+  private generateStrategicInsights(episodes: ArbitrageEpisode[]): any {
+    const successful = episodes.filter(e => e.outcome?.success);
+    const failed = episodes.filter(e => e.outcome && !e.outcome.success);
+    
+    // Find most profitable conditions
+    const mostProfitableConditions: string[] = [];
+    if (successful.length > 0) {
+      const avgCongestion = successful.reduce((sum, e) => sum + e.marketState.congestion, 0) / successful.length;
+      if (avgCongestion < 0.5) {
+        mostProfitableConditions.push('Low congestion');
+      }
+      
+      const avgSearchers = successful.reduce((sum, e) => sum + e.marketState.searcherDensity, 0) / successful.length;
+      if (avgSearchers < 0.3) {
+        mostProfitableConditions.push('Low searcher competition');
+      }
+    }
+    
+    // Find most dangerous conditions
+    const mostDangerousConditions: string[] = [];
+    if (failed.length > 0) {
+      const avgMEVRisk = failed.reduce((sum, e) => sum + e.mevContext.mevRisk, 0) / failed.length;
+      if (avgMEVRisk > 0.6) {
+        mostDangerousConditions.push('High MEV risk');
+      }
+    }
+    
+    return {
+      mostProfitableConditions,
+      mostDangerousConditions,
+      optimalRiskThreshold: this.calculateOptimalRiskThreshold(episodes),
+      optimalProfitThreshold: this.calculateOptimalProfitThreshold(episodes),
+      bestTimeWindows: this.findBestTimeWindows(episodes),
+    };
+  }
+  
+  /**
+   * Calculate optimal risk threshold
+   */
+  private calculateOptimalRiskThreshold(episodes: ArbitrageEpisode[]): number {
+    const withOutcome = episodes.filter(e => e.outcome);
+    if (withOutcome.length < 10) return 0.5;
+    
+    // Find threshold that maximizes success rate
+    const thresholds = [0.3, 0.4, 0.5, 0.6, 0.7];
+    let bestThreshold = 0.5;
+    let bestScore = 0;
+    
+    for (const threshold of thresholds) {
+      const wouldExecute = withOutcome.filter(e => e.mevContext.mevRisk <= threshold);
+      const successful = wouldExecute.filter(e => e.outcome?.success);
+      const score = wouldExecute.length > 0 ? successful.length / wouldExecute.length : 0;
+      
+      if (score > bestScore) {
+        bestScore = score;
+        bestThreshold = threshold;
+      }
+    }
+    
+    return bestThreshold;
+  }
+  
+  /**
+   * Calculate optimal profit threshold
+   */
+  private calculateOptimalProfitThreshold(episodes: ArbitrageEpisode[]): number {
+    const successful = episodes.filter(e => e.outcome?.success);
+    if (successful.length === 0) return 0.01;
+    
+    const profits = successful.map(e => e.outcome?.actualProfit ?? 0).sort((a, b) => a - b);
+    const median = profits[Math.floor(profits.length / 2)];
+    
+    return median * 0.8; // 80% of median successful profit
+  }
+  
+  /**
+   * Find best time windows for execution
+   */
+  private findBestTimeWindows(episodes: ArbitrageEpisode[]): string[] {
+    const successful = episodes.filter(e => e.outcome?.success);
+    if (successful.length < 5) return [];
+    
+    const hourlySuccessRate = new Map<number, { success: number; total: number }>();
+    
+    for (const episode of episodes.filter(e => e.decision.executed)) {
+      const hour = new Date(episode.timestamp).getHours();
+      const stats = hourlySuccessRate.get(hour) ?? { success: 0, total: 0 };
+      stats.total++;
+      if (episode.outcome?.success) stats.success++;
+      hourlySuccessRate.set(hour, stats);
+    }
+    
+    const bestHours = Array.from(hourlySuccessRate.entries())
+      .filter(([_, stats]) => stats.total >= 2)
+      .sort((a, b) => (b[1].success / b[1].total) - (a[1].success / a[1].total))
+      .slice(0, 3)
+      .map(([hour, _]) => `${hour}:00-${hour + 1}:00`);
+    
+    return bestHours;
+  }
+  
+  /**
+   * Generate improvement recommendations
+   */
+  private generateImprovementRecommendations(performance: any, decisionQuality: any, insights: any): any {
+    const parameterAdjustments = new Map<string, number>();
+    const strategicChanges: string[] = [];
+    const riskManagementTips: string[] = [];
+    
+    // Parameter adjustments
+    if (performance.successRate < 0.5) {
+      parameterAdjustments.set('riskThreshold', insights.optimalRiskThreshold);
+      strategicChanges.push('Increase selectivity - current success rate too low');
+    }
+    
+    if (decisionQuality.falseNegatives > decisionQuality.truePositives) {
+      parameterAdjustments.set('profitThreshold', insights.optimalProfitThreshold * 0.9);
+      strategicChanges.push('Being too conservative - missing profitable opportunities');
+    }
+    
+    if (performance.mevLossRate > 0.3) {
+      riskManagementTips.push('High MEV loss rate - consider private transaction pools');
+      riskManagementTips.push('Increase gas bids for valuable opportunities');
+    }
+    
+    // Time-based recommendations
+    if (insights.bestTimeWindows.length > 0) {
+      strategicChanges.push(`Focus execution during: ${insights.bestTimeWindows.join(', ')}`);
+    }
+    
+    return {
+      parameterAdjustments,
+      strategicChanges,
+      riskManagementTips,
+      confidence: Math.min(0.9, performance.totalProfit > 0 ? 0.6 + (performance.successRate * 0.3) : 0.4),
+    };
+  }
+  
+  /**
+   * Assess learning progress over time
+   */
+  private assessLearningProgress(): any {
+    if (this.reflections.length < 2) {
+      return {
+        improvementTrend: 'stable' as const,
+        strengthsIdentified: [],
+        weaknessesIdentified: [],
+        explorationVsExploitation: 0.5,
+      };
+    }
+    
+    const recent = this.reflections[this.reflections.length - 1];
+    const previous = this.reflections[this.reflections.length - 2];
+    
+    const profitImprovement = recent.performance.netProfit - previous.performance.netProfit;
+    const successImprovement = recent.performance.successRate - previous.performance.successRate;
+    
+    let improvementTrend: 'improving' | 'stable' | 'declining' = 'stable';
+    if (profitImprovement > 0.1 && successImprovement > 0.05) {
+      improvementTrend = 'improving';
+    } else if (profitImprovement < -0.1 || successImprovement < -0.05) {
+      improvementTrend = 'declining';
+    }
+    
+    const strengthsIdentified: string[] = [];
+    const weaknessesIdentified: string[] = [];
+    
+    if (recent.performance.successRate > 0.7) {
+      strengthsIdentified.push('High execution success rate');
+    }
+    if (recent.performance.mevLossRate < 0.2) {
+      strengthsIdentified.push('Low MEV loss rate');
+    }
+    
+    if (recent.decisionQuality.falseNegatives > 5) {
+      weaknessesIdentified.push('Missing profitable opportunities (false negatives)');
+    }
+    if (recent.decisionQuality.falsePositives > 5) {
+      weaknessesIdentified.push('Executing unprofitable opportunities (false positives)');
+    }
+    
+    return {
+      improvementTrend,
+      strengthsIdentified,
+      weaknessesIdentified,
+      explorationVsExploitation: this.calculateExplorationRate(),
+    };
+  }
+  
+  /**
+   * Calculate exploration rate
+   */
+  private calculateExplorationRate(): number {
+    const recentEpisodes = Array.from(this.episodicMemory.values()).slice(-100);
+    if (recentEpisodes.length === 0) return 0.5;
+    
+    // Episodes with high risk or low profit are considered "exploration"
+    const exploratoryCount = recentEpisodes.filter(e =>
+      e.decision.executed &&
+      (e.mevContext.mevRisk > 0.6 || e.opportunity.netProfit < 0.02)
+    ).length;
+    
+    return exploratoryCount / recentEpisodes.length;
+  }
+  
+  /**
+   * Calculate ethical score
+   */
+  private calculateEthicalScore(opportunity: any): number {
+    let score = 1.0;
+    
+    // Deduct for high MEV risk
+    if (opportunity.mevRisk > 0.7) score -= 0.3;
+    
+    // Deduct for low profit (resource waste)
+    if (opportunity.profit < 0.001) score -= 0.2;
+    
+    return Math.max(0, score);
+  }
+  
+  /**
+   * Calculate confidence score
+   */
+  private calculateConfidenceScore(opportunity: any, marketState: any): number {
+    let confidence = 0.5;
+    
+    // Higher confidence in favorable conditions
+    if (marketState.congestion < 0.5) confidence += 0.2;
+    if (marketState.searcherDensity < 0.3) confidence += 0.2;
+    if (opportunity.profit > 0.05) confidence += 0.1;
+    
+    return Math.min(1.0, confidence);
+  }
+  
+  /**
+   * Get episodic memory
+   */
+  getEpisodicMemory(): ArbitrageEpisode[] {
+    return Array.from(this.episodicMemory.values());
+  }
+  
+  /**
+   * Get adversarial patterns
+   */
+  getAdversarialPatterns(): AdversarialPattern[] {
+    return Array.from(this.adversarialPatterns.values());
+  }
+  
+  /**
+   * Get reflections
+   */
+  getReflections(): StrategyReflection[] {
+    return [...this.reflections];
+  }
+  
+  /**
+   * Get consciousness snapshot for persistence
+   */
+  getSnapshot(): ConsciousnessSnapshot {
+    const episodes = Array.from(this.episodicMemory.values());
+    const stats = this.getStatistics();
+    
+    return {
+      timestamp: Date.now(),
+      version: '3.0.0-phase3',
+      memoryStats: {
+        episodeCount: this.episodicMemory.size,
+        patternCount: this.detectedPatterns.size,
+        adversarialPatternCount: this.adversarialPatterns.size,
+        reflectionCount: this.reflections.length,
+        oldestEpisode: episodes.length > 0 ? Math.min(...episodes.map(e => e.timestamp)) : 0,
+        newestEpisode: episodes.length > 0 ? Math.max(...episodes.map(e => e.timestamp)) : 0,
+      },
+      currentState: {
+        learningRate: this.learningRate,
+        explorationRate: this.calculateExplorationRate(),
+        riskTolerance: 0.5,
+        ethicalThreshold: 0.7,
+        confidence: stats.successRate,
+      },
+      keyInsights: {
+        topPatterns: this.getDetectedPatterns().slice(0, 5).map(p => p.description),
+        topAdversaries: Array.from(this.adversarialPatterns.values()).slice(0, 3).map(p => p.description),
+        bestStrategies: this.reflections.length > 0 ? this.reflections[this.reflections.length - 1].insights.mostProfitableConditions : [],
+        worstConditions: this.reflections.length > 0 ? this.reflections[this.reflections.length - 1].insights.mostDangerousConditions : [],
+      },
+      performanceSummary: {
+        totalExecutions: stats.totalExecutions,
+        successRate: stats.successRate,
+        avgProfit: stats.averageProfit,
+        totalMEVLoss: 0,
+        learningVelocity: this.reflections.length > 1 ? 
+          (this.reflections[this.reflections.length - 1].performance.successRate - 
+           this.reflections[0].performance.successRate) : 0,
+      },
     };
   }
 }
