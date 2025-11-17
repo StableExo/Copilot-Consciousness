@@ -1,5 +1,21 @@
 # Getting Started
 
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Node.js**: v20.11.1 (specified in `.nvmrc`)
+  ```bash
+  # If you use nvm:
+  nvm install 20.11.1
+  nvm use 20.11.1
+  
+  # Verify version:
+  node --version  # Should output v20.11.1
+  ```
+- **npm**: >= 9.0.0
+- **Git**: For cloning the repository
+
 ## Quick Installation
 
 ```bash

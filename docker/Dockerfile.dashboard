@@ -1,5 +1,5 @@
 # Dashboard Service - Web UI and API
-FROM node:20-alpine
+FROM node:20.11.1-alpine
 
 WORKDIR /app
 

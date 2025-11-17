@@ -1,5 +1,5 @@
 # ML Service - Machine learning for prediction and optimization
-FROM node:20-alpine
+FROM node:20.11.1-alpine
 
 WORKDIR /app
 

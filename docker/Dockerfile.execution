@@ -1,5 +1,5 @@
 # Execution Service - Executes arbitrage trades
-FROM node:20-alpine
+FROM node:20.11.1-alpine
 
 WORKDIR /app
 
