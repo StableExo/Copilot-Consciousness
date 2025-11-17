@@ -48,6 +48,24 @@ Demonstrates DEX monitoring integration:
 - Memory search and filtering
 - Consciousness reflection with DEX events
 
+### private-rpc-usage.ts
+Private order-flow / MEV-friendly RPC examples:
+- Flashbots Protect basic usage
+- MEV-Share with revenue sharing
+- Multi-relay setup with fallback
+- Flashbots bundle creation
+- Statistics and monitoring
+- Privacy level comparison
+
+### smart-transaction-routing.ts
+Intelligent transaction routing:
+- Smart routing based on transaction value
+- High-value transactions → Private relays (MEV-Share, Flashbots)
+- Medium-value transactions → Basic privacy (Flashbots Protect)
+- Low-value transactions → Public mempool
+- Automatic fallback handling
+- Statistics tracking
+
 ### memory-management.ts (Coming soon)
 Deep dive into memory systems:
 - Different memory types
@@ -75,6 +93,24 @@ export GEMINI_API_KEY="your-api-key-here"
 ```
 
 Without an API key, examples will run in simulation mode.
+
+### Private RPC Configuration
+
+For private RPC examples, configure your relays:
+
+```bash
+# Flashbots
+export FLASHBOTS_RPC_URL="https://rpc.flashbots.net"
+export FLASHBOTS_AUTH_KEY="your-auth-key"  # Optional
+
+# MEV-Share
+export MEV_SHARE_RPC_URL="https://relay.flashbots.net"
+export MEV_SHARE_AUTH_KEY="your-auth-key"  # Optional
+
+# Builder RPC (optional)
+export BUILDER_RPC_URL_1="https://builder.example.com"
+export BUILDER_RPC_AUTH_KEY_1="your-auth-key"
+```
 
 ## Notes
 
