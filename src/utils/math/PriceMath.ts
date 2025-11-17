@@ -12,7 +12,7 @@
  */
 
 import { ethers } from 'ethers';
-import logger from '../logger';
+import { logger } from '../logger';
 
 // Constants for price calculations
 export const PRICE_SCALE_DECIMALS = 18;
@@ -271,7 +271,7 @@ export async function convertToNativeWei(
 
   const amountNativeWei = numerator / denominator;
   logger.debug(
-    `${logPrefix} Converted ${ethers.formatUnits(amountWeiBigInt, tokenObject.decimals)} ${tokenObject.symbol} to ${ethers.formatUnits(amountNativeWei, nativeCurrencyToken.decimals)} ${nativeCurrencyToken.symbol}`
+    `${logPrefix} Converted ${ethers.utils.formatUnits(amountWeiBigInt, tokenObject.decimals)} ${tokenObject.symbol} to ${ethers.utils.formatUnits(amountNativeWei, nativeCurrencyToken.decimals)} ${nativeCurrencyToken.symbol}`
   );
   return amountNativeWei;
 }

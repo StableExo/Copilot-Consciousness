@@ -5,7 +5,7 @@
  * with retry logic and exponential backoff.
  */
 
-import logger from '../logger';
+import { logger } from '../logger';
 
 /**
  * Utility function to introduce a delay

@@ -5,8 +5,8 @@
  * for addresses, RPC URLs, and data parsing.
  */
 
-import { isAddress, getAddress } from 'ethers';
-import logger from '../logger';
+import { ethers } from 'ethers';
+import { logger } from '../logger';
 
 /**
  * Validates and normalizes an Ethereum address
@@ -30,7 +30,7 @@ export function validateAndNormalizeAddress(
   try {
     const cleanAddress = addressString.replace(/^['"]+|['"]+$/g, '');
     
-    if (!isAddress(cleanAddress)) {
+    if (!ethers.utils.isAddress(cleanAddress)) {
       const errorMsg = `[ValidationUtils] ${contextName}: Invalid address format "${cleanAddress}".`;
       if (isRequired) {
         logger.error(`CRITICAL: ${errorMsg}`);
@@ -40,7 +40,7 @@ export function validateAndNormalizeAddress(
       return null;
     }
 
-    return getAddress(cleanAddress);
+    return ethers.utils.getAddress(cleanAddress);
   } catch (error: any) {
     const errorMsg = `[ValidationUtils] ${contextName}: Validation error for "${rawAddress}" - ${error.message}`;
     if (isRequired) {
