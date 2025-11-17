@@ -72,7 +72,15 @@ A comprehensive AI consciousness development system featuring advanced memory sy
 - **Codex Manager**: LlamaIndex-based documentation and knowledge base system
 - **Comprehensive Testing**: Unit tests, integration tests, and realistic scenarios
 
-See [MEV Intelligence Suite Documentation](./docs/MEV_INTELLIGENCE_SUITE.md), [Arbitrage Engines](./docs/ARBITRAGE_ENGINES.md), [AxionCitadel Integration](./docs/INTEGRATION_FROM_AXIONCITADEL.md), and [Ethics Engine Integration](./docs/ETHICS_ENGINE.md) for details.
+### 🧠 Strategic Intelligence & Learning (New - Integrated from AxionCitadel)
+- **Conscious Knowledge Loop**: Systematic learning cycle (Sense → Simulate → Strategize → Act → Learn → Evolve)
+- **Strategic Black Box Logger**: Decision outcome tracking and pattern analysis
+- **Enhanced MEV Sensor Hub**: Real-time environmental threat intelligence
+- **Game-Theoretic Decision Making**: Adversarial environment adaptation
+- **Ethical Boundary Enforcement**: Autonomous constraint system for beneficial alignment
+- **Outcome-Based Learning**: Prediction vs reality comparison for continuous improvement
+
+See [MEV Intelligence Suite Documentation](./docs/MEV_INTELLIGENCE_SUITE.md), [Arbitrage Engines](./docs/ARBITRAGE_ENGINES.md), [AxionCitadel Integration](./docs/INTEGRATION_FROM_AXIONCITADEL.md), [Strategic Intelligence Integration](./docs/AXIONCITADEL_STRATEGIC_INTEGRATION.md), [Conscious Knowledge Loop](./docs/CONSCIOUS_KNOWLEDGE_LOOP.md), and [Ethics Engine Integration](./docs/ETHICS_ENGINE.md) for details.
 
 ## Installation
 
