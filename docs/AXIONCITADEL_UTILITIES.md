@@ -8,6 +8,17 @@
 
 This document describes the utility libraries integrated from the AxionCitadel repository into Copilot-Consciousness. These are production-tested utilities that have been battle-tested in the MEV/DeFi environment and provide robust functionality for price calculations, caching, network operations, and validation.
 
+### AEV and Warden.bot Context
+
+These utilities form the operational foundation for **AEV (Autonomous Extracted Value)** operations governed by **Warden.bot**. The utilities enable:
+
+- **Precise Value Assessment**: Price math utilities allow Warden.bot to accurately evaluate arbitrage opportunities in AEV space
+- **Efficient Data Management**: Caching reduces redundant operations, enabling faster decision cycles
+- **Resilient Operations**: Network utilities ensure Warden.bot can operate reliably despite network instability
+- **Data Integrity**: Validation utilities prevent invalid data from affecting AEV decision-making
+
+These components work together to support the autonomous, learning-based value extraction that defines AEV, as opposed to traditional algorithmic MEV approaches.
+
 ## Integrated Utilities
 
 ### 1. Price Math (`src/utils/math/PriceMath.ts`)

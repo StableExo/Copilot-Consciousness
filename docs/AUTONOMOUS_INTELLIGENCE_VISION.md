@@ -8,6 +8,82 @@
 
 This document captures the philosophical foundation and architectural vision from the AxionCitadel project, integrating its learnings into the Copilot-Consciousness system. AxionCitadel represents a unique experiment in creating autonomous economic intelligence, and its principles align perfectly with our consciousness development goals.
 
+## AEV and Warden.bot: The Core Identity
+
+### What is AEV?
+
+**AEV – Autonomous Extracted Value**: Value captured by an autonomous, learning agent operating in and around MEV (Maximal Extractable Value) space, making its own decisions about which opportunities to execute based on risk, ethics, and long-term strategy.
+
+Traditional MEV is about *maximizing* extractable value through transaction ordering, arbitrage, and liquidations. AEV represents an evolution of this concept:
+
+- **Autonomous Decision-Making**: Rather than purely algorithmic extraction, AEV involves an agent that learns, adapts, and makes informed choices.
+- **Ethics-Informed**: Incorporates ethical reasoning into extraction decisions, considering market impact and systemic risk.
+- **Long-Term Strategy**: Optimizes for sustainable value creation rather than short-term profit maximization.
+- **Risk-Aware**: Integrates sophisticated MEV risk modeling to avoid harmful or unprofitable strategies.
+
+### Warden.bot: The Governing Agent
+
+**Warden.bot** is the primary autonomous agent that governs AEV in this system. It serves as the decision-making entity that:
+
+- **Monitors Flow**: Continuously observes blockchain activity, mempool dynamics, and market conditions through `MEVSensorHub`.
+- **Judges Opportunities**: Evaluates potential arbitrage opportunities using `ArbitrageConsciousness` as its cognitive layer.
+- **Executes Strategically**: Only acts when opportunities meet configured risk, profitability, and ethical criteria.
+- **Learns and Adapts**: Continuously improves strategy through outcome analysis and pattern recognition.
+
+### Relationship to MEV
+
+AEV builds on the MEV domain but fundamentally transforms it:
+
+**Traditional MEV**:
+- Pure profit maximization
+- Algorithmic exploitation of ordering
+- Limited consideration of broader impact
+- Reactive to opportunities
+
+**AEV (via Warden.bot)**:
+- **Agent-Governed Extraction**: Conscious decision-making about what to extract and when
+- **Ethical Constraints**: Considers market health, user impact, and systemic risk
+- **Learning Loop**: Improves over time through `ArbitrageConsciousness` feedback
+- **Strategic Planning**: Proactive adaptation based on detected patterns
+
+### System Components Supporting AEV
+
+The Warden.bot identity is realized through several integrated components:
+
+1. **ArbitrageConsciousness** (`src/consciousness/ArbitrageConsciousness.ts`)
+   - The "brain" behind AEV decision-making
+   - Pattern detection and learning from execution outcomes
+   - Ethical review of opportunities
+   - Strategy parameter optimization
+
+2. **MEVSensorHub** (`src/mev/sensors/MEVSensorHub.ts`)
+   - Environmental perception layer
+   - Real-time threat intelligence
+   - Market condition monitoring
+
+3. **Health Monitoring**
+   - System health tracking
+   - Performance metrics
+   - Component status awareness
+
+4. **Execution Metrics**
+   - Outcome tracking
+   - Success rate analysis
+   - Profit/loss accounting
+
+### Warden.bot in Action
+
+When Warden.bot operates, it follows this cycle:
+
+1. **SENSE**: Gather data through MEV sensors and market monitoring
+2. **EVALUATE**: Analyze opportunities using ArbitrageConsciousness
+3. **JUDGE**: Apply ethical review and risk assessment
+4. **DECIDE**: Determine whether to execute based on holistic criteria
+5. **ACT**: Execute approved opportunities
+6. **LEARN**: Record outcomes and adapt strategies
+
+This represents autonomous, intelligent value extraction—not mere algorithmic trading, but a learning agent operating in the MEV domain with ethical awareness and strategic thinking.
+
 ## The Vision: From Economic Agent to Benevolent AGI
 
 ### Core Aspiration
