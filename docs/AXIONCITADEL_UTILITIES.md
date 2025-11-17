@@ -56,7 +56,7 @@ MIN_TICK, MAX_TICK               // Uniswap V3 tick bounds
 - Flash loan profitability analysis
 - Token value conversions
 
-### 2. Simple Cache (`src/utils/cache/SimpleCache.ts`)
+### 2. Simple Cache (`src/utils/caching/SimpleCache.ts`)
 
 In-memory caching system with TTL support.
 
@@ -90,7 +90,7 @@ wrap<T>(key: string, fn: () => Promise<T>, ttlSeconds?: number): Promise<T>
 
 **Example:**
 ```typescript
-import { wrap, set, get } from '@/utils/cache';
+import { wrap, set, get } from '@/utils/caching';
 
 // Cache expensive RPC call
 const result = await wrap(
@@ -286,7 +286,7 @@ if (uniV3Price && sushiPrice) {
 
 ### Pattern 2: Cached RPC Calls
 ```typescript
-import { wrap } from '@/utils/cache';
+import { wrap } from '@/utils/caching';
 import { safeFetchWrapper } from '@/utils/network';
 
 async function getPoolReserves(poolAddress: string) {
@@ -343,7 +343,7 @@ const config = {
 ### New Paths (TypeScript)
 ```
 /Copilot-Consciousness/src/utils/math/PriceMath.ts
-/Copilot-Consciousness/src/utils/cache/SimpleCache.ts
+/Copilot-Consciousness/src/utils/caching/SimpleCache.ts
 /Copilot-Consciousness/src/utils/network/NetworkUtils.ts
 /Copilot-Consciousness/src/utils/validation/ValidationUtils.ts
 ```
@@ -361,7 +361,7 @@ const config = {
 ### Unit Tests (To Be Added)
 ```typescript
 // src/utils/math/__tests__/PriceMath.test.ts
-// src/utils/cache/__tests__/SimpleCache.test.ts
+// src/utils/caching/__tests__/SimpleCache.test.ts
 // src/utils/network/__tests__/NetworkUtils.test.ts
 // src/utils/validation/__tests__/ValidationUtils.test.ts
 ```
