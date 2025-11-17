@@ -1,7 +1,7 @@
 {
-  "name": "copilot-consciousness",
+  "name": "aev-thewarden",
   "version": "3.0.0",
-  "description": "Advanced arbitrage bot with PROJECT-HAVOC integration",
+  "description": "AEV (Autonomous Extracted Value) - TheWarden: Intelligent autonomous agent competing with MEV through learning-based value extraction",
   "main": "dist/main.js",
   "author": "StableExo",
   "license": "MIT",
