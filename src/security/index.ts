@@ -52,3 +52,9 @@ export type { HardwareWalletConfig, SignedTransaction } from './wallet/HardwareW
 // Middleware
 export { SecurityMiddleware } from './middleware/authMiddleware';
 export type { AuthRequest } from './middleware/authMiddleware';
+
+// Phase 3: Enhanced Security
+export { BloodhoundScanner } from './BloodhoundScanner';
+export { ThreatResponseEngine } from './ThreatResponseEngine';
+export { SecurityPatternLearner } from './SecurityPatternLearner';
+export * from './types';
