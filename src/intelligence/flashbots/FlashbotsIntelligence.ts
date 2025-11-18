@@ -608,6 +608,113 @@ export class FlashbotsIntelligence {
   }
 
   /**
+   * Calculate recommended refund percentage based on strategy
+   * 
+   * @param strategy - Refund strategy: 'maximize_profit', 'balanced', 'fair_share'
+   * @returns Recommended refund percentage (0-100)
+   */
+  calculateRefundPercentage(
+    strategy: 'maximize_profit' | 'balanced' | 'fair_share' = 'balanced'
+  ): {
+    percent: number;
+    reasoning: string;
+  } {
+    const refundStats = this.getTotalMEVRefunds();
+    
+    switch (strategy) {
+      case 'maximize_profit':
+        // Default 90% to user is already optimal for profit
+        // Only reduce if we're getting poor refund rates
+        if (refundStats.refundRate < 0.7) {
+          return {
+            percent: 95,
+            reasoning: 'Low historical refund rate - requesting higher percentage (95%) to maximize returns',
+          };
+        }
+        return {
+          percent: 90,
+          reasoning: 'Default 90% refund is optimal for profit maximization with good historical rate',
+        };
+      
+      case 'balanced':
+        // Balance between user profit and validator incentives
+        // Good refund rates = we can share more with validators
+        if (refundStats.refundRate > 0.85) {
+          return {
+            percent: 80,
+            reasoning: 'High refund rate allows sharing more with validators (80% user, 20% validator) for better inclusion',
+          };
+        } else if (refundStats.refundRate < 0.7) {
+          return {
+            percent: 90,
+            reasoning: 'Low refund rate - maintaining standard 90% to maximize user returns',
+          };
+        }
+        return {
+          percent: 85,
+          reasoning: 'Balanced 85% to user, 15% to validator for moderate refund optimization',
+        };
+      
+      case 'fair_share':
+        // More equitable split with validators to incentivize inclusion
+        return {
+          percent: 70,
+          reasoning: 'Fair sharing (70% user, 30% validator) to maximize inclusion probability and support network',
+        };
+      
+      default:
+        return {
+          percent: 90,
+          reasoning: 'Default 90% to user as per Flashbots standard',
+        };
+    }
+  }
+
+  /**
+   * Get recommended MEV-Share configuration for a transaction
+   * 
+   * @param privacyPriority - Privacy priority (0 = max refund, 1 = max privacy)
+   * @param refundStrategy - Refund distribution strategy
+   * @returns Complete MEV-Share configuration
+   */
+  getRecommendedMEVShareConfig(
+    privacyPriority: number = 0.5,
+    refundStrategy: 'maximize_profit' | 'balanced' | 'fair_share' = 'balanced'
+  ): {
+    hints: any;
+    refundConfig: { percent: number };
+    fastMode: boolean;
+    shareTEE: boolean;
+    reasoning: string[];
+  } {
+    const hints = this.recommendOptimalHints(privacyPriority);
+    const refundConfig = this.calculateRefundPercentage(refundStrategy);
+    const fastModeRec = { useFastMode: privacyPriority < 0.3 }; // Fast mode for low privacy priority
+    
+    const reasoning: string[] = [
+      `Privacy priority: ${(privacyPriority * 100).toFixed(0)}%`,
+      `Refund strategy: ${refundStrategy}`,
+      `Recommended refund: ${refundConfig.percent}% to user`,
+      refundConfig.reasoning,
+      fastModeRec.useFastMode ? 'Fast mode enabled for maximum MEV capture' : 'Standard mode for balanced privacy',
+    ];
+    
+    // TEE sharing recommended for medium-high privacy
+    const shareTEE = privacyPriority > 0.4;
+    if (shareTEE) {
+      reasoning.push('TEE searcher sharing enabled for enhanced privacy with delayed disclosure');
+    }
+
+    return {
+      hints,
+      refundConfig: { percent: refundConfig.percent },
+      fastMode: fastModeRec.useFastMode,
+      shareTEE,
+      reasoning,
+    };
+  }
+
+  /**
    * Reset statistics (for testing or new deployment)
    */
   reset(): void {
