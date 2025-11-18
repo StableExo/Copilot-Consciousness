@@ -403,6 +403,211 @@ export class FlashbotsIntelligence {
   }
 
   /**
+   * Recommend optimal MEV-Share hints configuration
+   * Balances privacy vs. MEV refund potential
+   * 
+   * @param privacyPriority - 0 (max refunds) to 1 (max privacy)
+   * @returns Recommended hints configuration
+   */
+  recommendOptimalHints(privacyPriority: number = 0.5): {
+    calldata?: boolean;
+    contractAddress?: boolean;
+    functionSelector?: boolean;
+    logs?: boolean;
+    hash?: boolean;
+    default_logs?: boolean;
+  } {
+    // Clamp priority between 0 and 1
+    const priority = Math.max(0, Math.min(1, privacyPriority));
+
+    // Maximum refunds (low privacy)
+    if (priority < 0.3) {
+      logger.info('[FlashbotsIntelligence] Recommending maximum refund hints (low privacy)');
+      return {
+        calldata: true,
+        contractAddress: true,
+        functionSelector: true,
+        logs: true,
+        hash: true,
+        default_logs: true,
+      };
+    }
+
+    // Balanced approach (medium privacy)
+    if (priority < 0.7) {
+      logger.info('[FlashbotsIntelligence] Recommending balanced hints (medium privacy)');
+      return {
+        contractAddress: true,
+        functionSelector: true,
+        logs: true,
+        hash: true,
+        default_logs: true,
+      };
+    }
+
+    // Maximum privacy (low refunds)
+    logger.info('[FlashbotsIntelligence] Recommending maximum privacy hints');
+    return {
+      hash: true,
+    };
+  }
+
+  /**
+   * Recommend whether to use fast mode based on network conditions
+   * 
+   * @param urgency - How urgent the transaction is (0 = not urgent, 1 = very urgent)
+   * @param currentGasPrice - Current network gas price
+   * @returns Recommendation for fast mode with reasoning
+   */
+  async recommendFastMode(
+    urgency: number = 0.5,
+    currentGasPrice?: bigint
+  ): Promise<{
+    useFastMode: boolean;
+    reasoning: string;
+    estimatedInclusionBlocks: number;
+  }> {
+    const gasPrice = currentGasPrice || (await this.provider.getGasPrice());
+    const gasPriceBigInt = BigInt(gasPrice.toString());
+    
+    // Get base fee from latest block
+    const block = await this.provider.getBlock('latest');
+    const baseFee = block.baseFeePerGas ? BigInt(block.baseFeePerGas.toString()) : 0n;
+    
+    // Calculate priority fee percentage
+    const priorityFee = gasPriceBigInt > baseFee ? gasPriceBigInt - baseFee : 0n;
+    const priorityPercent = baseFee > 0n 
+      ? Number((priorityFee * 100n) / baseFee) 
+      : 0;
+
+    // High urgency = recommend fast mode
+    if (urgency > 0.7) {
+      return {
+        useFastMode: true,
+        reasoning: 'High urgency transaction - fast mode recommended for next block inclusion',
+        estimatedInclusionBlocks: 1,
+      };
+    }
+
+    // High network congestion (high priority fees) = recommend fast mode
+    if (priorityPercent > 50) {
+      return {
+        useFastMode: true,
+        reasoning: `High network congestion (${priorityPercent.toFixed(1)}% priority fee) - fast mode increases inclusion probability`,
+        estimatedInclusionBlocks: 1,
+      };
+    }
+
+    // Medium urgency or congestion
+    if (urgency > 0.4 || priorityPercent > 20) {
+      return {
+        useFastMode: true,
+        reasoning: 'Moderate urgency/congestion - fast mode recommended for reliable inclusion',
+        estimatedInclusionBlocks: 1,
+      };
+    }
+
+    // Low urgency and congestion - normal mode is fine
+    return {
+      useFastMode: false,
+      reasoning: 'Low urgency and network congestion - normal mode sufficient',
+      estimatedInclusionBlocks: 2,
+    };
+  }
+
+  /**
+   * Analyze MEV-Share configuration and recommend optimizations
+   * 
+   * @param currentHints - Current hints configuration
+   * @param refundHistory - Recent refund data
+   * @returns Optimization recommendations
+   */
+  analyzeMEVShareConfig(
+    currentHints?: {
+      calldata?: boolean;
+      contractAddress?: boolean;
+      functionSelector?: boolean;
+      logs?: boolean;
+      hash?: boolean;
+      default_logs?: boolean;
+    },
+    refundHistory?: MEVRefund[]
+  ): {
+    shouldOptimize: boolean;
+    recommendations: string[];
+    suggestedHints?: {
+      calldata?: boolean;
+      contractAddress?: boolean;
+      functionSelector?: boolean;
+      logs?: boolean;
+      hash?: boolean;
+      default_logs?: boolean;
+    };
+  } {
+    const recommendations: string[] = [];
+    let shouldOptimize = false;
+
+    // If no hints configured, recommend starting with balanced approach
+    if (!currentHints || Object.keys(currentHints).length === 0) {
+      shouldOptimize = true;
+      recommendations.push('No hints configured - recommend balanced privacy/refund approach');
+      return {
+        shouldOptimize,
+        recommendations,
+        suggestedHints: this.recommendOptimalHints(0.5),
+      };
+    }
+
+    // Check refund history if available
+    const recentRefunds = refundHistory || this.getRecentRefunds(10);
+    if (recentRefunds.length > 5) {
+      const refundStats = this.getTotalMEVRefunds();
+      
+      // Low refund rate suggests more hints could be shared
+      if (refundStats.refundRate < 0.3) {
+        shouldOptimize = true;
+        recommendations.push(
+          `Low MEV refund rate (${(refundStats.refundRate * 100).toFixed(1)}%) - consider sharing more hints for better refunds`
+        );
+        
+        // Suggest adding more hints
+        const suggestedHints = { ...currentHints };
+        if (!suggestedHints.default_logs) {
+          suggestedHints.default_logs = true;
+          recommendations.push('Add default_logs hint to share swap/transfer events');
+        }
+        if (!suggestedHints.logs) {
+          suggestedHints.logs = true;
+          recommendations.push('Add logs hint for better searcher visibility');
+        }
+        
+        return { shouldOptimize, recommendations, suggestedHints };
+      }
+    }
+
+    // Check if only hash is shared (maximum privacy)
+    if (currentHints.hash && Object.keys(currentHints).length === 1) {
+      recommendations.push(
+        'Maximum privacy mode active - MEV refunds will be minimal. Consider adding default_logs for moderate refunds while maintaining good privacy'
+      );
+    }
+
+    // Check if everything is shared
+    const allShared = currentHints.calldata && currentHints.logs && 
+                      currentHints.contractAddress && currentHints.functionSelector;
+    if (allShared) {
+      recommendations.push(
+        'Maximum refund mode active - all transaction data is shared. This is optimal for refunds but provides minimal privacy'
+      );
+    }
+
+    return {
+      shouldOptimize,
+      recommendations,
+    };
+  }
+
+  /**
    * Reset statistics (for testing or new deployment)
    */
   reset(): void {

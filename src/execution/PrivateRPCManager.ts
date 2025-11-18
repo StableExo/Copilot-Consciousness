@@ -852,19 +852,20 @@ export class PrivateRPCManager {
  */
 export function createFlashbotsProtectConfig(
   chainId: number,
-  authKey?: string
+  authKey?: string,
+  fastMode: boolean = false
 ): PrivateRelayConfig {
   let endpoint: string;
   
   switch (chainId) {
     case 1: // Mainnet
-      endpoint = FLASHBOTS_ENDPOINTS.MAINNET;
+      endpoint = fastMode ? 'https://rpc.flashbots.net/fast' : FLASHBOTS_ENDPOINTS.MAINNET;
       break;
     case 5: // Goerli
-      endpoint = FLASHBOTS_ENDPOINTS.GOERLI;
+      endpoint = fastMode ? 'https://rpc-goerli.flashbots.net/fast' : FLASHBOTS_ENDPOINTS.GOERLI;
       break;
     case 11155111: // Sepolia
-      endpoint = FLASHBOTS_ENDPOINTS.SEPOLIA;
+      endpoint = fastMode ? 'https://rpc-sepolia.flashbots.net/fast' : FLASHBOTS_ENDPOINTS.SEPOLIA;
       break;
     default:
       throw new Error(`Flashbots not supported on chain ID ${chainId}`);
@@ -876,7 +877,8 @@ export function createFlashbotsProtectConfig(
     authKey,
     enabled: true,
     priority: 100,
-    name: 'Flashbots Protect',
+    name: fastMode ? 'Flashbots Protect (Fast Mode)' : 'Flashbots Protect',
+    fastMode,
   };
 }
 
@@ -891,5 +893,27 @@ export function createMEVShareConfig(authKey?: string): PrivateRelayConfig {
     enabled: true,
     priority: 90,
     name: 'MEV-Share',
+  };
+}
+
+/**
+ * Create MEV-Boost relay configuration
+ * @param relayUrl - The MEV-Boost relay URL (e.g., https://boost-relay.flashbots.net)
+ * @param beaconNodes - Beacon node URLs for block validation
+ * @param builders - Connected builder names
+ */
+export function createMEVBoostRelayConfig(
+  relayUrl: string,
+  beaconNodes: string[] = [],
+  builders: string[] = []
+): PrivateRelayConfig {
+  return {
+    type: PrivateRelayType.BUILDER_RPC,
+    endpoint: relayUrl,
+    enabled: true,
+    priority: 80,
+    name: 'MEV-Boost Relay',
+    beaconNodes,
+    connectedBuilders: builders,
   };
 }

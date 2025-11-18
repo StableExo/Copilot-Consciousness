@@ -349,4 +349,161 @@ describe('FlashbotsIntelligence', () => {
       expect(stats.refunds.total).toBe(0);
     });
   });
+
+  describe('Optimal Hints Configuration', () => {
+    it('should recommend all hints for low privacy priority', () => {
+      const hints = intelligence.recommendOptimalHints(0.2);
+      expect(hints.calldata).toBe(true);
+      expect(hints.contractAddress).toBe(true);
+      expect(hints.functionSelector).toBe(true);
+      expect(hints.logs).toBe(true);
+      expect(hints.hash).toBe(true);
+      expect(hints.default_logs).toBe(true);
+    });
+
+    it('should recommend balanced hints for medium privacy priority', () => {
+      const hints = intelligence.recommendOptimalHints(0.5);
+      expect(hints.calldata).toBeUndefined();
+      expect(hints.contractAddress).toBe(true);
+      expect(hints.functionSelector).toBe(true);
+      expect(hints.logs).toBe(true);
+      expect(hints.hash).toBe(true);
+      expect(hints.default_logs).toBe(true);
+    });
+
+    it('should recommend only hash for high privacy priority', () => {
+      const hints = intelligence.recommendOptimalHints(0.9);
+      expect(hints.calldata).toBeUndefined();
+      expect(hints.contractAddress).toBeUndefined();
+      expect(hints.functionSelector).toBeUndefined();
+      expect(hints.logs).toBeUndefined();
+      expect(hints.hash).toBe(true);
+      expect(hints.default_logs).toBeUndefined();
+    });
+
+    it('should handle edge cases', () => {
+      const hintsMin = intelligence.recommendOptimalHints(-0.5);
+      expect(hintsMin.calldata).toBe(true);
+
+      const hintsMax = intelligence.recommendOptimalHints(1.5);
+      expect(hintsMax.hash).toBe(true);
+      expect(hintsMax.calldata).toBeUndefined();
+    });
+  });
+
+  describe('Fast Mode Recommendations', () => {
+    beforeEach(() => {
+      // Mock provider methods
+      jest.spyOn(provider, 'getGasPrice').mockResolvedValue(ethers.BigNumber.from('50000000000')); // 50 gwei
+      jest.spyOn(provider, 'getBlock').mockResolvedValue({
+        baseFeePerGas: ethers.BigNumber.from('40000000000'), // 40 gwei base fee
+      } as any);
+    });
+
+    it('should recommend fast mode for high urgency', async () => {
+      const recommendation = await intelligence.recommendFastMode(0.8);
+      expect(recommendation.useFastMode).toBe(true);
+      expect(recommendation.reasoning).toContain('High urgency');
+      expect(recommendation.estimatedInclusionBlocks).toBe(1);
+    });
+
+    it('should recommend normal mode for low urgency and low congestion', async () => {
+      // Mock low priority fee
+      jest.spyOn(provider, 'getGasPrice').mockResolvedValue(ethers.BigNumber.from('45000000000')); // 45 gwei
+      jest.spyOn(provider, 'getBlock').mockResolvedValue({
+        baseFeePerGas: ethers.BigNumber.from('40000000000'), // 40 gwei base fee, only 12.5% priority
+      } as any);
+
+      const recommendation = await intelligence.recommendFastMode(0.1);
+      expect(recommendation.useFastMode).toBe(false);
+      expect(recommendation.reasoning).toContain('Low urgency');
+      expect(recommendation.estimatedInclusionBlocks).toBe(2);
+    });
+
+    it('should recommend fast mode for high network congestion', async () => {
+      // Mock high priority fee
+      jest.spyOn(provider, 'getGasPrice').mockResolvedValue(ethers.BigNumber.from('100000000000')); // 100 gwei
+      jest.spyOn(provider, 'getBlock').mockResolvedValue({
+        baseFeePerGas: ethers.BigNumber.from('40000000000'), // 40 gwei base fee, 150% priority
+      } as any);
+
+      const recommendation = await intelligence.recommendFastMode(0.3);
+      expect(recommendation.useFastMode).toBe(true);
+      expect(recommendation.reasoning).toContain('congestion');
+    });
+
+    it('should handle medium urgency correctly', async () => {
+      const recommendation = await intelligence.recommendFastMode(0.5);
+      expect(recommendation.useFastMode).toBe(true);
+      expect(recommendation.reasoning).toContain('Moderate');
+    });
+  });
+
+  describe('MEV-Share Configuration Analysis', () => {
+    it('should recommend hints when none configured', () => {
+      const analysis = intelligence.analyzeMEVShareConfig();
+      expect(analysis.shouldOptimize).toBe(true);
+      expect(analysis.recommendations.some(r => r.includes('No hints'))).toBe(true);
+      expect(analysis.suggestedHints).toBeDefined();
+    });
+
+    it('should detect low refund rate and recommend more hints', () => {
+      // Record some low refund transactions
+      for (let i = 0; i < 10; i++) {
+        intelligence.recordMEVRefund({
+          txHash: `0x${i}`,
+          mevExtracted: (0.1e18).toString(),
+          refundAmount: (0.02e18).toString(), // Only 20% refund
+          blockNumber: 100 + i,
+          timestamp: Date.now(),
+        });
+      }
+
+      const currentHints = { hash: true };
+      const analysis = intelligence.analyzeMEVShareConfig(currentHints);
+      
+      expect(analysis.shouldOptimize).toBe(true);
+      expect(analysis.recommendations.some(r => r.includes('Low MEV refund rate'))).toBe(true);
+      expect(analysis.suggestedHints?.default_logs).toBe(true);
+    });
+
+    it('should detect maximum privacy mode', () => {
+      const currentHints = { hash: true };
+      const analysis = intelligence.analyzeMEVShareConfig(currentHints);
+      
+      expect(analysis.recommendations.some(r => r.includes('Maximum privacy'))).toBe(true);
+    });
+
+    it('should detect maximum refund mode', () => {
+      const currentHints = {
+        calldata: true,
+        logs: true,
+        contractAddress: true,
+        functionSelector: true,
+      };
+      const analysis = intelligence.analyzeMEVShareConfig(currentHints);
+      
+      expect(analysis.recommendations.some(r => r.includes('Maximum refund'))).toBe(true);
+    });
+
+    it('should suggest adding default_logs for better refunds', () => {
+      // Record low refunds
+      for (let i = 0; i < 10; i++) {
+        intelligence.recordMEVRefund({
+          txHash: `0x${i}`,
+          mevExtracted: (0.1e18).toString(),
+          refundAmount: (0.02e18).toString(),
+          blockNumber: 100 + i,
+          timestamp: Date.now(),
+        });
+      }
+
+      const currentHints = { hash: true, logs: true };
+      const analysis = intelligence.analyzeMEVShareConfig(currentHints);
+      
+      if (analysis.suggestedHints) {
+        expect(analysis.suggestedHints.default_logs).toBe(true);
+      }
+    });
+  });
 });

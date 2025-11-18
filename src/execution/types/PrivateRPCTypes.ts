@@ -73,6 +73,24 @@ export interface PrivateRelayConfig {
   
   /** Optional name/label for this relay */
   name?: string;
+  
+  /**
+   * Enable fast mode for this relay
+   * Multiplexes bundles to all builders for faster inclusion
+   */
+  fastMode?: boolean;
+  
+  /**
+   * Associated beacon node URLs for MEV-Boost relays
+   * Used for block validation in MEV-Boost setup
+   */
+  beaconNodes?: string[];
+  
+  /**
+   * Builder names this relay connects to
+   * Used for multi-relay MEV-Boost configurations
+   */
+  connectedBuilders?: string[];
 }
 
 /**
@@ -204,6 +222,19 @@ export interface MEVShareOptions {
     /** Percent of MEV to refund (0-100) */
     percent?: number;
   };
+  
+  /** 
+   * Enable fast mode - multiplexes to all builders for faster inclusion
+   * Increases validator incentives and shares with TEE searchers
+   * @see https://docs.flashbots.net/flashbots-protect/quick-start
+   */
+  fastMode?: boolean;
+  
+  /**
+   * Share with Trusted Execution Environment (TEE) searchers
+   * TEE searchers get full transaction info (except signatures) with time delay for privacy
+   */
+  shareTEE?: boolean;
 }
 
 /**
