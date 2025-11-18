@@ -8,3 +8,4 @@
 export * from './types';
 export * from './EthicalReviewGate';
 export * from './HarmonicPrinciple';
+export * from './GatedExecutor';

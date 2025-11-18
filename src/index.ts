@@ -5,6 +5,8 @@
  * - Memory systems (sensory, short-term, working, long-term, episodic, semantic, procedural)
  * - Temporal awareness (event tracking, pattern detection, time perception)
  * - Cognitive development (learning, reasoning, self-awareness, adaptation)
+ * - Ethics Engine with Gated Execution (from AGI)
+ * - Memory Core tools (Scribe, Mnemosyne, SelfReflection)
  * - Gemini Citadel integration (cosmic-scale problem solving)
  * - DEX monitoring and integration
  */
@@ -21,8 +23,11 @@ export * from './consciousness';
 // Temporal awareness
 export * from './temporal';
 
-// Cognitive development
+// Cognitive development (includes Ethics Engine)
 export * from './cognitive';
+
+// Tools (includes Memory Core tools)
+export * from './tools';
 
 // Gemini Citadel integration
 export * from './gemini-citadel';
