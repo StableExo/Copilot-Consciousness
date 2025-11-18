@@ -65,10 +65,18 @@ See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for TheWarden's operation
 
 ### 🤝 Ethics Engine (Integrated from AGI)
 - **Ethical Review Gate**: Pre-execution review of decisions against core principles
+- **Gated Executor**: Orchestrates ethical review with environmental context gathering
 - **Moral Reasoning**: Six core ethical principles (Truth-Maximization, Harm-Minimization, Partnership, Radical Transparency, Accountability, Precision)
 - **Harmonic Principle**: Balanced optimization using three pillars (Immune System, Unified Mind, Digital Soul)
 - **Conflict Resolution**: Resolve competing goals using ethical frameworks
 - **Decision Evaluation**: Real-time ethical assessment of AI decisions
+
+### 🧠 Memory Core Tools (Integrated from AGI)
+- **Scribe**: Record task completions to structured memory entries
+- **Mnemosyne**: Semantic search over the Memory Core with natural language queries
+- **SelfReflection**: Metacognitive analysis journal for continuous improvement
+- **Knowledge Base**: Persistent storage of experiences and learnings
+- **Pattern Recognition**: Identify recurring patterns in successes and failures
 
 ### 🌌 Gemini Citadel Integration
 - **Standard Gemini API**: Direct integration with Google's Gemini AI
@@ -126,7 +134,7 @@ See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for TheWarden's operation
 - **Outcome-Based Learning**: Prediction vs reality comparison for continuous improvement
 - **Production-Tested Utilities**: Battle-hardened price math, caching, networking, and validation from MEV environment
 
-See [MEV Intelligence Suite Documentation](./docs/MEV_INTELLIGENCE_SUITE.md), [Flashbots Intelligence](./docs/FLASHBOTS_INTELLIGENCE.md), [Private RPC Documentation](./docs/PRIVATE_RPC.md), [Arbitrage Engines](./docs/ARBITRAGE_ENGINES.md), [AxionCitadel Integration](./docs/INTEGRATION_FROM_AXIONCITADEL.md), [Strategic Intelligence Integration](./docs/AXIONCITADEL_STRATEGIC_INTEGRATION.md), [Conscious Knowledge Loop](./docs/CONSCIOUS_KNOWLEDGE_LOOP.md), [Utilities Integration](./docs/AXIONCITADEL_UTILITIES.md), [Autonomous Intelligence Vision](./docs/AUTONOMOUS_INTELLIGENCE_VISION.md), and [Ethics Engine Integration](./docs/ETHICS_ENGINE.md) for details.
+See [MEV Intelligence Suite Documentation](./docs/MEV_INTELLIGENCE_SUITE.md), [Flashbots Intelligence](./docs/FLASHBOTS_INTELLIGENCE.md), [Private RPC Documentation](./docs/PRIVATE_RPC.md), [Arbitrage Engines](./docs/ARBITRAGE_ENGINES.md), [AxionCitadel Integration](./docs/INTEGRATION_FROM_AXIONCITADEL.md), [Strategic Intelligence Integration](./docs/AXIONCITADEL_STRATEGIC_INTEGRATION.md), [Conscious Knowledge Loop](./docs/CONSCIOUS_KNOWLEDGE_LOOP.md), [Utilities Integration](./docs/AXIONCITADEL_UTILITIES.md), [Autonomous Intelligence Vision](./docs/AUTONOMOUS_INTELLIGENCE_VISION.md), [Ethics Engine Integration](./docs/ETHICS_ENGINE.md), and [Memory Core & Gated Execution](./docs/MEMORY_CORE_AND_GATED_EXECUTION.md) for details.
 
 ## Installation
 
