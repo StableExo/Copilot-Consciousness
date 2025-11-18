@@ -627,9 +627,232 @@ try {
 3. **MEV-Share Hints** - Configure hints carefully to balance privacy vs. profit
 4. **Builder Trust** - Use reputation system to avoid unreliable builders
 
+## Advanced Features (New)
+
+### Fast Mode Support
+
+Fast mode multiplexes bundles to all registered builders, increasing the likelihood of next-block inclusion:
+
+```typescript
+import { createFlashbotsProtectConfig } from './execution';
+
+// Create fast mode configuration
+const fastConfig = createFlashbotsProtectConfig(1, undefined, true);
+// Uses endpoint: https://rpc.flashbots.net/fast
+
+// Or configure in MEV-Share options
+const mevShareOptions: MEVShareOptions = {
+  fastMode: true,
+  hints: {
+    logs: true,
+    default_logs: true,
+  },
+};
+```
+
+**Fast Mode Benefits:**
+- Transactions shared with all registered builders immediately
+- Higher validator incentives for faster inclusion
+- Full transaction info shared with TEE (Trusted Execution Environment) searchers
+- Ideal for time-sensitive arbitrage opportunities
+
+**When to Use Fast Mode:**
+
+```typescript
+// Get fast mode recommendation based on urgency and network conditions
+const recommendation = await intelligence.recommendFastMode(0.8); // High urgency
+
+if (recommendation.useFastMode) {
+  console.log(recommendation.reasoning);
+  console.log(`Expected inclusion: ${recommendation.estimatedInclusionBlocks} blocks`);
+  
+  // Use fast mode configuration
+  const config = createFlashbotsProtectConfig(1, authKey, true);
+}
+```
+
+### Optimal Hints Configuration
+
+The intelligence module can recommend optimal hint configurations based on your privacy requirements:
+
+```typescript
+// Maximum refunds (low privacy)
+const maxRefundHints = intelligence.recommendOptimalHints(0.2);
+// Returns: { calldata, contractAddress, functionSelector, logs, hash, default_logs }
+
+// Balanced approach (medium privacy)
+const balancedHints = intelligence.recommendOptimalHints(0.5);
+// Returns: { contractAddress, functionSelector, logs, hash, default_logs }
+
+// Maximum privacy (low refunds)
+const maxPrivacyHints = intelligence.recommendOptimalHints(0.9);
+// Returns: { hash }
+
+// Use in MEV-Share options
+const options: MEVShareOptions = {
+  hints: balancedHints,
+  fastMode: false,
+};
+```
+
+**Privacy vs. Refund Trade-offs:**
+
+| Privacy Priority | Hints Shared | MEV Refund Potential | Use Case |
+|-----------------|--------------|---------------------|----------|
+| 0.0 - 0.3 | All (calldata, logs, etc.) | Maximum | Maximize profit, minimal privacy concerns |
+| 0.3 - 0.7 | Selective (logs, selectors) | High | Balanced approach for most use cases |
+| 0.7 - 1.0 | Hash only | Minimal | Maximum privacy, competitive advantage |
+
+### MEV-Share Configuration Analysis
+
+Analyze your current MEV-Share configuration and get optimization recommendations:
+
+```typescript
+const currentHints = {
+  hash: true,
+  logs: true,
+};
+
+const analysis = intelligence.analyzeMEVShareConfig(currentHints);
+
+if (analysis.shouldOptimize) {
+  console.log('Optimization recommended:');
+  analysis.recommendations.forEach(rec => console.log('-', rec));
+  
+  if (analysis.suggestedHints) {
+    console.log('Suggested hints:', analysis.suggestedHints);
+  }
+}
+```
+
+**Example Output:**
+
+```
+Optimization recommended:
+- Low MEV refund rate (25.3%) - consider sharing more hints for better refunds
+- Add default_logs hint to share swap/transfer events
+- Add logs hint for better searcher visibility
+Suggested hints: { hash: true, logs: true, default_logs: true }
+```
+
+### MEV-Boost Relay Configuration
+
+Support for MEV-Boost relay configurations with multiple relay support:
+
+```typescript
+import { createMEVBoostRelayConfig } from './execution';
+
+// Configure multiple MEV-Boost relays for redundancy
+const flashbotsRelay = createMEVBoostRelayConfig(
+  'https://boost-relay.flashbots.net',
+  ['http://localhost:5052'], // Beacon node URLs
+  ['flashbots-builder']      // Connected builders
+);
+
+const ultrasoundRelay = createMEVBoostRelayConfig(
+  'https://relay.ultrasound.money',
+  ['http://localhost:5052'],
+  ['ultrasound-builder']
+);
+
+const manager = new PrivateRPCManager(provider, signer, {
+  relays: [flashbotsRelay, ultrasoundRelay],
+  enableFallback: true,
+});
+```
+
+**Benefits of Multiple Relays:**
+- Increased redundancy and uptime
+- Protection against single-relay downtime
+- Access to different builder networks
+- Enhanced censorship resistance
+
+### TEE Searcher Support
+
+Trusted Execution Environment (TEE) searchers receive full transaction information with time delays for privacy:
+
+```typescript
+const mevShareOptions: MEVShareOptions = {
+  shareTEE: true,  // Enable TEE searcher sharing
+  hints: {
+    hash: true,
+    logs: true,
+  },
+  fastMode: true,
+};
+```
+
+**TEE Searcher Features:**
+- Access to full transaction data (except signatures)
+- Runs in secure enclaves for guaranteed privacy
+- Time delay before data is revealed
+- Useful for debugging and advanced MEV strategies
+
+## Complete Advanced Workflow Example
+
+```typescript
+import { ethers } from 'ethers';
+import { 
+  PrivateRPCManager, 
+  createFlashbotsProtectConfig,
+  createMEVBoostRelayConfig,
+} from './execution';
+import { FlashbotsIntelligence } from './intelligence/flashbots';
+
+// Setup with multiple relays
+const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
+const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+
+const manager = new PrivateRPCManager(provider, wallet, {
+  relays: [
+    createFlashbotsProtectConfig(1, authKey, false), // Normal mode
+    createMEVBoostRelayConfig('https://boost-relay.flashbots.net'),
+  ],
+  defaultPrivacyLevel: PrivacyLevel.ENHANCED,
+});
+
+const intelligence = new FlashbotsIntelligence(provider);
+
+// Get fast mode recommendation
+const fastModeRec = await intelligence.recommendFastMode(0.8); // High urgency
+
+// Get optimal hints
+const privacyPriority = 0.5; // Balanced
+const hints = intelligence.recommendOptimalHints(privacyPriority);
+
+// Analyze current MEV-Share config
+const analysis = intelligence.analyzeMEVShareConfig(hints);
+console.log('Config analysis:', analysis.recommendations);
+
+// Create transaction with recommendations
+const tx = await wallet.populateTransaction({
+  to: targetAddress,
+  data: calldata,
+  value: 0,
+});
+
+// Submit with optimized configuration
+const result = await manager.submitPrivateTransaction(tx, {
+  privacyLevel: PrivacyLevel.ENHANCED,
+  fastMode: fastModeRec.useFastMode,
+  mevShareOptions: {
+    hints,
+    shareTEE: true,
+    fastMode: fastModeRec.useFastMode,
+  },
+});
+
+if (result.success) {
+  console.log('Transaction submitted successfully');
+  console.log('Relay used:', result.relayUsed);
+  console.log('Expected inclusion:', fastModeRec.estimatedInclusionBlocks, 'blocks');
+}
+```
+
 ## See Also
 
 - [Flashbots Documentation](https://docs.flashbots.net/)
 - [MEV-Share Documentation](https://docs.flashbots.net/flashbots-mev-share/)
+- [Flashbots Protect Settings Guide](https://docs.flashbots.net/flashbots-protect/settings-guide)
 - [Private RPC Guide](./PRIVATE_RPC.md)
 - [MEV Intelligence Suite](./MEV_INTELLIGENCE_SUITE.md)
