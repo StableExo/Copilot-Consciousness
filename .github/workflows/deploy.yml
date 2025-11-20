@@ -21,11 +21,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20.11.1'
+          node-version: '20.18.0'
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --omit=optional --legacy-peer-deps || npm install --omit=optional --legacy-peer-deps
+        run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+
+      - name: Compile contracts
+        run: npm run compile
 
       - name: Run linter
         run: npm run lint || echo "Linting skipped"
