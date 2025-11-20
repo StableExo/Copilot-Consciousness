@@ -106,6 +106,7 @@ See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for TheWarden's operation
 ### 🔒 Private Transaction Submission & Flashbots Intelligence
 - **Flashbots Protect**: Keep transactions out of public mempool
 - **MEV-Share**: Share MEV revenue while maintaining privacy
+- **Custom Refund Configuration**: Configure MEV refund percentages (90% user / 10% validator default)
 - **Bundle Simulation**: Pre-validate bundles with `eth_callBundle` before submission
 - **Bundle Cancellation**: Cancel submitted bundles with `eth_cancelBundle`
 - **Builder Reputation Tracking**: Monitor and optimize builder selection based on performance
@@ -117,6 +118,22 @@ See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for TheWarden's operation
 - **Privacy Levels**: Configurable privacy (none, basic, enhanced, maximum)
 - **Bundle Support**: Atomic multi-transaction execution with validation
 - **Health Monitoring**: Real-time relay availability tracking
+
+### 🌐 BuilderNet Integration (New - December 2024)
+- **TEE Attestation**: Verify Trusted Execution Environment integrity for builder nodes
+- **Decentralized Building**: Participate in BuilderNet's distributed block-building network
+- **Builder Node Management**: Track and select trusted builders with verified attestations
+- **Orderflow Privacy**: Enhanced privacy through TEE-secured orderflow distribution
+- **Remote Attestation**: Verify builder code integrity via platform attestation (Intel SGX, AMD SEV)
+- **Reputation System**: Dynamic builder scoring based on performance and attestation status
+
+### 🚀 Rollup-Boost for L2 (New - 2024-2025)
+- **Flashblocks**: Sub-second (200-250ms) block confirmations on OP Stack L2s
+- **OP-rbuilder Integration**: Rust-based block builder for Optimism, Base, and OP Stack chains
+- **Rollup Extensions**: Modular upgrades for performance, programmability, and decentralization
+- **Dynamic Configuration**: Adaptive target confirmation times based on network conditions
+- **Inclusion Estimation**: Predict transaction confirmation times with priority fee optimization
+- **L2 Performance Monitoring**: Track flashblock metrics, L1 finalization, and uptime
 
 ### 🔧 Production Infrastructure
 - **Configuration System**: Structured configs for chains, tokens, pools, and protocols
@@ -134,7 +151,7 @@ See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for TheWarden's operation
 - **Outcome-Based Learning**: Prediction vs reality comparison for continuous improvement
 - **Production-Tested Utilities**: Battle-hardened price math, caching, networking, and validation from MEV environment
 
-See [MEV Intelligence Suite Documentation](./docs/MEV_INTELLIGENCE_SUITE.md), [Flashbots Intelligence](./docs/FLASHBOTS_INTELLIGENCE.md), [Private RPC Documentation](./docs/PRIVATE_RPC.md), [Arbitrage Engines](./docs/ARBITRAGE_ENGINES.md), [AxionCitadel Integration](./docs/INTEGRATION_FROM_AXIONCITADEL.md), [Strategic Intelligence Integration](./docs/AXIONCITADEL_STRATEGIC_INTEGRATION.md), [Conscious Knowledge Loop](./docs/CONSCIOUS_KNOWLEDGE_LOOP.md), [Utilities Integration](./docs/AXIONCITADEL_UTILITIES.md), [Autonomous Intelligence Vision](./docs/AUTONOMOUS_INTELLIGENCE_VISION.md), [Ethics Engine Integration](./docs/ETHICS_ENGINE.md), and [Memory Core & Gated Execution](./docs/MEMORY_CORE_AND_GATED_EXECUTION.md) for details.
+See [MEV Intelligence Suite Documentation](./docs/MEV_INTELLIGENCE_SUITE.md), [Flashbots Intelligence](./docs/FLASHBOTS_INTELLIGENCE.md), [BuilderNet Integration](./docs/BUILDERNET_INTEGRATION.md), [Rollup-Boost Integration](./docs/ROLLUP_BOOST_INTEGRATION.md), [Private RPC Documentation](./docs/PRIVATE_RPC.md), [Arbitrage Engines](./docs/ARBITRAGE_ENGINES.md), [AxionCitadel Integration](./docs/INTEGRATION_FROM_AXIONCITADEL.md), [Strategic Intelligence Integration](./docs/AXIONCITADEL_STRATEGIC_INTEGRATION.md), [Conscious Knowledge Loop](./docs/CONSCIOUS_KNOWLEDGE_LOOP.md), [Utilities Integration](./docs/AXIONCITADEL_UTILITIES.md), [Autonomous Intelligence Vision](./docs/AUTONOMOUS_INTELLIGENCE_VISION.md), [Ethics Engine Integration](./docs/ETHICS_ENGINE.md), and [Memory Core & Gated Execution](./docs/MEMORY_CORE_AND_GATED_EXECUTION.md) for details.
 
 ## Installation
 
