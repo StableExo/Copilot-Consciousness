@@ -1242,8 +1242,11 @@ export class PrivateRPCManager {
     const url = `${endpoint}/bundle?id=${bundleId}`;
 
     try {
-      // Use ethers to make HTTP request
-      const fetchImpl = (global as any).fetch || require('node-fetch');
+      // Use native fetch or polyfill
+      const fetchImpl = (global as any).fetch;
+      if (!fetchImpl) {
+        throw new Error('fetch is not available. Please ensure you are running in an environment with fetch support or use a polyfill.');
+      }
       const response = await fetchImpl(url);
       
       if (!response.ok) {
