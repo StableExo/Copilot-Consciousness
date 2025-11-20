@@ -530,3 +530,56 @@ export interface PrivacyHintRecommendation {
   /** Explanation */
   reasoning: string;
 }
+
+/**
+ * Bundle Cache API Types
+ * https://docs.flashbots.net/flashbots-protect/additional-documentation/bundle-cache
+ */
+
+/**
+ * Bundle cache information
+ */
+export interface BundleCacheInfo {
+  /** Unique bundle ID (UUID v4) */
+  bundleId: string;
+  
+  /** Array of raw signed transactions */
+  rawTxs: string[];
+  
+  /** Timestamp when bundle was created */
+  createdAt?: Date;
+  
+  /** Number of transactions in bundle */
+  txCount?: number;
+}
+
+/**
+ * Options for creating a bundle cache
+ */
+export interface BundleCacheOptions {
+  /** Custom bundle ID (if not provided, will be generated) */
+  bundleId?: string;
+  
+  /** Enable fake funds mode (returns 100 ETH balance for testing) */
+  fakeFunds?: boolean;
+  
+  /** Chain ID (default: 1 for mainnet) */
+  chainId?: number;
+}
+
+/**
+ * Result of adding a transaction to bundle cache
+ */
+export interface BundleCacheAddResult {
+  /** Bundle ID */
+  bundleId: string;
+  
+  /** Transaction hash */
+  txHash: string;
+  
+  /** Current transaction count in bundle */
+  txCount: number;
+  
+  /** Success flag */
+  success: boolean;
+}

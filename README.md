@@ -113,6 +113,7 @@ See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for TheWarden's operation
 - **Transaction Cancellation**: Cancel private transactions with `eth_cancelPrivateTransaction`
 - **Transaction Status API**: Check tx status at `protect.flashbots.net/tx/`
 - **Bundle Replacement**: Use `replacementUuid` for flexible bundle management
+- **Bundle Cache API**: Iteratively build transaction bundles for atomic execution (perfect for whitehat recoveries)
 - **Privacy Hint Recommendations**: Intelligent privacy vs refund optimization
 - **Builder Reputation Tracking**: Monitor and optimize builder selection based on performance
 - **MEV Refund Monitoring**: Track MEV extraction and refund rates
@@ -156,7 +157,7 @@ See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for TheWarden's operation
 - **Outcome-Based Learning**: Prediction vs reality comparison for continuous improvement
 - **Production-Tested Utilities**: Battle-hardened price math, caching, networking, and validation from MEV environment
 
-See [MEV Intelligence Suite Documentation](./docs/MEV_INTELLIGENCE_SUITE.md), [Flashbots Intelligence](./docs/FLASHBOTS_INTELLIGENCE.md), [BuilderNet Integration](./docs/BUILDERNET_INTEGRATION.md), [Rollup-Boost Integration](./docs/ROLLUP_BOOST_INTEGRATION.md), [Private RPC Documentation](./docs/PRIVATE_RPC.md), [Arbitrage Engines](./docs/ARBITRAGE_ENGINES.md), [AxionCitadel Integration](./docs/INTEGRATION_FROM_AXIONCITADEL.md), [Strategic Intelligence Integration](./docs/AXIONCITADEL_STRATEGIC_INTEGRATION.md), [Conscious Knowledge Loop](./docs/CONSCIOUS_KNOWLEDGE_LOOP.md), [Utilities Integration](./docs/AXIONCITADEL_UTILITIES.md), [Autonomous Intelligence Vision](./docs/AUTONOMOUS_INTELLIGENCE_VISION.md), [Ethics Engine Integration](./docs/ETHICS_ENGINE.md), and [Memory Core & Gated Execution](./docs/MEMORY_CORE_AND_GATED_EXECUTION.md) for details.
+See [MEV Intelligence Suite Documentation](./docs/MEV_INTELLIGENCE_SUITE.md), [Flashbots Intelligence](./docs/FLASHBOTS_INTELLIGENCE.md), [Bundle Cache API](./docs/BUNDLE_CACHE_API.md), [BuilderNet Integration](./docs/BUILDERNET_INTEGRATION.md), [Rollup-Boost Integration](./docs/ROLLUP_BOOST_INTEGRATION.md), [Private RPC Documentation](./docs/PRIVATE_RPC.md), [Arbitrage Engines](./docs/ARBITRAGE_ENGINES.md), [AxionCitadel Integration](./docs/INTEGRATION_FROM_AXIONCITADEL.md), [Strategic Intelligence Integration](./docs/AXIONCITADEL_STRATEGIC_INTEGRATION.md), [Conscious Knowledge Loop](./docs/CONSCIOUS_KNOWLEDGE_LOOP.md), [Utilities Integration](./docs/AXIONCITADEL_UTILITIES.md), [Autonomous Intelligence Vision](./docs/AUTONOMOUS_INTELLIGENCE_VISION.md), [Ethics Engine Integration](./docs/ETHICS_ENGINE.md), and [Memory Core & Gated Execution](./docs/MEMORY_CORE_AND_GATED_EXECUTION.md) for details.
 
 ## Installation
 

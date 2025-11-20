@@ -30,6 +30,9 @@ import {
   BundleStatus,
   BuilderReputation,
   MEVRefund,
+  BundleCacheOptions,
+  BundleCacheInfo,
+  BundleCacheAddResult,
 } from './types/PrivateRPCTypes';
 
 /**
@@ -1154,6 +1157,171 @@ export class PrivateRPCManager {
     };
 
     return recommendations[transactionType]?.[privacyPriority] || recommendations.general.medium;
+  }
+
+  /**
+   * Bundle Cache API Methods
+   * https://docs.flashbots.net/flashbots-protect/additional-documentation/bundle-cache
+   */
+
+  /**
+   * Create a new bundle cache with a unique ID
+   * @param options - Bundle cache options
+   * @returns Bundle ID and RPC endpoint URL
+   */
+  createBundleCache(options: import('./types/PrivateRPCTypes').BundleCacheOptions = {}): {
+    bundleId: string;
+    rpcUrl: string;
+    chainId: number;
+  } {
+    const bundleId = options.bundleId || this.generateUUID();
+    const chainId = options.chainId || 1;
+    const endpoint = FLASHBOTS_ENDPOINTS.MAINNET;
+    const rpcUrl = `${endpoint}?bundle=${bundleId}`;
+
+    logger.info(`[BundleCache] Created bundle cache with ID: ${bundleId}`);
+    logger.info(`[BundleCache] RPC URL: ${rpcUrl}`);
+    
+    if (options.fakeFunds) {
+      logger.info(`[BundleCache] Fake funds mode enabled - balance queries will return 100 ETH`);
+    }
+
+    return {
+      bundleId,
+      rpcUrl,
+      chainId,
+    };
+  }
+
+  /**
+   * Add a signed transaction to the bundle cache
+   * @param bundleId - The bundle ID
+   * @param signedTx - The signed transaction hex string
+   * @returns Result with success status
+   */
+  async addTransactionToBundleCache(
+    bundleId: string,
+    signedTx: string
+  ): Promise<import('./types/PrivateRPCTypes').BundleCacheAddResult> {
+    const endpoint = FLASHBOTS_ENDPOINTS.MAINNET;
+    const rpcUrl = `${endpoint}?bundle=${bundleId}`;
+
+    try {
+      // Create a provider connected to the bundle cache RPC
+      const bundleProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
+      
+      // Send the signed transaction to the bundle cache
+      const tx = await bundleProvider.sendTransaction(signedTx);
+      
+      logger.info(`[BundleCache] Added transaction ${tx.hash} to bundle ${bundleId}`);
+
+      // Get current bundle info to count transactions
+      const bundleInfo = await this.getBundleCacheTransactions(bundleId);
+
+      return {
+        bundleId,
+        txHash: tx.hash,
+        txCount: bundleInfo.rawTxs.length,
+        success: true,
+      };
+    } catch (error: any) {
+      logger.error(`[BundleCache] Failed to add transaction to bundle ${bundleId}:`, error?.message || error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get all transactions in a bundle cache
+   * @param bundleId - The bundle ID
+   * @returns Bundle cache information with all transactions
+   */
+  async getBundleCacheTransactions(
+    bundleId: string
+  ): Promise<import('./types/PrivateRPCTypes').BundleCacheInfo> {
+    const endpoint = FLASHBOTS_ENDPOINTS.MAINNET;
+    const url = `${endpoint}/bundle?id=${bundleId}`;
+
+    try {
+      // Use native fetch or polyfill
+      const fetchImpl = (global as any).fetch;
+      if (!fetchImpl) {
+        throw new Error('fetch is not available. Please ensure you are running in an environment with fetch support or use a polyfill.');
+      }
+      const response = await fetchImpl(url);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      logger.info(`[BundleCache] Retrieved bundle ${bundleId} with ${data.rawTxs?.length || 0} transactions`);
+
+      return {
+        bundleId: data.bundleId || bundleId,
+        rawTxs: data.rawTxs || [],
+        txCount: data.rawTxs?.length || 0,
+        createdAt: data.createdAt ? new Date(data.createdAt) : undefined,
+      };
+    } catch (error: any) {
+      logger.error(`[BundleCache] Failed to retrieve bundle ${bundleId}:`, error?.message || error);
+      throw error;
+    }
+  }
+
+  /**
+   * Send a cached bundle for execution
+   * @param bundleId - The bundle ID
+   * @param targetBlock - Target block number for inclusion
+   * @returns Bundle submission result
+   */
+  async sendCachedBundle(
+    bundleId: string,
+    targetBlock: number
+  ): Promise<PrivateTransactionResult> {
+    try {
+      // Get all transactions from the bundle cache
+      const bundleInfo = await this.getBundleCacheTransactions(bundleId);
+      
+      if (bundleInfo.rawTxs.length === 0) {
+        throw new Error(`Bundle ${bundleId} is empty`);
+      }
+
+      logger.info(
+        `[BundleCache] Sending cached bundle ${bundleId} with ${bundleInfo.rawTxs.length} transactions to block ${targetBlock}`
+      );
+
+      // Submit the bundle using the standard bundle submission method
+      const bundle: FlashbotsBundle = {
+        signedTransactions: bundleInfo.rawTxs,
+        targetBlockNumber: targetBlock,
+        minTimestamp: 0,
+        maxTimestamp: 0,
+      };
+
+      const result = await this.submitFlashbotsBundle(bundle);
+
+      this.updateStats(PrivateRelayType.FLASHBOTS_PROTECT, result.success);
+
+      return result;
+    } catch (error: any) {
+      logger.error(`[BundleCache] Failed to send cached bundle ${bundleId}:`, error?.message || error);
+      this.updateStats(PrivateRelayType.FLASHBOTS_PROTECT, false);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate a UUID v4 for bundle IDs
+   * @returns UUID v4 string
+   */
+  private generateUUID(): string {
+    // Simple UUID v4 generator
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
   }
 }
 
