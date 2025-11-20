@@ -109,6 +109,11 @@ See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for TheWarden's operation
 - **Custom Refund Configuration**: Configure MEV refund percentages (90% user / 10% validator default)
 - **Bundle Simulation**: Pre-validate bundles with `eth_callBundle` before submission
 - **Bundle Cancellation**: Cancel submitted bundles with `eth_cancelBundle`
+- **Private Transaction API**: Simple single-tx privacy via `eth_sendPrivateTransaction`
+- **Transaction Cancellation**: Cancel private transactions with `eth_cancelPrivateTransaction`
+- **Transaction Status API**: Check tx status at `protect.flashbots.net/tx/`
+- **Bundle Replacement**: Use `replacementUuid` for flexible bundle management
+- **Privacy Hint Recommendations**: Intelligent privacy vs refund optimization
 - **Builder Reputation Tracking**: Monitor and optimize builder selection based on performance
 - **MEV Refund Monitoring**: Track MEV extraction and refund rates
 - **Bundle Optimization**: AI-powered recommendations for improving bundle profitability

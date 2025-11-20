@@ -398,3 +398,135 @@ export interface MEVRefund {
   /** Timestamp */
   timestamp: number;
 }
+
+/**
+ * Private transaction options for eth_sendPrivateTransaction
+ */
+export interface PrivateTransactionParams {
+  /** Signed transaction hex */
+  tx: string;
+  
+  /** Maximum block number for inclusion (optional) */
+  maxBlockNumber?: number;
+  
+  /** Preferences for transaction processing */
+  preferences?: {
+    /** Fast mode - multiplex to all builders */
+    fast?: boolean;
+    
+    /** Enable transaction privacy (hide from searchers) */
+    privacy?: {
+      /** Privacy hints to share */
+      hints?: string[];
+      
+      /** Builders to share with */
+      builders?: string[];
+    };
+  };
+}
+
+/**
+ * Transaction status from Flashbots Protect Status API
+ * @see https://docs.flashbots.net/flashbots-protect/additional-documentation/status-api
+ */
+export enum TransactionStatus {
+  /** Transaction is pending inclusion */
+  PENDING = 'PENDING',
+  
+  /** Transaction was successfully included */
+  INCLUDED = 'INCLUDED',
+  
+  /** Transaction failed */
+  FAILED = 'FAILED',
+  
+  /** Transaction was cancelled */
+  CANCELLED = 'CANCELLED',
+  
+  /** Status unknown */
+  UNKNOWN = 'UNKNOWN',
+}
+
+/**
+ * Transaction status response from Flashbots Protect API
+ */
+export interface FlashbotsTransactionStatus {
+  /** Current status */
+  status: TransactionStatus;
+  
+  /** Transaction hash */
+  hash: string;
+  
+  /** Maximum block number for inclusion */
+  maxBlockNumber?: number;
+  
+  /** Transaction details (only available when INCLUDED) */
+  transaction?: {
+    from: string;
+    to: string;
+    gasLimit: string;
+    maxFeePerGas: string;
+    maxPriorityFeePerGas: string;
+    nonce: string;
+    value: string;
+  };
+  
+  /** Block number (if included) */
+  blockNumber?: number;
+  
+  /** Timestamp (if included) */
+  timestamp?: number;
+}
+
+/**
+ * Bundle replacement options using replacementUuid
+ */
+export interface BundleReplacementOptions {
+  /** Unique UUID to identify bundle for replacement/cancellation */
+  replacementUuid: string;
+  
+  /** Whether this is a replacement (true) or cancellation (false) */
+  isReplacement: boolean;
+}
+
+/**
+ * Privacy hint helper types
+ */
+export enum PrivacyHint {
+  /** Share transaction calldata */
+  CALLDATA = 'calldata',
+  
+  /** Share contract address */
+  CONTRACT_ADDRESS = 'contract_address',
+  
+  /** Share function selector */
+  FUNCTION_SELECTOR = 'function_selector',
+  
+  /** Share logs */
+  LOGS = 'logs',
+  
+  /** Share transaction hash */
+  HASH = 'hash',
+  
+  /** Share default logs (Uniswap, Balancer, Curve swaps) */
+  DEFAULT_LOGS = 'default_logs',
+  
+  /** Share transaction hash */
+  TX_HASH = 'tx_hash',
+}
+
+/**
+ * Privacy hint recommendation based on use case
+ */
+export interface PrivacyHintRecommendation {
+  /** Recommended hints */
+  hints: PrivacyHint[];
+  
+  /** Expected refund percentage */
+  expectedRefundPercent: number;
+  
+  /** Privacy level (0-100, higher = more private) */
+  privacyScore: number;
+  
+  /** Explanation */
+  reasoning: string;
+}
