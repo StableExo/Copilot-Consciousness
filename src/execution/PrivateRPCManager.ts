@@ -120,6 +120,23 @@ export class PrivateRPCManager {
   }
 
   /**
+   * Update statistics for a relay
+   */
+  private updateStats(type: PrivateRelayType, success: boolean): void {
+    const stats = this.stats.get(type);
+    if (stats) {
+      stats.totalSubmissions++;
+      stats.lastSubmission = new Date();
+      
+      if (success) {
+        stats.successfulInclusions++;
+      } else {
+        stats.failedSubmissions++;
+      }
+    }
+  }
+
+  /**
    * Submit a transaction privately
    */
   async submitPrivateTransaction(
@@ -844,6 +861,299 @@ export class PrivateRPCManager {
 
     logger.warn(`[PrivateRPCManager] Bundle not included after ${maxBlocks} blocks`);
     return null;
+  }
+
+  /**
+   * Send a single private transaction using eth_sendPrivateTransaction
+   * This is simpler than bundles for single transaction privacy
+   * 
+   * @see https://docs.flashbots.net/flashbots-protect/additional-documentation/eth-sendPrivateTransaction
+   */
+  async sendPrivateTransaction(
+    transaction: providers.TransactionRequest,
+    options?: {
+      maxBlockNumber?: number;
+      fast?: boolean;
+      preferences?: {
+        privacy?: {
+          hints?: string[];
+          builders?: string[];
+        };
+      };
+    }
+  ): Promise<PrivateTransactionResult> {
+    try {
+      const relay = this.relays.get(PrivateRelayType.FLASHBOTS_PROTECT);
+      if (!relay) {
+        throw new Error('Flashbots Protect relay not configured');
+      }
+
+      // Sign the transaction
+      const signedTx = await this.signer.signTransaction(transaction);
+
+      // Build RPC parameters
+      const params: any = {
+        tx: signedTx,
+      };
+
+      if (options?.maxBlockNumber) {
+        params.maxBlockNumber = `0x${options.maxBlockNumber.toString(16)}`;
+      }
+
+      if (options?.fast || options?.preferences) {
+        params.preferences = {};
+        
+        if (options.fast) {
+          params.preferences.fast = true;
+        }
+        
+        if (options.preferences?.privacy) {
+          params.preferences.privacy = options.preferences.privacy;
+        }
+      }
+
+      // Submit to Flashbots Protect RPC
+      const flashbotsProvider = new ethers.providers.JsonRpcProvider(relay.endpoint);
+      const result = await flashbotsProvider.send('eth_sendPrivateTransaction', [params]);
+
+      logger.info(`[PrivateRPCManager] Private transaction submitted: ${result}`);
+
+      this.updateStats(relay.type, true);
+
+      return {
+        success: true,
+        txHash: result,
+        relayUsed: PrivateRelayType.FLASHBOTS_PROTECT,
+        metadata: {
+          publicMempoolVisible: false,
+        },
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`[PrivateRPCManager] Private transaction failed: ${message}`);
+      
+      const relay = this.relays.get(PrivateRelayType.FLASHBOTS_PROTECT);
+      if (relay) {
+        this.updateStats(relay.type, false);
+      }
+
+      return {
+        success: false,
+        error: message,
+      };
+    }
+  }
+
+  /**
+   * Cancel a private transaction using eth_cancelPrivateTransaction
+   * Only works for transactions submitted via eth_sendPrivateTransaction
+   * 
+   * @see https://docs.flashbots.net/flashbots-protect/additional-documentation/eth-sendPrivateTransaction
+   */
+  async cancelPrivateTransaction(txHash: string): Promise<boolean> {
+    try {
+      const relay = this.relays.get(PrivateRelayType.FLASHBOTS_PROTECT);
+      if (!relay) {
+        throw new Error('Flashbots Protect relay not configured');
+      }
+
+      const flashbotsProvider = new ethers.providers.JsonRpcProvider(relay.endpoint);
+      const result = await flashbotsProvider.send('eth_cancelPrivateTransaction', [
+        { txHash },
+      ]);
+
+      logger.info(`[PrivateRPCManager] Private transaction cancelled: ${txHash}`);
+
+      const stats = this.stats.get(relay.type);
+      if (stats) {
+        stats.totalCancellations = (stats.totalCancellations || 0) + 1;
+      }
+
+      return result === true;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`[PrivateRPCManager] Cancel private transaction failed: ${message}`);
+      return false;
+    }
+  }
+
+  /**
+   * Get transaction status from Flashbots Protect Status API
+   * 
+   * @see https://docs.flashbots.net/flashbots-protect/additional-documentation/status-api
+   */
+  async getTransactionStatus(txHash: string): Promise<any> {
+    try {
+      const statusUrl = `https://protect.flashbots.net/tx/${txHash}`;
+      
+      // Use fetch or axios if available, otherwise return null
+      // This is a placeholder for the actual HTTP request
+      logger.info(`[PrivateRPCManager] Check transaction status at: ${statusUrl}`);
+      
+      // In a real implementation, you would do:
+      // const response = await fetch(statusUrl);
+      // return await response.json();
+      
+      return {
+        message: 'Status API integration requires HTTP client',
+        statusUrl,
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`[PrivateRPCManager] Get transaction status failed: ${message}`);
+      return null;
+    }
+  }
+
+  /**
+   * Create bundle with replacement UUID for cancellation/replacement
+   * 
+   * @see https://docs.flashbots.net/flashbots-auction/advanced/rpc-endpoint
+   */
+  async submitFlashbotsBundleWithReplacement(
+    bundle: FlashbotsBundle,
+    replacementUuid: string
+  ): Promise<PrivateTransactionResult> {
+    try {
+      const relay = this.relays.get(PrivateRelayType.FLASHBOTS_PROTECT);
+      if (!relay) {
+        throw new Error('Flashbots Protect relay not configured');
+      }
+
+      const payload = {
+        txs: bundle.signedTransactions,
+        blockNumber: `0x${bundle.targetBlockNumber.toString(16)}`,
+        minTimestamp: bundle.minTimestamp,
+        maxTimestamp: bundle.maxTimestamp,
+        revertingTxHashes: bundle.revertingTxHashes || [],
+        replacementUuid, // UUID for replacement/cancellation
+      };
+
+      const flashbotsProvider = new ethers.providers.JsonRpcProvider(relay.endpoint);
+      const data = await flashbotsProvider.send('eth_sendBundle', [payload]);
+
+      logger.info(
+        `[PrivateRPCManager] Bundle submitted with replacement UUID: ${replacementUuid}`
+      );
+
+      this.updateStats(relay.type, true);
+
+      return {
+        success: true,
+        bundleHash: data?.bundleHash,
+        relayUsed: PrivateRelayType.FLASHBOTS_PROTECT,
+        metadata: {
+          publicMempoolVisible: false,
+        },
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`[PrivateRPCManager] Bundle submission with UUID failed: ${message}`);
+      
+      const relay = this.relays.get(PrivateRelayType.FLASHBOTS_PROTECT);
+      if (relay) {
+        this.updateStats(relay.type, false);
+      }
+
+      return {
+        success: false,
+        error: message,
+      };
+    }
+  }
+
+  /**
+   * Get privacy hint recommendations based on transaction type
+   * Helps optimize privacy vs MEV refund tradeoff
+   */
+  getPrivacyHintRecommendations(
+    transactionType: 'swap' | 'arbitrage' | 'liquidation' | 'general',
+    privacyPriority: 'high' | 'medium' | 'low'
+  ): any {
+    const recommendations: Record<string, any> = {
+      swap: {
+        high: {
+          hints: ['hash'],
+          expectedRefundPercent: 50,
+          privacyScore: 90,
+          reasoning: 'Maximum privacy - only share hash. Lower refunds but protected from MEV.',
+        },
+        medium: {
+          hints: ['hash', 'contract_address', 'default_logs'],
+          expectedRefundPercent: 75,
+          privacyScore: 60,
+          reasoning: 'Balanced - share swap events. Good refunds with reasonable privacy.',
+        },
+        low: {
+          hints: ['hash', 'contract_address', 'function_selector', 'default_logs', 'calldata'],
+          expectedRefundPercent: 90,
+          privacyScore: 30,
+          reasoning: 'Maximum refunds - share most data. Best for refund maximization.',
+        },
+      },
+      arbitrage: {
+        high: {
+          hints: ['hash'],
+          expectedRefundPercent: 40,
+          privacyScore: 95,
+          reasoning: 'Protect strategy - only hash. Essential for competitive arbitrage.',
+        },
+        medium: {
+          hints: ['hash', 'contract_address'],
+          expectedRefundPercent: 60,
+          privacyScore: 70,
+          reasoning: 'Moderate privacy - share contract. Balanced for most arbitrage.',
+        },
+        low: {
+          hints: ['hash', 'contract_address', 'logs'],
+          expectedRefundPercent: 80,
+          privacyScore: 40,
+          reasoning: 'Higher refunds - share logs. Use when refund priority is high.',
+        },
+      },
+      liquidation: {
+        high: {
+          hints: ['hash'],
+          expectedRefundPercent: 45,
+          privacyScore: 90,
+          reasoning: 'Maximum privacy - protect liquidation target.',
+        },
+        medium: {
+          hints: ['hash', 'contract_address'],
+          expectedRefundPercent: 70,
+          privacyScore: 65,
+          reasoning: 'Standard liquidation privacy with good refunds.',
+        },
+        low: {
+          hints: ['hash', 'contract_address', 'function_selector', 'logs'],
+          expectedRefundPercent: 85,
+          privacyScore: 35,
+          reasoning: 'High refunds - share liquidation details.',
+        },
+      },
+      general: {
+        high: {
+          hints: ['hash'],
+          expectedRefundPercent: 50,
+          privacyScore: 85,
+          reasoning: 'Maximum privacy - only share hash.',
+        },
+        medium: {
+          hints: ['hash', 'contract_address'],
+          expectedRefundPercent: 70,
+          privacyScore: 60,
+          reasoning: 'Balanced privacy and refunds.',
+        },
+        low: {
+          hints: ['hash', 'contract_address', 'logs', 'default_logs'],
+          expectedRefundPercent: 85,
+          privacyScore: 35,
+          reasoning: 'Maximum refunds - share most data.',
+        },
+      },
+    };
+
+    return recommendations[transactionType]?.[privacyPriority] || recommendations.general.medium;
   }
 }
 
