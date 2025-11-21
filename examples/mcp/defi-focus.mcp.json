@@ -1,0 +1,58 @@
+{
+  "mcpServers": {
+    "mev-intelligence": {
+      "command": "node",
+      "args": [
+        "../../dist/mcp/mev-server.js"
+      ],
+      "description": "MEV Intelligence Suite for blockchain monitoring and arbitrage",
+      "env": {
+        "RPC_URL": "${ARBITRUM_RPC_URL}",
+        "FLASHBOTS_AUTH_KEY": "${FLASHBOTS_AUTH_KEY}",
+        "NODE_ENV": "production"
+      },
+      "capabilities": [
+        "mempool_monitoring",
+        "mev_risk_assessment",
+        "arbitrage_detection",
+        "flashbots_integration",
+        "game_theoretic_analysis"
+      ]
+    },
+    "dex-services": {
+      "command": "node",
+      "args": [
+        "../../dist/mcp/dex-server.js"
+      ],
+      "description": "DEX monitoring and interaction services",
+      "env": {
+        "RPC_URL": "${ARBITRUM_RPC_URL}",
+        "NODE_ENV": "production"
+      },
+      "capabilities": [
+        "dex_monitoring",
+        "pool_data_fetching",
+        "liquidity_analysis",
+        "price_discovery",
+        "cross_dex_arbitrage"
+      ]
+    },
+    "analytics-learning": {
+      "command": "node",
+      "args": [
+        "../../dist/mcp/analytics-server.js"
+      ],
+      "description": "Analytics and machine learning for DeFi strategies",
+      "capabilities": [
+        "pattern_recognition",
+        "strategy_optimization",
+        "outcome_prediction",
+        "performance_analysis"
+      ]
+    }
+  },
+  "defaults": {
+    "timeout": 45000,
+    "retries": 5
+  }
+}

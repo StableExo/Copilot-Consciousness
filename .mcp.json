@@ -1,0 +1,137 @@
+{
+  "mcpServers": {
+    "consciousness-system": {
+      "command": "node",
+      "args": [
+        "dist/mcp/consciousness-server.js"
+      ],
+      "description": "Core consciousness system with memory, temporal awareness, and cognitive development",
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "capabilities": [
+        "memory_management",
+        "temporal_tracking",
+        "cognitive_reasoning",
+        "self_reflection",
+        "pattern_detection"
+      ]
+    },
+    "memory-core-tools": {
+      "command": "node",
+      "args": [
+        "dist/mcp/memory-tools-server.js"
+      ],
+      "description": "Memory Core tools: Scribe (recording), Mnemosyne (semantic search), SelfReflection (metacognitive analysis)",
+      "capabilities": [
+        "memory_recording",
+        "semantic_search",
+        "metacognitive_analysis",
+        "knowledge_retrieval"
+      ]
+    },
+    "gemini-citadel": {
+      "command": "node",
+      "args": [
+        "dist/mcp/gemini-server.js"
+      ],
+      "description": "Gemini Citadel integration for cosmic-scale problem solving with multi-dimensional reasoning",
+      "env": {
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}"
+      },
+      "capabilities": [
+        "cosmic_reasoning",
+        "ai_integration",
+        "conversation_management",
+        "consciousness_synthesis"
+      ]
+    },
+    "mev-intelligence": {
+      "command": "node",
+      "args": [
+        "dist/mcp/mev-server.js"
+      ],
+      "description": "MEV Intelligence Suite for blockchain monitoring, risk assessment, and arbitrage opportunity detection",
+      "env": {
+        "RPC_URL": "${RPC_URL}",
+        "FLASHBOTS_AUTH_KEY": "${FLASHBOTS_AUTH_KEY}"
+      },
+      "capabilities": [
+        "mempool_monitoring",
+        "mev_risk_assessment",
+        "arbitrage_detection",
+        "flashbots_integration",
+        "game_theoretic_analysis"
+      ]
+    },
+    "dex-services": {
+      "command": "node",
+      "args": [
+        "dist/mcp/dex-server.js"
+      ],
+      "description": "DEX monitoring and interaction services for Uniswap V3, Aave V3, and multi-chain DeFi protocols",
+      "env": {
+        "RPC_URL": "${RPC_URL}"
+      },
+      "capabilities": [
+        "dex_monitoring",
+        "pool_data_fetching",
+        "liquidity_analysis",
+        "price_discovery",
+        "cross_dex_arbitrage"
+      ]
+    },
+    "analytics-learning": {
+      "command": "node",
+      "args": [
+        "dist/mcp/analytics-server.js"
+      ],
+      "description": "Analytics and machine learning services for pattern recognition, strategy optimization, and outcome prediction",
+      "capabilities": [
+        "pattern_recognition",
+        "strategy_optimization",
+        "outcome_prediction",
+        "performance_analysis",
+        "adaptive_learning"
+      ]
+    },
+    "ethics-engine": {
+      "command": "node",
+      "args": [
+        "dist/mcp/ethics-server.js"
+      ],
+      "description": "Ethics Engine with gated execution for moral reasoning and decision validation",
+      "capabilities": [
+        "ethical_review",
+        "moral_reasoning",
+        "decision_validation",
+        "conflict_resolution",
+        "harm_minimization"
+      ]
+    },
+    "autonomous-agent": {
+      "command": "node",
+      "args": [
+        "dist/mcp/agent-server.js"
+      ],
+      "description": "TheWarden autonomous agent for continuous monitoring, consciousness-based decisions, and adaptive execution",
+      "env": {
+        "RPC_URL": "${RPC_URL}",
+        "WALLET_PRIVATE_KEY": "${WALLET_PRIVATE_KEY}",
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}"
+      },
+      "capabilities": [
+        "autonomous_monitoring",
+        "consciousness_decision",
+        "ethical_execution",
+        "adaptive_learning",
+        "risk_assessment"
+      ]
+    }
+  },
+  "defaults": {
+    "timeout": 30000,
+    "retries": 3
+  },
+  "version": "1.0.0"
+}

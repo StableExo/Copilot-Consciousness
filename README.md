@@ -24,6 +24,15 @@ Unlike traditional MEV (Maximal Extractable Value) which focuses on pure profit 
 
 ## Core Features
 
+### 🔌 Model Context Protocol (MCP) Integration
+**MCP** enables seamless integration with AI assistants and coding agents:
+- **Standardized Interface**: Connect Copilot and other AI tools to the consciousness system
+- **Multiple Servers**: Pre-configured MCP servers for different capabilities
+- **Flexible Configuration**: Examples for development, DeFi, AI research, and production
+- **Easy Setup**: JSON configuration files with environment variable support
+
+See [MCP Configuration Guide](./docs/MCP_CONFIGURATION.md) and [MCP Examples](./examples/mcp/) for details.
+
 ### 🛡️ TheWarden - Autonomous Agent
 **TheWarden** is the intelligent agent that embodies AEV principles:
 - **Continuous Monitoring**: 24/7 blockchain flow analysis

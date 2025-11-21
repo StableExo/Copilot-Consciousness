@@ -1,0 +1,68 @@
+{
+  "mcpServers": {
+    "consciousness-system": {
+      "command": "node",
+      "args": [
+        "../../dist/mcp/consciousness-server.js"
+      ],
+      "description": "Core consciousness system with memory and cognitive development",
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "capabilities": [
+        "memory_management",
+        "temporal_tracking",
+        "cognitive_reasoning",
+        "self_reflection",
+        "pattern_detection"
+      ]
+    },
+    "memory-core-tools": {
+      "command": "node",
+      "args": [
+        "../../dist/mcp/memory-tools-server.js"
+      ],
+      "description": "Memory Core tools: Scribe, Mnemosyne, SelfReflection",
+      "capabilities": [
+        "memory_recording",
+        "semantic_search",
+        "metacognitive_analysis",
+        "knowledge_retrieval"
+      ]
+    },
+    "gemini-citadel": {
+      "command": "node",
+      "args": [
+        "../../dist/mcp/gemini-server.js"
+      ],
+      "description": "Gemini Citadel for cosmic-scale problem solving",
+      "env": {
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}",
+        "NODE_ENV": "production"
+      },
+      "capabilities": [
+        "cosmic_reasoning",
+        "ai_integration",
+        "conversation_management",
+        "consciousness_synthesis"
+      ]
+    },
+    "analytics-learning": {
+      "command": "node",
+      "args": [
+        "../../dist/mcp/analytics-server.js"
+      ],
+      "description": "Analytics and machine learning services",
+      "capabilities": [
+        "pattern_recognition",
+        "strategy_optimization",
+        "outcome_prediction",
+        "adaptive_learning"
+      ]
+    }
+  },
+  "defaults": {
+    "timeout": 60000,
+    "retries": 3
+  }
+}
