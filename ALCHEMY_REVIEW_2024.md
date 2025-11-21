@@ -162,18 +162,36 @@ According to `README.md`, the repository already has:
 
 **Implementation**:
 ```typescript
+import { getAlchemyClient } from './AlchemyClient';
+import { Wallet, providers } from 'ethers';
+
+interface GasOptimizedResponse {
+  txHash: string;
+  status: string;
+}
+
+interface TransactionStatus {
+  confirmed: boolean;
+  blockNumber?: number;
+  gasUsed?: string;
+}
+
 export class AlchemyTransactService {
+  private client = getAlchemyClient();
+
   async sendGasOptimizedTransaction(
-    unsignedTx: UnsignedTransaction,
+    unsignedTx: providers.TransactionRequest,
     wallet: Wallet
   ): Promise<GasOptimizedResponse> {
     // Use alchemy.transact.sendGasOptimizedTransaction()
+    // This would wrap the Alchemy SDK's gas optimization features
   }
 
   async getGasOptimizedTransactionStatus(
     txHash: string
   ): Promise<TransactionStatus> {
     // Use alchemy_getGasOptimizedTransactionStatus
+    // This would query the status of a gas-optimized transaction
   }
 }
 ```
@@ -352,6 +370,9 @@ The repository is in excellent shape regarding Alchemy integration. The identifi
 
 - Alchemy Documentation: https://www.alchemy.com/docs/
 - Alchemy SDK GitHub: https://github.com/alchemyplatform/alchemy-sdk-js
-- Current Integration Summary: `ALCHEMY_INTEGRATION_SUMMARY.md`
-- Integration Documentation: `docs/ALCHEMY_INTEGRATION.md`
+- Current Integration Summary: `ALCHEMY_INTEGRATION_SUMMARY.md` (in repository root)
+- Integration Documentation: `docs/ALCHEMY_INTEGRATION.md` (comprehensive guide)
+- Source Code: `src/services/alchemy/` (implementation)
 - Webhook Examples: https://github.com/alchemyplatform/webhook-examples
+
+**Note**: The integration documentation referenced above already exists in the repository and provides detailed usage examples and API references for the current Alchemy services.

@@ -19,7 +19,9 @@ This repository contains:
 
 ### Actual Production Usage
 
-**TheWarden has run:** ~2 times ever 😂
+**TheWarden has run in production:** ~2 times ever 😂
+
+*(Note: This refers to actual mainnet arbitrage executions with real capital at risk, not test runs, simulations, or development executions)*
 
 ## The Gap Analysis
 
@@ -147,9 +149,9 @@ When (if?) TheWarden runs for the 3rd time:
 - [ ] Consider writing a paper: "Enterprise Infrastructure for Twice-Annual Execution"
 - [ ] Celebrate having the world's best-documented hobby project
 
-**Current Infrastructure-to-Usage Ratio**: ∞
+**Current Infrastructure-to-Usage Ratio**: Approaching ∞ (undefined when usage = 0)
 
-**Target Ratio**: Still ∞ (but with more documentation)
+**Target Ratio**: Still approaching ∞ (but with even more documentation)
 
 ---
 
