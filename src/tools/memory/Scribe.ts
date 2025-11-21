@@ -27,6 +27,7 @@ export interface ScribeOptions {
  */
 export class Scribe {
   private memoryDir: string;
+  private counter: number = 0;
 
   constructor(memoryDir?: string) {
     this.memoryDir = memoryDir || path.join(process.cwd(), '.memory');
@@ -54,7 +55,7 @@ export class Scribe {
   }
 
   /**
-   * Generate a timestamp-based filename
+   * Generate a timestamp-based filename with counter to prevent collisions
    */
   private generateFilename(): string {
     const now = new Date();
@@ -62,7 +63,10 @@ export class Scribe {
       .replace(/[-:]/g, '')
       .replace(/\.\d{3}Z/, '')
       .replace('T', '');
-    return `${timestamp}.md`;
+    
+    // Add counter to prevent collisions when multiple records happen in same second
+    this.counter++;
+    return `${timestamp}_${this.counter.toString().padStart(4, '0')}.md`;
   }
 
   /**

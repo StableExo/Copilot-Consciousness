@@ -12,8 +12,19 @@
  */
 
 import { ethers } from 'ethers';
-// @ts-ignore - Artifact may not exist yet
-import * as FlashSwapV2Artifact from '../../artifacts/contracts/FlashSwapV2.sol/FlashSwapV2.json';
+
+// Dynamic import for artifact - may not exist if contracts haven't been compiled
+let FlashSwapV2Artifact: any;
+try {
+  FlashSwapV2Artifact = require('../../artifacts/contracts/FlashSwapV2.sol/FlashSwapV2.json');
+} catch (error) {
+  // Artifact not found - contracts haven't been compiled
+  // This is OK for testing/development without deploying contracts
+  console.warn('[FlashLoanExecutor] FlashSwapV2 artifact not found. Run `npm run compile` to generate contract artifacts.');
+  FlashSwapV2Artifact = {
+    abi: [], // Empty ABI as fallback
+  };
+}
 
 /**
  * Swap step in a multi-hop path
