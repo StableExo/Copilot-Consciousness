@@ -62,6 +62,16 @@ export interface EmergenceStats {
   lastEmergence: number | null;
 }
 
+export interface EmergenceThresholds {
+  minModules?: number;
+  maxRiskScore?: number;
+  minEthicalScore?: number;
+  minGoalAlignment?: number;
+  minPatternConfidence?: number;
+  minHistoricalSuccess?: number;
+  maxDissentRatio?: number;
+}
+
 /**
  * Emergence Detector - The "BOOM" Moment System
  */
@@ -80,7 +90,7 @@ export class EmergenceDetector {
     maxDissentRatio: 0.15, // Max 15% of modules can dissent
   };
 
-  constructor(thresholds?: Partial<typeof EmergenceDetector.prototype.thresholds>) {
+  constructor(thresholds?: EmergenceThresholds) {
     if (thresholds) {
       this.thresholds = { ...this.thresholds, ...thresholds };
     }
@@ -377,7 +387,7 @@ export class EmergenceDetector {
   /**
    * Update thresholds dynamically
    */
-  updateThresholds(thresholds: Partial<typeof EmergenceDetector.prototype.thresholds>): void {
+  updateThresholds(thresholds: EmergenceThresholds): void {
     this.thresholds = { ...this.thresholds, ...thresholds };
   }
 

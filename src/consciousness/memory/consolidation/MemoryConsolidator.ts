@@ -55,6 +55,15 @@ export interface PruneResult {
   freedSpace: number;
 }
 
+export interface MemoryConsolidatorParams {
+  importanceThreshold?: number;
+  accessCountThreshold?: number;
+  minAge?: number; // milliseconds
+  consolidationInterval?: number; // milliseconds
+  pruneRelevanceCutoff?: number;
+  maxLongTermMemories?: number;
+}
+
 /**
  * Memory Consolidator - Implements sleep-like processing
  */
@@ -74,7 +83,7 @@ export class MemoryConsolidator {
     maxLongTermMemories: 10000,
   };
 
-  constructor(params?: Partial<typeof MemoryConsolidator.prototype.params>) {
+  constructor(params?: MemoryConsolidatorParams) {
     if (params) {
       this.params = { ...this.params, ...params };
     }
@@ -453,7 +462,7 @@ export class MemoryConsolidator {
   /**
    * Update consolidation parameters
    */
-  updateParams(params: Partial<typeof MemoryConsolidator.prototype.params>): void {
+  updateParams(params: MemoryConsolidatorParams): void {
     this.params = { ...this.params, ...params };
   }
 }
