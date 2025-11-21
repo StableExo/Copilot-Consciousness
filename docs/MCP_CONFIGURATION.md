@@ -222,7 +222,7 @@ For development and testing, you might want only the consciousness system:
   "mcpServers": {
     "consciousness-system": {
       "command": "node",
-      "args": ["dist/mcp/consciousness-server.js"],
+      "args": ["dist/src/consciousness.js"],
       "description": "Core consciousness system"
     }
   }
@@ -238,7 +238,7 @@ For DeFi applications, enable MEV intelligence and DEX services:
   "mcpServers": {
     "mev-intelligence": {
       "command": "node",
-      "args": ["dist/mcp/mev-server.js"],
+      "args": ["dist/src/mev/index.js"],
       "env": {
         "RPC_URL": "https://arb1.arbitrum.io/rpc",
         "FLASHBOTS_AUTH_KEY": "${FLASHBOTS_AUTH_KEY}"
@@ -246,7 +246,7 @@ For DeFi applications, enable MEV intelligence and DEX services:
     },
     "dex-services": {
       "command": "node",
-      "args": ["dist/mcp/dex-server.js"],
+      "args": ["dist/src/dex/index.js"],
       "env": {
         "RPC_URL": "https://arb1.arbitrum.io/rpc"
       }
@@ -264,15 +264,15 @@ For AI research, enable consciousness, memory, and Gemini:
   "mcpServers": {
     "consciousness-system": {
       "command": "node",
-      "args": ["dist/mcp/consciousness-server.js"]
+      "args": ["dist/src/consciousness.js"]
     },
     "memory-core-tools": {
       "command": "node",
-      "args": ["dist/mcp/memory-tools-server.js"]
+      "args": ["dist/src/tools/memory/index.js"]
     },
     "gemini-citadel": {
       "command": "node",
-      "args": ["dist/mcp/gemini-server.js"],
+      "args": ["dist/src/gemini-citadel/index.js"],
       "env": {
         "GEMINI_API_KEY": "${GEMINI_API_KEY}"
       }
@@ -290,15 +290,15 @@ For production autonomous systems with ethical safeguards:
   "mcpServers": {
     "consciousness-system": {
       "command": "node",
-      "args": ["dist/mcp/consciousness-server.js"]
+      "args": ["dist/src/consciousness.js"]
     },
     "ethics-engine": {
       "command": "node",
-      "args": ["dist/mcp/ethics-server.js"]
+      "args": ["dist/src/cognitive/ethics/index.js"]
     },
     "autonomous-agent": {
       "command": "node",
-      "args": ["dist/mcp/agent-server.js"],
+      "args": ["dist/src/main.js"],
       "env": {
         "RPC_URL": "${RPC_URL}",
         "WALLET_PRIVATE_KEY": "${WALLET_PRIVATE_KEY}",
