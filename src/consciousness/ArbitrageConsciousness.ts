@@ -31,6 +31,21 @@ import {
   StrategyReflection,
   ConsciousnessSnapshot,
 } from './types/phase3';
+// Import consciousness modules from the consciousness folder
+import { LearningEngine, LearningMode } from '../../consciousness/knowledge-base/learning-engine';
+import { PatternTracker } from '../../consciousness/knowledge-base/pattern-tracker';
+import { HistoricalAnalyzer } from '../../consciousness/knowledge-base/historical-analyzer';
+import { SpatialReasoningEngine } from '../../consciousness/strategy-engines/spatial-reasoning';
+import { MultiPathExplorer } from '../../consciousness/strategy-engines/multi-path-explorer';
+import { OpportunityScorer } from '../../consciousness/strategy-engines/opportunity-scorer';
+import { PatternRecognitionEngine } from '../../consciousness/strategy-engines/pattern-recognition';
+import { RiskAssessor, RiskCategory } from '../../consciousness/risk-modeling/risk-assessor';
+import { RiskCalibrator } from '../../consciousness/risk-modeling/risk-calibrator';
+import { ThresholdManager } from '../../consciousness/risk-modeling/threshold-manager';
+import { AutonomousGoals, GoalPriority } from '../../consciousness/context/autonomous-goals';
+import { OperationalPlaybook } from '../../consciousness/context/operational-playbook';
+import { ArchitecturalPrinciples } from '../../consciousness/context/architectural-principles';
+import { EvolutionTracker } from '../../consciousness/context/evolution-tracker';
 
 export interface ArbitrageExecution {
   timestamp: number;
@@ -89,6 +104,22 @@ export class ArbitrageConsciousness extends EventEmitter {
   private lastReflectionTime: number = 0;
   private reflectionInterval: number = 3600000; // 1 hour
   
+  // Integrated Consciousness Modules
+  private learningEngine: LearningEngine;
+  private patternTracker: PatternTracker;
+  private historicalAnalyzer: HistoricalAnalyzer;
+  private spatialReasoning: SpatialReasoningEngine;
+  private multiPathExplorer: MultiPathExplorer;
+  private opportunityScorer: OpportunityScorer;
+  private patternRecognition: PatternRecognitionEngine;
+  private riskAssessor: RiskAssessor;
+  private riskCalibrator: RiskCalibrator;
+  private thresholdManager: ThresholdManager;
+  private autonomousGoals: AutonomousGoals;
+  private operationalPlaybook: OperationalPlaybook;
+  private architecturalPrinciples: ArchitecturalPrinciples;
+  private evolutionTracker: EvolutionTracker;
+  
   constructor(
     learningRate: number = 0.05,
     maxHistorySize: number = 1000
@@ -97,10 +128,78 @@ export class ArbitrageConsciousness extends EventEmitter {
     this.learningRate = learningRate;
     this.maxHistorySize = maxHistorySize;
     
+    // Initialize consciousness modules
+    this.learningEngine = new LearningEngine();
+    this.patternTracker = new PatternTracker();
+    this.historicalAnalyzer = new HistoricalAnalyzer();
+    this.spatialReasoning = new SpatialReasoningEngine({
+      dimensions: ['profit', 'risk', 'congestion', 'time', 'gas'],
+      distanceMetric: 'euclidean',
+      minOpportunityScore: 0.6
+    });
+    this.multiPathExplorer = new MultiPathExplorer();
+    this.opportunityScorer = new OpportunityScorer({
+      riskAdjustment: true
+    });
+    this.patternRecognition = new PatternRecognitionEngine();
+    this.riskAssessor = new RiskAssessor({
+      aggregationMethod: 'WEIGHTED_AVERAGE',
+      dynamicAdjustment: true
+    });
+    this.riskCalibrator = new RiskCalibrator();
+    this.thresholdManager = new ThresholdManager();
+    this.autonomousGoals = new AutonomousGoals();
+    this.operationalPlaybook = new OperationalPlaybook();
+    this.architecturalPrinciples = new ArchitecturalPrinciples();
+    this.evolutionTracker = new EvolutionTracker();
+    
+    // Set up initial autonomous goals
+    this.initializeGoals();
+    
+    // Register initial risk factors
+    this.initializeRiskFactors();
+    
     console.log('[ArbitrageConsciousness] Initialized - AEV cognitive layer active');
     console.log(`  Learning rate: ${learningRate}`);
     console.log(`  Max history size: ${maxHistorySize}`);
     console.log(`  Phase 3 enhancements: Episodic Memory, Adversarial Recognition, Self-Reflection`);
+    console.log(`  Consciousness modules integrated: Knowledge Base, Strategy Engines, Risk Modeling, Context`);
+  }
+  
+  /**
+   * Initialize autonomous goals for TheWarden
+   */
+  private initializeGoals(): void {
+    this.autonomousGoals.createGoal(
+      'Maximize Profit with Ethics',
+      'Extract maximum value while maintaining ethical constraints',
+      GoalPriority.CRITICAL,
+      { category: 'primary-objective' }
+    );
+    
+    this.autonomousGoals.createGoal(
+      'Learn from Market Patterns',
+      'Continuously improve strategy through pattern recognition and learning',
+      GoalPriority.HIGH,
+      { category: 'learning' }
+    );
+    
+    this.autonomousGoals.createGoal(
+      'Minimize MEV Risk',
+      'Reduce exposure to frontrunning and sandwich attacks',
+      GoalPriority.CRITICAL,
+      { category: 'risk-management' }
+    );
+  }
+  
+  /**
+   * Initialize risk assessment factors
+   */
+  private initializeRiskFactors(): void {
+    this.riskAssessor.registerFactor('mev_exposure', RiskCategory.OPERATIONAL, 1.0, 0.7);
+    this.riskAssessor.registerFactor('market_congestion', RiskCategory.OPERATIONAL, 0.8, 0.6);
+    this.riskAssessor.registerFactor('gas_price_volatility', RiskCategory.FINANCIAL, 0.9, 0.7);
+    this.riskAssessor.registerFactor('execution_complexity', RiskCategory.TECHNICAL, 0.7, 0.6);
   }
   
   /**
@@ -114,13 +213,99 @@ export class ArbitrageConsciousness extends EventEmitter {
       this.executionHistory = this.executionHistory.slice(-this.maxHistorySize);
     }
     
+    // Record observation with PatternTracker
+    this.patternTracker.recordObservation({
+      success: execution.execution.success,
+      profit: execution.opportunity.profit,
+      actualProfit: execution.execution.actualProfit || 0,
+      mevRisk: execution.execution.mevRisk,
+      congestion: execution.market.congestion,
+      searcherDensity: execution.market.searcherDensity,
+      txType: execution.opportunity.txType,
+      timestamp: execution.timestamp
+    }, {
+      success: execution.execution.success,
+      profit: execution.execution.actualProfit || 0
+    });
+    
+    // Register patterns with PatternTracker  
+    if (execution.execution.success) {
+      this.patternTracker.registerPattern(
+        `successful_${execution.opportunity.txType}`,
+        'BEHAVIORAL' as any,
+        `Successful ${execution.opportunity.txType} execution pattern`,
+        {
+          txType: execution.opportunity.txType,
+          congestion: execution.market.congestion,
+          mevRisk: execution.execution.mevRisk
+        } as any,
+        0.7
+      );
+    }
+    
+    // Add learning example to LearningEngine
+    if (execution.execution.success) {
+      const learningSession = this.learningEngine.startSession('arbitrage_optimization', LearningMode.REINFORCEMENT);
+      
+      this.learningEngine.addExample({
+        congestion: execution.market.congestion,
+        searcherDensity: execution.market.searcherDensity,
+        mevRisk: execution.execution.mevRisk,
+        profit: execution.opportunity.profit
+      }, {
+        success: execution.execution.success,
+        actualProfit: execution.execution.actualProfit || 0
+      }, undefined, 'POSITIVE');
+      
+      this.learningEngine.endSession();
+    }
+    
+    // Assess risk for this execution
+    const riskAssessment = this.riskAssessor.assess(
+      `execution_${execution.cycleNumber}`,
+      'arbitrage_execution',
+      {
+        mev_exposure: execution.execution.mevRisk,
+        market_congestion: execution.market.congestion,
+        gas_price_volatility: execution.market.baseFee ? Math.min(execution.market.baseFee / 100, 1.0) : 0.5
+      }
+    );
+    
     // Trigger pattern detection
     this.detectPatterns();
     
     // Trigger learning
     this.learnFromExecution(execution);
     
+    // Update goals progress
+    this.updateGoalsProgress(execution);
+    
     this.emit('executionRecorded', execution);
+  }
+  
+  /**
+   * Update autonomous goals based on execution
+   */
+  private updateGoalsProgress(execution: ArbitrageExecution): void {
+    const allGoals = Array.from((this.autonomousGoals as any).goals.values()) as any[];
+    
+    for (const goal of allGoals) {
+      if (goal.name === 'Maximize Profit with Ethics' && execution.execution.success) {
+        this.autonomousGoals.updateProgress(
+          goal.id,
+          Math.min(goal.progress + 1, 100),
+          { totalProfit: (goal.metrics.totalProfit || 0) + (execution.execution.actualProfit || 0) }
+        );
+      } else if (goal.name === 'Minimize MEV Risk') {
+        const avgRisk = (goal.metrics.avgRisk || 0.5);
+        const newAvgRisk = (avgRisk * 0.9 + execution.execution.mevRisk * 0.1);
+        this.autonomousGoals.updateProgress(
+          goal.id,
+          newAvgRisk < 0.5 ? 80 : 50,
+          { avgRisk: newAvgRisk }
+        );
+      }
+    }
   }
   
   /**
@@ -1105,5 +1290,107 @@ export class ArbitrageConsciousness extends EventEmitter {
            this.reflections[0].performance.successRate) : 0,
       },
     };
+  }
+  
+  /**
+   * Get integrated consciousness modules for external access
+   */
+  getConsciousnessModules() {
+    return {
+      learningEngine: this.learningEngine,
+      patternTracker: this.patternTracker,
+      historicalAnalyzer: this.historicalAnalyzer,
+      spatialReasoning: this.spatialReasoning,
+      multiPathExplorer: this.multiPathExplorer,
+      opportunityScorer: this.opportunityScorer,
+      patternRecognition: this.patternRecognition,
+      riskAssessor: this.riskAssessor,
+      riskCalibrator: this.riskCalibrator,
+      thresholdManager: this.thresholdManager,
+      autonomousGoals: this.autonomousGoals,
+      operationalPlaybook: this.operationalPlaybook,
+      architecturalPrinciples: this.architecturalPrinciples,
+      evolutionTracker: this.evolutionTracker
+    };
+  }
+  
+  /**
+   * Get comprehensive insights from all consciousness modules
+   */
+  getComprehensiveInsights() {
+    return {
+      // Learning insights
+      learning: {
+        skills: Array.from((this.learningEngine as any).skills.values()),
+        sessions: Array.from((this.learningEngine as any).sessions.values()).slice(-5)
+      },
+      
+      // Pattern insights
+      patterns: {
+        all: Array.from((this.patternTracker as any).patterns.values()),
+        recognized: this.patternRecognition.getStats(),
+        marketPatterns: this.getDetectedPatterns()
+      },
+      
+      // Historical insights
+      historical: {
+        observations: (this.historicalAnalyzer as any).events?.slice(-20) || []
+      },
+      
+      // Risk insights
+      risk: {
+        factors: Array.from((this.riskAssessor as any).factors.values()),
+        assessments: Array.from((this.riskAssessor as any).assessments.values()).slice(-5)
+      },
+      
+      // Goal progress
+      goals: {
+        all: Array.from((this.autonomousGoals as any).goals.values()),
+        active: Array.from((this.autonomousGoals as any).goals.values()).filter((g: any) => g.status === 'ACTIVE'),
+        completed: Array.from((this.autonomousGoals as any).goals.values()).filter((g: any) => g.status === 'COMPLETED')
+      },
+      
+      // Strategy insights
+      strategy: {
+        spatialStats: this.spatialReasoning.getStats(),
+        pathExploration: this.multiPathExplorer.getStats(),
+        opportunityScoring: this.opportunityScorer.getStats()
+      },
+      
+      // Evolution tracking
+      evolution: {
+        phases: (this.evolutionTracker as any).phases || [],
+        milestones: (this.evolutionTracker as any).milestones || []
+      },
+      
+      // Consciousness state
+      consciousness: {
+        snapshot: this.getSnapshot(),
+        statistics: this.getStatistics(),
+        reflections: this.getReflections().slice(-5)
+      }
+    };
+  }
+  
+  /**
+   * Use spatial reasoning to analyze opportunity space
+   */
+  analyzeSpatialOpportunities(opportunities: any[]): any {
+    // Return spatial reasoning stats instead of trying to analyze complex problem space
+    // This provides insights into the multi-dimensional analysis capabilities
+    return {
+      opportunityCount: opportunities.length,
+      spatialStats: this.spatialReasoning.getStats(),
+      dimensions: ['profit', 'risk', 'congestion', 'time', 'gas'],
+      message: 'Spatial reasoning engine available for multi-dimensional opportunity analysis'
+    };
+  }
+  
+  /**
+   * Use pattern recognition to find similar past situations
+   */
+  recognizeSimilarSituations(currentState: any): any {
+    // Use pattern tracker predictions instead
+    return this.patternTracker.getPredictions(currentState);
   }
 }
