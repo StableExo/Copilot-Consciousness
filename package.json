@@ -45,6 +45,7 @@
     "@uniswap/v3-core": "1.0.1",
     "@uniswap/v3-periphery": "1.4.3",
     "@uniswap/v3-sdk": "3.8.3",
+    "alchemy-sdk": "3.6.5",
     "amqplib": "0.10.3",
     "async-mutex": "0.5.0",
     "bcrypt": "5.1.1",
