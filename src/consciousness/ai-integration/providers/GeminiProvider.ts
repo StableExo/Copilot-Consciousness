@@ -157,6 +157,13 @@ export class GeminiProvider extends BaseAIProvider implements AIProvider {
   }
 
   /**
+   * Get Citadel mode status
+   */
+  getCitadelMode(): { enabled: boolean } {
+    return { enabled: this.citadelModeEnabled };
+  }
+
+  /**
    * Build Gemini-specific system instruction
    */
   private buildGeminiSystemInstruction(
