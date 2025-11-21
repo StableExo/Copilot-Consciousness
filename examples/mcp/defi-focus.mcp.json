@@ -3,7 +3,7 @@
     "mev-intelligence": {
       "command": "node",
       "args": [
-        "../../dist/mcp/mev-server.js"
+        "dist/src/mev/index.js"
       ],
       "description": "MEV Intelligence Suite for blockchain monitoring and arbitrage",
       "env": {
@@ -22,7 +22,7 @@
     "dex-services": {
       "command": "node",
       "args": [
-        "../../dist/mcp/dex-server.js"
+        "dist/src/dex/index.js"
       ],
       "description": "DEX monitoring and interaction services",
       "env": {
@@ -40,7 +40,7 @@
     "analytics-learning": {
       "command": "node",
       "args": [
-        "../../dist/mcp/analytics-server.js"
+        "dist/src/ml/index.js"
       ],
       "description": "Analytics and machine learning for DeFi strategies",
       "capabilities": [

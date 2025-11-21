@@ -3,7 +3,7 @@
     "consciousness-system": {
       "command": "node",
       "args": [
-        "../../dist/mcp/consciousness-server.js"
+        "dist/src/consciousness.js"
       ],
       "description": "Core consciousness system with memory and cognitive development",
       "env": {
@@ -20,7 +20,7 @@
     "memory-core-tools": {
       "command": "node",
       "args": [
-        "../../dist/mcp/memory-tools-server.js"
+        "dist/src/tools/memory/index.js"
       ],
       "description": "Memory Core tools: Scribe, Mnemosyne, SelfReflection",
       "capabilities": [
@@ -33,7 +33,7 @@
     "gemini-citadel": {
       "command": "node",
       "args": [
-        "../../dist/mcp/gemini-server.js"
+        "dist/src/gemini-citadel/index.js"
       ],
       "description": "Gemini Citadel for cosmic-scale problem solving",
       "env": {
@@ -50,7 +50,7 @@
     "analytics-learning": {
       "command": "node",
       "args": [
-        "../../dist/mcp/analytics-server.js"
+        "dist/src/ml/index.js"
       ],
       "description": "Analytics and machine learning services",
       "capabilities": [

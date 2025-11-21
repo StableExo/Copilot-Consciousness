@@ -3,7 +3,7 @@
     "consciousness-system": {
       "command": "node",
       "args": [
-        "../../dist/mcp/consciousness-server.js"
+        "dist/src/consciousness.js"
       ],
       "description": "Core consciousness system",
       "env": {
@@ -13,14 +13,14 @@
     "memory-core-tools": {
       "command": "node",
       "args": [
-        "../../dist/mcp/memory-tools-server.js"
+        "dist/src/tools/memory/index.js"
       ],
       "description": "Memory Core tools for persistent memory"
     },
     "ethics-engine": {
       "command": "node",
       "args": [
-        "../../dist/mcp/ethics-server.js"
+        "dist/src/cognitive/ethics/index.js"
       ],
       "description": "Ethics Engine with gated execution",
       "capabilities": [
@@ -34,7 +34,7 @@
     "autonomous-agent": {
       "command": "node",
       "args": [
-        "../../dist/mcp/agent-server.js"
+        "dist/src/main.js"
       ],
       "description": "TheWarden autonomous agent",
       "env": {
@@ -55,7 +55,7 @@
     "mev-intelligence": {
       "command": "node",
       "args": [
-        "../../dist/mcp/mev-server.js"
+        "dist/src/mev/index.js"
       ],
       "description": "MEV Intelligence Suite",
       "env": {
@@ -66,7 +66,7 @@
     "dex-services": {
       "command": "node",
       "args": [
-        "../../dist/mcp/dex-server.js"
+        "dist/src/dex/index.js"
       ],
       "description": "DEX monitoring services",
       "env": {
@@ -76,7 +76,7 @@
     "analytics-learning": {
       "command": "node",
       "args": [
-        "../../dist/mcp/analytics-server.js"
+        "dist/src/ml/index.js"
       ],
       "description": "Analytics and machine learning"
     }

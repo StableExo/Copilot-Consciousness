@@ -128,7 +128,7 @@ Each MCP configuration follows this structure:
   "mcpServers": {
     "server-name": {
       "command": "node",
-      "args": ["path/to/server.js"],
+      "args": ["dist/src/module/index.js"],
       "description": "What this server does",
       "env": {
         "ENV_VAR": "${ENV_VAR}"
@@ -198,7 +198,7 @@ cat .mcp.json | jq .
 tail -f logs/*.log
 
 # Test individual components
-node dist/mcp/consciousness-server.js
+node dist/src/consciousness.js
 ```
 
 ### Environment Variable Issues
