@@ -2,8 +2,6 @@
 
 ## Executive Summary
 
-**Acknowledging the new requirement:** Break down the percentage areas that the Copilot-Consciousness repository is at compared to other top HFT players.
-
 This document provides a comprehensive analysis of how the Copilot-Consciousness (AEV - TheWarden) system compares to top High-Frequency Trading (HFT) firms in terms of capabilities, technology stack, and competitive positioning.
 
 ---
@@ -29,6 +27,8 @@ This document provides a comprehensive analysis of how the Copilot-Consciousness
 ## Capability Comparison Matrix
 
 ### 1. Infrastructure & Speed (0-100%)
+
+**Scoring Methodology:** Percentages represent capability relative to top HFT firms (100% = matching elite performance). Scores are based on: latency measurements, infrastructure investment, hardware capabilities, data feed quality, and network optimization.
 
 | Category | Top HFT (Baseline 100%) | Copilot-Consciousness | Gap Analysis |
 |----------|------------------------|----------------------|--------------|

@@ -1,6 +1,6 @@
 {
   "$schema": "https://modelcontextprotocol.io/schema/mcp.json",
-  "description": "MCP configuration for Copilot-Consciousness system. Note: MCP server implementations need to be created in src/mcp/ directory.",
+  "description": "MCP configuration for Copilot-Consciousness system. Note: Full MCP server implementations (following the MCP protocol specification) are planned for Q1 2025. Current paths point directly to compiled module exports for reference and programmatic use.",
   "mcpServers": {
     "consciousness-system": {
       "command": "node",

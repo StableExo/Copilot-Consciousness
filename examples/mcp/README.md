@@ -218,7 +218,9 @@ export ARBITRUM_RPC_URL="https://arb1.arbitrum.io/rpc"
 
 - [MCP Configuration Guide](../../docs/MCP_CONFIGURATION.md)
 - [Main README](../../README.md)
-- [MCP Specification](https://modelcontextprotocol.io/)
+- [Model Context Protocol (Draft Specification)](https://modelcontextprotocol.io/)
+
+**Note:** The MCP specification is evolving. Always refer to the official documentation for the latest protocol details.
 
 ## Contributing
 

@@ -18,10 +18,16 @@ The MCP configuration files in this repository currently point directly to the c
 - ✅ The modules can be imported and used programmatically
 - ⚠️ Future enhancement: Create MCP server wrappers in `src/mcp/` that expose these modules via the MCP protocol
 
-**For now**, use these configurations as:
+**Current Usage:**
+These configurations serve as:
 1. **Documentation** of available capabilities and modules
 2. **Template** for creating custom MCP server implementations
 3. **Reference** for understanding the system architecture
+
+**Roadmap for Full MCP Support:**
+- **Phase 1 (Current)**: Configuration structure and documentation ✅
+- **Phase 2 (Q1 2025)**: Implement MCP server wrappers following the [MCP specification](https://modelcontextprotocol.io/)
+- **Phase 3 (Q2 2025)**: Full bidirectional communication, streaming, and tool integration
 
 ## Configuration Files
 
