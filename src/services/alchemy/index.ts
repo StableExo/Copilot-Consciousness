@@ -6,30 +6,53 @@
  * and transaction analysis capabilities.
  */
 
-export { AlchemyClient, getAlchemyClient, resetAlchemyClient } from './AlchemyClient';
-export type { AlchemyConfig } from './AlchemyClient';
+import { getAlchemyClient as getClient } from './AlchemyClient';
+import { AlchemyTokenService as TokenService } from './AlchemyTokenService';
+import { AlchemyPricesService as PricesService } from './AlchemyPricesService';
+import { AlchemyTraceService as TraceService } from './AlchemyTraceService';
+import { AlchemyWebhookService as WebhookService } from './AlchemyWebhookService';
 
-export { AlchemyTokenService } from './AlchemyTokenService';
-export type { TokenBalance, TokenMetadata, TransferFilter } from './AlchemyTokenService';
+export { 
+  AlchemyClient, 
+  getAlchemyClient, 
+  resetAlchemyClient,
+  type AlchemyConfig 
+} from './AlchemyClient';
 
-export { AlchemyPricesService } from './AlchemyPricesService';
-export type { TokenPrice, PriceComparison } from './AlchemyPricesService';
+export { 
+  AlchemyTokenService,
+  type TokenBalance, 
+  type TokenMetadata, 
+  type TransferFilter 
+} from './AlchemyTokenService';
 
-export { AlchemyTraceService } from './AlchemyTraceService';
-export type { TraceResult, TransactionAnalysis } from './AlchemyTraceService';
+export { 
+  AlchemyPricesService,
+  type TokenPrice, 
+  type PriceComparison 
+} from './AlchemyPricesService';
 
-export { AlchemyWebhookService } from './AlchemyWebhookService';
-export type { WebhookEvent, AddressActivityConfig } from './AlchemyWebhookService';
+export { 
+  AlchemyTraceService,
+  type TraceResult, 
+  type TransactionAnalysis 
+} from './AlchemyTraceService';
+
+export { 
+  AlchemyWebhookService,
+  type WebhookEvent, 
+  type AddressActivityConfig 
+} from './AlchemyWebhookService';
 
 /**
  * Create a complete Alchemy service suite
  */
 export function createAlchemyServices() {
   return {
-    client: getAlchemyClient(),
-    tokens: new AlchemyTokenService(),
-    prices: new AlchemyPricesService(),
-    trace: new AlchemyTraceService(),
-    webhooks: new AlchemyWebhookService(),
+    client: getClient(),
+    tokens: new TokenService(),
+    prices: new PricesService(),
+    trace: new TraceService(),
+    webhooks: new WebhookService(),
   };
 }

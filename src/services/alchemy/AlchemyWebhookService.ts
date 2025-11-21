@@ -38,33 +38,17 @@ export class AlchemyWebhookService {
     try {
       // Subscribe to all pending transactions
       this.client.ws.on(
-        {
-          method: 'alchemy_pendingTransactions',
-          toAddress: address,
-        },
+        'alchemy_pendingTransactions',
         (tx) => {
-          callback({
-            type: 'PENDING_TX',
-            address,
-            transaction: tx,
-            timestamp: Date.now(),
-          });
-        }
-      );
-
-      // Subscribe to mined transactions
-      this.client.ws.on(
-        {
-          method: 'alchemy_minedTransactions',
-          addresses: [{ to: address }],
-        },
-        (tx) => {
-          callback({
-            type: 'MINED_TX',
-            address,
-            transaction: tx,
-            timestamp: Date.now(),
-          });
+          // Filter for address
+          if (tx.to === address || tx.from === address) {
+            callback({
+              type: 'PENDING_TX',
+              address,
+              transaction: tx,
+              timestamp: Date.now(),
+            });
+          }
         }
       );
 
@@ -102,19 +86,14 @@ export class AlchemyWebhookService {
     }
   ): Promise<void> {
     try {
-      const subscribeOptions: any = {
-        method: 'alchemy_pendingTransactions',
-      };
-
-      if (filter?.fromAddress) {
-        subscribeOptions.fromAddress = filter.fromAddress;
-      }
-
-      if (filter?.toAddress) {
-        subscribeOptions.toAddress = filter.toAddress;
-      }
-
-      this.client.ws.on(subscribeOptions, (tx) => {
+      this.client.ws.on('alchemy_pendingTransactions', (tx) => {
+        // Apply filters if provided
+        if (filter?.fromAddress && tx.from !== filter.fromAddress) {
+          return;
+        }
+        if (filter?.toAddress && tx.to !== filter.toAddress) {
+          return;
+        }
         callback(tx);
       });
 
@@ -255,9 +234,8 @@ export class AlchemyWebhookService {
    */
   isConnected(): boolean {
     try {
-      // Check if WebSocket is connected
-      return this.client.ws.listenerCount('block') > 0 || 
-             this.client.ws.listenerCount('pending') > 0;
+      // Simple check if WebSocket exists
+      return !!this.client.ws;
     } catch {
       return false;
     }

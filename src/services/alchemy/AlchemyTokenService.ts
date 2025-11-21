@@ -55,7 +55,7 @@ export class AlchemyTokenService {
       return balances.tokenBalances.map(balance => ({
         contractAddress: balance.contractAddress,
         tokenBalance: balance.tokenBalance || '0',
-        error: balance.error,
+        error: balance.error || undefined,
       }));
     } catch (error) {
       console.error('Error fetching token balances:', error);
@@ -87,7 +87,7 @@ export class AlchemyTokenService {
    */
   async getAssetTransfers(
     filter: TransferFilter
-  ): Promise<AssetTransfersWithMetadataResult> {
+  ): Promise<any> {
     try {
       const params: any = {
         fromBlock: filter.fromBlock || '0x0',
@@ -182,7 +182,7 @@ export class AlchemyTokenService {
         category: options?.category,
       });
 
-      transfers.transfers.forEach(transfer => callback(transfer));
+      transfers.transfers.forEach((transfer: any) => callback(transfer));
     } catch (error) {
       console.error(`Error monitoring address ${address}:`, error);
       throw error;

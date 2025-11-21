@@ -6,7 +6,6 @@
  */
 
 import { getAlchemyClient } from './AlchemyClient';
-import { DebugTransaction, DebugCallTracer } from 'alchemy-sdk';
 
 export interface TraceResult {
   success: boolean;
@@ -32,22 +31,6 @@ export class AlchemyTraceService {
   private client = getAlchemyClient();
 
   /**
-   * Trace a transaction to understand its execution
-   */
-  async traceTransaction(txHash: string): Promise<TraceResult> {
-    try {
-      const trace = await this.client.debug.traceTransaction(txHash, {
-        tracer: DebugCallTracer.CALL_TRACER,
-      });
-
-      return this.parseTraceResult(trace);
-    } catch (error) {
-      console.error(`Error tracing transaction ${txHash}:`, error);
-      throw error;
-    }
-  }
-
-  /**
    * Analyze a failed transaction to determine why it failed
    */
   async analyzeFailedTransaction(txHash: string): Promise<TransactionAnalysis> {
@@ -63,21 +46,28 @@ export class AlchemyTraceService {
       const gasUsed = parseInt(receipt.gasUsed.toString());
 
       let failureReason: string | undefined;
-      let internalCalls = 0;
-      let valueTransfers = 0;
+      const internalCalls = 0;
+      const valueTransfers = 0;
 
       if (!success) {
-        // Trace the transaction to understand the failure
+        // Try to get revert reason
         try {
-          const trace = await this.traceTransaction(txHash);
-          failureReason = trace.error || 'Unknown error';
-          
-          if (trace.calls) {
-            internalCalls = trace.calls.length;
-            valueTransfers = this.countValueTransfers(trace.calls);
+          const tx = await this.client.core.getTransaction(txHash);
+          if (tx) {
+            // Attempt to replay the transaction to get revert reason
+            try {
+              await this.client.core.call({
+                to: tx.to || undefined,
+                from: tx.from,
+                data: tx.data,
+                value: tx.value,
+              }, receipt.blockNumber);
+            } catch (callError: any) {
+              failureReason = callError.message || 'Unknown error';
+            }
           }
         } catch (traceError) {
-          failureReason = 'Unable to trace transaction';
+          failureReason = 'Unable to determine failure reason';
         }
       }
 
@@ -96,37 +86,6 @@ export class AlchemyTraceService {
   }
 
   /**
-   * Simulate a transaction before sending
-   */
-  async simulateTransaction(
-    from: string,
-    to: string,
-    data: string,
-    value?: string
-  ): Promise<TraceResult> {
-    try {
-      // Use debug_traceCall for simulation
-      const trace = await this.client.debug.traceCall(
-        {
-          from,
-          to,
-          data,
-          value: value || '0x0',
-        },
-        'latest',
-        {
-          tracer: DebugCallTracer.CALL_TRACER,
-        }
-      );
-
-      return this.parseTraceResult(trace);
-    } catch (error) {
-      console.error('Error simulating transaction:', error);
-      throw error;
-    }
-  }
-
-  /**
    * Get detailed gas usage breakdown
    */
   async analyzeGasUsage(txHash: string): Promise<{
@@ -134,23 +93,19 @@ export class AlchemyTraceService {
     operationBreakdown: Array<{ operation: string; gas: number }>;
   }> {
     try {
-      const trace = await this.client.debug.traceTransaction(txHash, {
-        tracer: DebugCallTracer.CALL_TRACER,
-      });
-
-      // Parse gas usage from trace
-      const totalGas = parseInt(trace.gasUsed || '0', 16);
-      const operationBreakdown: Array<{ operation: string; gas: number }> = [];
-
-      // Extract gas usage per operation from trace
-      if (trace.calls) {
-        for (const call of trace.calls) {
-          operationBreakdown.push({
-            operation: call.type || 'unknown',
-            gas: parseInt(call.gasUsed || '0', 16),
-          });
-        }
+      const receipt = await this.client.core.getTransactionReceipt(txHash);
+      
+      if (!receipt) {
+        throw new Error(`Transaction ${txHash} not found`);
       }
+
+      const totalGas = parseInt(receipt.gasUsed.toString());
+      const operationBreakdown: Array<{ operation: string; gas: number }> = [
+        {
+          operation: 'total',
+          gas: totalGas,
+        },
+      ];
 
       return {
         totalGas,
@@ -163,64 +118,25 @@ export class AlchemyTraceService {
   }
 
   /**
-   * Trace multiple transactions in a block
+   * Get transaction receipt with additional context
    */
-  async traceBlock(blockNumber: number): Promise<TraceResult[]> {
+  async getTransactionDetails(txHash: string): Promise<any> {
     try {
-      const block = await this.client.core.getBlockWithTransactions(blockNumber);
-      
-      if (!block || !block.transactions) {
-        return [];
-      }
+      const [receipt, tx] = await Promise.all([
+        this.client.core.getTransactionReceipt(txHash),
+        this.client.core.getTransaction(txHash),
+      ]);
 
-      const traces: TraceResult[] = [];
-      
-      for (const tx of block.transactions) {
-        try {
-          const trace = await this.traceTransaction(tx.hash);
-          traces.push(trace);
-        } catch (error) {
-          console.warn(`Failed to trace transaction ${tx.hash}:`, error);
-        }
-      }
-
-      return traces;
+      return {
+        receipt,
+        transaction: tx,
+        success: receipt?.status === 1,
+        gasUsed: receipt ? parseInt(receipt.gasUsed.toString()) : 0,
+      };
     } catch (error) {
-      console.error(`Error tracing block ${blockNumber}:`, error);
+      console.error(`Error getting transaction details for ${txHash}:`, error);
       throw error;
     }
-  }
-
-  /**
-   * Parse trace result into a standard format
-   */
-  private parseTraceResult(trace: any): TraceResult {
-    return {
-      success: !trace.error,
-      gasUsed: trace.gasUsed || '0',
-      output: trace.output || trace.returnValue || '0x',
-      calls: trace.calls || [],
-      error: trace.error,
-    };
-  }
-
-  /**
-   * Count value transfers in trace calls
-   */
-  private countValueTransfers(calls: any[]): number {
-    let count = 0;
-    
-    for (const call of calls) {
-      if (call.value && BigInt(call.value) > 0n) {
-        count++;
-      }
-      
-      if (call.calls) {
-        count += this.countValueTransfers(call.calls);
-      }
-    }
-    
-    return count;
   }
 
   /**
@@ -228,24 +144,30 @@ export class AlchemyTraceService {
    */
   async getRevertReason(txHash: string): Promise<string | null> {
     try {
-      const trace = await this.traceTransaction(txHash);
+      const receipt = await this.client.core.getTransactionReceipt(txHash);
       
-      if (trace.error) {
-        return trace.error;
+      if (!receipt || receipt.status === 1) {
+        return null; // Transaction succeeded
       }
-      
-      // Try to decode revert reason from output
-      if (trace.output && trace.output.length > 2) {
-        try {
-          // Parse revert reason if it follows standard format
-          const reason = this.decodeRevertReason(trace.output);
-          return reason;
-        } catch {
-          return trace.output;
-        }
+
+      const tx = await this.client.core.getTransaction(txHash);
+      if (!tx) {
+        return null;
       }
-      
-      return null;
+
+      // Try to replay the transaction
+      try {
+        await this.client.core.call({
+          to: tx.to || undefined,
+          from: tx.from,
+          data: tx.data,
+          value: tx.value,
+        }, receipt.blockNumber);
+        
+        return null;
+      } catch (error: any) {
+        return error.message || error.toString();
+      }
     } catch (error) {
       console.error(`Error getting revert reason for ${txHash}:`, error);
       return null;
@@ -253,20 +175,31 @@ export class AlchemyTraceService {
   }
 
   /**
-   * Decode revert reason from output data
+   * Check if transaction will succeed (simulation)
    */
-  private decodeRevertReason(output: string): string {
-    // Standard revert with reason string starts with 0x08c379a0
-    if (output.startsWith('0x08c379a0')) {
-      try {
-        // Skip function selector (4 bytes) and decode the string
-        const reason = Buffer.from(output.slice(10), 'hex').toString('utf8');
-        return reason.replace(/\0/g, '').trim();
-      } catch {
-        return output;
-      }
+  async simulateTransaction(
+    from: string,
+    to: string,
+    data: string,
+    value?: string
+  ): Promise<{ success: boolean; result?: string; error?: string }> {
+    try {
+      const result = await this.client.core.call({
+        from,
+        to,
+        data,
+        value: value || '0x0',
+      });
+
+      return {
+        success: true,
+        result,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || error.toString(),
+      };
     }
-    
-    return output;
   }
 }
