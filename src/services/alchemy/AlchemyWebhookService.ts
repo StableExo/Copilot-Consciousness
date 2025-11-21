@@ -7,6 +7,7 @@
  */
 
 import { getAlchemyClient } from './AlchemyClient';
+import { utils } from 'ethers';
 
 export interface WebhookEvent {
   type: 'ADDRESS_ACTIVITY' | 'MINED_TRANSACTION' | 'DROPPED_TRANSACTION' | 'CUSTOM';
@@ -170,14 +171,18 @@ export class AlchemyWebhookService {
     try {
       await this.subscribeToPendingTransactions((tx) => {
         if (tx.value) {
-          const valueEth = parseFloat(tx.value) / 1e18;
-          if (valueEth >= minValueEth) {
-            callback({
-              type: 'LARGE_TRANSACTION',
-              valueEth,
-              transaction: tx,
-              timestamp: Date.now(),
-            });
+          try {
+            const valueEth = parseFloat(utils.formatEther(tx.value));
+            if (valueEth >= minValueEth) {
+              callback({
+                type: 'LARGE_TRANSACTION',
+                valueEth,
+                transaction: tx,
+                timestamp: Date.now(),
+              });
+            }
+          } catch (error) {
+            console.error('Error parsing transaction value:', error);
           }
         }
       });

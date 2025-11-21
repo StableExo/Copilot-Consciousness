@@ -6,7 +6,7 @@
  */
 
 import { getAlchemyClient } from './AlchemyClient';
-import { AssetTransfersCategory, AssetTransfersWithMetadataResult } from 'alchemy-sdk';
+import { AssetTransfersCategory } from 'alchemy-sdk';
 
 export interface TokenBalance {
   contractAddress: string;

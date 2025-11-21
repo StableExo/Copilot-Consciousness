@@ -6,7 +6,7 @@
  */
 
 import { getAlchemyClient } from './AlchemyClient';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 
 export interface TokenPrice {
   token: string;
@@ -118,7 +118,7 @@ export class AlchemyPricesService {
     decimals: number
   ): Promise<number> {
     try {
-      const amountFloat = parseFloat(ethers.utils.formatUnits(amount, decimals));
+      const amountFloat = parseFloat(utils.formatUnits(amount, decimals));
       const priceUsd = await this.getTokenPriceUsd(tokenAddress);
       
       const buyValueUsd = buyPrice * amountFloat * priceUsd;
@@ -142,10 +142,8 @@ export class AlchemyPricesService {
       // 2. Uniswap V3 TWAP
       // 3. Other reliable price oracles
       
-      // For now, return a placeholder
-      // Real implementation would use Alchemy's core.call() to query price oracles
-      console.warn(`Price fetching not fully implemented for ${tokenAddress}`);
-      return 0;
+      // For now, throw an error to indicate not implemented
+      throw new Error(`Price fetching not fully implemented for ${tokenAddress}. Please integrate with price oracle.`);
     } catch (error) {
       console.error(`Error fetching on-chain price for ${tokenAddress}:`, error);
       throw error;
@@ -195,8 +193,7 @@ export class AlchemyPricesService {
     try {
       // Would fetch historical price at specific block
       // This requires integration with historical price oracles or indexed data
-      console.warn(`Historical price fetching not fully implemented for ${tokenAddress} at block ${blockNumber}`);
-      return 0;
+      throw new Error(`Historical price fetching not fully implemented for ${tokenAddress} at block ${blockNumber}. Please integrate with historical price oracle.`);
     } catch (error) {
       console.error('Error fetching historical price:', error);
       throw error;
