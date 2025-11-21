@@ -161,6 +161,18 @@ See [MEV Intelligence Suite Documentation](./docs/MEV_INTELLIGENCE_SUITE.md), [F
 
 ## Installation
 
+### Required Node.js Version
+This repository runs on Node.js `20.18.0`. Install [NVM](https://github.com/nvm-sh/nvm) for Node.js version management.
+
+Follow these commands for setup:
+```bash
+# Automatically switch to the version declared in .nvmrc
+nvm install
+nvm use
+```
+
+### Install Package
+
 ```bash
 npm install aev-thewarden
 ```
