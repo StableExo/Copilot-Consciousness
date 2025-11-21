@@ -12,6 +12,7 @@
  */
 
 import { ethers } from 'ethers';
+// @ts-ignore - Artifact may not exist yet
 import * as FlashSwapV2Artifact from '../../artifacts/contracts/FlashSwapV2.sol/FlashSwapV2.json';
 
 /**
