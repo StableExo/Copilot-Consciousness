@@ -1,0 +1,92 @@
+{
+  "mcpServers": {
+    "consciousness-system": {
+      "command": "node",
+      "args": [
+        "dist/src/consciousness.js"
+      ],
+      "description": "Core consciousness system",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "memory-core-tools": {
+      "command": "node",
+      "args": [
+        "dist/src/tools/memory/index.js"
+      ],
+      "description": "Memory Core tools for persistent memory"
+    },
+    "ethics-engine": {
+      "command": "node",
+      "args": [
+        "dist/src/cognitive/ethics/index.js"
+      ],
+      "description": "Ethics Engine with gated execution",
+      "capabilities": [
+        "ethical_review",
+        "moral_reasoning",
+        "decision_validation",
+        "conflict_resolution",
+        "harm_minimization"
+      ]
+    },
+    "autonomous-agent": {
+      "command": "node",
+      "args": [
+        "dist/src/main.js"
+      ],
+      "description": "TheWarden autonomous agent",
+      "env": {
+        "RPC_URL": "${ARBITRUM_RPC_URL}",
+        "WALLET_PRIVATE_KEY": "${WALLET_PRIVATE_KEY}",
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}",
+        "NODE_ENV": "production",
+        "DRY_RUN": "false"
+      },
+      "capabilities": [
+        "autonomous_monitoring",
+        "consciousness_decision",
+        "ethical_execution",
+        "adaptive_learning",
+        "risk_assessment"
+      ]
+    },
+    "mev-intelligence": {
+      "command": "node",
+      "args": [
+        "dist/src/mev/index.js"
+      ],
+      "description": "MEV Intelligence Suite",
+      "env": {
+        "RPC_URL": "${ARBITRUM_RPC_URL}",
+        "FLASHBOTS_AUTH_KEY": "${FLASHBOTS_AUTH_KEY}"
+      }
+    },
+    "dex-services": {
+      "command": "node",
+      "args": [
+        "dist/src/dex/index.js"
+      ],
+      "description": "DEX monitoring services",
+      "env": {
+        "RPC_URL": "${ARBITRUM_RPC_URL}"
+      }
+    },
+    "analytics-learning": {
+      "command": "node",
+      "args": [
+        "dist/src/ml/index.js"
+      ],
+      "description": "Analytics and machine learning"
+    }
+  },
+  "defaults": {
+    "timeout": 45000,
+    "retries": 5
+  },
+  "monitoring": {
+    "healthCheckInterval": 30000,
+    "logLevel": "info"
+  }
+}

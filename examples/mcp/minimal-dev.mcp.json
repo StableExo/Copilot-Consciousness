@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "consciousness-system": {
+      "command": "node",
+      "args": [
+        "dist/src/consciousness.js"
+      ],
+      "description": "Core consciousness system with memory, temporal awareness, and cognitive development",
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  },
+  "defaults": {
+    "timeout": 30000,
+    "retries": 3
+  }
+}
