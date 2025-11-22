@@ -125,7 +125,9 @@ export class DEXRegistry {
             network: '8453',
             router: '0xcF77a3Ba9A5CA399B7c97c74d54e5b1Beb874E43',
             factory: '0x420DD381b31aEf6683db6B902084cB0FFECe40Da',
-            initCodeHash: '0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470', // Aerodrome uses Uniswap V3-style concentrated liquidity
+            // Aerodrome uses Uniswap V3-style concentrated liquidity
+            // Note: V3-style DEXes may not use initCodeHash for pool address calculation
+            initCodeHash: '0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54',
             priority: 2,
             liquidityThreshold: BigInt(ethers.utils.parseEther('10000').toString()),
             gasEstimate: 150000
