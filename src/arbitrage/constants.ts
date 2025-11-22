@@ -48,10 +48,15 @@ export const V3_LIQUIDITY_SCALE_FACTOR = 1000000;
 export const V3_STYLE_PROTOCOLS = ['UniswapV3', 'Aerodrome'] as const;
 
 /**
+ * Type representing V3-style protocol names
+ */
+export type V3StyleProtocol = typeof V3_STYLE_PROTOCOLS[number];
+
+/**
  * Check if a protocol uses V3-style concentrated liquidity
  * @param protocol The protocol identifier string
  * @returns true if protocol uses V3-style liquidity (L = sqrt(x*y))
  */
-export function isV3StyleProtocol(protocol: string): boolean {
-  return V3_STYLE_PROTOCOLS.includes(protocol as any);
+export function isV3StyleProtocol(protocol: string): protocol is V3StyleProtocol {
+  return (V3_STYLE_PROTOCOLS as readonly string[]).includes(protocol);
 }

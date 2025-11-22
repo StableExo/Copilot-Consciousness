@@ -8,7 +8,7 @@
  */
 
 import { ethers } from 'ethers';
-import { V3_LIQUIDITY_SCALE_FACTOR } from '../src/arbitrage/constants';
+import { V3_LIQUIDITY_SCALE_FACTOR, UNISWAP_V3_FEE_TIERS } from '../src/arbitrage/constants';
 
 // Base network RPC
 const BASE_RPC_URL = process.env.BASE_RPC_URL || 'https://mainnet.base.org';
@@ -21,13 +21,13 @@ const WETH = '0x4200000000000000000000000000000000000006';
 const USDC = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const DAI = '0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb';
 
-// Fee tiers
-const FEE_TIERS = [
-  { fee: 100, label: '0.01%' },
-  { fee: 500, label: '0.05%' },
-  { fee: 3000, label: '0.3%' },
-  { fee: 10000, label: '1%' }
-];
+// Fee tier labels for display
+const FEE_TIER_LABELS: Record<number, string> = {
+  100: '0.01%',
+  500: '0.05%',
+  3000: '0.3%',
+  10000: '1%'
+};
 
 async function testPoolDetection() {
   console.log('=== Base Network Pool Detection Test ===\n');
@@ -55,8 +55,10 @@ async function testPoolDetection() {
     
     let poolsFound = 0;
     
-    // Check each fee tier
-    for (const { fee, label } of FEE_TIERS) {
+    // Check each fee tier using shared constants
+    for (const fee of UNISWAP_V3_FEE_TIERS) {
+      const label = FEE_TIER_LABELS[fee];
+      
       try {
         const poolAddress = await factory.getPool(WETH, USDC, fee);
         
@@ -103,7 +105,7 @@ async function testPoolDetection() {
     }
     
     console.log('\n=== Summary ===');
-    console.log(`Pools found: ${poolsFound}/${FEE_TIERS.length}`);
+    console.log(`Pools found: ${poolsFound}/${UNISWAP_V3_FEE_TIERS.length}`);
     
     if (poolsFound > 0) {
       console.log('\n✓ Pool detection is working correctly!');
