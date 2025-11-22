@@ -2,6 +2,19 @@
  * Type definitions for the Real-Time Analytics Dashboard
  */
 
+export interface WalletBalance {
+  address: string;
+  chainId: number;
+  chainName: string;
+  nativeBalance: string; // ETH/native token balance as string
+  tokens: {
+    address: string;
+    symbol: string;
+    balance: string;
+    decimals: number;
+  }[];
+}
+
 export interface DashboardMetrics {
   // Trading metrics
   totalTrades: number;
@@ -26,6 +39,9 @@ export interface DashboardMetrics {
   latency: number;
   memoryUsage: number;
   errorRate: number;
+  
+  // Wallet balances
+  walletBalances?: WalletBalance[];
 }
 
 export interface LiveTrade {
