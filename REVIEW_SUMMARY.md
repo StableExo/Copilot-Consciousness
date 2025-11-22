@@ -268,7 +268,7 @@ After configuration, verify:
 1. **Configuration errors**: Run `npm run validate-env` for detailed feedback
 2. **RPC failures**: Check API keys and rate limits
 3. **Database errors**: Verify connection strings and credentials
-4. **Build errors**: Check Node.js version (>=20.18.0 required)
+4. **Build errors**: Check Node.js version (>=20.11.0 required)
 
 ### Resources:
 
