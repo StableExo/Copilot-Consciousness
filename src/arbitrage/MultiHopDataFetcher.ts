@@ -9,6 +9,11 @@ import { DEXRegistry } from '../dex/core/DEXRegistry';
 import { DEXConfig } from '../dex/types';
 import { PoolEdge, Token } from './types';
 import { logger } from '../utils/logger';
+import { 
+  UNISWAP_V3_FEE_TIERS, 
+  V3_LIQUIDITY_SCALE_FACTOR, 
+  isV3StyleProtocol 
+} from './constants';
 
 /**
  * Interface for pool data
@@ -151,11 +156,8 @@ export class MultiHopDataFetcher {
           
           if (poolData) {
             // For V3 pools, liquidity is in L = sqrt(x*y) format, significantly smaller than V2 reserves
-            // V3 liquidity values are typically 10^6 to 10^9 times smaller than equivalent V2 reserves
-            // This is because V3 uses concentrated liquidity: L = sqrt(x*y), while V2 tracks x and y separately
-            // We adjust the threshold proportionally to account for this difference
-            const V3_LIQUIDITY_SCALE_FACTOR = 1000000; // Empirically determined from Base network pools
-            const threshold = (dex.protocol === 'UniswapV3' || dex.protocol === 'Aerodrome')
+            // See V3_LIQUIDITY_SCALE_FACTOR constant definition for mathematical explanation
+            const threshold = isV3StyleProtocol(dex.protocol)
               ? dex.liquidityThreshold / BigInt(V3_LIQUIDITY_SCALE_FACTOR)
               : dex.liquidityThreshold;
             
@@ -203,17 +205,14 @@ export class MultiHopDataFetcher {
         : [token1, token0];
 
       // Uniswap V3 style - check multiple fee tiers using factory.getPool()
-      if (dex.protocol === 'UniswapV3' || dex.protocol === 'Aerodrome') {
-        // Uniswap V3 fee tiers: 100 (0.01%), 500 (0.05%), 3000 (0.3%), 10000 (1%)
-        const feeTiers = [3000, 500, 10000, 100]; // Order by liquidity likelihood
-        
+      if (isV3StyleProtocol(dex.protocol)) {
         const factoryInterface = new ethers.utils.Interface([
           'function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)'
         ]);
         
         const factory = new ethers.Contract(dex.factory, factoryInterface, provider);
         
-        for (const fee of feeTiers) {
+        for (const fee of UNISWAP_V3_FEE_TIERS) {
           try {
             const poolAddress = await factory.getPool(tokenA, tokenB, fee);
             
@@ -269,7 +268,7 @@ export class MultiHopDataFetcher {
   ): Promise<{ reserve0: bigint; reserve1: bigint } | null> {
     try {
       // Uniswap V3 style pools use slot0 and liquidity instead of reserves
-      if (protocol === 'UniswapV3' || protocol === 'Aerodrome') {
+      if (isV3StyleProtocol(protocol)) {
         const poolInterface = new ethers.utils.Interface([
           'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
           'function liquidity() external view returns (uint128)',

@@ -8,6 +8,7 @@
  */
 
 import { ethers } from 'ethers';
+import { V3_LIQUIDITY_SCALE_FACTOR } from '../src/arbitrage/constants';
 
 // Base network RPC
 const BASE_RPC_URL = process.env.BASE_RPC_URL || 'https://mainnet.base.org';
@@ -82,17 +83,8 @@ async function testPoolDetection() {
             const liquidityBigInt = BigInt(liquidity.toString());
             
             // V3 liquidity is in L = sqrt(x*y) format, which is significantly smaller than V2 reserves
-            // For V2: reserves are actual token amounts (e.g., 1000 ETH = 1000 * 10^18)
-            // For V3: liquidity L = sqrt(x * y), where x and y are token amounts
-            // If a V2 pool has 1000 ETH and 3M USDC, reserves are ~10^21 and ~10^24
-            // The equivalent V3 pool would have L = sqrt(10^21 * 10^24) = ~10^22.5 ≈ 10^22
-            // This is roughly 1000x smaller than the larger reserve, or 10^6 times smaller overall
-            // 
-            // For our 100 token threshold (100 * 10^18 = 10^20), the V3 equivalent is:
-            // L = sqrt(10^20 * 10^20) = 10^20 (if tokens are equal value)
-            // But since we're measuring L directly, we use: threshold = 10^20 / 10^6 = 10^14
-            const V3_SCALE_FACTOR = 1000000;
-            const threshold = BigInt('100000000000000000000') / BigInt(V3_SCALE_FACTOR); // 100 tokens / 1M
+            // See constants.ts V3_LIQUIDITY_SCALE_FACTOR for detailed mathematical explanation
+            const threshold = BigInt('100000000000000000000') / BigInt(V3_LIQUIDITY_SCALE_FACTOR); // 100 tokens / scale factor
             
             if (liquidityBigInt >= threshold) {
               console.log(`  ✓ Pool has sufficient V3 liquidity (≥${threshold.toString()})\n`);
