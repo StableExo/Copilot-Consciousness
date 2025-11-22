@@ -99,7 +99,7 @@ export class MultiDexPathBuilder {
     // Initialize arbitrage engines
     this.spatialEngine = new SpatialArbEngine({
       minProfitBps: config.minProfitThresholdEth * 10000, // Convert ETH to BIPS
-      minLiquidityUsd: 10000,
+      minLiquidityUsd: 100, // Lower for Base network
       supportedProtocols: config.supportedDexs,
     });
 
