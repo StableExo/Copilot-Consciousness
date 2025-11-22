@@ -154,6 +154,7 @@ function loadConfig(): WardenConfig {
   
   logger.info('Configuration loaded successfully');
   logger.info(`- Chain ID: ${config.chainId}`);
+  logger.info(`- RPC URL: ${config.rpcUrl.substring(0, 30)}...`);
   logger.info(`- Scan Interval: ${config.scanInterval}ms`);
   logger.info(`- Min Profit: ${config.minProfitPercent}%`);
   logger.info(`- Dry Run Mode: ${config.dryRun}`);
