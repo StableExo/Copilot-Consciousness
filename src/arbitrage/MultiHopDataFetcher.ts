@@ -149,23 +149,30 @@ export class MultiHopDataFetcher {
           poolsChecked++;
           const poolData = await this.fetchPoolData(dex, token0, token1);
           
-          if (poolData && poolData.reserve0 > dex.liquidityThreshold) {
-            poolsFound++;
-            // Create edge in both directions
-            edges.push({
-              poolAddress: poolData.poolAddress,
-              dexName: dex.name,
-              tokenIn: token0,
-              tokenOut: token1,
-              reserve0: poolData.reserve0,
-              reserve1: poolData.reserve1,
-              fee: this.getDEXFee(dex),
-              gasEstimate: dex.gasEstimate || 150000
-            });
+          if (poolData) {
+            // For V3 pools, liquidity is in L = sqrt(x*y) format, so threshold is much lower
+            const threshold = (dex.protocol === 'UniswapV3' || dex.protocol === 'Aerodrome')
+              ? dex.liquidityThreshold / BigInt(1000000)  // V3 liquidity is ~1M times smaller
+              : dex.liquidityThreshold;
             
-            // Only perform string operations if debug is enabled
-            if (logger.isDebugEnabled()) {
-              logger.debug(`Found pool: ${dex.name} ${token0.slice(0,6)}.../${token1.slice(0,6)}... (reserves: ${poolData.reserve0}/${poolData.reserve1})`, 'DATAFETCH');
+            if (poolData.reserve0 > threshold) {
+              poolsFound++;
+              // Create edge in both directions
+              edges.push({
+                poolAddress: poolData.poolAddress,
+                dexName: dex.name,
+                tokenIn: token0,
+                tokenOut: token1,
+                reserve0: poolData.reserve0,
+                reserve1: poolData.reserve1,
+                fee: this.getDEXFee(dex),
+                gasEstimate: dex.gasEstimate || 150000
+              });
+              
+              // Only perform string operations if debug is enabled
+              if (logger.isDebugEnabled()) {
+                logger.debug(`Found pool: ${dex.name} ${token0.slice(0,6)}.../${token1.slice(0,6)}... (reserves: ${poolData.reserve0}/${poolData.reserve1})`, 'DATAFETCH');
+              }
             }
           }
         }
