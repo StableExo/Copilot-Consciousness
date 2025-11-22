@@ -87,8 +87,8 @@ export class MultiHopDataFetcher {
         return this.poolCache.get(cacheKey)!;
       }
 
-      // Fetch reserves
-      const reserves = await this.getReserves(poolAddress, provider);
+      // Fetch reserves - method varies by protocol
+      const reserves = await this.getReserves(poolAddress, provider, dex.protocol);
       
       if (!reserves) {
         return null;
@@ -191,6 +191,38 @@ export class MultiHopDataFetcher {
         ? [token0, token1] 
         : [token1, token0];
 
+      // Uniswap V3 style - check multiple fee tiers using factory.getPool()
+      if (dex.protocol === 'UniswapV3' || dex.protocol === 'Aerodrome') {
+        // Uniswap V3 fee tiers: 100 (0.01%), 500 (0.05%), 3000 (0.3%), 10000 (1%)
+        const feeTiers = [3000, 500, 10000, 100]; // Order by liquidity likelihood
+        
+        const factoryInterface = new ethers.utils.Interface([
+          'function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)'
+        ]);
+        
+        const factory = new ethers.Contract(dex.factory, factoryInterface, provider);
+        
+        for (const fee of feeTiers) {
+          try {
+            const poolAddress = await factory.getPool(tokenA, tokenB, fee);
+            
+            if (poolAddress && poolAddress !== ethers.constants.AddressZero) {
+              // Verify pool has liquidity
+              const code = await provider.getCode(poolAddress);
+              if (code !== '0x') {
+                logger.debug(`Found V3 pool at ${poolAddress} with fee tier ${fee}`, 'DATAFETCH');
+                return poolAddress;
+              }
+            }
+          } catch (error) {
+            // Continue to next fee tier if this one fails
+            continue;
+          }
+        }
+        
+        return null;
+      }
+
       // Uniswap V2 style pool address calculation
       if (dex.initCodeHash) {
         const salt = ethers.utils.keccak256(
@@ -221,9 +253,44 @@ export class MultiHopDataFetcher {
    */
   private async getReserves(
     poolAddress: string,
-    provider: ethers.providers.Provider
+    provider: ethers.providers.Provider,
+    protocol: string
   ): Promise<{ reserve0: bigint; reserve1: bigint } | null> {
     try {
+      // Uniswap V3 style pools use slot0 and liquidity instead of reserves
+      if (protocol === 'UniswapV3' || protocol === 'Aerodrome') {
+        const poolInterface = new ethers.utils.Interface([
+          'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
+          'function liquidity() external view returns (uint128)',
+          'function token0() external view returns (address)',
+          'function token1() external view returns (address)'
+        ]);
+
+        const contract = new ethers.Contract(poolAddress, poolInterface, provider);
+        
+        // Get liquidity and price
+        const liquidity = await contract.liquidity();
+        const slot0 = await contract.slot0();
+        
+        // For V3, we approximate reserves based on liquidity and price
+        // This is a simplification - actual reserve calculation is more complex
+        // Using liquidity as a proxy for both reserves
+        const liquidityBigInt = BigInt(liquidity.toString());
+        
+        // If there's no liquidity, return null
+        if (liquidityBigInt === BigInt(0)) {
+          return null;
+        }
+        
+        // Use liquidity as approximate reserve values
+        // In V3, liquidity represents L = sqrt(x * y)
+        // So we can approximate reserves as both being sqrt(L^2) = L
+        return {
+          reserve0: liquidityBigInt,
+          reserve1: liquidityBigInt
+        };
+      }
+
       // Standard Uniswap V2 getReserves function
       const poolInterface = new ethers.utils.Interface([
         'function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)'

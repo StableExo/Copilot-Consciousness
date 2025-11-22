@@ -358,7 +358,7 @@ export function validateConfig(): ValidatedConfig {
       // Liquidity
       minLiquidity: parseBigIntEnv(
         'MIN_LIQUIDITY',
-        BigInt('100000000000000000000000') // 100,000 tokens default
+        BigInt('100000000000000000000') // 100 tokens default (Base network has smaller pools)
       ),
 
       // Feature flags
