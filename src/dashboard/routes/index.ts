@@ -35,9 +35,9 @@ export function createRoutes(
    * GET /api/metrics
    * Get current aggregated metrics
    */
-  router.get('/metrics', (req: Request, res: Response) => {
+  router.get('/metrics', async (req: Request, res: Response) => {
     try {
-      const metrics = metricsAggregator.getCurrentMetrics();
+      const metrics = await metricsAggregator.getCurrentMetrics();
       res.json({
         success: true,
         data: metrics,

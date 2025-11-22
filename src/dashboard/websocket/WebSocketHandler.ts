@@ -73,12 +73,12 @@ export class WebSocketHandler {
       this.updatePerformanceMetrics();
 
       // Send initial data
-      this.sendMetricsUpdate(socket);
+      void this.sendMetricsUpdate(socket);
       this.sendPerformanceUpdate(socket);
 
       // Handle client requests
       socket.on('request:metrics', () => {
-        this.sendMetricsUpdate(socket);
+        void this.sendMetricsUpdate(socket);
       });
 
       socket.on('request:chart-data', (data: { timeRange?: { start: number; end: number } }) => {
@@ -136,8 +136,8 @@ export class WebSocketHandler {
 
     console.log(`Starting WebSocket updates (interval: ${this.updateInterval}ms)`);
     
-    this.intervalId = setInterval(() => {
-      this.broadcastMetrics();
+    this.intervalId = setInterval(async () => {
+      await this.broadcastMetrics();
       this.broadcastPerformance();
     }, this.updateInterval);
   }
@@ -156,8 +156,8 @@ export class WebSocketHandler {
   /**
    * Broadcast metrics to all connected clients
    */
-  private broadcastMetrics(): void {
-    const metrics = this.metricsAggregator.getCurrentMetrics();
+  private async broadcastMetrics(): Promise<void> {
+    const metrics = await this.metricsAggregator.getCurrentMetrics();
     
     // Check metrics against alert thresholds
     this.alertSystem.checkMetrics(metrics);
@@ -176,8 +176,8 @@ export class WebSocketHandler {
   /**
    * Send metrics update to specific socket
    */
-  private sendMetricsUpdate(socket: Socket): void {
-    const metrics = this.metricsAggregator.getCurrentMetrics();
+  private async sendMetricsUpdate(socket: Socket): Promise<void> {
+    const metrics = await this.metricsAggregator.getCurrentMetrics();
     socket.emit('metrics', metrics);
   }
 

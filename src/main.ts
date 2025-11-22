@@ -39,7 +39,10 @@ import { ArbitrageConfig } from './types/definitions';
 import { SensoryMemory } from '../consciousness/sensory_memory';
 import { TemporalAwarenessFramework } from '../consciousness/temporal_awareness';
 import { PerceptionStream } from './services/PerceptionStream';
-
+import { DashboardServer } from './dashboard/DashboardServer';
+import { GasAnalytics } from './gas/GasAnalytics';
+import { CrossChainAnalytics } from './chains/CrossChainAnalytics';
+import { DashboardConfig } from './dashboard/types';
 // Load environment variables
 dotenv.config();
 
@@ -888,6 +891,44 @@ async function main() {
         process.exit(1);
       }
     });
+    
+    // Start Dashboard Server if not disabled
+    let dashboardServer: DashboardServer | undefined;
+    if (process.env.DISABLE_DASHBOARD !== 'true') {
+      try {
+        logger.info('Starting dashboard server...', 'MAIN');
+        
+        // Initialize analytics modules
+        const gasAnalytics = new GasAnalytics();
+        const crossChainAnalytics = new CrossChainAnalytics();
+        
+        // Configure dashboard
+        const dashboardConfig: Partial<DashboardConfig> = {
+          port: parseInt(process.env.DASHBOARD_PORT || '3000'),
+          enableCors: true,
+          updateInterval: parseInt(process.env.UPDATE_INTERVAL || '1000'),
+          maxConnections: parseInt(process.env.MAX_CONNECTIONS || '100'),
+          alerts: {
+            channels: {
+              websocket: true
+            }
+          }
+        };
+        
+        // Create and start dashboard server
+        dashboardServer = new DashboardServer(
+          gasAnalytics,
+          crossChainAnalytics,
+          dashboardConfig
+        );
+        
+        await dashboardServer.start();
+        logger.info('Dashboard server started successfully', 'MAIN');
+      } catch (error) {
+        logger.warn(`Failed to start dashboard server: ${error}`, 'MAIN');
+        logger.warn('Continuing without dashboard...', 'MAIN');
+      }
+    }
     
     // Start TheWarden
     await theWarden.start();
