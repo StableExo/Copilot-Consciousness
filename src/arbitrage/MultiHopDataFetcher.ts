@@ -8,6 +8,7 @@ import { ethers } from 'ethers';
 import { DEXRegistry } from '../dex/core/DEXRegistry';
 import { DEXConfig } from '../dex/types';
 import { PoolEdge, Token } from './types';
+import { logger } from '../utils/logger';
 
 /**
  * Interface for pool data
@@ -27,11 +28,20 @@ export class MultiHopDataFetcher {
   private mode: 'polling' | 'event-driven' = 'polling';
   private cacheTTL: number = 60000; // 1 minute default TTL
   private cacheTimestamps: Map<string, number> = new Map();
+  private currentChainId?: number; // Track current chain for filtering
 
-  constructor(registry: DEXRegistry) {
+  constructor(registry: DEXRegistry, chainId?: number) {
     this.registry = registry;
     this.providers = new Map();
     this.poolCache = new Map();
+    this.currentChainId = chainId;
+  }
+  
+  /**
+   * Set the current chain ID for filtering DEXes
+   */
+  setChainId(chainId: number): void {
+    this.currentChainId = chainId;
   }
 
   /**
@@ -108,7 +118,23 @@ export class MultiHopDataFetcher {
    */
   async buildGraphEdges(tokens: string[]): Promise<PoolEdge[]> {
     const edges: PoolEdge[] = [];
-    const dexes = this.registry.getAllDEXes();
+    
+    // Get DEXes - filter by current chain if set
+    let dexes = this.registry.getAllDEXes();
+    if (this.currentChainId !== undefined) {
+      const chainIdStr = this.currentChainId.toString();
+      dexes = this.registry.getDEXesByNetwork(chainIdStr);
+      logger.debug(`Filtering DEXes for chain ${this.currentChainId}: Found ${dexes.length} DEXes`, 'DATAFETCH');
+    }
+    
+    if (dexes.length === 0) {
+      logger.warn(`No DEXes found for chain ${this.currentChainId}`, 'DATAFETCH');
+      return edges;
+    }
+
+    logger.debug(`Building graph edges for ${tokens.length} tokens across ${dexes.length} DEXes`, 'DATAFETCH');
+    let poolsChecked = 0;
+    let poolsFound = 0;
 
     // Generate all token pairs
     for (let i = 0; i < tokens.length; i++) {
@@ -120,9 +146,11 @@ export class MultiHopDataFetcher {
 
         // Check each DEX for this pair
         for (const dex of dexes) {
+          poolsChecked++;
           const poolData = await this.fetchPoolData(dex, token0, token1);
           
           if (poolData && poolData.reserve0 > dex.liquidityThreshold) {
+            poolsFound++;
             // Create edge in both directions
             edges.push({
               poolAddress: poolData.poolAddress,
@@ -134,11 +162,17 @@ export class MultiHopDataFetcher {
               fee: this.getDEXFee(dex),
               gasEstimate: dex.gasEstimate || 150000
             });
+            
+            // Only perform string operations if debug is enabled
+            if (logger.isDebugEnabled()) {
+              logger.debug(`Found pool: ${dex.name} ${token0.slice(0,6)}.../${token1.slice(0,6)}... (reserves: ${poolData.reserve0}/${poolData.reserve1})`, 'DATAFETCH');
+            }
           }
         }
       }
     }
 
+    logger.info(`Pool scan complete: Checked ${poolsChecked} potential pools, found ${poolsFound} valid pools with sufficient liquidity`, 'DATAFETCH');
     return edges;
   }
 

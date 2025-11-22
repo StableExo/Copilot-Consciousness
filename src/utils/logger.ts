@@ -250,6 +250,13 @@ class Logger {
   setLevel(level: LogLevel): void {
     this.config.level = level;
   }
+  
+  /**
+   * Check if debug logging is enabled
+   */
+  isDebugEnabled(): boolean {
+    return this.config.level <= LogLevel.DEBUG;
+  }
 }
 
 // Export singleton instance
