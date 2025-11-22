@@ -157,6 +157,42 @@ const DEFAULT_DEX_CONFIGS: Record<string, DEXGasConfig> = {
     gasPerHop: 35000,
     overhead: 21000,
     complexity: 1.2
+  },
+  // Base-specific DEXes
+  'Uniswap V3 on Base': {
+    dexName: 'Uniswap V3 on Base',
+    baseGas: 120000,
+    gasPerHop: 35000,
+    overhead: 21000,
+    complexity: 1.2
+  },
+  'Aerodrome on Base': {
+    dexName: 'Aerodrome on Base',
+    baseGas: 120000,
+    gasPerHop: 35000,
+    overhead: 21000,
+    complexity: 1.2
+  },
+  'BaseSwap': {
+    dexName: 'BaseSwap',
+    baseGas: 100000,
+    gasPerHop: 30000,
+    overhead: 21000,
+    complexity: 1.0
+  },
+  'Uniswap V2 on Base': {
+    dexName: 'Uniswap V2 on Base',
+    baseGas: 100000,
+    gasPerHop: 30000,
+    overhead: 21000,
+    complexity: 1.0
+  },
+  'SushiSwap on Base': {
+    dexName: 'SushiSwap on Base',
+    baseGas: 100000,
+    gasPerHop: 30000,
+    overhead: 21000,
+    complexity: 1.0
   }
 };
 

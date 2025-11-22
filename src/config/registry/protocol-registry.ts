@@ -5,7 +5,7 @@
  * Provides type-safe access to protocol metadata, addresses, and features.
  */
 
-export type ProtocolType = 'uniswap-v3' | 'sushiswap-v3' | 'curve' | 'balancer' | 'uniswap-v2' | 'sushiswap-v2';
+export type ProtocolType = 'uniswap-v3' | 'sushiswap-v3' | 'curve' | 'balancer' | 'uniswap-v2' | 'sushiswap-v2' | 'aerodrome' | 'baseswap';
 
 export interface ProtocolConfig {
   name: string;
@@ -165,6 +165,24 @@ protocolRegistry.loadFromConfig([
     router: '0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F',
     factory: '0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac',
     supportedChains: [1, 42161, 137],
+    features: ['flash-swap', 'constant-product'],
+    version: '2'
+  },
+  {
+    name: 'Aerodrome',
+    type: 'aerodrome',
+    router: '0xcF77a3Ba9A5CA399B7c97c74d54e5b1Beb874E43',
+    factory: '0x420DD381b31aEf6683db6B902084cB0FFECe40Da',
+    supportedChains: [8453], // Base only
+    features: ['flash-swap', 'concentrated-liquidity', 'variable-fee'],
+    version: '1'
+  },
+  {
+    name: 'BaseSwap',
+    type: 'baseswap',
+    router: '0x327Df1E6de05895d2ab08513aaDD9313Fe505d86',
+    factory: '0xFDa619b6d20975be80A10332cD39b9a4b0FAa8BB',
+    supportedChains: [8453], // Base only
     features: ['flash-swap', 'constant-product'],
     version: '2'
   }
