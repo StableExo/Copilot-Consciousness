@@ -16,6 +16,7 @@ import { ethers } from 'ethers';
 // Dynamic import for artifact - may not exist if contracts haven't been compiled
 let FlashSwapV2Artifact: any;
 try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   FlashSwapV2Artifact = require('../../artifacts/contracts/FlashSwapV2.sol/FlashSwapV2.json');
 } catch (error) {
   // Artifact not found - contracts haven't been compiled
