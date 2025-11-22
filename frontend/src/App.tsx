@@ -8,6 +8,7 @@ import { MetricsCard } from './components/MetricsCard';
 import { LineChart } from './components/LineChart';
 import { AlertList } from './components/AlertList';
 import { PerformanceDashboard } from './components/PerformanceDashboard';
+import { WalletBalances } from './components/WalletBalances';
 
 function App() {
   const {
@@ -64,6 +65,11 @@ function App() {
           </div>
         ) : (
           <>
+            {/* Wallet Balances */}
+            {metrics.walletBalances && metrics.walletBalances.length > 0 && (
+              <WalletBalances walletBalances={metrics.walletBalances} />
+            )}
+
             {/* Hero Metrics */}
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-4">Key Metrics</h2>

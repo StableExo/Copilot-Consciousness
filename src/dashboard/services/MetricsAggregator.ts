@@ -7,11 +7,13 @@
 
 import { GasAnalytics } from '../../gas/GasAnalytics';
 import { CrossChainAnalytics, AnalyticsSummary } from '../../chains/CrossChainAnalytics';
-import { DashboardMetrics, ChartData } from '../types';
+import { DashboardMetrics, ChartData, WalletBalance } from '../types';
+import { WalletBalanceService } from './WalletBalanceService';
 
 export class MetricsAggregator {
   private gasAnalytics: GasAnalytics;
   private crossChainAnalytics: CrossChainAnalytics;
+  private walletBalanceService?: WalletBalanceService;
   private metricsHistory: DashboardMetrics[];
   private startTime: number;
   private maxHistorySize: number;
@@ -19,10 +21,12 @@ export class MetricsAggregator {
   constructor(
     gasAnalytics: GasAnalytics,
     crossChainAnalytics: CrossChainAnalytics,
-    maxHistorySize: number = 10000
+    maxHistorySize: number = 10000,
+    walletBalanceService?: WalletBalanceService
   ) {
     this.gasAnalytics = gasAnalytics;
     this.crossChainAnalytics = crossChainAnalytics;
+    this.walletBalanceService = walletBalanceService;
     this.metricsHistory = [];
     this.startTime = Date.now();
     this.maxHistorySize = maxHistorySize;
@@ -31,7 +35,7 @@ export class MetricsAggregator {
   /**
    * Get current aggregated metrics
    */
-  getCurrentMetrics(): DashboardMetrics {
+  async getCurrentMetrics(): Promise<DashboardMetrics> {
     const gasMetrics = this.gasAnalytics.getMetrics();
     const crossChainSummary = this.crossChainAnalytics.getSummary();
 

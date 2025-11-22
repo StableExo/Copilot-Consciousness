@@ -39,7 +39,10 @@ import { ArbitrageConfig } from './types/definitions';
 import { SensoryMemory } from '../consciousness/sensory_memory';
 import { TemporalAwarenessFramework } from '../consciousness/temporal_awareness';
 import { PerceptionStream } from './services/PerceptionStream';
-
+import { DashboardServer } from './dashboard/DashboardServer';
+import { GasAnalytics } from './gas/GasAnalytics';
+import { CrossChainAnalytics } from './chains/CrossChainAnalytics';
+import { DashboardConfig } from './dashboard/types';
 // Load environment variables
 dotenv.config();
 
@@ -88,10 +91,35 @@ function loadConfig(): WardenConfig {
   
   logger.info(`Loading configuration for environment: ${nodeEnv}`);
   
-  // Required configuration
-  const rpcUrl = process.env.ETHEREUM_RPC_URL || process.env.BASE_RPC_URL;
+  // Determine chain ID first to select appropriate RPC URL
+  const chainId = parseInt(process.env.CHAIN_ID || '8453'); // Default to Base (8453) instead of Ethereum (1)
+  
+  // Select appropriate RPC URL based on chain ID
+  let rpcUrl: string | undefined;
+  if (chainId === 8453 || chainId === 84532) {
+    // Base mainnet or testnet
+    rpcUrl = process.env.BASE_RPC_URL;
+  } else if (chainId === 1 || chainId === 5 || chainId === 11155111) {
+    // Ethereum mainnet, Goerli, or Sepolia
+    rpcUrl = process.env.ETHEREUM_RPC_URL;
+  } else if (chainId === 137 || chainId === 80001) {
+    // Polygon mainnet or Mumbai
+    rpcUrl = process.env.POLYGON_RPC_URL;
+  } else if (chainId === 42161 || chainId === 421613) {
+    // Arbitrum mainnet or testnet
+    rpcUrl = process.env.ARBITRUM_RPC_URL;
+  } else if (chainId === 10 || chainId === 420) {
+    // Optimism mainnet or testnet
+    rpcUrl = process.env.OPTIMISM_RPC_URL;
+  }
+  
+  // Fall back to generic RPC_URL or any available RPC URL
   if (!rpcUrl) {
-    throw new Error('RPC URL is required (ETHEREUM_RPC_URL or BASE_RPC_URL)');
+    rpcUrl = process.env.RPC_URL || process.env.BASE_RPC_URL || process.env.ETHEREUM_RPC_URL;
+  }
+  
+  if (!rpcUrl) {
+    throw new Error(`RPC URL is required for chain ID ${chainId}. Please set BASE_RPC_URL, ETHEREUM_RPC_URL, or RPC_URL`);
   }
   
   const walletPrivateKey = process.env.WALLET_PRIVATE_KEY;
@@ -102,7 +130,7 @@ function loadConfig(): WardenConfig {
   // Optional configuration with defaults
   const config: WardenConfig = {
     rpcUrl,
-    chainId: parseInt(process.env.CHAIN_ID || '1'),
+    chainId,
     walletPrivateKey,
     
     executorAddress: process.env.FLASHSWAP_V2_ADDRESS,
@@ -126,6 +154,7 @@ function loadConfig(): WardenConfig {
   
   logger.info('Configuration loaded successfully');
   logger.info(`- Chain ID: ${config.chainId}`);
+  logger.info(`- RPC URL: ${config.rpcUrl.substring(0, 30)}...`);
   logger.info(`- Scan Interval: ${config.scanInterval}ms`);
   logger.info(`- Min Profit: ${config.minProfitPercent}%`);
   logger.info(`- Dry Run Mode: ${config.dryRun}`);
@@ -197,10 +226,20 @@ class TheWarden extends EventEmitter {
       const network = await this.provider.getNetwork();
       logger.info(`Connected to network: ${network.name} (chainId: ${network.chainId})`);
       
+      // Validate that the connected network matches the configured chain ID
+      if (network.chainId !== this.config.chainId) {
+        const errorMsg = `Chain ID mismatch! Configured: ${this.config.chainId}, Connected: ${network.chainId}. Please check your RPC_URL configuration.`;
+        logger.error(errorMsg);
+        throw new Error(errorMsg);
+      }
+      
       // Verify wallet
       const balance = await this.wallet.getBalance();
       logger.info(`Wallet address: ${this.wallet.address}`);
       logger.info(`Wallet balance: ${ethers.utils.formatEther(balance)} ETH`);
+      
+      // Check token balances for common tokens based on chain
+      await this.checkTokenBalances();
       
       if (balance.eq(0)) {
         logger.warn('WARNING: Wallet balance is 0 - bot will not be able to execute trades');
@@ -291,6 +330,57 @@ class TheWarden extends EventEmitter {
     } catch (error) {
       logger.error(`Failed to initialize components: ${error}`);
       throw error;
+    }
+  }
+  
+  /**
+   * Check and log token balances for common tokens
+   */
+  private async checkTokenBalances(): Promise<void> {
+    try {
+      // ERC20 ABI for balance checking
+      const ERC20_ABI = [
+        'function balanceOf(address owner) view returns (uint256)',
+        'function decimals() view returns (uint8)',
+        'function symbol() view returns (string)'
+      ];
+      
+      // Define tokens to check based on chain ID
+      const tokens: { address: string; symbol: string; decimals: number }[] = [];
+      
+      if (this.config.chainId === 8453) {
+        // Base mainnet
+        tokens.push(
+          { address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', symbol: 'USDC', decimals: 6 },
+          { address: '0x4200000000000000000000000000000000000006', symbol: 'WETH', decimals: 18 }
+        );
+      } else if (this.config.chainId === 1) {
+        // Ethereum mainnet
+        tokens.push(
+          { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', symbol: 'USDC', decimals: 6 },
+          { address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', symbol: 'WETH', decimals: 18 }
+        );
+      } else if (this.config.chainId === 137) {
+        // Polygon
+        tokens.push(
+          { address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', symbol: 'USDC', decimals: 6 },
+          { address: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619', symbol: 'WETH', decimals: 18 }
+        );
+      }
+      
+      // Check each token balance
+      for (const token of tokens) {
+        try {
+          const contract = new ethers.Contract(token.address, ERC20_ABI, this.provider);
+          const balance = await contract.balanceOf(this.wallet.address);
+          const formattedBalance = ethers.utils.formatUnits(balance, token.decimals);
+          logger.info(`${token.symbol} balance: ${formattedBalance}`);
+        } catch (error) {
+          logger.warn(`Could not fetch ${token.symbol} balance: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+      }
+    } catch (error) {
+      logger.warn(`Error checking token balances: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
   
@@ -802,6 +892,44 @@ async function main() {
         process.exit(1);
       }
     });
+    
+    // Start Dashboard Server if not disabled
+    let dashboardServer: DashboardServer | undefined;
+    if (process.env.DISABLE_DASHBOARD !== 'true') {
+      try {
+        logger.info('Starting dashboard server...', 'MAIN');
+        
+        // Initialize analytics modules
+        const gasAnalytics = new GasAnalytics();
+        const crossChainAnalytics = new CrossChainAnalytics();
+        
+        // Configure dashboard
+        const dashboardConfig: Partial<DashboardConfig> = {
+          port: parseInt(process.env.DASHBOARD_PORT || '3000'),
+          enableCors: true,
+          updateInterval: parseInt(process.env.UPDATE_INTERVAL || '1000'),
+          maxConnections: parseInt(process.env.MAX_CONNECTIONS || '100'),
+          alerts: {
+            channels: {
+              websocket: true
+            }
+          }
+        };
+        
+        // Create and start dashboard server
+        dashboardServer = new DashboardServer(
+          gasAnalytics,
+          crossChainAnalytics,
+          dashboardConfig
+        );
+        
+        await dashboardServer.start();
+        logger.info('Dashboard server started successfully', 'MAIN');
+      } catch (error) {
+        logger.warn(`Failed to start dashboard server: ${error}`, 'MAIN');
+        logger.warn('Continuing without dashboard...', 'MAIN');
+      }
+    }
     
     // Start TheWarden
     await theWarden.start();

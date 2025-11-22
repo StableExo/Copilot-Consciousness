@@ -3,6 +3,19 @@
  * Shared types for the dashboard frontend
  */
 
+export interface WalletBalance {
+  address: string;
+  chainId: number;
+  chainName: string;
+  nativeBalance: string; // ETH/native token balance as string
+  tokens: {
+    address: string;
+    symbol: string;
+    balance: string;
+    decimals: number;
+  }[];
+}
+
 export interface DashboardMetrics {
   totalTrades: number;
   successfulTrades: number;
@@ -20,6 +33,7 @@ export interface DashboardMetrics {
   latency: number;
   memoryUsage: number;
   errorRate: number;
+  walletBalances?: WalletBalance[];
 }
 
 export interface LiveTrade {
