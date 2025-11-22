@@ -253,7 +253,13 @@ export class MultiHopDataFetcher {
       'Curve': 0.0004,
       'Balancer': 0.001,
       '1inch': 0.003,
-      'PancakeSwap V3': 0.0025
+      'PancakeSwap V3': 0.0025,
+      // Base-specific DEXes
+      'Uniswap V3 on Base': 0.003,
+      'Aerodrome on Base': 0.003,
+      'BaseSwap': 0.003,
+      'Uniswap V2 on Base': 0.003,
+      'SushiSwap on Base': 0.003
     };
 
     return fees[dex.name] || 0.003;
