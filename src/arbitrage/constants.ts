@@ -44,8 +44,14 @@ export const V3_LIQUIDITY_SCALE_FACTOR = 1000000;
 
 /**
  * Protocols that use V3-style concentrated liquidity (L = sqrt(x*y))
+ * Includes both naming conventions for compatibility
  */
-export const V3_STYLE_PROTOCOLS = ['UniswapV3', 'Aerodrome'] as const;
+export const V3_STYLE_PROTOCOLS = [
+  'UniswapV3',    // DEXRegistry naming
+  'uniswap_v3',   // Legacy test naming
+  'Aerodrome',    // DEXRegistry naming
+  'aerodrome'     // Legacy naming
+] as const;
 
 /**
  * Type representing V3-style protocol names
@@ -54,9 +60,12 @@ export type V3StyleProtocol = typeof V3_STYLE_PROTOCOLS[number];
 
 /**
  * Check if a protocol uses V3-style concentrated liquidity
+ * Handles both 'UniswapV3' and 'uniswap_v3' naming conventions
  * @param protocol The protocol identifier string
  * @returns true if protocol uses V3-style liquidity (L = sqrt(x*y))
  */
 export function isV3StyleProtocol(protocol: string): protocol is V3StyleProtocol {
-  return (V3_STYLE_PROTOCOLS as readonly string[]).includes(protocol);
+  // Normalize comparison by converting to lowercase
+  const normalized = protocol.toLowerCase().replace('_', '');
+  return V3_STYLE_PROTOCOLS.some(p => p.toLowerCase().replace('_', '') === normalized);
 }
