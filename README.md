@@ -171,7 +171,9 @@ See [MEV Intelligence Suite Documentation](./docs/MEV_INTELLIGENCE_SUITE.md), [F
 ## Installation
 
 ### Required Node.js Version
-This repository runs on Node.js `20.18.0`. Install [NVM](https://github.com/nvm-sh/nvm) for Node.js version management.
+This repository requires Node.js `^20.11.1` (20.11.1 or higher in the 20.x series) and npm `^10.2.4`. Install [NVM](https://github.com/nvm-sh/nvm) for Node.js version management.
+
+The `.nvmrc` file pins to `20.11.1` as the recommended version to avoid confusion from version switching.
 
 Follow these commands for setup:
 ```bash
