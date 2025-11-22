@@ -43,6 +43,7 @@ import { DashboardServer } from './dashboard/DashboardServer';
 import { GasAnalytics } from './gas/GasAnalytics';
 import { CrossChainAnalytics } from './chains/CrossChainAnalytics';
 import { DashboardConfig } from './dashboard/types';
+import { getScanTokens, getTokensByChainId, formatTokenList, getNetworkName } from './utils/chainTokens';
 // Load environment variables
 dotenv.config();
 
@@ -271,6 +272,10 @@ class TheWarden extends EventEmitter {
         advancedConfig
       );
       
+      // Set chain ID for filtering DEXes
+      this.advancedOrchestrator.setChainId(this.config.chainId);
+      logger.info(`Configured orchestrator for chain ${this.config.chainId}`);
+      
       // If not in dry run mode, also initialize integrated orchestrator for execution
       if (!this.config.dryRun) {
         const pathfindingConfig = {
@@ -428,17 +433,27 @@ class TheWarden extends EventEmitter {
     try {
       this.stats.cyclesCompleted++;
       
-      // Define tokens to scan (could be loaded from config)
-      const tokens = [
-        '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
-        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-        '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
-      ];
+      // Get tokens to scan based on configured chain
+      const tokens = getScanTokens(this.config.chainId);
+      
+      // Log scan details on first cycle or every 10 cycles
+      if (this.stats.cyclesCompleted === 1 || this.stats.cyclesCompleted % 10 === 0) {
+        const networkName = getNetworkName(this.config.chainId);
+        const chainTokens = getTokensByChainId(this.config.chainId);
+        const dexes = this.dexRegistry.getDEXesByNetwork(this.config.chainId.toString());
+        
+        logger.info(`Scanning cycle ${this.stats.cyclesCompleted}`);
+        logger.info(`  Network: ${networkName} (Chain ID: ${this.config.chainId})`);
+        logger.info(`  Tokens: ${tokens.length} (${Object.keys(chainTokens).join(', ')})`);
+        logger.info(`  DEXes: ${dexes.length} (${dexes.map(d => d.name).join(', ')})`);
+      }
       
       const startAmount = ethers.utils.parseEther('1.0').toBigInt();
       
       // Find opportunities using advanced orchestrator
+      logger.debug(`[Cycle ${this.stats.cyclesCompleted}] Fetching pool data for ${tokens.length} tokens across DEXes...`);
       const paths = await this.advancedOrchestrator.findOpportunities(tokens, startAmount);
+      logger.debug(`[Cycle ${this.stats.cyclesCompleted}] Found ${paths.length} paths`);
       
       if (paths && paths.length > 0) {
         this.stats.opportunitiesFound += paths.length;
@@ -691,17 +706,27 @@ class EnhancedTheWarden extends EventEmitter {
     try {
       this.stats.cyclesCompleted++;
       
-      // Define tokens to scan
-      const tokens = [
-        '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
-        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-        '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
-      ];
+      // Get tokens to scan based on configured chain
+      const tokens = getScanTokens(this.components.config.chainId);
+      
+      // Log scan details on first cycle or every 10 cycles
+      if (this.stats.cyclesCompleted === 1 || this.stats.cyclesCompleted % 10 === 0) {
+        const networkName = getNetworkName(this.components.config.chainId);
+        const chainTokens = getTokensByChainId(this.components.config.chainId);
+        const dexes = this.components.advancedOrchestrator['registry'].getDEXesByNetwork(this.components.config.chainId.toString());
+        
+        logger.info(`Scanning cycle ${this.stats.cyclesCompleted}`, 'ARBITRAGE');
+        logger.info(`  Network: ${networkName} (Chain ID: ${this.components.config.chainId})`, 'ARBITRAGE');
+        logger.info(`  Tokens: ${tokens.length} (${Object.keys(chainTokens).join(', ')})`, 'ARBITRAGE');
+        logger.info(`  DEXes: ${dexes.length} (${dexes.map(d => d.name).join(', ')})`, 'ARBITRAGE');
+      }
       
       const startAmount = ethers.utils.parseEther('1.0').toBigInt();
       
       // Find opportunities
+      logger.debug(`[Cycle ${this.stats.cyclesCompleted}] Fetching pool data for ${tokens.length} tokens across DEXes...`, 'ARBITRAGE');
       const paths = await this.components.advancedOrchestrator.findOpportunities(tokens, startAmount);
+      logger.debug(`[Cycle ${this.stats.cyclesCompleted}] Found ${paths.length} paths`, 'ARBITRAGE');
       
       if (paths && paths.length > 0) {
         this.stats.opportunitiesFound += paths.length;

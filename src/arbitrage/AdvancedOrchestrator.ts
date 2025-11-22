@@ -108,6 +108,13 @@ export class AdvancedOrchestrator {
       this.initializeAdvancedComponents();
     }
   }
+  
+  /**
+   * Set the chain ID for filtering DEXes
+   */
+  setChainId(chainId: number): void {
+    this.dataFetcher.setChainId(chainId);
+  }
 
   /**
    * Find arbitrage opportunities using advanced features
