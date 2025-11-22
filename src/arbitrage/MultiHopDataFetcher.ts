@@ -163,7 +163,10 @@ export class MultiHopDataFetcher {
               gasEstimate: dex.gasEstimate || 150000
             });
             
-            logger.debug(`Found pool: ${dex.name} ${token0.slice(0,6)}.../${token1.slice(0,6)}... (reserves: ${poolData.reserve0}/${poolData.reserve1})`, 'DATAFETCH');
+            // Only perform string operations if debug is enabled
+            if (logger.isDebugEnabled()) {
+              logger.debug(`Found pool: ${dex.name} ${token0.slice(0,6)}.../${token1.slice(0,6)}... (reserves: ${poolData.reserve0}/${poolData.reserve1})`, 'DATAFETCH');
+            }
           }
         }
       }

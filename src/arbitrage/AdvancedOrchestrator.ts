@@ -82,7 +82,7 @@ export class AdvancedOrchestrator {
   private dataFetcher: MultiHopDataFetcher;
   private mode: OrchestratorMode = 'polling';
 
-  constructor(registry: DEXRegistry, config: AdvancedOrchestratorConfig) {
+  constructor(registry: DEXRegistry, config: AdvancedOrchestratorConfig, chainId?: number) {
     this.registry = registry;
     this.config = config;
     
@@ -101,7 +101,7 @@ export class AdvancedOrchestrator {
     );
     
     this.profitCalculator = new ProfitabilityCalculator(config.pathfinding.gasPrice);
-    this.dataFetcher = new MultiHopDataFetcher(registry);
+    this.dataFetcher = new MultiHopDataFetcher(registry, chainId);
     
     // Initialize advanced components if enabled
     if (config.enableAdvancedFeatures) {
@@ -114,6 +114,13 @@ export class AdvancedOrchestrator {
    */
   setChainId(chainId: number): void {
     this.dataFetcher.setChainId(chainId);
+  }
+  
+  /**
+   * Get DEXes for a specific network
+   */
+  getDEXesByNetwork(network: string): any[] {
+    return this.registry.getDEXesByNetwork(network);
   }
 
   /**

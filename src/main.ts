@@ -269,11 +269,10 @@ class TheWarden extends EventEmitter {
       
       this.advancedOrchestrator = new AdvancedOrchestrator(
         this.dexRegistry,
-        advancedConfig
+        advancedConfig,
+        this.config.chainId // Pass chain ID during construction
       );
       
-      // Set chain ID for filtering DEXes
-      this.advancedOrchestrator.setChainId(this.config.chainId);
       logger.info(`Configured orchestrator for chain ${this.config.chainId}`);
       
       // If not in dry run mode, also initialize integrated orchestrator for execution
@@ -713,7 +712,7 @@ class EnhancedTheWarden extends EventEmitter {
       if (this.stats.cyclesCompleted === 1 || this.stats.cyclesCompleted % 10 === 0) {
         const networkName = getNetworkName(this.components.config.chainId);
         const chainTokens = getTokensByChainId(this.components.config.chainId);
-        const dexes = this.components.advancedOrchestrator['registry'].getDEXesByNetwork(this.components.config.chainId.toString());
+        const dexes = this.components.advancedOrchestrator.getDEXesByNetwork(this.components.config.chainId.toString());
         
         logger.info(`Scanning cycle ${this.stats.cyclesCompleted}`, 'ARBITRAGE');
         logger.info(`  Network: ${networkName} (Chain ID: ${this.components.config.chainId})`, 'ARBITRAGE');
