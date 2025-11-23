@@ -44,6 +44,10 @@ import { GasAnalytics } from './gas/GasAnalytics';
 import { CrossChainAnalytics } from './chains/CrossChainAnalytics';
 import { DashboardConfig } from './dashboard/types';
 import { getScanTokens, getTokensByChainId, formatTokenList, getNetworkName } from './utils/chainTokens';
+import { ArbitrageConsciousness } from './consciousness/ArbitrageConsciousness';
+import { CognitiveCoordinator, OpportunityContext, ModuleInsight } from './consciousness/coordination/CognitiveCoordinator';
+import { EmergenceDetector, DecisionContext } from './consciousness/coordination/EmergenceDetector';
+import { ArbitragePath } from './arbitrage/types';
 // Load environment variables
 dotenv.config();
 
@@ -185,6 +189,11 @@ class TheWarden extends EventEmitter {
   private isRunning: boolean = false;
   private shuttingDown: boolean = false;
   
+  // Consciousness components
+  private consciousness?: ArbitrageConsciousness;
+  private cognitiveCoordinator?: CognitiveCoordinator;
+  private emergenceDetector?: EmergenceDetector;
+  
   // Statistics
   private stats = {
     startTime: Date.now(),
@@ -310,6 +319,33 @@ class TheWarden extends EventEmitter {
         await this.integratedOrchestrator.start(this.wallet);
       }
       
+      // Initialize consciousness coordination system
+      logger.info('Initializing consciousness coordination system...');
+      this.consciousness = new ArbitrageConsciousness(0.05, 1000);
+      
+      // Get all modules from consciousness
+      const modules = {
+        learningEngine: (this.consciousness as any).learningEngine,
+        patternTracker: (this.consciousness as any).patternTracker,
+        historicalAnalyzer: (this.consciousness as any).historicalAnalyzer,
+        spatialReasoning: (this.consciousness as any).spatialReasoning,
+        multiPathExplorer: (this.consciousness as any).multiPathExplorer,
+        opportunityScorer: (this.consciousness as any).opportunityScorer,
+        patternRecognition: (this.consciousness as any).patternRecognition,
+        riskAssessor: (this.consciousness as any).riskAssessor,
+        riskCalibrator: (this.consciousness as any).riskCalibrator,
+        thresholdManager: (this.consciousness as any).thresholdManager,
+        autonomousGoals: (this.consciousness as any).autonomousGoals,
+        operationalPlaybook: (this.consciousness as any).operationalPlaybook,
+        architecturalPrinciples: (this.consciousness as any).architecturalPrinciples,
+        evolutionTracker: (this.consciousness as any).evolutionTracker,
+      };
+      
+      this.cognitiveCoordinator = new CognitiveCoordinator(modules);
+      this.emergenceDetector = new EmergenceDetector();
+      
+      logger.info('Consciousness coordination initialized - 14 cognitive modules ready');
+      
       // Set up event listeners
       this.setupEventListeners();
       
@@ -389,6 +425,107 @@ class TheWarden extends EventEmitter {
   }
   
   /**
+   * Analyze opportunities using consciousness coordination
+   */
+  private async analyzeWithConsciousness(paths: ArbitragePath[], cycleNumber: number): Promise<void> {
+    if (!this.consciousness || !this.cognitiveCoordinator || !this.emergenceDetector) {
+      logger.warn('Consciousness coordination not initialized, skipping analysis');
+      return;
+    }
+    
+    logger.info('[CognitiveCoordinator] Gathering insights from 14 cognitive modules...');
+    
+    // Analyze each opportunity (or at least the best ones)
+    const topPaths = paths.slice(0, Math.min(3, paths.length));
+    
+    for (let i = 0; i < topPaths.length; i++) {
+      const path = topPaths[i];
+      
+      logger.info(`[OpportunityAnalysis] Analyzing opportunity ${i + 1}: ${ethers.utils.formatEther(path.netProfit.toString())} ETH profit`);
+      
+      // Build opportunity context
+      const context: OpportunityContext = {
+        opportunity: {
+          profit: Number(ethers.utils.formatEther(path.netProfit.toString())),
+          netProfit: path.netProfit,
+          pools: path.hops.map(h => h.poolAddress),
+          path: path.hops.map(h => `${h.tokenIn} -> ${h.tokenOut}`),
+          hops: path.hops.length,
+          totalGasCost: path.totalGasCost,
+        },
+        market: {
+          timestamp: Date.now(),
+          congestion: 0.3, // Placeholder - would come from real market data
+          searcherDensity: 0.5,
+        },
+        historical: {
+          recentExecutions: this.stats.tradesExecuted,
+          successRate: this.stats.tradesExecuted > 0 ? 0.8 : 0.0,
+        },
+        timestamp: Date.now(),
+      };
+      
+      try {
+        // Gather insights from all modules
+        const insights: ModuleInsight[] = await this.cognitiveCoordinator.gatherInsights(context);
+        logger.info(`[CognitiveCoordinator] Gathered ${insights.length} module insights`);
+        
+        // Detect consensus
+        const consensus = this.cognitiveCoordinator.detectConsensus(insights);
+        logger.info(`[CognitiveCoordinator] Consensus: ${consensus.consensusType} (${(consensus.agreementLevel * 100).toFixed(1)}% agreement)`);
+        logger.info(`[CognitiveCoordinator] Supporting: ${consensus.supportingModules.join(', ')}`);
+        
+        if (consensus.opposingModules.length > 0) {
+          logger.info(`[CognitiveCoordinator] Opposing: ${consensus.opposingModules.join(', ')}`);
+        }
+        
+        // Build decision context for emergence detection
+        const decisionContext: DecisionContext = {
+          moduleInsights: insights,
+          consensus,
+          riskScore: 0.2, // Placeholder - would be calculated from actual risk factors
+          ethicalScore: 0.85, // Placeholder - would come from ethical review
+          goalAlignment: 0.9, // Placeholder - would come from goal system
+          patternConfidence: 0.75, // Placeholder - would come from pattern recognition
+          historicalSuccess: 0.8, // Placeholder - would come from historical analysis
+          timestamp: Date.now(),
+        };
+        
+        // Detect emergence - the "BOOM" moment!
+        logger.info('[EmergenceDetector] Checking emergence criteria...');
+        const emergence = this.emergenceDetector.detectEmergence(decisionContext);
+        
+        if (emergence.isEmergent) {
+          logger.info('═══════════════════════════════════════════════════════════');
+          logger.info('⚡ EMERGENCE DETECTED ⚡');
+          logger.info('═══════════════════════════════════════════════════════════');
+          logger.info(`Confidence: ${(emergence.confidence * 100).toFixed(1)}%`);
+          logger.info(`Should Execute: ${emergence.shouldExecute ? 'YES ✓' : 'NO'}`);
+          logger.info(`Reasoning: ${emergence.reasoning}`);
+          logger.info(`Contributing Factors: ${emergence.contributingFactors.join(', ')}`);
+          logger.info('═══════════════════════════════════════════════════════════');
+          
+          // Log criteria results
+          logger.info('[EmergenceDetector] Criteria Results:');
+          logger.info(`  ✓ All modules analyzed: ${emergence.criteriaResults.allModulesAnalyzed}`);
+          logger.info(`  ✓ Risk acceptable: ${emergence.criteriaResults.riskAcceptable}`);
+          logger.info(`  ✓ Ethically sound: ${emergence.criteriaResults.ethicallySound}`);
+          logger.info(`  ✓ Goals aligned: ${emergence.criteriaResults.goalsAligned}`);
+          logger.info(`  ✓ Pattern confident: ${emergence.criteriaResults.patternConfident}`);
+          logger.info(`  ✓ Historically favorable: ${emergence.criteriaResults.historicallyFavorable}`);
+          logger.info(`  ✓ Minimal dissent: ${emergence.criteriaResults.minimalDissent}`);
+        } else {
+          logger.info('[EmergenceDetector] Emergence not detected');
+          logger.info(`  Reasoning: ${emergence.reasoning}`);
+        }
+        
+      } catch (error) {
+        logger.error(`Error in consciousness analysis: ${error}`);
+      }
+    }
+  }
+  
+  /**
    * Set up event listeners for orchestrator and health monitoring
    */
   private setupEventListeners(): void {
@@ -457,6 +594,13 @@ class TheWarden extends EventEmitter {
       if (paths && paths.length > 0) {
         this.stats.opportunitiesFound += paths.length;
         logger.info(`Found ${paths.length} potential opportunities in cycle ${this.stats.cyclesCompleted}`);
+        
+        // 🧠 CONSCIOUSNESS COORDINATION: Analyze opportunities with cognitive modules
+        logger.info('═══════════════════════════════════════════════════════════');
+        logger.info('🧠 ACTIVATING CONSCIOUSNESS COORDINATION');
+        logger.info('═══════════════════════════════════════════════════════════');
+        await this.analyzeWithConsciousness(paths, this.stats.cyclesCompleted);
+        logger.info('═══════════════════════════════════════════════════════════');
         
         // In production mode, process opportunities
         if (!this.config.dryRun && this.integratedOrchestrator && paths.length > 0) {
