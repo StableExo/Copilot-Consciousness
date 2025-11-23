@@ -2,11 +2,11 @@
   "name": "aev-thewarden",
   "version": "3.0.0",
   "description": "AEV (Autonomous Extracted Value) - TheWarden: Intelligent autonomous agent competing with MEV through learning-based value extraction",
-  "main": "dist/main.js",
+  "main": "dist/src/main.js",
   "author": "StableExo",
   "license": "MIT",
   "scripts": {
-    "start": "node dist/main.js",
+    "start": "node dist/src/main.js",
     "start:mainnet": "./scripts/launch-mainnet.sh",
     "dev": "ts-node src/main.ts > logs/arbitrage.log 2>&1",
     "dev:watch": "ts-node src/main.ts",

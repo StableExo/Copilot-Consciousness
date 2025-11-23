@@ -85,7 +85,7 @@ echo ""
 mkdir -p logs
 
 # Launch TheWarden
-node dist/main.js
+node dist/src/main.js
 
 # Script should not reach here unless TheWarden exits
 echo ""
