@@ -99,7 +99,7 @@ export class ProfitLossTracker extends EventEmitter {
   private successfulTrades: number = 0;
   private failedTrades: number = 0;
   private totalGrossProfit: bigint = BigInt(0);
-  private totalGrossloss: bigint = BigInt(0);
+  private totalGrossLoss: bigint = BigInt(0);
   private totalGasCost: bigint = BigInt(0);
   private totalInvested: bigint = BigInt(0);
   
@@ -156,7 +156,7 @@ export class ProfitLossTracker extends EventEmitter {
       }
     } else if (trade.grossProfit < BigInt(0)) {
       const loss = -trade.grossProfit;
-      this.totalGrossloss += loss;
+      this.totalGrossLoss += loss;
       if (loss > this.largestLoss) {
         this.largestLoss = loss;
       }
@@ -213,8 +213,8 @@ export class ProfitLossTracker extends EventEmitter {
       Number((totalNetProfit * BigInt(100)) / this.totalInvested) : 0;
     
     // Calculate profit factor
-    const profitFactor = this.totalGrossloss > BigInt(0) ? 
-      Number(this.totalGrossProfit) / Number(this.totalGrossloss) : 
+    const profitFactor = this.totalGrossLoss > BigInt(0) ? 
+      Number(this.totalGrossProfit) / Number(this.totalGrossLoss) : 
       (this.totalGrossProfit > BigInt(0) ? Number.POSITIVE_INFINITY : 0);
     
     // Calculate debt allocation
@@ -266,7 +266,7 @@ export class ProfitLossTracker extends EventEmitter {
    * Get total net profit
    */
   getTotalNetProfit(): bigint {
-    return this.totalGrossProfit - this.totalGrossloss - this.totalGasCost;
+    return this.totalGrossProfit - this.totalGrossLoss - this.totalGasCost;
   }
 
   /**
@@ -435,7 +435,7 @@ Success Rate: ${stats24h.successRate.toFixed(2)}%
     this.successfulTrades = 0;
     this.failedTrades = 0;
     this.totalGrossProfit = BigInt(0);
-    this.totalGrossloss = BigInt(0);
+    this.totalGrossLoss = BigInt(0);
     this.totalGasCost = BigInt(0);
     this.totalInvested = BigInt(0);
     this.currentWinStreak = 0;

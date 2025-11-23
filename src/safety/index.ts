@@ -18,18 +18,18 @@ export { AlertSystem, AlertSeverity, AlertType, Alert, AlertChannel, AlertSystem
 /**
  * Production Safety Manager - Coordinates all safety systems
  */
-import { CircuitBreaker } from './CircuitBreaker';
-import { EmergencyStop } from './EmergencyStop';
-import { PositionSizeManager } from './PositionSizeManager';
+import { CircuitBreaker, CircuitBreakerConfig } from './CircuitBreaker';
+import { EmergencyStop, EmergencyStopConfig } from './EmergencyStop';
+import { PositionSizeManager, PositionSizeConfig } from './PositionSizeManager';
 import { ProfitLossTracker, TradeRecord } from './ProfitLossTracker';
-import { AlertSystem, AlertType, AlertSeverity } from './AlertSystem';
+import { AlertSystem, AlertType, AlertSeverity, AlertSystemConfig } from './AlertSystem';
 import { logger } from '../utils/logger';
 
 export interface ProductionSafetyConfig {
-  circuitBreaker?: any;
-  emergencyStop?: any;
-  positionSize?: any;
-  alerts?: any;
+  circuitBreaker?: Partial<CircuitBreakerConfig>;
+  emergencyStop?: Partial<EmergencyStopConfig>;
+  positionSize?: Partial<PositionSizeConfig>;
+  alerts?: Partial<AlertSystemConfig>;
 }
 
 export class ProductionSafetyManager {

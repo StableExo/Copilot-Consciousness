@@ -160,11 +160,11 @@ export class AlertSystem extends EventEmitter {
     title: string,
     message: string,
     metadata?: Record<string, any>
-  ): Promise<Alert> {
+  ): Promise<Alert | null> {
     // Check throttling
     if (this.config.enableThrottling && this.shouldThrottle(type)) {
       logger.debug(`[AlertSystem] Alert throttled: ${type}`, 'ALERTS');
-      throw new Error(`Alert throttled: ${type}`);
+      return null; // Return null instead of throwing
     }
     
     // Create alert
@@ -399,19 +399,19 @@ export class AlertSystem extends EventEmitter {
   /**
    * Convenience methods for common alert types
    */
-  async critical(type: AlertType, title: string, message: string, metadata?: Record<string, any>): Promise<Alert> {
+  async critical(type: AlertType, title: string, message: string, metadata?: Record<string, any>): Promise<Alert | null> {
     return this.sendAlert(AlertSeverity.CRITICAL, type, title, message, metadata);
   }
 
-  async error(type: AlertType, title: string, message: string, metadata?: Record<string, any>): Promise<Alert> {
+  async error(type: AlertType, title: string, message: string, metadata?: Record<string, any>): Promise<Alert | null> {
     return this.sendAlert(AlertSeverity.ERROR, type, title, message, metadata);
   }
 
-  async warning(type: AlertType, title: string, message: string, metadata?: Record<string, any>): Promise<Alert> {
+  async warning(type: AlertType, title: string, message: string, metadata?: Record<string, any>): Promise<Alert | null> {
     return this.sendAlert(AlertSeverity.WARNING, type, title, message, metadata);
   }
 
-  async info(type: AlertType, title: string, message: string, metadata?: Record<string, any>): Promise<Alert> {
+  async info(type: AlertType, title: string, message: string, metadata?: Record<string, any>): Promise<Alert | null> {
     return this.sendAlert(AlertSeverity.INFO, type, title, message, metadata);
   }
 

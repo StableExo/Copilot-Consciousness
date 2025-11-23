@@ -221,7 +221,7 @@ export class PositionSizeManager {
     const positions = Array.from(this.activePositions.values());
     
     let largest = BigInt(0);
-    let smallest = BigInt(Number.MAX_SAFE_INTEGER);
+    let smallest = positions.length > 0 ? positions[0] : BigInt(0);
     
     for (const pos of positions) {
       if (pos > largest) largest = pos;
