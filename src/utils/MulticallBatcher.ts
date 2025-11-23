@@ -94,7 +94,14 @@ export class MulticallBatcher {
       }));
     } catch (error: any) {
       console.error('[MulticallBatcher] Batch execution failed:', error.message);
+      console.error('[MulticallBatcher] Error details:', {
+        message: error.message,
+        code: error.code,
+        callCount: calls.length,
+        multicallAddress: this.multicallAddress,
+      });
       // Return failed results for all calls
+      // Caller can check success=false and decide how to handle
       return calls.map(() => ({
         success: false,
         returnData: '0x',

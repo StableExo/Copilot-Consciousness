@@ -112,6 +112,11 @@ export class OptimizedPoolScanner {
 
     if (!batcher) {
       // Fallback: Check fee tiers sequentially
+      logger.warn(
+        `Multicall3 not available on chain ${this.currentChainId || 'unknown'}. ` +
+        `Falling back to sequential RPC calls (slower performance expected).`,
+        'POOLSCAN'
+      );
       const factoryContract = new ethers.Contract(factory, factoryInterface, this.provider);
       for (const fee of UNISWAP_V3_FEE_TIERS) {
         try {

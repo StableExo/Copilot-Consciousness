@@ -55,7 +55,8 @@ async function measureStandardScanner(
   
   const totalTime = endTime - startTime;
   const poolsFound = edges.length / 2; // Each pool creates 2 edges
-  const poolsChecked = tokens.length * (tokens.length - 1) * registry.getAllDEXes().length;
+  // Calculate unique token pairs (combinations, not permutations)
+  const poolsChecked = (tokens.length * (tokens.length - 1) / 2) * registry.getAllDEXes().length;
   
   return {
     totalTime,
@@ -84,7 +85,8 @@ async function measureOptimizedScanner(
   
   const totalTime = endTime - startTime;
   const poolsFound = edges.length / 2;
-  const poolsChecked = tokens.length * (tokens.length - 1) * registry.getAllDEXes().length;
+  // Calculate unique token pairs (combinations, not permutations)
+  const poolsChecked = (tokens.length * (tokens.length - 1) / 2) * registry.getAllDEXes().length;
   
   const cacheStats = scanner.getCacheStats();
   

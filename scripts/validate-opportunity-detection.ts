@@ -165,7 +165,11 @@ function estimatePathProfit(
     // Simplified constant product formula (x * y = k)
     // amountOut = (amountIn * reserve1 * (1 - fee)) / (reserve0 + amountIn * (1 - fee))
     const fee = edge.fee;
-    const amountInAfterFee = currentAmount * BigInt(Math.floor((1 - fee) * 1e18)) / BigInt(1e18);
+    
+    // Use BigInt arithmetic for precision
+    // Calculate (1 - fee) as a fraction: (1e18 - fee * 1e18) / 1e18
+    const feeMultiplier = BigInt(1e18) - BigInt(Math.floor(fee * 1e18));
+    const amountInAfterFee = (currentAmount * feeMultiplier) / BigInt(1e18);
     
     // Use reserve0/reserve1 for calculation
     const numerator = amountInAfterFee * edge.reserve1;
