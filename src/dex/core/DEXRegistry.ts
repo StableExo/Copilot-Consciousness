@@ -114,7 +114,7 @@ export class DEXRegistry {
             factory: '0x33128a8fC17869897dcE68Ed026d694621f6FDfD',
             initCodeHash: '0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54',
             priority: 1,
-            liquidityThreshold: BigInt(ethers.utils.parseEther('10000').toString()),
+            liquidityThreshold: BigInt(ethers.utils.parseEther('100').toString()), // Base has smaller pools
             gasEstimate: 150000
         });
 
@@ -129,7 +129,7 @@ export class DEXRegistry {
             // Note: V3-style DEXes may not use initCodeHash for pool address calculation
             initCodeHash: '0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54',
             priority: 2,
-            liquidityThreshold: BigInt(ethers.utils.parseEther('10000').toString()),
+            liquidityThreshold: BigInt(ethers.utils.parseEther('100').toString()), // Base has smaller pools
             gasEstimate: 150000
         });
 
@@ -142,7 +142,7 @@ export class DEXRegistry {
             factory: '0xFDa619b6d20975be80A10332cD39b9a4b0FAa8BB',
             initCodeHash: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
             priority: 3,
-            liquidityThreshold: BigInt(ethers.utils.parseEther('5000').toString()),
+            liquidityThreshold: BigInt(ethers.utils.parseEther('50').toString()), // Base has smaller pools
             gasEstimate: 130000
         });
 
@@ -156,7 +156,7 @@ export class DEXRegistry {
             factory: '0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6',
             initCodeHash: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
             priority: 8,
-            liquidityThreshold: BigInt(ethers.utils.parseEther('10000').toString()),
+            liquidityThreshold: BigInt(ethers.utils.parseEther('100').toString()), // Base has smaller pools
             gasEstimate: 150000
         });
 
@@ -169,7 +169,7 @@ export class DEXRegistry {
             factory: '0xc35dadb65012ec5796536bd9864ed8773abc74c4',
             initCodeHash: '0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303',
             priority: 9,
-            liquidityThreshold: BigInt(ethers.utils.parseEther('10000').toString()),
+            liquidityThreshold: BigInt(ethers.utils.parseEther('100').toString()), // Base has smaller pools
             gasEstimate: 150000
         });
 

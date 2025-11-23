@@ -9,6 +9,11 @@ import { DEXRegistry } from '../dex/core/DEXRegistry';
 import { DEXConfig } from '../dex/types';
 import { PoolEdge, Token } from './types';
 import { logger } from '../utils/logger';
+import { 
+  UNISWAP_V3_FEE_TIERS, 
+  V3_LIQUIDITY_SCALE_FACTOR, 
+  isV3StyleProtocol 
+} from './constants';
 
 /**
  * Interface for pool data
@@ -87,8 +92,8 @@ export class MultiHopDataFetcher {
         return this.poolCache.get(cacheKey)!;
       }
 
-      // Fetch reserves
-      const reserves = await this.getReserves(poolAddress, provider);
+      // Fetch reserves - method varies by protocol
+      const reserves = await this.getReserves(poolAddress, provider, dex.protocol);
       
       if (!reserves) {
         return null;
@@ -149,23 +154,31 @@ export class MultiHopDataFetcher {
           poolsChecked++;
           const poolData = await this.fetchPoolData(dex, token0, token1);
           
-          if (poolData && poolData.reserve0 > dex.liquidityThreshold) {
-            poolsFound++;
-            // Create edge in both directions
-            edges.push({
-              poolAddress: poolData.poolAddress,
-              dexName: dex.name,
-              tokenIn: token0,
-              tokenOut: token1,
-              reserve0: poolData.reserve0,
-              reserve1: poolData.reserve1,
-              fee: this.getDEXFee(dex),
-              gasEstimate: dex.gasEstimate || 150000
-            });
+          if (poolData) {
+            // For V3 pools, liquidity is in L = sqrt(x*y) format, significantly smaller than V2 reserves
+            // See V3_LIQUIDITY_SCALE_FACTOR constant definition for mathematical explanation
+            const threshold = isV3StyleProtocol(dex.protocol)
+              ? dex.liquidityThreshold / BigInt(V3_LIQUIDITY_SCALE_FACTOR)
+              : dex.liquidityThreshold;
             
-            // Only perform string operations if debug is enabled
-            if (logger.isDebugEnabled()) {
-              logger.debug(`Found pool: ${dex.name} ${token0.slice(0,6)}.../${token1.slice(0,6)}... (reserves: ${poolData.reserve0}/${poolData.reserve1})`, 'DATAFETCH');
+            if (poolData.reserve0 > threshold) {
+              poolsFound++;
+              // Create edge in both directions
+              edges.push({
+                poolAddress: poolData.poolAddress,
+                dexName: dex.name,
+                tokenIn: token0,
+                tokenOut: token1,
+                reserve0: poolData.reserve0,
+                reserve1: poolData.reserve1,
+                fee: this.getDEXFee(dex),
+                gasEstimate: dex.gasEstimate || 150000
+              });
+              
+              // Only perform string operations if debug is enabled
+              if (logger.isDebugEnabled()) {
+                logger.debug(`Found pool: ${dex.name} ${token0.slice(0,6)}.../${token1.slice(0,6)}... (reserves: ${poolData.reserve0}/${poolData.reserve1})`, 'DATAFETCH');
+              }
             }
           }
         }
@@ -190,6 +203,35 @@ export class MultiHopDataFetcher {
       const [tokenA, tokenB] = token0.toLowerCase() < token1.toLowerCase() 
         ? [token0, token1] 
         : [token1, token0];
+
+      // Uniswap V3 style - check multiple fee tiers using factory.getPool()
+      if (isV3StyleProtocol(dex.protocol)) {
+        const factoryInterface = new ethers.utils.Interface([
+          'function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)'
+        ]);
+        
+        const factory = new ethers.Contract(dex.factory, factoryInterface, provider);
+        
+        for (const fee of UNISWAP_V3_FEE_TIERS) {
+          try {
+            const poolAddress = await factory.getPool(tokenA, tokenB, fee);
+            
+            if (poolAddress && poolAddress !== ethers.constants.AddressZero) {
+              // Verify pool has liquidity
+              const code = await provider.getCode(poolAddress);
+              if (code !== '0x') {
+                logger.debug(`Found V3 pool at ${poolAddress} with fee tier ${fee}`, 'DATAFETCH');
+                return poolAddress;
+              }
+            }
+          } catch (error) {
+            // Continue to next fee tier if this one fails
+            continue;
+          }
+        }
+        
+        return null;
+      }
 
       // Uniswap V2 style pool address calculation
       if (dex.initCodeHash) {
@@ -221,9 +263,47 @@ export class MultiHopDataFetcher {
    */
   private async getReserves(
     poolAddress: string,
-    provider: ethers.providers.Provider
+    provider: ethers.providers.Provider,
+    protocol: string
   ): Promise<{ reserve0: bigint; reserve1: bigint } | null> {
     try {
+      // Uniswap V3 style pools use slot0 and liquidity instead of reserves
+      if (isV3StyleProtocol(protocol)) {
+        const poolInterface = new ethers.utils.Interface([
+          'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
+          'function liquidity() external view returns (uint128)',
+          'function token0() external view returns (address)',
+          'function token1() external view returns (address)'
+        ]);
+
+        const contract = new ethers.Contract(poolAddress, poolInterface, provider);
+        
+        // Get liquidity and price
+        const liquidity = await contract.liquidity();
+        const slot0 = await contract.slot0();
+        
+        // For V3, we use liquidity (L) as a proxy for pool size
+        // Note: This is a simplified approximation. In V3, L = sqrt(x * y) where x and y are token amounts
+        // For accurate reserve calculation, we would need to:
+        // 1. Use sqrtPriceX96 to determine the price ratio
+        // 2. Calculate actual token amounts based on the current tick and liquidity
+        // However, for pool filtering purposes, using L directly is sufficient as it correlates with pool size
+        const liquidityBigInt = BigInt(liquidity.toString());
+        
+        // If there's no liquidity, return null
+        if (liquidityBigInt === BigInt(0)) {
+          return null;
+        }
+        
+        // Use liquidity value for both reserves as a proxy
+        // This allows threshold comparisons while acknowledging the limitation
+        // TODO: Implement proper V3 reserve calculation using sqrtPriceX96 and tick data
+        return {
+          reserve0: liquidityBigInt,
+          reserve1: liquidityBigInt
+        };
+      }
+
       // Standard Uniswap V2 getReserves function
       const poolInterface = new ethers.utils.Interface([
         'function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)'

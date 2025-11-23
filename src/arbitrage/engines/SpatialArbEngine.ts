@@ -50,7 +50,7 @@ export interface SpatialArbEngineConfig {
   /** Minimum profit margin in basis points (default 50 = 0.5%) */
   minProfitBps?: number;
   
-  /** Minimum pool liquidity in USD (default 10000) */
+  /** Minimum pool liquidity in USD (default 100 for Base network) */
   minLiquidityUsd?: number;
   
   /** Supported DEX protocols */
@@ -89,7 +89,7 @@ export class SpatialArbEngine {
 
   constructor(config: SpatialArbEngineConfig = {}) {
     this.minProfitBps = config.minProfitBps ?? 50;  // 0.5% minimum profit
-    this.minLiquidityUsd = config.minLiquidityUsd ?? 10000;
+    this.minLiquidityUsd = config.minLiquidityUsd ?? 100; // Lower for Base network
     this.supportedProtocols = config.supportedProtocols ?? [
       'uniswap_v2',
       'uniswap_v3',
