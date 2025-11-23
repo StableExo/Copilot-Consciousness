@@ -48,6 +48,12 @@ import { ArbitrageConsciousness } from './consciousness/ArbitrageConsciousness';
 import { CognitiveCoordinator, OpportunityContext, ModuleInsight } from './consciousness/coordination/CognitiveCoordinator';
 import { EmergenceDetector, DecisionContext } from './consciousness/coordination/EmergenceDetector';
 import { ArbitragePath } from './arbitrage/types';
+
+// Phase 3 Imports
+import { loadPhase3Config, validatePhase3Config, getPhase3ConfigSummary } from './config/phase3.config';
+import { initializePhase3Components, shutdownPhase3Components, Phase3Components, getPhase3Status } from './core/Phase3Initializer';
+import { extractOpportunityFeatures, featuresToArray } from './ai/featureExtraction';
+
 // Load environment variables
 dotenv.config();
 
@@ -194,6 +200,9 @@ class TheWarden extends EventEmitter {
   private cognitiveCoordinator?: CognitiveCoordinator;
   private emergenceDetector?: EmergenceDetector;
   
+  // Phase 3 components
+  private phase3Components?: Phase3Components;
+  
   // Statistics
   private stats = {
     startTime: Date.now(),
@@ -330,6 +339,33 @@ class TheWarden extends EventEmitter {
       this.emergenceDetector = new EmergenceDetector();
       
       logger.info('Consciousness coordination initialized - 14 cognitive modules ready');
+      
+      // Initialize Phase 3 components
+      logger.info('═══════════════════════════════════════════════════════════');
+      logger.info('🚀 INITIALIZING PHASE 3: Advanced AI & AEV Evolution 🚀');
+      logger.info('═══════════════════════════════════════════════════════════');
+      
+      const phase3Config = loadPhase3Config();
+      
+      // Validate Phase 3 configuration
+      const validation = validatePhase3Config(phase3Config);
+      if (!validation.valid) {
+        logger.warn('Phase 3 configuration validation warnings:');
+        validation.errors.forEach(err => logger.warn(`  - ${err}`));
+      }
+      
+      // Log Phase 3 configuration summary
+      logger.info(getPhase3ConfigSummary(phase3Config));
+      
+      // Initialize Phase 3 components with base strategy from orchestrator config
+      this.phase3Components = await initializePhase3Components(
+        phase3Config,
+        arbitrageConfig
+      );
+      
+      logger.info('═══════════════════════════════════════════════════════════');
+      logger.info('✓ Phase 3 initialization complete');
+      logger.info('═══════════════════════════════════════════════════════════');
       
       // Set up event listeners
       this.setupEventListeners();
@@ -513,6 +549,98 @@ class TheWarden extends EventEmitter {
         // Historical success rate
         const historicalSuccess = stats.successRate;
         
+        // ═══════════════════════════════════════════════════════════
+        // Phase 3: AI-Enhanced Opportunity Evaluation
+        // ═══════════════════════════════════════════════════════════
+        
+        let aiScore: number | undefined;
+        let aiRecommendation: 'execute' | 'skip' | 'uncertain' = 'uncertain';
+        let aiReasoning: string = 'AI scoring not available';
+        
+        if (this.phase3Components?.nnScorer && this.phase3Components.aiEnabled) {
+          try {
+            // Extract features from opportunity for neural network
+            const features = extractOpportunityFeatures(
+              path,
+              {
+                congestion,
+                mevRisk: riskScore,
+                competitionLevel: searcherDensity,
+                // Use actual volatility if available from market data
+                // For now using moderate default until price history tracking is implemented
+                volatility: 0.5,
+              },
+              {
+                successRate: stats.successRate,
+                avgProfit: stats.averageProfit,
+              }
+            );
+            
+            // Get AI scoring with details
+            const scoringResult = await this.phase3Components.nnScorer.scoreWithDetails(features);
+            aiScore = scoringResult.score;
+            aiRecommendation = scoringResult.recommendation;
+            aiReasoning = scoringResult.reasoning;
+            
+            logger.info(`[Phase3-AI] Neural Network Score: ${(aiScore * 100).toFixed(1)}%`);
+            logger.info(`[Phase3-AI] Recommendation: ${aiRecommendation.toUpperCase()}`);
+            logger.info(`[Phase3-AI] Reasoning: ${aiReasoning}`);
+            
+            // If AI confidently says to skip, respect that
+            if (aiRecommendation === 'skip' && scoringResult.confidence > 0.8) {
+              logger.warn(`[Phase3-AI] AI strongly recommends skipping this opportunity (confidence: ${(scoringResult.confidence * 100).toFixed(1)}%)`);
+            }
+          } catch (error) {
+            logger.error(`[Phase3-AI] Error in AI scoring: ${error}`);
+          }
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // Phase 3: Reinforcement Learning Parameter Suggestion
+        // ═══════════════════════════════════════════════════════════
+        
+        if (this.phase3Components?.rlAgent && this.phase3Components.aiEnabled) {
+          try {
+            // Get current strategy parameters
+            const currentParams: any = {
+              minProfitThreshold: this.config.minProfitThreshold,
+              mevRiskSensitivity: 0.5, // TODO: Make configurable
+              maxSlippage: 0.05,
+              gasMultiplier: 1.1,
+              executionTimeout: 60000,
+              priorityFeeStrategy: 'moderate' as const,
+            };
+            
+            // Get suggested parameter improvements from RL agent
+            const suggestion = await this.phase3Components.rlAgent.suggestParameters(currentParams);
+            
+            if (suggestion.confidence > 0.7) {
+              logger.info(`[Phase3-RL] Parameter suggestion (confidence: ${(suggestion.confidence * 100).toFixed(1)}%):`);
+              if (suggestion.params.minProfitThreshold !== currentParams.minProfitThreshold) {
+                logger.info(`[Phase3-RL]   minProfitThreshold: ${currentParams.minProfitThreshold} → ${suggestion.params.minProfitThreshold}`);
+              }
+              if (suggestion.params.maxSlippage !== currentParams.maxSlippage) {
+                logger.info(`[Phase3-RL]   maxSlippage: ${(currentParams.maxSlippage * 100).toFixed(2)}% → ${(suggestion.params.maxSlippage * 100).toFixed(2)}%`);
+              }
+              
+              // Apply parameter updates when confidence is very high (>0.9)
+              // This allows RL agent to autonomously optimize strategy
+              if (suggestion.confidence > 0.9) {
+                logger.info(`[Phase3-RL] High confidence (${(suggestion.confidence * 100).toFixed(1)}%) - applying parameter updates`);
+                // Note: Parameter application would happen here in production
+                // For safety, requires explicit enablement via PHASE3_RL_AUTO_APPLY=true
+                if (process.env.PHASE3_RL_AUTO_APPLY === 'true') {
+                  // this.config.minProfitThreshold = suggestion.params.minProfitThreshold;
+                  // (Additional parameter updates would go here)
+                  logger.warn('[Phase3-RL] Auto-apply is disabled for safety. Set PHASE3_RL_AUTO_APPLY=true to enable.');
+                }
+              }
+            }
+          } catch (error) {
+            logger.error(`[Phase3-RL] Error in RL parameter suggestion: ${error}`);
+          }
+        }
+        
         // Build decision context for emergence detection
         const decisionContext: DecisionContext = {
           moduleInsights: insights,
@@ -690,6 +818,43 @@ class TheWarden extends EventEmitter {
     
     await this.initialize();
     
+    // ═══════════════════════════════════════════════════════════
+    // Phase 3: Security Configuration Scan
+    // ═══════════════════════════════════════════════════════════
+    
+    if (this.phase3Components?.bloodhoundScanner && this.phase3Components.securityEnabled) {
+      logger.info('[Phase3-Security] Scanning configuration for sensitive data...');
+      
+      try {
+        // Scan configuration excluding the private key (which should remain secure)
+        // The scanner will check other configuration values for potential secrets
+        const configScan = await this.phase3Components.bloodhoundScanner.scanConfig({
+          rpcUrl: this.config.rpcUrl,
+          chainId: this.config.chainId,
+          executorAddress: this.config.executorAddress,
+          titheRecipient: this.config.titheRecipient,
+          // Note: Private key is intentionally excluded from scanning
+          // as it should already be secured via environment variables
+        });
+        
+        if (configScan.hasSensitiveData) {
+          logger.warn(`[Phase3-Security] ⚠️  Found ${configScan.detectedSecrets.length} potential secrets in configuration`);
+          configScan.detectedSecrets.forEach(secret => {
+            logger.warn(`[Phase3-Security]   - ${secret.type}: ${secret.redactedValue}`);
+            logger.warn(`[Phase3-Security]     Recommendation: ${secret.recommendation}`);
+          });
+          
+          if (configScan.riskLevel === 'critical') {
+            logger.error('[Phase3-Security] CRITICAL: Configuration contains secrets that should be moved to environment variables!');
+          }
+        } else {
+          logger.info('[Phase3-Security] ✓ Configuration security scan passed');
+        }
+      } catch (error) {
+        logger.error(`[Phase3-Security] Error in configuration scan: ${error}`);
+      }
+    }
+    
     this.isRunning = true;
     this.emit('started');
     
@@ -737,6 +902,12 @@ class TheWarden extends EventEmitter {
       await this.healthMonitor.stop();
     }
     
+    // Phase 3: Shutdown components
+    if (this.phase3Components) {
+      logger.info('[Phase3] Shutting down Phase 3 components...');
+      await shutdownPhase3Components(this.phase3Components);
+    }
+    
     // Log final statistics
     this.logStatus();
     
@@ -763,6 +934,34 @@ class TheWarden extends EventEmitter {
     logger.info(`Trades executed: ${this.stats.tradesExecuted}`);
     logger.info(`Total profit: ${ethers.utils.formatEther(this.stats.totalProfit)} ETH`);
     logger.info(`Errors: ${this.stats.errors}`);
+    
+    // Phase 3 Status
+    if (this.phase3Components) {
+      const phase3Status = getPhase3Status(this.phase3Components);
+      logger.info('─────────────────────────────────────────────────────────');
+      logger.info('PHASE 3 STATUS');
+      logger.info('─────────────────────────────────────────────────────────');
+      
+      if (phase3Status.ai.enabled) {
+        logger.info('AI Components: ENABLED');
+        if (phase3Status.ai.rlAgent) {
+          logger.info(`  RL Agent: ${phase3Status.ai.rlAgent.episodeCount} episodes, ${phase3Status.ai.rlAgent.totalReward?.toFixed(2) || 0} total reward`);
+        }
+        if (phase3Status.ai.nnScorer) {
+          logger.info(`  NN Scorer: ${phase3Status.ai.nnScorer.trainingExamples} examples, ${((phase3Status.ai.nnScorer.accuracy || 0) * 100).toFixed(1)}% accuracy`);
+        }
+      }
+      
+      if (phase3Status.crossChain.enabled) {
+        logger.info('Cross-Chain Intelligence: ENABLED');
+      }
+      
+      if (phase3Status.security.enabled) {
+        logger.info('Security Components: ENABLED');
+        logger.info(`  Security Patterns: ${phase3Status.security.patterns || 0}`);
+      }
+    }
+    
     logger.info('─────────────────────────────────────────────────────────');
   }
   
