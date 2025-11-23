@@ -1,8 +1,17 @@
 # AEV - TheWarden
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Production Status](https://img.shields.io/badge/Production-Run%20%233%20Complete-success)]()
+[![Pool Detection](https://img.shields.io/badge/Pool%20Detection-Working%20%E2%9C%85-brightgreen)]()
+[![Performance](https://img.shields.io/badge/Scan%20Time-60s%20%E2%86%92%2010s-blue)]()
 
 **AEV (Autonomous Extracted Value)** - An intelligent autonomous agent system competing with traditional MEV through learning-based value extraction, powered by **TheWarden**.
+
+## 🎉 Production Run #3 - BREAKTHROUGH ACHIEVED!
+
+**Status**: Pool detection is WORKING on Base network!  
+**Latest**: Performance optimizations implemented (5-7.5x faster)  
+**Report**: See [Production Run #3 Validation Report](./PRODUCTION_RUN_3_VALIDATION_REPORT.md)
 
 ## What is AEV?
 
@@ -39,6 +48,8 @@ See [MCP Configuration Guide](./docs/MCP_CONFIGURATION.md) and [MCP Examples](./
 - **Consciousness-Based Decision**: Uses `ArbitrageConsciousness` for informed judgment
 - **Ethical Execution**: Only acts when opportunities meet risk and ethical criteria
 - **Adaptive Learning**: Improves strategy through outcome-based learning
+- **✅ Pool Detection**: Working on Base network (6+ pools detected)
+- **⚡ Performance**: Optimized scanning (60s → 10s with multicall batching)
 
 See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for TheWarden's operational details.
 
@@ -111,6 +122,9 @@ See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for TheWarden's operation
 - **Flash Loan Execution**: Capital-free arbitrage with Aave V3 integration
 - **Multi-Chain Support**: Arbitrum, Ethereum, Polygon, Base networks
 - **Path Optimization**: Advanced graph algorithms for efficient routing
+- **⚡ NEW: Optimized Pool Scanner**: 5-7.5x faster pool detection with multicall batching
+- **⚡ NEW: RPC Batching**: Reduce RPC calls by 4-5x (420 → 80-100 calls)
+- **⚡ NEW: Performance Monitoring**: Diagnostic tools for scan time analysis
 
 ### 🔒 Private Transaction Submission & Flashbots Intelligence
 - **Flashbots Protect**: Keep transactions out of public mempool
