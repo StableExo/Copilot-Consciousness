@@ -243,12 +243,43 @@ npm install aev-thewarden
 npm install
 
 # Configure environment
-cp .env.example .env
-# Edit .env with your RPC_URL and WALLET_PRIVATE_KEY
+cp .env.test .env
+# Or edit .env with your RPC_URL and WALLET_PRIVATE_KEY
 
 # Run TheWarden in development mode (dry-run - no real transactions)
 npm run dev
 ```
+
+### 🤖 Autonomous Operation (Recommended)
+
+**Run TheWarden continuously with auto-restart and monitoring:**
+
+```bash
+# Install dependencies
+npm install
+npm run build
+
+# Setup test environment for safe autonomous operation
+cp .env.test .env
+
+# Run autonomously (will auto-restart on crash)
+./scripts/autonomous-run.sh
+
+# Monitor status in another terminal
+./scripts/status.sh
+
+# Stop when needed
+kill $(cat logs/warden.pid)
+```
+
+**Features:**
+- ✅ Auto-restart on crashes
+- ✅ Detailed logging to `logs/` directory
+- ✅ Graceful shutdown handling
+- ✅ Real-time status monitoring
+- ✅ Safety checks and warnings
+
+See [Autonomous Test Report](./AUTONOMOUS_TEST_REPORT.md) for validation results.
 
 ### 🔥 Production Mode - Live Fire on Mainnet
 
@@ -259,7 +290,7 @@ npm run dev
 npm install
 
 # Create production configuration
-cp .env .env.backup
+cp .env.test .env
 nano .env
 
 # Set in .env:
@@ -269,12 +300,16 @@ nano .env
 # BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR-API-KEY
 # WALLET_PRIVATE_KEY=0xYOUR_PRIVATE_KEY_HERE
 
-# Build and run
+# Build and run autonomously
 npm run build
-npm start
+./scripts/autonomous-run.sh
+
+# Or use PM2 for production
+npm install -g pm2
+pm2 start ecosystem.config.json --env production
 ```
 
-⚠️ **CRITICAL**: Running in production mode enables REAL transactions with REAL money. See [Mainnet Deployment Guide](./docs/MAINNET_DEPLOYMENT.md) for comprehensive setup, safety guidelines, and what to expect.
+⚠️ **CRITICAL**: Running in production mode enables REAL transactions with REAL money. See [Mainnet Deployment Guide](./docs/MAINNET_DEPLOYMENT.md) and [Mainnet Upgrade Guide](./docs/MAINNET_UPGRADE_GUIDE.md) for comprehensive setup, safety guidelines, and what to expect.
 
 See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for detailed configuration and operation guide.
 
