@@ -2,8 +2,12 @@
  * CrossChainScanner - Continuously scan for price differences across chains
  * 
  * Monitors token prices across all chains in parallel and identifies arbitrage opportunities
+ * 
+ * ⚠️ EXPERIMENTAL FEATURE: Cross-chain scanning is experimental and requires careful configuration.
+ * Ensure proper RPC endpoints and network IDs are configured before use.
  */
 
+import { EventEmitter } from 'events';
 import { ChainProviderManager } from './ChainProviderManager';
 import { EVMAdapter } from './adapters/EVMAdapter';
 import { SolanaAdapter } from './adapters/SolanaAdapter';
@@ -28,7 +32,7 @@ export interface ScanResult {
   tokensScanned: number;
 }
 
-export class CrossChainScanner {
+export class CrossChainScanner extends EventEmitter {
   private providerManager: ChainProviderManager;
   private adapters: Map<number | string, ChainAdapter>;
   private config: ScannerConfig;
@@ -42,17 +46,44 @@ export class CrossChainScanner {
     config: ScannerConfig,
     tokenList: string[] = []
   ) {
+    super();
     this.providerManager = providerManager;
     this.config = config;
     this.adapters = new Map();
     this.isScanning = false;
     this.tokenList = tokenList;
     this.lastScanResults = null;
+    
+    // Validate configuration
+    this.validateConfiguration();
+    
+    // Initialize adapters synchronously (network validation happens on first scan)
     this.initializeAdapters();
   }
 
   /**
+   * Validate scanner configuration
+   */
+  private validateConfiguration(): void {
+    if (!this.config) {
+      throw new Error('Scanner configuration is required');
+    }
+    
+    if (this.config.scanIntervalMs < 1000) {
+      console.warn('⚠️ WARNING: Scan interval is very short (<1s), this may cause rate limiting');
+    }
+    
+    if (this.config.maxConcurrentScans > 10) {
+      console.warn('⚠️ WARNING: High concurrent scan limit may cause performance issues');
+    }
+    
+    console.log('⚠️ Cross-chain scanning is an EXPERIMENTAL feature. Monitor for unexpected behavior.');
+  }
+
+  /**
    * Initialize adapters for all active chains
+   * 
+   * Network validation happens during startScanning() to avoid async constructor
    */
   private initializeAdapters(): void {
     const activeChains = this.providerManager.getAllActiveChains();
@@ -64,38 +95,104 @@ export class CrossChainScanner {
           const provider = this.providerManager.getProvider(chainId);
           if (provider) {
             this.adapters.set(chainId, new EVMAdapter(chainId, provider));
+            this.emit('adapterInitialized', { chainId, type: 'EVM' });
           }
         } else {
           // Solana
           const connection = this.providerManager.getSolanaConnection();
           if (connection) {
             this.adapters.set(chainId, new SolanaAdapter(connection));
+            this.emit('adapterInitialized', { chainId, type: 'Solana' });
           }
         }
       } catch (error) {
         console.warn(`Failed to initialize adapter for chain ${chainId}:`, error);
+        this.emit('adapterInitializationFailed', { chainId, error: String(error) });
       }
     }
+  }
+  
+  /**
+   * Validate provider networks match expected chain IDs
+   * Called during startScanning to catch provider mismatches early
+   */
+  private async validateProviderNetworks(): Promise<boolean> {
+    let allValid = true;
+    
+    for (const [chainId, adapter] of this.adapters.entries()) {
+      if (typeof chainId === 'number' && adapter.chainType === 'EVM') {
+        try {
+          const evmAdapter = adapter as EVMAdapter;
+          const provider = this.providerManager.getProvider(chainId);
+          if (provider) {
+            const network = await provider.getNetwork();
+            if (network.chainId !== chainId) {
+              console.error(
+                `⚠️ PROVIDER MISMATCH: Expected chain ${chainId} but provider is connected to chain ${network.chainId}`
+              );
+              this.emit('providerMismatch', {
+                expectedChainId: chainId,
+                actualChainId: network.chainId,
+                timestamp: Date.now()
+              });
+              allValid = false;
+            }
+          }
+        } catch (error) {
+          console.warn(`Failed to verify network for chain ${chainId}:`, error);
+          // Don't fail validation if we can't check - log warning and continue
+        }
+      }
+    }
+    
+    return allValid;
   }
 
   /**
    * Start continuous scanning
    */
-  startScanning(): void {
+  async startScanning(): Promise<void> {
     if (this.isScanning) {
       console.warn('Scanner already running');
       return;
     }
+    
+    // Validate we have adapters before starting
+    if (this.adapters.size === 0) {
+      console.error('⚠️ Cannot start scanner: No chain adapters initialized');
+      this.emit('error', new Error('No chain adapters available'));
+      return;
+    }
+    
+    // Validate provider networks match expected chain IDs
+    console.log('Validating provider networks...');
+    const networksValid = await this.validateProviderNetworks();
+    if (!networksValid) {
+      console.warn('⚠️ Some provider networks do not match expected chain IDs. Proceeding with available adapters.');
+    }
 
     this.isScanning = true;
-    console.log('Starting cross-chain price scanner...');
+    console.log('⚠️ Starting cross-chain price scanner (EXPERIMENTAL)...');
+    console.log(`   Monitoring ${this.adapters.size} chains with ${this.tokenList.length} tokens`);
+
+    this.emit('started', {
+      chainsMonitored: this.adapters.size,
+      tokensWatched: this.tokenList.length,
+      scanInterval: this.config.scanIntervalMs
+    });
 
     // Run initial scan
-    this.scan().catch(err => console.error('Initial scan failed:', err));
+    this.scan().catch(err => {
+      console.error('Initial scan failed:', err);
+      this.emit('scanError', { error: String(err), timestamp: Date.now() });
+    });
 
     // Schedule periodic scans
     this.scanInterval = setInterval(() => {
-      this.scan().catch(err => console.error('Periodic scan failed:', err));
+      this.scan().catch(err => {
+        console.error('Periodic scan failed:', err);
+        this.emit('scanError', { error: String(err), timestamp: Date.now() });
+      });
     }, this.config.scanIntervalMs);
   }
 
@@ -109,6 +206,7 @@ export class CrossChainScanner {
     }
     this.isScanning = false;
     console.log('Stopped cross-chain price scanner');
+    this.emit('stopped', { timestamp: Date.now() });
   }
 
   /**
@@ -174,7 +272,19 @@ export class CrossChainScanner {
       
       if (discrepancies.length > 0) {
         console.log(`Found ${discrepancies.length} price discrepancies across ${chainIds.length} chains`);
+        this.emit('discrepanciesFound', {
+          count: discrepancies.length,
+          topDiscrepancies: discrepancies.slice(0, 5),
+          timestamp: Date.now()
+        });
       }
+      
+      this.emit('scanComplete', {
+        chainsScanned: chainIds.length,
+        tokensScanned: this.tokenList.length,
+        discrepanciesFound: discrepancies.length,
+        scanTime: result.scanTime
+      });
 
       return result;
     } catch (error) {
@@ -196,18 +306,20 @@ export class CrossChainScanner {
 
     if (this.config.parallelChainScans) {
       // Parallel scanning with concurrency limit
-      const chunks = this.chunkArray(
-        Array.from(this.adapters.entries()),
-        this.config.maxConcurrentScans
-      );
-
-      for (const chunk of chunks) {
+      // Process adapters in chunks to respect maxConcurrentScans limit
+      const adapterEntries = Array.from(this.adapters.entries());
+      const chunkSize = this.config.maxConcurrentScans;
+      
+      for (let i = 0; i < adapterEntries.length; i += chunkSize) {
+        const chunk = adapterEntries.slice(i, i + chunkSize);
+        
         const chunkPromises = chunk.map(async ([chainId, adapter]) => {
           try {
             const prices = await adapter.getTokenPrices(this.tokenList);
             return [chainId, prices] as [number | string, TokenPrice[]];
           } catch (error) {
             console.warn(`Failed to fetch prices for chain ${chainId}:`, error);
+            this.emit('chainFetchError', { chainId, error: String(error) });
             return [chainId, []] as [number | string, TokenPrice[]];
           }
         });
@@ -225,6 +337,7 @@ export class CrossChainScanner {
           pricesByChain.set(chainId, prices);
         } catch (error) {
           console.warn(`Failed to fetch prices for chain ${chainId}:`, error);
+          this.emit('chainFetchError', { chainId, error: String(error) });
           pricesByChain.set(chainId, []);
         }
       }
@@ -275,17 +388,6 @@ export class CrossChainScanner {
     const minProfitableDiscrepancy = Math.max(priceA, priceB) * CrossChainScanner.MIN_PROFITABILITY_THRESHOLD;
     
     return discrepancy >= minProfitableDiscrepancy;
-  }
-
-  /**
-   * Chunk array for parallel processing
-   */
-  private chunkArray<T>(array: T[], chunkSize: number): T[][] {
-    const chunks: T[][] = [];
-    for (let i = 0; i < array.length; i += chunkSize) {
-      chunks.push(array.slice(i, i + chunkSize));
-    }
-    return chunks;
   }
 
   /**
