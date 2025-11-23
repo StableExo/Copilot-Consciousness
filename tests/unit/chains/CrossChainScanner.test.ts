@@ -29,14 +29,13 @@ describe('CrossChainScanner', () => {
       isChainHealthy: jest.fn().mockReturnValue(true),
     } as any;
     
-    // Default scanner config
+    // Default scanner config - matching actual ScannerConfig interface
     scannerConfig = {
       scanIntervalMs: 5000,
       priceDiscrepancyThreshold: 0.01,
       parallelChainScans: true,
       maxConcurrentScans: 3,
-      enableAlerts: true,
-      alertThreshold: 0.05,
+      enableWebSocket: false,
     };
   });
   

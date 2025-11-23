@@ -41,6 +41,10 @@ export class CrossChainScanner extends EventEmitter {
   private tokenList: string[];
   private lastScanResults: ScanResult | null;
 
+  // Configuration validation constants
+  private static readonly MIN_SAFE_SCAN_INTERVAL_MS = 1000;
+  private static readonly MAX_SAFE_CONCURRENT_SCANS = 10;
+
   constructor(
     providerManager: ChainProviderManager,
     config: ScannerConfig,
@@ -69,12 +73,12 @@ export class CrossChainScanner extends EventEmitter {
       throw new Error('Scanner configuration is required');
     }
     
-    if (this.config.scanIntervalMs < 1000) {
-      console.warn('⚠️ WARNING: Scan interval is very short (<1s), this may cause rate limiting');
+    if (this.config.scanIntervalMs < CrossChainScanner.MIN_SAFE_SCAN_INTERVAL_MS) {
+      console.warn(`⚠️ WARNING: Scan interval is very short (<${CrossChainScanner.MIN_SAFE_SCAN_INTERVAL_MS}ms), this may cause rate limiting`);
     }
     
-    if (this.config.maxConcurrentScans > 10) {
-      console.warn('⚠️ WARNING: High concurrent scan limit may cause performance issues');
+    if (this.config.maxConcurrentScans > CrossChainScanner.MAX_SAFE_CONCURRENT_SCANS) {
+      console.warn(`⚠️ WARNING: High concurrent scan limit (>${CrossChainScanner.MAX_SAFE_CONCURRENT_SCANS}), may cause performance issues`);
     }
     
     console.log('⚠️ Cross-chain scanning is an EXPERIMENTAL feature. Monitor for unexpected behavior.');
