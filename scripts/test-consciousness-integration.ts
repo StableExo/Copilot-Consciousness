@@ -20,22 +20,7 @@ async function testConsciousnessIntegration() {
 
   // 2. Extract modules
   console.log('2. Extracting cognitive modules...');
-  const modules = {
-    learningEngine: (consciousness as any).learningEngine,
-    patternTracker: (consciousness as any).patternTracker,
-    historicalAnalyzer: (consciousness as any).historicalAnalyzer,
-    spatialReasoning: (consciousness as any).spatialReasoning,
-    multiPathExplorer: (consciousness as any).multiPathExplorer,
-    opportunityScorer: (consciousness as any).opportunityScorer,
-    patternRecognition: (consciousness as any).patternRecognition,
-    riskAssessor: (consciousness as any).riskAssessor,
-    riskCalibrator: (consciousness as any).riskCalibrator,
-    thresholdManager: (consciousness as any).thresholdManager,
-    autonomousGoals: (consciousness as any).autonomousGoals,
-    operationalPlaybook: (consciousness as any).operationalPlaybook,
-    architecturalPrinciples: (consciousness as any).architecturalPrinciples,
-    evolutionTracker: (consciousness as any).evolutionTracker,
-  };
+  const modules = consciousness.getModules();
   
   const moduleCount = Object.keys(modules).length;
   console.log(`   ✓ Extracted ${moduleCount} modules\n`);

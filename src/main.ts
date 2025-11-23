@@ -323,23 +323,8 @@ class TheWarden extends EventEmitter {
       logger.info('Initializing consciousness coordination system...');
       this.consciousness = new ArbitrageConsciousness(0.05, 1000);
       
-      // Get all modules from consciousness
-      const modules = {
-        learningEngine: (this.consciousness as any).learningEngine,
-        patternTracker: (this.consciousness as any).patternTracker,
-        historicalAnalyzer: (this.consciousness as any).historicalAnalyzer,
-        spatialReasoning: (this.consciousness as any).spatialReasoning,
-        multiPathExplorer: (this.consciousness as any).multiPathExplorer,
-        opportunityScorer: (this.consciousness as any).opportunityScorer,
-        patternRecognition: (this.consciousness as any).patternRecognition,
-        riskAssessor: (this.consciousness as any).riskAssessor,
-        riskCalibrator: (this.consciousness as any).riskCalibrator,
-        thresholdManager: (this.consciousness as any).thresholdManager,
-        autonomousGoals: (this.consciousness as any).autonomousGoals,
-        operationalPlaybook: (this.consciousness as any).operationalPlaybook,
-        architecturalPrinciples: (this.consciousness as any).architecturalPrinciples,
-        evolutionTracker: (this.consciousness as any).evolutionTracker,
-      };
+      // Get all modules from consciousness using proper method
+      const modules = this.consciousness.getModules();
       
       this.cognitiveCoordinator = new CognitiveCoordinator(modules);
       this.emergenceDetector = new EmergenceDetector();
@@ -435,6 +420,10 @@ class TheWarden extends EventEmitter {
     
     logger.info('[CognitiveCoordinator] Gathering insights from 14 cognitive modules...');
     
+    // Get statistics from consciousness for informed decision making
+    const stats = this.consciousness.getStatistics();
+    const patterns = this.consciousness.getDetectedPatterns();
+    
     // Analyze each opportunity (or at least the best ones)
     const topPaths = paths.slice(0, Math.min(3, paths.length));
     
@@ -443,7 +432,19 @@ class TheWarden extends EventEmitter {
       
       logger.info(`[OpportunityAnalysis] Analyzing opportunity ${i + 1}: ${ethers.utils.formatEther(path.netProfit.toString())} ETH profit`);
       
-      // Build opportunity context
+      // Calculate market metrics from real data
+      const blockNumber = await this.provider.getBlockNumber().catch(() => 0);
+      const gasPrice = await this.provider.getGasPrice().catch(() => BigInt(0));
+      const gasPriceGwei = Number(ethers.utils.formatUnits(gasPrice, 'gwei'));
+      
+      // Calculate congestion from gas price (0-1 scale, normalized against 100 gwei)
+      const congestion = Math.min(gasPriceGwei / 100, 1.0);
+      
+      // Searcher density estimation based on network activity
+      // Base has lower searcher density than Ethereum mainnet
+      const searcherDensity = this.config.chainId === 8453 ? 0.3 : 0.5;
+      
+      // Build opportunity context with real data
       const context: OpportunityContext = {
         opportunity: {
           profit: Number(ethers.utils.formatEther(path.netProfit.toString())),
@@ -455,12 +456,16 @@ class TheWarden extends EventEmitter {
         },
         market: {
           timestamp: Date.now(),
-          congestion: 0.3, // Placeholder - would come from real market data
-          searcherDensity: 0.5,
+          congestion,
+          searcherDensity,
+          gasPrice: gasPriceGwei,
+          blockNumber,
         },
         historical: {
-          recentExecutions: this.stats.tradesExecuted,
-          successRate: this.stats.tradesExecuted > 0 ? 0.8 : 0.0,
+          recentExecutions: stats.totalExecutions,
+          successRate: stats.successRate,
+          averageProfit: stats.averageProfit,
+          patternsDetected: patterns.length,
         },
         timestamp: Date.now(),
       };
@@ -479,15 +484,44 @@ class TheWarden extends EventEmitter {
           logger.info(`[CognitiveCoordinator] Opposing: ${consensus.opposingModules.join(', ')}`);
         }
         
+        // Calculate risk score from opportunity characteristics
+        const complexityRisk = Math.min(path.hops.length / 5, 1.0); // More hops = more risk
+        const gasCostRisk = Number(ethers.utils.formatEther(path.totalGasCost.toString())) / Number(ethers.utils.formatEther(path.netProfit.toString()));
+        const congestionRisk = congestion;
+        const riskScore = (complexityRisk * 0.3 + gasCostRisk * 0.4 + congestionRisk * 0.3);
+        
+        // Ethical review of opportunity
+        const ethicalReview = this.consciousness.ethicalReview({
+          profit: context.opportunity.profit,
+          mevRisk: riskScore,
+          hops: path.hops.length,
+        });
+        const ethicalScore = ethicalReview.approved ? 0.85 : 0.3;
+        
+        // Calculate goal alignment from autonomous goals
+        const modules = this.consciousness.getModules();
+        const goals = Array.from((modules.autonomousGoals as any).goals.values());
+        const goalAlignment = goals.length > 0 
+          ? goals.reduce((sum: number, g: any) => sum + (g.progress / 100), 0) / goals.length
+          : 0.5;
+        
+        // Pattern confidence from detected patterns
+        const patternConfidence = patterns.length > 0
+          ? patterns.reduce((sum, p) => sum + p.confidence, 0) / patterns.length
+          : 0.5;
+        
+        // Historical success rate
+        const historicalSuccess = stats.successRate;
+        
         // Build decision context for emergence detection
         const decisionContext: DecisionContext = {
           moduleInsights: insights,
           consensus,
-          riskScore: 0.2, // Placeholder - would be calculated from actual risk factors
-          ethicalScore: 0.85, // Placeholder - would come from ethical review
-          goalAlignment: 0.9, // Placeholder - would come from goal system
-          patternConfidence: 0.75, // Placeholder - would come from pattern recognition
-          historicalSuccess: 0.8, // Placeholder - would come from historical analysis
+          riskScore,
+          ethicalScore,
+          goalAlignment,
+          patternConfidence,
+          historicalSuccess,
           timestamp: Date.now(),
         };
         
@@ -517,6 +551,8 @@ class TheWarden extends EventEmitter {
         } else {
           logger.info('[EmergenceDetector] Emergence not detected');
           logger.info(`  Reasoning: ${emergence.reasoning}`);
+          logger.info(`  Risk Score: ${(riskScore * 100).toFixed(1)}%`);
+          logger.info(`  Ethical Score: ${(ethicalScore * 100).toFixed(1)}%`);
         }
         
       } catch (error) {

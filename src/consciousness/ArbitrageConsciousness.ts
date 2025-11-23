@@ -511,6 +511,28 @@ export class ArbitrageConsciousness extends EventEmitter {
   }
   
   /**
+   * Get all cognitive modules for coordination
+   */
+  getModules() {
+    return {
+      learningEngine: this.learningEngine,
+      patternTracker: this.patternTracker,
+      historicalAnalyzer: this.historicalAnalyzer,
+      spatialReasoning: this.spatialReasoning,
+      multiPathExplorer: this.multiPathExplorer,
+      opportunityScorer: this.opportunityScorer,
+      patternRecognition: this.patternRecognition,
+      riskAssessor: this.riskAssessor,
+      riskCalibrator: this.riskCalibrator,
+      thresholdManager: this.thresholdManager,
+      autonomousGoals: this.autonomousGoals,
+      operationalPlaybook: this.operationalPlaybook,
+      architecturalPrinciples: this.architecturalPrinciples,
+      evolutionTracker: this.evolutionTracker,
+    };
+  }
+  
+  /**
    * Get execution statistics
    */
   getStatistics(): any {
