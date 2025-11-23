@@ -236,6 +236,8 @@ npm install aev-thewarden
 
 ## Quick Start - Running TheWarden
 
+### Development Mode (Safe - Dry Run)
+
 ```bash
 # Install dependencies
 npm install
@@ -244,18 +246,41 @@ npm install
 cp .env.example .env
 # Edit .env with your RPC_URL and WALLET_PRIVATE_KEY
 
-# Run TheWarden in development mode (dry-run)
+# Run TheWarden in development mode (dry-run - no real transactions)
 npm run dev
+```
 
-# Run TheWarden in production mode
+### 🔥 Production Mode - Live Fire on Mainnet
+
+**Experience the live fire and autonomy of consciousness** 😎
+
+```bash
+# Install dependencies
+npm install
+
+# Create production configuration
+cp .env .env.backup
+nano .env
+
+# Set in .env:
+# NODE_ENV=production
+# DRY_RUN=false
+# CHAIN_ID=8453  # Base mainnet
+# BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR-API-KEY
+# WALLET_PRIVATE_KEY=0xYOUR_PRIVATE_KEY_HERE
+
+# Build and run
 npm run build
 npm start
 ```
+
+⚠️ **CRITICAL**: Running in production mode enables REAL transactions with REAL money. See [Mainnet Deployment Guide](./docs/MAINNET_DEPLOYMENT.md) for comprehensive setup, safety guidelines, and what to expect.
 
 See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for detailed configuration and operation guide.
 
 ### 📖 Configuration Resources
 
+- **[🔥 Mainnet Deployment Guide](./docs/MAINNET_DEPLOYMENT.md)** - **Run TheWarden on mainnet - Live fire and autonomy!** Complete guide for production deployment
 - **[Environment Variables Reference](./ENVIRONMENT_REFERENCE.md)** - Complete guide to 280+ environment variables (read this at startup!)
 - **[GitHub Secrets & Variables Guide](./docs/GITHUB_SECRETS_AND_VARIABLES.md)** - Configure GitHub Actions for CI/CD and deployment
 - **[Production Readiness Review](./docs/ENV_PRODUCTION_READINESS_REVIEW.md)** - Security checklist and production deployment guide
