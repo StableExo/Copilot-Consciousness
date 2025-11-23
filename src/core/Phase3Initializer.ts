@@ -201,7 +201,6 @@ export async function initializePhase3Components(
             autoRespond: config.security.threatResponse.autoRespond,
             responseDelay: config.security.threatResponse.responseDelay,
             requireOperatorApproval: config.security.threatResponse.requireOperatorApproval,
-            // maxActionsPerMinute is not a real config option - remove it
           });
           
           // Set up event listeners
