@@ -150,7 +150,7 @@ function loadConfig(): WardenConfig {
     // Multi-chain scanning configuration
     // Parse SCAN_CHAINS env var (comma-separated chain IDs) or default to primary chain
     scanChains: process.env.SCAN_CHAINS 
-      ? process.env.SCAN_CHAINS.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id))
+      ? process.env.SCAN_CHAINS.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id) && id > 0)
       : [chainId],
     
     executorAddress: process.env.FLASHSWAP_V2_ADDRESS,
@@ -185,6 +185,8 @@ function loadConfig(): WardenConfig {
 
 /**
  * Get RPC URL for a specific chain ID
+ * @param chainId - The blockchain network chain ID
+ * @returns The RPC URL for the chain, or undefined if not configured
  */
 function getRpcUrlForChain(chainId: number): string | undefined {
   switch (chainId) {
@@ -205,6 +207,10 @@ function getRpcUrlForChain(chainId: number): string | undefined {
     case 420: // Optimism testnet
       return process.env.OPTIMISM_RPC_URL;
     default:
+      // Log warning for unknown chains falling back to default
+      if (process.env.RPC_URL) {
+        logger.warn(`Unknown chain ID ${chainId}, using default RPC_URL`);
+      }
       return process.env.RPC_URL;
   }
 }
