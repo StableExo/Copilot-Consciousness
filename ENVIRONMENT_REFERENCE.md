@@ -2,7 +2,7 @@
 
 **Quick Reference Guide for Copilot-Consciousness**  
 **Read this at startup to understand all available configuration options**  
-**Last Updated:** 2025-11-23 | **Version:** 3.1.0
+**Last Updated:** 2025-11-23 | **Version:** 3.0.0
 
 ---
 
@@ -656,4 +656,4 @@ curl -X POST $ETHEREUM_RPC_URL \
 
 *This is your startup reference document. Read it each session to understand what's available and how to configure the system.*
 
-**Last Updated:** 2025-11-23 | **Version:** 3.1.0
+**Last Updated:** 2025-11-23 | **Version:** 3.0.0

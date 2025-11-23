@@ -642,10 +642,10 @@ This runs the existing validation script: `scripts/validate-env.ts`
 - [MEV_SETUP_GUIDE.md](./MEV_SETUP_GUIDE.md)
 
 ### Related Files
-- `.env.example` - Template for local development environment variables
-- `k8s/base/secret.yaml` - Kubernetes secrets template
-- `scripts/validate-env.ts` - Environment validation script
-- `.github/workflows/deploy.yml` - Deployment workflow
+- [.env.example](../.env.example) - Template for local development environment variables
+- [k8s/base/secret.yaml](../k8s/base/secret.yaml) - Kubernetes secrets template
+- [scripts/validate-env.ts](../scripts/validate-env.ts) - Environment validation script
+- [.github/workflows/deploy.yml](../.github/workflows/deploy.yml) - Deployment workflow
 
 ### Support
 For issues or questions about secrets configuration:

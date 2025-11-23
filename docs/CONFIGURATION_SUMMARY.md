@@ -84,10 +84,10 @@ This repository includes comprehensive configuration documentation to help you s
 
 ## 📊 Statistics
 
-- **Total Environment Variables**: 280+
-- **GitHub Secrets**: 50+ possible secrets
+- **Total Environment Variables**: 280+ (documented in ENVIRONMENT_REFERENCE.md)
+- **GitHub Secrets**: 50+ possible secrets (documented in GITHUB_SECRETS_AND_VARIABLES.md)
 - **GitHub Variables**: 30+ configuration variables
-- **Documentation Lines**: 1,392 total
+- **Documentation Lines**: 1,392 total (calculated via `wc -l ENVIRONMENT_REFERENCE.md docs/GITHUB_SECRETS_AND_VARIABLES.md`)
 - **Configuration Categories**: 9 major categories
 
 ---
