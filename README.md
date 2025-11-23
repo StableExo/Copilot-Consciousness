@@ -236,6 +236,8 @@ npm install aev-thewarden
 
 ## Quick Start - Running TheWarden
 
+### Development/Dry-Run Mode (Recommended First)
+
 ```bash
 # Install dependencies
 npm install
@@ -244,13 +246,34 @@ npm install
 cp .env.example .env
 # Edit .env with your RPC_URL and WALLET_PRIVATE_KEY
 
-# Run TheWarden in development mode (dry-run)
+# Run TheWarden in development mode (dry-run, no real transactions)
 npm run dev
-
-# Run TheWarden in production mode
-npm run build
-npm start
 ```
+
+### Mainnet/Production Mode (Live Trading)
+
+**⚠️ WARNING**: This will execute REAL transactions with REAL money!
+
+```bash
+# Configure for mainnet
+cp .env.mainnet.example .env
+# Edit .env with your actual settings:
+# - NODE_ENV=production
+# - DRY_RUN=false
+# - Valid RPC URLs and private key
+
+# Build the application
+npm run build
+
+# Launch on mainnet (with safety checks)
+npm run start:mainnet
+```
+
+**Before going live:**
+1. Test extensively in dry-run mode first
+2. Read [Mainnet Deployment Guide](./docs/MAINNET_DEPLOYMENT.md)
+3. Understand you can lose your entire capital
+4. Start with minimal capital to test
 
 See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for detailed configuration and operation guide.
 

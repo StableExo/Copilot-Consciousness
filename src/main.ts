@@ -812,8 +812,27 @@ class TheWarden extends EventEmitter {
     logger.info('═══════════════════════════════════════════════════════════');
     logger.info('  AEV WARDEN.BOT – AUTONOMOUS EXTRACTED VALUE ENGINE');
     logger.info('═══════════════════════════════════════════════════════════');
+    
+    // Display prominent warning if running in live mode
+    if (!this.config.dryRun) {
+      logger.warn('🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨');
+      logger.warn('🚨                                                      🚨');
+      logger.warn('🚨      ⚠️  LIVE MODE - REAL TRANSACTIONS ENABLED  ⚠️     🚨');
+      logger.warn('🚨                                                      🚨');
+      logger.warn('🚨  TheWarden will execute REAL trades with REAL money 🚨');
+      logger.warn('🚨  You can LOSE funds. Monitor closely!               🚨');
+      logger.warn('🚨                                                      🚨');
+      logger.warn('🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨');
+      logger.info('');
+    } else {
+      logger.info('💚 DRY RUN MODE - Simulation only (no real transactions)');
+      logger.info('');
+    }
+    
     logger.info('AEV status: ONLINE');
     logger.info('Role: Warden.bot – monitoring flow, judging opportunities…');
+    logger.info(`Mode: ${this.config.dryRun ? 'DRY RUN (simulation)' : 'LIVE (real trading)'}`);
+    logger.info(`Network: Chain ID ${this.config.chainId}`);
     logger.info('═══════════════════════════════════════════════════════════');
     
     await this.initialize();
@@ -1355,7 +1374,7 @@ async function main() {
 }
 
 // Export for testing and module usage
-export { TheWarden, EnhancedTheWarden, WardenConfig, loadConfig };
+export { TheWarden, EnhancedTheWarden, WardenConfig, loadConfig, main };
 
 // Run if executed directly
 if (require.main === module) {
