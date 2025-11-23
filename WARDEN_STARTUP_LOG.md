@@ -57,8 +57,8 @@ Role: Warden.bot – monitoring flow, judging opportunities…
 ```
 [INFO] Initializing arbitrage orchestrator...
 [INFO] Configured orchestrator for chain 8453
-[INFO] Executor address: 0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf
-[INFO] Tithe recipient: 0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf
+[INFO] Executor address: 0x119F4857DD9B2e8d1B729E8C3a8AE58fC867E91B
+[INFO] Tithe recipient: 0x119F4857DD9B2e8d1B729E8C3a8AE58fC867E91B
 ```
 
 #### Execution Pipeline
