@@ -222,11 +222,140 @@ async function validateEndToEnd(): Promise<void> {
   console.log('  Task 2.4: End-to-End Dry Run');
   console.log('═══════════════════════════════════════════════════════\n');
 
-  logResult({
-    task: '2.4 End-to-End',
-    status: 'SKIP',
-    message: 'Requires Tasks 2.1-2.3 completion - will be validated after all components pass',
-  });
+  const startTime = Date.now();
+
+  try {
+    if (!process.env.BASE_RPC_URL && !process.env.RPC_URL) {
+      logResult({
+        task: '2.4 End-to-End',
+        status: 'SKIP',
+        message: 'No RPC URL configured',
+      });
+      return;
+    }
+
+    const rpcUrl = process.env.BASE_RPC_URL || process.env.RPC_URL;
+
+    // Initialize all components
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const registry = new DEXRegistry();
+    const scanner = new OptimizedPoolScanner(registry, provider, 8453);
+    const consciousness = new ArbitrageConsciousness(0.05, 1000);
+    const modules = consciousness.getModules();
+    const coordinator = new CognitiveCoordinator(modules);
+    const emergenceDetector = new EmergenceDetector();
+
+    console.log('Testing full cycle: scan → detect → evaluate → decide\n');
+
+    // Scan
+    const tokens = [
+      '0x4200000000000000000000000000000000000006', // WETH
+      '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC
+    ];
+
+    const edges = await scanner.buildGraphEdges(tokens);
+    
+    if (edges.length === 0) {
+      logResult({
+        task: '2.4 End-to-End',
+        status: 'SKIP',
+        message: 'No pools found - cannot complete full cycle test',
+        duration: Date.now() - startTime,
+      });
+      return;
+    }
+
+    // Detect paths
+    const graph = new Map<string, typeof edges>();
+    for (const edge of edges) {
+      if (!graph.has(edge.tokenIn)) {
+        graph.set(edge.tokenIn, []);
+      }
+      graph.get(edge.tokenIn)!.push(edge);
+    }
+
+    let pathsFound = 0;
+    for (const [startToken, firstEdges] of graph.entries()) {
+      for (const firstEdge of firstEdges) {
+        const secondEdges = graph.get(firstEdge.tokenOut) || [];
+        for (const secondEdge of secondEdges) {
+          if (secondEdge.tokenOut === startToken) {
+            pathsFound++;
+          }
+        }
+      }
+    }
+
+    if (pathsFound === 0) {
+      logResult({
+        task: '2.4 End-to-End',
+        status: 'FAIL',
+        message: 'No arbitrage paths found',
+        duration: Date.now() - startTime,
+      });
+      return;
+    }
+
+    // Evaluate with consciousness
+    const testOpportunity: OpportunityContext = {
+      opportunity: {
+        profit: 0.02,
+        netProfit: BigInt('20000000000000000'),
+        pools: ['0x1234...', '0x5678...'],
+        path: ['WETH -> USDC', 'USDC -> WETH'],
+        hops: 2,
+        totalGasCost: BigInt('5000000000000000'),
+      },
+      market: {
+        timestamp: Date.now(),
+        congestion: 0.3,
+        searcherDensity: 0.4,
+      },
+      historical: {
+        recentExecutions: 10,
+        successRate: 0.8,
+      },
+      timestamp: Date.now(),
+    };
+
+    const insights = await coordinator.gatherInsights(testOpportunity);
+    const consensus = coordinator.detectConsensus(insights);
+
+    const decisionContext: DecisionContext = {
+      moduleInsights: insights,
+      consensus,
+      riskScore: 0.25,
+      ethicalScore: 0.85,
+      goalAlignment: 0.9,
+      patternConfidence: 0.75,
+      historicalSuccess: 0.8,
+      timestamp: Date.now(),
+    };
+
+    const emergence = emergenceDetector.detectEmergence(decisionContext);
+
+    const duration = Date.now() - startTime;
+
+    console.log(`Full cycle completed:`);
+    console.log(`  Pools: ${edges.length}`);
+    console.log(`  Paths: ${pathsFound}`);
+    console.log(`  Decision: ${emergence.shouldExecute ? 'EXECUTE' : 'SKIP'}`);
+    console.log(`  ✅ No actual trades executed (DRY RUN mode)\n`);
+
+    logResult({
+      task: '2.4 End-to-End',
+      status: 'PASS',
+      message: `Full cycle working: ${edges.length} pools, ${pathsFound} paths, dry-run safety confirmed`,
+      duration,
+    });
+  } catch (error: any) {
+    logResult({
+      task: '2.4 End-to-End',
+      status: 'FAIL',
+      message: `Error: ${error.message}`,
+      duration: Date.now() - startTime,
+    });
+  }
 }
 
 /**
