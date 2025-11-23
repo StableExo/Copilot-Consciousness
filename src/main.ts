@@ -792,12 +792,20 @@ class TheWarden extends EventEmitter {
   
   /**
    * Scan a specific chain for arbitrage opportunities
+   * 
+   * NOTE: Current implementation uses the primary chain's orchestrator and provider.
+   * For full multi-chain support, each chain would need its own provider and orchestrator.
+   * This is a foundation for future multi-chain expansion.
    */
   private async scanChainForOpportunities(chainId: number): Promise<void> {
     if (!this.advancedOrchestrator) {
       logger.warn(`Advanced orchestrator not available for chain ${chainId}`);
       return;
     }
+    
+    // TODO: For true multi-chain support, create chain-specific providers and orchestrators
+    // For now, we use the primary chain's setup and scan tokens/DEXes for other chains
+    // This allows discovering cross-chain arbitrage patterns via CrossChainIntelligence
     
     try {
       // Get tokens to scan based on chain
@@ -863,7 +871,9 @@ class TheWarden extends EventEmitter {
         }
       }
     } catch (error) {
+      this.stats.errors++;
       logger.error(`Error scanning chain ${chainId}: ${error instanceof Error ? error.message : String(error)}`);
+      this.emit('scan_error', { chainId, error });
     }
   }
   
