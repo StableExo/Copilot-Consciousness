@@ -37,6 +37,7 @@ Quick reference guide to all project documentation.
 
 ### Operational Guides
 - **[🔥 MAINNET_DEPLOYMENT.md](docs/MAINNET_DEPLOYMENT.md)** - **Live Fire Guide: Run TheWarden on mainnet**
+- **[🔑 PRIVATE_KEY_SETUP.md](docs/PRIVATE_KEY_SETUP.md)** - **Private key format and verification guide**
 - **[MAIN_RUNNER.md](docs/MAIN_RUNNER.md)** - TheWarden operational guide
 - **[QUICK_START_PRODUCTION.md](docs/QUICK_START_PRODUCTION.md)** - Production deployment guide
 - **[ENV_PRODUCTION_READINESS_REVIEW.md](docs/ENV_PRODUCTION_READINESS_REVIEW.md)** - Environment configuration review
