@@ -45,7 +45,7 @@ echo "✅ Configuration validated successfully"
 echo ""
 
 # Check if build exists
-if [ ! -d "dist" ] || [ ! -f "dist/main.js" ]; then
+if [ ! -d "dist/src" ] || [ ! -f "dist/src/main.js" ]; then
     echo "📦 Building project..."
     npm run build
     echo "✅ Build complete"

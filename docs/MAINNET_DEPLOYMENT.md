@@ -330,7 +330,7 @@ To stop TheWarden safely:
 ```bash
 # Press CTRL+C in terminal
 # Or send SIGTERM
-kill -TERM $(pgrep -f "node dist/main.js")
+kill -TERM $(pgrep -f "node dist/src/main.js")
 ```
 
 TheWarden will:

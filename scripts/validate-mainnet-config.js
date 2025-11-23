@@ -137,6 +137,6 @@ console.log('══════════════════════�
 // Show the command to run
 console.log('🔥 To start TheWarden on mainnet:\n');
 console.log('   npm start\n');
-console.log('   Or: node dist/main.js\n');
+console.log('   Or: node dist/src/main.js\n');
 
 process.exit(0);
