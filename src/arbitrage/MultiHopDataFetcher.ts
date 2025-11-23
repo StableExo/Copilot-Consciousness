@@ -141,7 +141,9 @@ export class MultiHopDataFetcher {
     let poolsChecked = 0;
     let poolsFound = 0;
 
-    // Generate all token pairs
+    // Generate all token pair + DEX combinations for parallel fetching
+    const fetchTasks: Array<{token0: string, token1: string, dex: DEXConfig}> = [];
+    
     for (let i = 0; i < tokens.length; i++) {
       for (let j = 0; j < tokens.length; j++) {
         if (i === j) continue;
@@ -151,35 +153,61 @@ export class MultiHopDataFetcher {
 
         // Check each DEX for this pair
         for (const dex of dexes) {
-          poolsChecked++;
-          const poolData = await this.fetchPoolData(dex, token0, token1);
+          fetchTasks.push({ token0, token1, dex });
+        }
+      }
+    }
+    
+    poolsChecked = fetchTasks.length;
+    
+    // Fetch pools in parallel with concurrency limit
+    const PARALLEL_LIMIT = 10; // Fetch 10 pools at a time
+    const results: Array<{poolData: PoolData | null, token0: string, token1: string, dex: DEXConfig}> = [];
+    
+    for (let i = 0; i < fetchTasks.length; i += PARALLEL_LIMIT) {
+      const batch = fetchTasks.slice(i, i + PARALLEL_LIMIT);
+      const batchResults = await Promise.all(
+        batch.map(async ({ token0, token1, dex }) => ({
+          poolData: await this.fetchPoolData(dex, token0, token1),
+          token0,
+          token1,
+          dex
+        }))
+      );
+      results.push(...batchResults);
+      
+      // Log progress for long scans
+      if (i > 0 && i % 20 === 0) {
+        logger.debug(`Pool scan progress: ${i}/${fetchTasks.length} checked`, 'DATAFETCH');
+      }
+    }
+    
+    // Process results
+    for (const { poolData, token0, token1, dex } of results) {
+      if (poolData) {
+        // For V3 pools, liquidity is in L = sqrt(x*y) format, significantly smaller than V2 reserves
+        // See V3_LIQUIDITY_SCALE_FACTOR constant definition for mathematical explanation
+        const threshold = isV3StyleProtocol(dex.protocol)
+          ? dex.liquidityThreshold / BigInt(V3_LIQUIDITY_SCALE_FACTOR)
+          : dex.liquidityThreshold;
+        
+        if (poolData.reserve0 > threshold) {
+          poolsFound++;
+          // Create edge in both directions
+          edges.push({
+            poolAddress: poolData.poolAddress,
+            dexName: dex.name,
+            tokenIn: token0,
+            tokenOut: token1,
+            reserve0: poolData.reserve0,
+            reserve1: poolData.reserve1,
+            fee: this.getDEXFee(dex),
+            gasEstimate: dex.gasEstimate || 150000
+          });
           
-          if (poolData) {
-            // For V3 pools, liquidity is in L = sqrt(x*y) format, significantly smaller than V2 reserves
-            // See V3_LIQUIDITY_SCALE_FACTOR constant definition for mathematical explanation
-            const threshold = isV3StyleProtocol(dex.protocol)
-              ? dex.liquidityThreshold / BigInt(V3_LIQUIDITY_SCALE_FACTOR)
-              : dex.liquidityThreshold;
-            
-            if (poolData.reserve0 > threshold) {
-              poolsFound++;
-              // Create edge in both directions
-              edges.push({
-                poolAddress: poolData.poolAddress,
-                dexName: dex.name,
-                tokenIn: token0,
-                tokenOut: token1,
-                reserve0: poolData.reserve0,
-                reserve1: poolData.reserve1,
-                fee: this.getDEXFee(dex),
-                gasEstimate: dex.gasEstimate || 150000
-              });
-              
-              // Only perform string operations if debug is enabled
-              if (logger.isDebugEnabled()) {
-                logger.debug(`Found pool: ${dex.name} ${token0.slice(0,6)}.../${token1.slice(0,6)}... (reserves: ${poolData.reserve0}/${poolData.reserve1})`, 'DATAFETCH');
-              }
-            }
+          // Only perform string operations if debug is enabled
+          if (logger.isDebugEnabled()) {
+            logger.debug(`Found pool: ${dex.name} ${token0.slice(0,6)}.../${token1.slice(0,6)}... (reserves: ${poolData.reserve0}/${poolData.reserve1})`, 'DATAFETCH');
           }
         }
       }

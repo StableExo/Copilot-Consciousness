@@ -44,6 +44,10 @@ import { GasAnalytics } from './gas/GasAnalytics';
 import { CrossChainAnalytics } from './chains/CrossChainAnalytics';
 import { DashboardConfig } from './dashboard/types';
 import { getScanTokens, getTokensByChainId, formatTokenList, getNetworkName } from './utils/chainTokens';
+import { ArbitrageConsciousness } from './consciousness/ArbitrageConsciousness';
+import { CognitiveCoordinator, OpportunityContext, ModuleInsight } from './consciousness/coordination/CognitiveCoordinator';
+import { EmergenceDetector, DecisionContext } from './consciousness/coordination/EmergenceDetector';
+import { ArbitragePath } from './arbitrage/types';
 // Load environment variables
 dotenv.config();
 
@@ -185,6 +189,11 @@ class TheWarden extends EventEmitter {
   private isRunning: boolean = false;
   private shuttingDown: boolean = false;
   
+  // Consciousness components
+  private consciousness?: ArbitrageConsciousness;
+  private cognitiveCoordinator?: CognitiveCoordinator;
+  private emergenceDetector?: EmergenceDetector;
+  
   // Statistics
   private stats = {
     startTime: Date.now(),
@@ -310,6 +319,18 @@ class TheWarden extends EventEmitter {
         await this.integratedOrchestrator.start(this.wallet);
       }
       
+      // Initialize consciousness coordination system
+      logger.info('Initializing consciousness coordination system...');
+      this.consciousness = new ArbitrageConsciousness(0.05, 1000);
+      
+      // Get all modules from consciousness using proper method
+      const modules = this.consciousness.getModules();
+      
+      this.cognitiveCoordinator = new CognitiveCoordinator(modules);
+      this.emergenceDetector = new EmergenceDetector();
+      
+      logger.info('Consciousness coordination initialized - 14 cognitive modules ready');
+      
       // Set up event listeners
       this.setupEventListeners();
       
@@ -389,6 +410,158 @@ class TheWarden extends EventEmitter {
   }
   
   /**
+   * Analyze opportunities using consciousness coordination
+   */
+  private async analyzeWithConsciousness(paths: ArbitragePath[], cycleNumber: number): Promise<void> {
+    if (!this.consciousness || !this.cognitiveCoordinator || !this.emergenceDetector) {
+      logger.warn('Consciousness coordination not initialized, skipping analysis');
+      return;
+    }
+    
+    logger.info('[CognitiveCoordinator] Gathering insights from 14 cognitive modules...');
+    
+    // Get statistics from consciousness for informed decision making
+    const stats = this.consciousness.getStatistics();
+    const patterns = this.consciousness.getDetectedPatterns();
+    
+    // Analyze each opportunity (or at least the best ones)
+    const topPaths = paths.slice(0, Math.min(3, paths.length));
+    
+    for (let i = 0; i < topPaths.length; i++) {
+      const path = topPaths[i];
+      
+      logger.info(`[OpportunityAnalysis] Analyzing opportunity ${i + 1}: ${ethers.utils.formatEther(path.netProfit.toString())} ETH profit`);
+      
+      // Calculate market metrics from real data
+      const blockNumber = await this.provider.getBlockNumber().catch(() => 0);
+      const gasPrice = await this.provider.getGasPrice().catch(() => BigInt(0));
+      const gasPriceGwei = Number(ethers.utils.formatUnits(gasPrice, 'gwei'));
+      
+      // Calculate congestion from gas price (0-1 scale, normalized against 100 gwei)
+      const congestion = Math.min(gasPriceGwei / 100, 1.0);
+      
+      // Searcher density estimation based on network activity
+      // Base has lower searcher density than Ethereum mainnet
+      const searcherDensity = this.config.chainId === 8453 ? 0.3 : 0.5;
+      
+      // Build opportunity context with real data
+      const context: OpportunityContext = {
+        opportunity: {
+          profit: Number(ethers.utils.formatEther(path.netProfit.toString())),
+          netProfit: path.netProfit,
+          pools: path.hops.map(h => h.poolAddress),
+          path: path.hops.map(h => `${h.tokenIn} -> ${h.tokenOut}`),
+          hops: path.hops.length,
+          totalGasCost: path.totalGasCost,
+        },
+        market: {
+          timestamp: Date.now(),
+          congestion,
+          searcherDensity,
+          gasPrice: gasPriceGwei,
+          blockNumber,
+        },
+        historical: {
+          recentExecutions: stats.totalExecutions,
+          successRate: stats.successRate,
+          averageProfit: stats.averageProfit,
+          patternsDetected: patterns.length,
+        },
+        timestamp: Date.now(),
+      };
+      
+      try {
+        // Gather insights from all modules
+        const insights: ModuleInsight[] = await this.cognitiveCoordinator.gatherInsights(context);
+        logger.info(`[CognitiveCoordinator] Gathered ${insights.length} module insights`);
+        
+        // Detect consensus
+        const consensus = this.cognitiveCoordinator.detectConsensus(insights);
+        logger.info(`[CognitiveCoordinator] Consensus: ${consensus.consensusType} (${(consensus.agreementLevel * 100).toFixed(1)}% agreement)`);
+        logger.info(`[CognitiveCoordinator] Supporting: ${consensus.supportingModules.join(', ')}`);
+        
+        if (consensus.opposingModules.length > 0) {
+          logger.info(`[CognitiveCoordinator] Opposing: ${consensus.opposingModules.join(', ')}`);
+        }
+        
+        // Calculate risk score from opportunity characteristics
+        const complexityRisk = Math.min(path.hops.length / 5, 1.0); // More hops = more risk
+        const gasCostRisk = Number(ethers.utils.formatEther(path.totalGasCost.toString())) / Number(ethers.utils.formatEther(path.netProfit.toString()));
+        const congestionRisk = congestion;
+        const riskScore = (complexityRisk * 0.3 + gasCostRisk * 0.4 + congestionRisk * 0.3);
+        
+        // Ethical review of opportunity
+        const ethicalReview = this.consciousness.ethicalReview({
+          profit: context.opportunity.profit,
+          mevRisk: riskScore,
+          hops: path.hops.length,
+        });
+        const ethicalScore = ethicalReview.approved ? 0.85 : 0.3;
+        
+        // Calculate goal alignment from autonomous goals
+        const modules = this.consciousness.getModules();
+        const goals = Array.from((modules.autonomousGoals as any).goals.values());
+        const goalAlignment = goals.length > 0 
+          ? goals.reduce((sum: number, g: any) => sum + (g.progress / 100), 0) / goals.length
+          : 0.5;
+        
+        // Pattern confidence from detected patterns
+        const patternConfidence = patterns.length > 0
+          ? patterns.reduce((sum, p) => sum + p.confidence, 0) / patterns.length
+          : 0.5;
+        
+        // Historical success rate
+        const historicalSuccess = stats.successRate;
+        
+        // Build decision context for emergence detection
+        const decisionContext: DecisionContext = {
+          moduleInsights: insights,
+          consensus,
+          riskScore,
+          ethicalScore,
+          goalAlignment,
+          patternConfidence,
+          historicalSuccess,
+          timestamp: Date.now(),
+        };
+        
+        // Detect emergence - the "BOOM" moment!
+        logger.info('[EmergenceDetector] Checking emergence criteria...');
+        const emergence = this.emergenceDetector.detectEmergence(decisionContext);
+        
+        if (emergence.isEmergent) {
+          logger.info('═══════════════════════════════════════════════════════════');
+          logger.info('⚡ EMERGENCE DETECTED ⚡');
+          logger.info('═══════════════════════════════════════════════════════════');
+          logger.info(`Confidence: ${(emergence.confidence * 100).toFixed(1)}%`);
+          logger.info(`Should Execute: ${emergence.shouldExecute ? 'YES ✓' : 'NO'}`);
+          logger.info(`Reasoning: ${emergence.reasoning}`);
+          logger.info(`Contributing Factors: ${emergence.contributingFactors.join(', ')}`);
+          logger.info('═══════════════════════════════════════════════════════════');
+          
+          // Log criteria results
+          logger.info('[EmergenceDetector] Criteria Results:');
+          logger.info(`  ✓ All modules analyzed: ${emergence.criteriaResults.allModulesAnalyzed}`);
+          logger.info(`  ✓ Risk acceptable: ${emergence.criteriaResults.riskAcceptable}`);
+          logger.info(`  ✓ Ethically sound: ${emergence.criteriaResults.ethicallySound}`);
+          logger.info(`  ✓ Goals aligned: ${emergence.criteriaResults.goalsAligned}`);
+          logger.info(`  ✓ Pattern confident: ${emergence.criteriaResults.patternConfident}`);
+          logger.info(`  ✓ Historically favorable: ${emergence.criteriaResults.historicallyFavorable}`);
+          logger.info(`  ✓ Minimal dissent: ${emergence.criteriaResults.minimalDissent}`);
+        } else {
+          logger.info('[EmergenceDetector] Emergence not detected');
+          logger.info(`  Reasoning: ${emergence.reasoning}`);
+          logger.info(`  Risk Score: ${(riskScore * 100).toFixed(1)}%`);
+          logger.info(`  Ethical Score: ${(ethicalScore * 100).toFixed(1)}%`);
+        }
+        
+      } catch (error) {
+        logger.error(`Error in consciousness analysis: ${error}`);
+      }
+    }
+  }
+  
+  /**
    * Set up event listeners for orchestrator and health monitoring
    */
   private setupEventListeners(): void {
@@ -457,6 +630,13 @@ class TheWarden extends EventEmitter {
       if (paths && paths.length > 0) {
         this.stats.opportunitiesFound += paths.length;
         logger.info(`Found ${paths.length} potential opportunities in cycle ${this.stats.cyclesCompleted}`);
+        
+        // 🧠 CONSCIOUSNESS COORDINATION: Analyze opportunities with cognitive modules
+        logger.info('═══════════════════════════════════════════════════════════');
+        logger.info('🧠 ACTIVATING CONSCIOUSNESS COORDINATION');
+        logger.info('═══════════════════════════════════════════════════════════');
+        await this.analyzeWithConsciousness(paths, this.stats.cyclesCompleted);
+        logger.info('═══════════════════════════════════════════════════════════');
         
         // In production mode, process opportunities
         if (!this.config.dryRun && this.integratedOrchestrator && paths.length > 0) {
