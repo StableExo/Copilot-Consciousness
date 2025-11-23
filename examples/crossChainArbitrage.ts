@@ -115,7 +115,7 @@ async function runCrossChainArbitrage() {
 
   // 8. Simulate scanning for opportunities
   console.log('8️⃣ Scanning for arbitrage opportunities...\n');
-  scanner.startScanning();
+  await scanner.startScanning();
   
   // Wait for scan results
   await new Promise(resolve => setTimeout(resolve, 2000));
