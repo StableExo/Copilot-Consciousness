@@ -102,7 +102,7 @@ npm run build
 NODE_ENV=production npm start
 
 # Or with PM2:
-pm2 start dist/main.js --name "aev-warden"
+pm2 start dist/src/main.js --name "aev-warden"
 pm2 save
 ```
 
