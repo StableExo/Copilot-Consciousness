@@ -254,6 +254,12 @@ npm start
 
 See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for detailed configuration and operation guide.
 
+### 📖 Configuration Resources
+
+- **[Environment Variables Reference](./ENVIRONMENT_REFERENCE.md)** - Complete guide to 280+ environment variables (read this at startup!)
+- **[GitHub Secrets & Variables Guide](./docs/GITHUB_SECRETS_AND_VARIABLES.md)** - Configure GitHub Actions for CI/CD and deployment
+- **[Production Readiness Review](./docs/ENV_PRODUCTION_READINESS_REVIEW.md)** - Security checklist and production deployment guide
+
 ## Quick Start - Consciousness System
 
 ```typescript
