@@ -926,7 +926,7 @@ class TheWarden extends EventEmitter {
     const uptimeMinutes = Math.floor(uptimeSeconds / 60);
     
     logger.info('─────────────────────────────────────────────────────────');
-    logger.info('THEWARDEN STATUS');
+    logger.info('TheWarden STATUS');
     logger.info('─────────────────────────────────────────────────────────');
     logger.info(`Uptime: ${uptimeMinutes}m ${uptimeSeconds % 60}s`);
     logger.info(`Cycles completed: ${this.stats.cyclesCompleted}`);
@@ -1210,7 +1210,7 @@ class EnhancedTheWarden extends EventEmitter {
     const uptimeMinutes = Math.floor(uptimeSeconds / 60);
     
     logger.info('─────────────────────────────────────────────────────────', 'STATUS');
-    logger.info('THEWARDEN STATUS', 'STATUS');
+    logger.info('TheWarden STATUS', 'STATUS');
     logger.info('─────────────────────────────────────────────────────────', 'STATUS');
     logger.info(`Uptime: ${uptimeMinutes}m ${uptimeSeconds % 60}s`, 'STATUS');
     logger.info(`Cycles completed: ${this.stats.cyclesCompleted}`, 'STATUS');
