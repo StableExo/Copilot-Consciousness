@@ -69,6 +69,9 @@ interface WardenConfig {
   chainId: number;
   walletPrivateKey: string;
   
+  // Multi-chain configuration
+  scanChains?: number[]; // Array of chain IDs to scan
+  
   // Contract addresses
   executorAddress?: string;
   titheRecipient?: string;
@@ -144,6 +147,12 @@ function loadConfig(): WardenConfig {
     chainId,
     walletPrivateKey,
     
+    // Multi-chain scanning configuration
+    // Parse SCAN_CHAINS env var (comma-separated chain IDs) or default to primary chain
+    scanChains: process.env.SCAN_CHAINS 
+      ? process.env.SCAN_CHAINS.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id))
+      : [chainId],
+    
     executorAddress: process.env.FLASHSWAP_V2_ADDRESS,
     titheRecipient: process.env.FLASHSWAP_V2_OWNER || process.env.MULTI_SIG_ADDRESS,
     
@@ -166,11 +175,38 @@ function loadConfig(): WardenConfig {
   logger.info('Configuration loaded successfully');
   logger.info(`- Chain ID: ${config.chainId}`);
   logger.info(`- RPC URL: ${config.rpcUrl.substring(0, 30)}...`);
+  logger.info(`- Scan Chains: ${config.scanChains?.join(', ') || config.chainId}`);
   logger.info(`- Scan Interval: ${config.scanInterval}ms`);
   logger.info(`- Min Profit: ${config.minProfitPercent}%`);
   logger.info(`- Dry Run Mode: ${config.dryRun}`);
   
   return config;
+}
+
+/**
+ * Get RPC URL for a specific chain ID
+ */
+function getRpcUrlForChain(chainId: number): string | undefined {
+  switch (chainId) {
+    case 8453: // Base mainnet
+    case 84532: // Base testnet
+      return process.env.BASE_RPC_URL;
+    case 1: // Ethereum mainnet
+    case 5: // Goerli
+    case 11155111: // Sepolia
+      return process.env.ETHEREUM_RPC_URL || process.env.MAINNET_RPC_URL;
+    case 137: // Polygon mainnet
+    case 80001: // Mumbai testnet
+      return process.env.POLYGON_RPC_URL;
+    case 42161: // Arbitrum mainnet
+    case 421613: // Arbitrum testnet
+      return process.env.ARBITRUM_RPC_URL;
+    case 10: // Optimism mainnet
+    case 420: // Optimism testnet
+      return process.env.OPTIMISM_RPC_URL;
+    default:
+      return process.env.RPC_URL;
+  }
 }
 
 /**
@@ -733,17 +769,48 @@ class TheWarden extends EventEmitter {
     try {
       this.stats.cyclesCompleted++;
       
-      // Get tokens to scan based on configured chain
-      const tokens = getScanTokens(this.config.chainId);
+      // Get chains to scan - use scanChains if configured, otherwise default to primary chainId
+      const chainsToScan = this.config.scanChains && this.config.scanChains.length > 0 
+        ? this.config.scanChains 
+        : [this.config.chainId];
+      
+      // Scan each configured chain
+      for (const chainId of chainsToScan) {
+        await this.scanChainForOpportunities(chainId);
+      }
+      
+      // Log periodic status
+      if (this.stats.cyclesCompleted % 100 === 0) {
+        this.logStatus();
+      }
+      
+    } catch (error) {
+      this.stats.errors++;
+      logger.error(`Scan cycle error: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+  
+  /**
+   * Scan a specific chain for arbitrage opportunities
+   */
+  private async scanChainForOpportunities(chainId: number): Promise<void> {
+    if (!this.advancedOrchestrator) {
+      logger.warn(`Advanced orchestrator not available for chain ${chainId}`);
+      return;
+    }
+    
+    try {
+      // Get tokens to scan based on chain
+      const tokens = getScanTokens(chainId);
       
       // Log scan details on first cycle or every 10 cycles
       if (this.stats.cyclesCompleted === 1 || this.stats.cyclesCompleted % 10 === 0) {
-        const networkName = getNetworkName(this.config.chainId);
-        const chainTokens = getTokensByChainId(this.config.chainId);
-        const dexes = this.dexRegistry.getDEXesByNetwork(this.config.chainId.toString());
+        const networkName = getNetworkName(chainId);
+        const chainTokens = getTokensByChainId(chainId);
+        const dexes = this.dexRegistry.getDEXesByNetwork(chainId.toString());
         
-        logger.info(`Scanning cycle ${this.stats.cyclesCompleted}`);
-        logger.info(`  Network: ${networkName} (Chain ID: ${this.config.chainId})`);
+        logger.info(`Scanning cycle ${this.stats.cyclesCompleted} - ${networkName}`);
+        logger.info(`  Network: ${networkName} (Chain ID: ${chainId})`);
         logger.info(`  Tokens: ${tokens.length} (${Object.keys(chainTokens).join(', ')})`);
         logger.info(`  DEXes: ${dexes.length} (${dexes.map(d => d.name).join(', ')})`);
       }
@@ -753,18 +820,18 @@ class TheWarden extends EventEmitter {
       // Find opportunities using advanced orchestrator
       // Only log fetching pool data every 10 cycles to reduce verbosity
       if (this.stats.cyclesCompleted === 1 || this.stats.cyclesCompleted % 10 === 0) {
-        logger.debug(`[Cycle ${this.stats.cyclesCompleted}] Fetching pool data for ${tokens.length} tokens across DEXes...`);
+        logger.debug(`[Cycle ${this.stats.cyclesCompleted}] [Chain ${chainId}] Fetching pool data for ${tokens.length} tokens across DEXes...`);
       }
       const paths = await this.advancedOrchestrator.findOpportunities(tokens, startAmount);
       
       // Only log if paths found or every 10 cycles
       if (paths.length > 0 || this.stats.cyclesCompleted % 10 === 0) {
-        logger.debug(`[Cycle ${this.stats.cyclesCompleted}] Found ${paths.length} paths`);
+        logger.debug(`[Cycle ${this.stats.cyclesCompleted}] [Chain ${chainId}] Found ${paths.length} paths`);
       }
       
       if (paths && paths.length > 0) {
         this.stats.opportunitiesFound += paths.length;
-        logger.info(`Found ${paths.length} potential opportunities in cycle ${this.stats.cyclesCompleted}`);
+        logger.info(`Found ${paths.length} potential opportunities in cycle ${this.stats.cyclesCompleted} on ${getNetworkName(chainId)}`);
         
         // 🧠 CONSCIOUSNESS COORDINATION: Analyze opportunities with cognitive modules
         logger.info('═══════════════════════════════════════════════════════════');
@@ -778,6 +845,7 @@ class TheWarden extends EventEmitter {
           // Process best opportunity
           const bestPath = paths[0];
           logger.info('Processing best opportunity...');
+          logger.info(`  Network: ${getNetworkName(chainId)}`);
           logger.info(`  Estimated profit: ${ethers.utils.formatEther(bestPath.netProfit.toString())} ETH`);
           logger.info(`  Gas cost: ${ethers.utils.formatEther(bestPath.totalGasCost.toString())} ETH`);
           logger.info(`  Hops: ${bestPath.hops.length}`);
@@ -788,22 +856,14 @@ class TheWarden extends EventEmitter {
         } else if (this.config.dryRun && paths.length > 0) {
           const bestPath = paths[0];
           logger.info('[DRY RUN] Best opportunity:');
+          logger.info(`  Network: ${getNetworkName(chainId)}`);
           logger.info(`  Estimated profit: ${ethers.utils.formatEther(bestPath.netProfit.toString())} ETH`);
           logger.info(`  Gas cost: ${ethers.utils.formatEther(bestPath.totalGasCost.toString())} ETH`);
           logger.info(`  Hops: ${bestPath.hops.length}`);
         }
       }
-      
-      // Log periodic status
-      if (this.stats.cyclesCompleted % 100 === 0) {
-        this.logStatus();
-      }
     } catch (error) {
-      this.stats.errors++;
-      logger.error(`Error in scan cycle: ${error}`);
-      
-      // Emit error event for external monitoring
-      this.emit('scan_error', error);
+      logger.error(`Error scanning chain ${chainId}: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
   
