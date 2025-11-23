@@ -95,7 +95,7 @@ async function validateOpportunityDetection(): Promise<void> {
     }
   } catch (error: any) {
     logResult({
-        task: '2.1 Opportunity Detection',
+      task: '2.1 Opportunity Detection',
       status: 'FAIL',
       message: `Error: ${error.message}`,
       duration: Date.now() - startTime,
