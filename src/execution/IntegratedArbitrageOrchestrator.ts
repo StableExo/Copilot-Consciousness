@@ -64,6 +64,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
   // State management
   private isRunning: boolean = false;
   private activeExecutions: Map<string, ExecutionContext> = new Map();
+  private lastCriticalHealthLog: number = 0; // Track last critical health log to avoid spam
   
   // Statistics
   private stats = {
@@ -213,7 +214,17 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
     });
     
     this.healthMonitor.on('critical-health', (report: SystemHealthReport) => {
-      logger.error('[IntegratedOrchestrator] Critical health status');
+      // Only log critical health status once every 5 minutes to avoid log spam
+      const now = Date.now();
+      const fiveMinutes = 5 * 60 * 1000;
+      
+      if (now - this.lastCriticalHealthLog > fiveMinutes) {
+        logger.error('[IntegratedOrchestrator] Critical health status');
+        logger.error(`  Components: ${report.components.filter(c => c.status === HealthStatus.CRITICAL).map(c => c.componentName).join(', ')}`);
+        logger.error(`  Active alerts: ${report.alerts.length}`);
+        this.lastCriticalHealthLog = now;
+      }
+      
       this.emit('critical-health', report);
       
       // Consider emergency shutdown

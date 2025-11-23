@@ -34,6 +34,7 @@ export class MultiHopDataFetcher {
   private cacheTTL: number = 60000; // 1 minute default TTL
   private cacheTimestamps: Map<string, number> = new Map();
   private currentChainId?: number; // Track current chain for filtering
+  private loggedPools: Set<string> = new Set(); // Track logged pools to avoid repetitive logs
 
   constructor(registry: DEXRegistry, chainId?: number) {
     this.registry = registry;
@@ -248,7 +249,11 @@ export class MultiHopDataFetcher {
               // Verify pool has liquidity
               const code = await provider.getCode(poolAddress);
               if (code !== '0x') {
-                logger.debug(`Found V3 pool at ${poolAddress} with fee tier ${fee}`, 'DATAFETCH');
+                // Only log if this is a newly discovered pool
+                if (!this.loggedPools.has(poolAddress)) {
+                  logger.debug(`Found V3 pool at ${poolAddress} with fee tier ${fee}`, 'DATAFETCH');
+                  this.loggedPools.add(poolAddress);
+                }
                 return poolAddress;
               }
             }

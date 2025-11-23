@@ -751,9 +751,16 @@ class TheWarden extends EventEmitter {
       const startAmount = ethers.utils.parseEther('1.0').toBigInt();
       
       // Find opportunities using advanced orchestrator
-      logger.debug(`[Cycle ${this.stats.cyclesCompleted}] Fetching pool data for ${tokens.length} tokens across DEXes...`);
+      // Only log fetching pool data every 10 cycles to reduce verbosity
+      if (this.stats.cyclesCompleted === 1 || this.stats.cyclesCompleted % 10 === 0) {
+        logger.debug(`[Cycle ${this.stats.cyclesCompleted}] Fetching pool data for ${tokens.length} tokens across DEXes...`);
+      }
       const paths = await this.advancedOrchestrator.findOpportunities(tokens, startAmount);
-      logger.debug(`[Cycle ${this.stats.cyclesCompleted}] Found ${paths.length} paths`);
+      
+      // Only log if paths found or every 10 cycles
+      if (paths.length > 0 || this.stats.cyclesCompleted % 10 === 0) {
+        logger.debug(`[Cycle ${this.stats.cyclesCompleted}] Found ${paths.length} paths`);
+      }
       
       if (paths && paths.length > 0) {
         this.stats.opportunitiesFound += paths.length;
@@ -1102,9 +1109,16 @@ class EnhancedTheWarden extends EventEmitter {
       const startAmount = ethers.utils.parseEther('1.0').toBigInt();
       
       // Find opportunities
-      logger.debug(`[Cycle ${this.stats.cyclesCompleted}] Fetching pool data for ${tokens.length} tokens across DEXes...`, 'ARBITRAGE');
+      // Only log fetching pool data every 10 cycles to reduce verbosity
+      if (this.stats.cyclesCompleted === 1 || this.stats.cyclesCompleted % 10 === 0) {
+        logger.debug(`[Cycle ${this.stats.cyclesCompleted}] Fetching pool data for ${tokens.length} tokens across DEXes...`, 'ARBITRAGE');
+      }
       const paths = await this.components.advancedOrchestrator.findOpportunities(tokens, startAmount);
-      logger.debug(`[Cycle ${this.stats.cyclesCompleted}] Found ${paths.length} paths`, 'ARBITRAGE');
+      
+      // Only log if paths found or every 10 cycles
+      if (paths.length > 0 || this.stats.cyclesCompleted % 10 === 0) {
+        logger.debug(`[Cycle ${this.stats.cyclesCompleted}] Found ${paths.length} paths`, 'ARBITRAGE');
+      }
       
       if (paths && paths.length > 0) {
         this.stats.opportunitiesFound += paths.length;
