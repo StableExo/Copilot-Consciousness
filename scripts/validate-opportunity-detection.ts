@@ -146,7 +146,7 @@ function findTriangularPaths(
 function estimatePathProfit(
   path: OpportunityPath,
   edges: PoolEdge[],
-  startAmount: bigint = ethers.utils.parseEther('1')
+  startAmountEth: string = '1'
 ): number {
   // This is a simplified estimation
   // Real profitability calculation needs to account for:
@@ -155,6 +155,8 @@ function estimatePathProfit(
   // - Flash loan fees
   // - Price impact
   
+  // Convert to bigint from ether string
+  const startAmount = BigInt(ethers.utils.parseEther(startAmountEth).toString());
   let currentAmount = startAmount;
   const edgeMap = new Map(edges.map(e => [e.poolAddress, e]));
   
