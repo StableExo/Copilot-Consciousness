@@ -53,14 +53,19 @@ if [ ! -d "dist/src" ] || [ ! -f "dist/src/main.js" ]; then
 fi
 
 # Preload pool data (skip if valid cache exists)
-echo "🔄 Checking pool data cache..."
+echo "🔄 Preloading pool data..."
+echo ""
+POOL_CACHE_STATUS="❌ Not preloaded"
 if [ -f "dist/scripts/preload-pools.js" ]; then
     node dist/scripts/preload-pools.js --skip-if-valid
     PRELOAD_EXIT=$?
-    if [ $PRELOAD_EXIT -ne 0 ]; then
+    if [ $PRELOAD_EXIT -eq 0 ]; then
+        POOL_CACHE_STATUS="✅ Pools preloaded and cached"
+    else
         echo ""
         echo "⚠️  Pool preload had issues but continuing..."
         echo "   TheWarden will fetch pools from network (slower)"
+        POOL_CACHE_STATUS="⚠️  Will fetch from network"
         echo ""
     fi
 else
@@ -68,17 +73,24 @@ else
     npm run build
     if [ -f "dist/scripts/preload-pools.js" ]; then
         node dist/scripts/preload-pools.js --skip-if-valid
+        PRELOAD_EXIT=$?
+        if [ $PRELOAD_EXIT -eq 0 ]; then
+            POOL_CACHE_STATUS="✅ Pools preloaded and cached"
+        else
+            POOL_CACHE_STATUS="⚠️  Will fetch from network"
+        fi
     fi
 fi
-echo ""
 
 # Safety confirmation (only if running interactively)
 if [ -t 0 ]; then
+    echo ""
     echo "⚠️  WARNING: You are about to run TheWarden on mainnet"
     echo ""
     echo "   NODE_ENV: $NODE_ENV"
     echo "   DRY_RUN: $DRY_RUN"
     echo "   CHAIN_ID: $CHAIN_ID"
+    echo "   Pool Cache: $POOL_CACHE_STATUS"
     echo ""
     echo "   This will execute REAL transactions with REAL money."
     echo ""

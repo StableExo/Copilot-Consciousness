@@ -187,12 +187,12 @@ async function main() {
       });
 
       if (allChainsValid && process.argv.includes('--skip-if-valid')) {
-        logger.info('\n✅ All caches are valid. Skipping preload.', 'PRELOAD');
-        logger.info('Use --force to reload anyway.\n', 'PRELOAD');
-        return;
+        logger.info('\n✅ All caches are valid. Skipping preload.\n', 'PRELOAD');
+        // Exit successfully without prompting
+        process.exit(0);
       }
       
-      if (!process.argv.includes('--force')) {
+      if (!process.argv.includes('--force') && !process.argv.includes('--skip-if-valid')) {
         console.log('\nPress Enter to continue with reload, or Ctrl+C to cancel...');
         await new Promise(resolve => {
           process.stdin.once('data', () => resolve(null));
