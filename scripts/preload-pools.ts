@@ -167,7 +167,7 @@ async function main() {
     }
 
     logger.info(`Chains to preload: ${config.chainIds.map(id => getNetworkName(id)).join(', ')}`, 'PRELOAD');
-    logger.info(`Cache duration: ${config.cacheDuration / 60000} minutes\n`, 'PRELOAD');
+    logger.info(`Cache duration: ${(config.cacheDuration || 3600000) / 60000} minutes\n`, 'PRELOAD');
 
     // Check if cache already exists and is valid
     const poolStore = new PoolDataStore({ cacheDuration: config.cacheDuration });
@@ -193,10 +193,17 @@ async function main() {
       }
       
       if (!process.argv.includes('--force') && !process.argv.includes('--skip-if-valid')) {
-        console.log('\nPress Enter to continue with reload, or Ctrl+C to cancel...');
-        await new Promise(resolve => {
-          process.stdin.once('data', () => resolve(null));
-        });
+        // Only prompt if running in interactive terminal
+        if (process.stdin.isTTY) {
+          console.log('\nPress Enter to continue with reload, or Ctrl+C to cancel...');
+          await new Promise<void>(resolve => {
+            const handler = () => {
+              process.stdin.removeListener('data', handler);
+              resolve();
+            };
+            process.stdin.once('data', handler);
+          });
+        }
       }
       
       console.log(''); // Empty line for formatting
@@ -226,7 +233,7 @@ async function main() {
     for (const stat of finalStats) {
       console.log(`  ${getNetworkName(stat.chainId)}: ${stat.poolCount} pools`);
     }
-    console.log('\n' + `Cache valid for: ${config.cacheDuration / 60000} minutes`);
+    console.log('\n' + `Cache valid for: ${(config.cacheDuration || 3600000) / 60000} minutes`);
     console.log('Location: .pool-cache/\n');
     console.log('🚀 TheWarden is ready to start with preloaded pools!');
     console.log('═══════════════════════════════════════════════════════════\n');

@@ -10,11 +10,29 @@ import path from 'path';
 import { logger } from '../utils/logger';
 import { PoolEdge } from './types';
 
+export interface SerializedPoolEdge {
+  poolAddress: string;
+  dexName: string;
+  tokenIn: string;
+  tokenOut: string;
+  reserve0: string;  // Serialized as string
+  reserve1: string;  // Serialized as string
+  fee: number;
+  gasEstimate: number;
+}
+
 export interface PoolDataCache {
   version: string;
   chainId: number;
   timestamp: number;
-  pools: PoolEdge[];
+  pools: SerializedPoolEdge[];
+}
+
+interface InMemoryCache {
+  version: string;
+  chainId: number;
+  timestamp: number;
+  pools: PoolEdge[];  // Uses BigInt
 }
 
 export interface PoolDataStoreConfig {
@@ -24,7 +42,7 @@ export interface PoolDataStoreConfig {
 
 export class PoolDataStore {
   private config: Required<PoolDataStoreConfig>;
-  private memoryCache: Map<number, PoolDataCache> = new Map();
+  private memoryCache: Map<number, InMemoryCache> = new Map();
 
   constructor(config: PoolDataStoreConfig = {}) {
     this.config = {
@@ -43,7 +61,7 @@ export class PoolDataStore {
   /**
    * Check if cache is still valid based on timestamp
    */
-  private isCacheValid(cache: PoolDataCache): boolean {
+  private isCacheValid(cache: InMemoryCache | PoolDataCache): boolean {
     const age = Date.now() - cache.timestamp;
     return age < this.config.cacheDuration;
   }
@@ -109,17 +127,22 @@ export class PoolDataStore {
       await fs.mkdir(this.config.cacheDir, { recursive: true });
 
       // Serialize pool data (convert BigInt to string for JSON)
-      const serializedPools = pools.map(pool => ({
-        ...pool,
+      const serializedPools: SerializedPoolEdge[] = pools.map(pool => ({
+        poolAddress: pool.poolAddress,
+        dexName: pool.dexName,
+        tokenIn: pool.tokenIn,
+        tokenOut: pool.tokenOut,
         reserve0: pool.reserve0.toString(),
         reserve1: pool.reserve1.toString(),
+        fee: pool.fee,
+        gasEstimate: pool.gasEstimate,
       }));
 
       const cache: PoolDataCache = {
         version: '1.0.0',
         chainId,
         timestamp: Date.now(),
-        pools: serializedPools as any, // Type assertion needed due to BigInt serialization
+        pools: serializedPools,
       };
 
       // Save to memory cache with original BigInt values

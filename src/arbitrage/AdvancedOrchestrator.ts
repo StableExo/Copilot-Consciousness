@@ -17,6 +17,7 @@ import { MultiHopDataFetcher } from './MultiHopDataFetcher';
 import { ArbitragePath, PathfindingConfig, PoolEdge } from './types';
 import { Stats as ArbitrageOrchestratorStats } from './ArbitrageOrchestrator';
 import { PatternMetrics } from './ArbitragePatterns';
+import { PoolDataStore } from './PoolDataStore';
 
 /**
  * Advanced orchestrator stats
@@ -82,7 +83,7 @@ export class AdvancedOrchestrator {
   private dataFetcher: MultiHopDataFetcher;
   private mode: OrchestratorMode = 'polling';
 
-  constructor(registry: DEXRegistry, config: AdvancedOrchestratorConfig, chainId?: number, poolDataStore?: import('./PoolDataStore').PoolDataStore) {
+  constructor(registry: DEXRegistry, config: AdvancedOrchestratorConfig, chainId?: number, poolDataStore?: PoolDataStore) {
     this.registry = registry;
     this.config = config;
     

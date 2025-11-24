@@ -325,8 +325,9 @@ class TheWarden extends EventEmitter {
       };
       
       // Initialize pool data store
-      const cacheDuration = process.env.POOL_CACHE_DURATION 
-        ? parseInt(process.env.POOL_CACHE_DURATION) * 1000 
+      const cacheDurationEnv = process.env.POOL_CACHE_DURATION;
+      const cacheDuration = cacheDurationEnv && !isNaN(parseInt(cacheDurationEnv))
+        ? parseInt(cacheDurationEnv) * 1000 
         : 3600000; // 1 hour default
       const poolDataStore = new PoolDataStore({ cacheDuration });
       
