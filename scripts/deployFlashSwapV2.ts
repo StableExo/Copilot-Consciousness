@@ -1,4 +1,4 @@
-import { ethers, network } from "hardhat";
+import hre from "hardhat";
 import { ADDRESSES, NetworkKey, requireAddress } from "../config/addresses";
 
 /**
@@ -11,6 +11,8 @@ import { ADDRESSES, NetworkKey, requireAddress } from "../config/addresses";
  */
 
 async function main() {
+  const ethers = (hre as any).ethers;
+  const network = hre.network;
   const [deployer] = await ethers.getSigners();
   
   console.log("Deploying FlashSwapV2 with account:", deployer.address);

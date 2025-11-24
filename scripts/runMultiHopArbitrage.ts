@@ -1,4 +1,4 @@
-import { ethers, network } from "hardhat";
+import hre from "hardhat";
 import { DEXRegistry } from "../src/dex/core/DEXRegistry";
 import { ArbitrageOrchestrator, PathfindingConfig } from "../src/arbitrage";
 import { ADDRESSES, NetworkKey, requireAddress } from "../config/addresses";
@@ -29,6 +29,8 @@ function decodeAaveError(error: any): string {
 }
 
 async function main() {
+  const ethers = (hre as any).ethers;
+  const network = hre.network;
   console.log("Starting multi-hop arbitrage script...");
 
   // --- 1. Configuration ---

@@ -9,6 +9,8 @@
     "start": "node dist/src/main.js",
     "start:mainnet": "./scripts/launch-mainnet.sh",
     "start:autonomous": "./scripts/autonomous-run.sh",
+    "preload:pools": "npm run build && node dist/scripts/preload-pools.js",
+    "preload:pools:force": "npm run build && node dist/scripts/preload-pools.js --force",
     "status": "./scripts/status.sh",
     "dev": "ts-node src/main.ts > logs/arbitrage.log 2>&1",
     "dev:watch": "ts-node src/main.ts",

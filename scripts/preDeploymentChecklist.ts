@@ -1,4 +1,4 @@
-import { ethers, network } from "hardhat";
+import hre from "hardhat";
 import { ADDRESSES, NetworkKey, requireAddress } from "../config/addresses";
 
 /**
@@ -18,6 +18,8 @@ interface CheckResult {
 }
 
 async function main() {
+  const ethers = (hre as any).ethers;
+  const network = hre.network;
   console.log("\n" + "=".repeat(70));
   console.log("  FLASHSWAPV2 PRE-DEPLOYMENT CHECKLIST - BASE MAINNET");
   console.log("=".repeat(70) + "\n");
@@ -86,7 +88,7 @@ async function main() {
 
     for (const { key, name } of requiredAddresses) {
       const addr = addresses[key as keyof typeof addresses];
-      const isConfigured = addr && typeof addr === "string" && addr.length > 0;
+      const isConfigured = Boolean(addr && typeof addr === "string" && addr.length > 0);
       results.push({
         passed: isConfigured,
         message: `${name}: ${isConfigured ? addr : "NOT CONFIGURED"}`,
@@ -157,7 +159,7 @@ async function main() {
   ];
   
   for (const { key, critical } of envVars) {
-    const isSet = process.env[key] && process.env[key]!.length > 0;
+    const isSet = Boolean(process.env[key] && process.env[key]!.length > 0);
     results.push({
       passed: isSet,
       message: `${key}: ${isSet ? "SET" : "NOT SET"}`,

@@ -1,4 +1,4 @@
-import { ethers, network } from "hardhat";
+import hre from "hardhat";
 import { ADDRESSES, NetworkKey, requireAddress } from "../config/addresses";
 
 /**
@@ -18,6 +18,8 @@ import { ADDRESSES, NetworkKey, requireAddress } from "../config/addresses";
  */
 
 async function main() {
+  const ethers = (hre as any).ethers;
+  const network = hre.network;
   console.log("\n" + "=".repeat(70));
   console.log("  FLASHSWAPV2 ARBITRAGE DRY-RUN SIMULATION");
   console.log("=".repeat(70) + "\n");

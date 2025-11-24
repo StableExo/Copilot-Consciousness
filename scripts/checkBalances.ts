@@ -1,4 +1,5 @@
-import { ethers } from 'hardhat';
+import hre from 'hardhat';
+import { ethers } from 'ethers';
 
 /**
  * Check Token Balances Script
@@ -28,11 +29,12 @@ import { ethers } from 'hardhat';
  */
 
 async function main() {
-  const [signer] = await ethers.getSigners();
+  const hreEthers = (hre as any).ethers;
+  const [signer] = await hreEthers.getSigners();
   const addr = await signer.getAddress();
   console.log('Address:', addr);
 
-  const ethBal = await ethers.provider.getBalance(addr);
+  const ethBal = await hreEthers.provider.getBalance(addr);
   console.log('ETH (native) balance:', ethers.utils.formatEther(ethBal));
 
   const WETH = '0x4200000000000000000000000000000000000006';
