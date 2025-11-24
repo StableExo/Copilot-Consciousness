@@ -4,7 +4,7 @@
  * Implements the IProtocol interface for Camelot DEX (Arbitrum)
  */
 
-import { ethers, BigNumber } ,Provider } from 'ethers';
+import { ethers, Provider } from 'ethers';
 import { BaseProtocol } from '../../base/BaseProtocol';
 import {
   SwapParams,

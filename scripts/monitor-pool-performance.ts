@@ -12,7 +12,7 @@
  *   BASE_RPC_URL - RPC endpoint for Base network
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider } from 'ethers';
 import dotenv from 'dotenv';
 import { DEXRegistry } from '../src/dex/core/DEXRegistry';
 import { MultiHopDataFetcher } from '../src/arbitrage/MultiHopDataFetcher';

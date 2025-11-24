@@ -46,7 +46,7 @@ interface ParamResult {
  * Transaction Executor Configuration
  */
 export interface TransactionExecutorConfig {
-  provider: providers.JsonRpcProvider;
+  provider: JsonRpcProvider;
   gasOracle: GasPriceOracle;
   gasEstimator: AdvancedGasEstimator;
   arbitrageConfig: ArbitrageConfig;

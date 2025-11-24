@@ -4,7 +4,7 @@
  * Extends DEX registry functionality to support multi-token paths
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider, Provider } from 'ethers';
 import { DEXRegistry } from '../dex/core/DEXRegistry';
 import { DEXConfig } from '../dex/types';
 import { PoolEdge, Token } from './types';

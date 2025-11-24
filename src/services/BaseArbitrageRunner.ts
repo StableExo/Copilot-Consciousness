@@ -9,7 +9,7 @@
  */
 
 import { EventEmitter } from 'events';
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider, Provider, formatEther } from 'ethers';
 import { ProfitCalculator, TransactionType } from '../mev/profit_calculator/ProfitCalculator';
 import { MEVSensorHub } from '../mev/sensors/MEVSensorHub';
 import { NonceManager } from '../execution/NonceManager';

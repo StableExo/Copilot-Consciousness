@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider, parseEther } from 'ethers';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { DEXConfig, ChainType } from '../types';
 

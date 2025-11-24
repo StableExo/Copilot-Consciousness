@@ -1,6 +1,6 @@
 import { BaseValidator } from './BaseValidator';
 import { ValidatorStatus, ComponentStatus } from '../types';
-import { ethers } from 'ethers';
+import { ethers, Provider, formatUnits } from 'ethers';
 
 /**
  * Curve DEX validator

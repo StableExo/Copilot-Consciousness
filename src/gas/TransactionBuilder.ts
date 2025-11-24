@@ -5,7 +5,7 @@
  * Now integrated with AdvancedGasEstimator for pre-execution validation
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider } from 'ethers';
 import { GasPriceOracle, GasPriceTier } from './GasPriceOracle';
 import { ArbitragePath } from '../arbitrage/types';
 import { AdvancedGasEstimator, ValidationResult } from './AdvancedGasEstimator';

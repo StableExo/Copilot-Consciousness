@@ -5,7 +5,7 @@
  * Specifically for OpportunityNNScorer neural network input
  */
 
-import { ethers } from 'ethers';
+import { ethers, formatEther, formatUnits } from 'ethers';
 import { ArbitragePath } from '../arbitrage/types';
 
 /**

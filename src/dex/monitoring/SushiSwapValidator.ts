@@ -1,6 +1,6 @@
 import { BaseValidator } from './BaseValidator';
 import { ValidatorStatus, ComponentStatus } from '../types';
-import { ethers } from 'ethers';
+import { ethers, formatEther } from 'ethers';
 
 /**
  * SushiSwap DEX validator

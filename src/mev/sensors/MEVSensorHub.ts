@@ -5,7 +5,7 @@
  * Periodically updates sensor readings in background thread
  */
 
-import { ethers } ,Provider } from 'ethers';
+import { ethers, Provider } from 'ethers';
 import { MempoolCongestionSensor } from './MempoolCongestionSensor';
 import { SearcherDensitySensor } from './SearcherDensitySensor';
 import { MEVRiskParams } from '../types/TransactionType';

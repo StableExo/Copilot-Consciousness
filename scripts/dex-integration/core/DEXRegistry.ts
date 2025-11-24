@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider, parseEther } from 'ethers';
 import chalk from 'chalk';
 
 interface DEX {

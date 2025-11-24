@@ -8,7 +8,7 @@
  * 3. Bot clustering (unique high-gas addresses)
  */
 
-import { ethers } ,Provider } from 'ethers';
+import { ethers, Provider } from 'ethers';
 import { SensorReading } from '../types/TransactionType';
 
 export interface DensityWeights {

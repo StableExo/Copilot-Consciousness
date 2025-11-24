@@ -5,7 +5,7 @@
  * This eliminates the need to scan pools on every restart, dramatically reducing startup time.
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider } from 'ethers';
 import dotenv from 'dotenv';
 import { DEXRegistry } from '../src/dex/core/DEXRegistry';
 import { MultiHopDataFetcher } from '../src/arbitrage/MultiHopDataFetcher';

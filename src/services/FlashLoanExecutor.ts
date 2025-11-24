@@ -11,7 +11,7 @@
  * - MEV risk assessment integration
  */
 
-import { ethers } ,Provider } from 'ethers';
+import { ethers, Provider } from 'ethers';
 
 // Dynamic import for artifact - may not exist if contracts haven't been compiled
 let FlashSwapV2Artifact: any;

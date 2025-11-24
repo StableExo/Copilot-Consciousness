@@ -11,7 +11,7 @@
  * - Uniswap V3 tick math
  */
 
-import { ethers } from 'ethers';
+import { ethers, formatUnits } from 'ethers';
 import { logger } from '../logger';
 
 // Constants for price calculations

@@ -8,7 +8,7 @@
  * reducing scan time from 60+ seconds to under 10 seconds.
  */
 
-import { ethers } ,Provider } from 'ethers';
+import { ethers, Provider, Interface } from 'ethers';
 
 export interface MulticallRequest {
   target: string;

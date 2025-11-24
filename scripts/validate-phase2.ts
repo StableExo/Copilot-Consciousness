@@ -9,7 +9,7 @@
  * 4. End-to-End Dry Run
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider } from 'ethers';
 import dotenv from 'dotenv';
 import { ArbitrageConsciousness } from '../src/consciousness/ArbitrageConsciousness';
 import { CognitiveCoordinator, OpportunityContext } from '../src/consciousness/coordination/CognitiveCoordinator';

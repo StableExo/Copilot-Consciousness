@@ -14,7 +14,7 @@
  * - Compares against 'pending' nonce to stay in sync with the mempool.
  */
 
-import { Signer, Provider } from 'ethers';
+import { Signer, Provider, TransactionRequest, TransactionResponse } from 'ethers';
 import { Mutex } from 'async-mutex';
 import { logger } from '../utils/logger'; // Assuming you have a logger utility
 
@@ -68,7 +68,7 @@ export class NonceManager extends Signer {
     return this._address;
   }
 
-  connect(provider: providers.Provider): NonceManager {
+  connect(provider: Provider): NonceManager {
     const newSigner = this.signer.connect(provider);
     // State (nonce) is not carried over, which is standard for `connect`
     const newManager = new NonceManager(newSigner);
@@ -79,18 +79,18 @@ export class NonceManager extends Signer {
     return newManager;
   }
 
-  async signMessage(message: ethers.utils.Bytes | string): Promise<string> {
+  async signMessage(message: string | Uint8Array): Promise<string> {
     return this.signer.signMessage(message);
   }
 
-  async signTransaction(transaction: ethers.providers.TransactionRequest): Promise<string> {
+  async signTransaction(transaction: TransactionRequest): Promise<string> {
     if (!this.signer.signTransaction) {
       throw new Error('signTransaction is not supported by the parent signer');
     }
     return this.signer.signTransaction(transaction);
   }
 
-  async sendTransaction(tx: ethers.providers.TransactionRequest): Promise<ethers.providers.TransactionResponse> {
+  async sendTransaction(tx: TransactionRequest): Promise<TransactionResponse> {
     const functionSig = `[NonceManager Address: ${this.address}]`;
     logger.debug(`${functionSig} sendTransaction called...`);
 

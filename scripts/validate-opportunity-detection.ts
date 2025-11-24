@@ -19,7 +19,7 @@
  *   MIN_PROFIT_THRESHOLD - Minimum profit in USD (default: 1.0)
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider, parseEther } from 'ethers';
 import dotenv from 'dotenv';
 import { DEXRegistry } from '../src/dex/core/DEXRegistry';
 import { OptimizedPoolScanner } from '../src/arbitrage/OptimizedPoolScanner';

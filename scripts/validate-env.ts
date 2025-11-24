@@ -12,7 +12,7 @@
  */
 
 import * as dotenv from 'dotenv';
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider } from 'ethers';
 import * as fs from 'fs';
 import * as path from 'path';
 

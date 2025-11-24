@@ -4,7 +4,7 @@
  * Integrates with Arbitrum, Optimism, and Base for cheaper execution
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider } from 'ethers';
 import { ArbitragePath } from '../arbitrage/types';
 import { GasPriceOracle } from './GasPriceOracle';
 

@@ -1,5 +1,5 @@
 import { DEXRegistry } from '../core/DEXRegistry';
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider, formatEther } from 'ethers';
 import chalk from 'chalk';
 
 class BalancerHealthCheck {

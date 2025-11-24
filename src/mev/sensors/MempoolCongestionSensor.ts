@@ -8,7 +8,7 @@
  * 3. Base fee velocity (EIP-1559 dynamics)
  */
 
-import { ethers } ,Provider } from 'ethers';
+import { ethers, Provider } from 'ethers';
 import { SensorReading } from '../types/TransactionType';
 
 export interface CongestionWeights {

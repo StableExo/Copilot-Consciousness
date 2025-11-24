@@ -7,7 +7,7 @@
  * including provider detection, builder selection, and validation logic.
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider, Provider } from 'ethers';
 
 interface TransactionParameters {
     to: string;

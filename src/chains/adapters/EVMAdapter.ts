@@ -4,7 +4,7 @@
  * Supports Ethereum, BSC, Polygon, Avalanche, Arbitrum, Optimism, Base
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider } from 'ethers';
 import { ChainAdapter, TokenBalance, SwapEstimate, SwapParams, TokenPrice } from './ChainAdapter';
 
 // Minimal ERC20 ABI for balance and approval
