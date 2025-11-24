@@ -172,7 +172,7 @@ export class AlchemyWebhookService {
       await this.subscribeToPendingTransactions((tx) => {
         if (tx.value) {
           try {
-            const valueEth = parseFloat(utils.formatEther(tx.value));
+            const valueEth = parseFloat(formatEther(tx.value));
             if (valueEth >= minValueEth) {
               callback({
                 type: 'LARGE_TRANSACTION',

@@ -10,7 +10,7 @@
  * Supports multi-DEX execution: Uniswap V2/V3, SushiSwap, Curve, Aave, Balancer
  */
 
-import { JsonRpcProvider, TransactionReceipt, TransactionResponse, isAddress, Interface, AbiCoder } from 'ethers';
+import { JsonRpcProvider, TransactionReceipt, TransactionResponse, TransactionRequest, isAddress, Interface, AbiCoder } from 'ethers';
 import { logger } from '../utils/logger';
 import { NonceManager } from './NonceManager';
 import { buildTwoHopParams, buildTriangularParams, buildAavePathParams } from './ParamBuilder';
@@ -385,7 +385,7 @@ export class TransactionExecutor {
     txParams: MultiDEXTransactionParams,
     gasEstimation: GasEstimationResult,
     gasPrice: bigint
-  ): Promise<ethers.TransactionRequest> {
+  ): Promise<TransactionRequest> {
     // Encode function call
     const iface = new Interface([
       this.getFunctionSignature(txParams.functionName, txParams.dexType)
@@ -521,9 +521,9 @@ export class TransactionExecutor {
 
       info.confirmedAt = Date.now();
       info.blockNumber = receipt.blockNumber;
-      info.confirmations = receipt.confirmations;
-      info.gasUsed = BigInt(receipt.gasUsed.toString());
-      info.effectiveGasPrice = BigInt(receipt.effectiveGasPrice?.toString() || '0');
+      info.confirmations = await this.provider.getBlockNumber() - receipt.blockNumber + 1;
+      info.gasUsed = receipt.gasUsed;
+      info.effectiveGasPrice = receipt.gasPrice || 0n;
 
       if (receipt.status === 1) {
         info.status = TransactionStatus.CONFIRMED;

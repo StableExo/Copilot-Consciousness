@@ -85,8 +85,8 @@ export class MulticallBatcher {
     }));
 
     try {
-      // Execute multicall using callStatic to avoid requiring a signer
-      const results = await this.multicallContract.callStatic.aggregate3(formattedCalls);
+      // Execute multicall using staticCall to avoid requiring a signer
+      const results = await (this.multicallContract as any).aggregate3.staticCall(formattedCalls);
 
       return results.map((result: any) => ({
         success: result.success,

@@ -182,7 +182,7 @@ export class BaseArbitrageRunner extends EventEmitter {
         flashSwapAddress: this.config.flashSwapAddress,
         aavePoolAddress: this.config.aavePoolAddress,
         provider: this.provider,
-        signer: this.nonceManager, // Use NonceManager as signer for nonce safety
+        signer: this.nonceManager as any, // Use NonceManager as signer for nonce safety
       });
       console.log('[BaseArbitrageRunner] ✓ FlashLoanExecutor initialized');
     }

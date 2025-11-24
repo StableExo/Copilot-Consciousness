@@ -87,7 +87,7 @@ export class EVMAdapter extends ChainAdapter {
       const path = [tokenIn, tokenOut];
       
       // Estimate gas for the swap
-      const gasEstimate = await router.estimateGas.swapExactTokensForTokens(
+      const gasEstimate = await (router as any).swapExactTokensForTokens.estimateGas(
         amountIn.toString(),
         0, // Min amount out (0 for estimation)
         path,
@@ -221,8 +221,8 @@ export class EVMAdapter extends ChainAdapter {
    * Get current gas price
    */
   async getGasPrice(): Promise<bigint> {
-    const gasPrice = await this.provider.getGasPrice();
-    return BigInt(gasPrice.toString());
+    const feeData = await this.provider.getFeeData();
+    return feeData.gasPrice || feeData.maxFeePerGas || 0n;
   }
 
   /**

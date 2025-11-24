@@ -351,6 +351,9 @@ export class PrivateRPCManager {
       // Wait for confirmation if requested
       if (options.maxBlockWait && options.maxBlockWait > 0) {
         const receipt = await response.wait(1);
+        if (!receipt) {
+          throw new Error('Transaction confirmation failed');
+        }
         return {
           success: true,
           txHash: response.hash,
