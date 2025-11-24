@@ -7,7 +7,7 @@
  * Reference: PROJECT-HAVOC/core/initializer.js
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider, Wallet, Signer, formatEther, parseEther } from 'ethers';
 import { ValidatedConfig } from '../utils/configValidator';
 import { logger } from '../utils/logger';
 import { DEXRegistry } from '../dex/core/DEXRegistry';
@@ -30,9 +30,9 @@ import { ArbitrageConfig } from '../types/definitions';
  */
 export interface InitializedComponents {
   // Network components
-  provider: ethers.providers.JsonRpcProvider;
-  wallet: ethers.Wallet;
-  signer: ethers.Signer;
+  provider: JsonRpcProvider;
+  wallet: Wallet;
+  signer: Signer;
   
   // Core arbitrage components
   dexRegistry: DEXRegistry;
@@ -57,10 +57,10 @@ export interface InitializedComponents {
 /**
  * Initialize provider and validate network connection
  */
-async function initializeProvider(config: ValidatedConfig): Promise<ethers.providers.JsonRpcProvider> {
+async function initializeProvider(config: ValidatedConfig): Promise<JsonRpcProvider> {
   logger.info('Initializing provider...', 'INIT');
   
-  const provider = new ethers.providers.JsonRpcProvider(config.rpcUrl);
+  const provider = new JsonRpcProvider(config.rpcUrl);
   
   try {
     // Validate connection by fetching network info
@@ -68,7 +68,7 @@ async function initializeProvider(config: ValidatedConfig): Promise<ethers.provi
     logger.info(`✓ Connected to network: ${network.name} (chainId: ${network.chainId})`, 'INIT');
     
     // Validate chain ID matches configuration
-    if (config.chainId && network.chainId !== config.chainId) {
+    if (config.chainId && Number(network.chainId) !== config.chainId) {
       logger.warn(
         `Chain ID mismatch: configured ${config.chainId}, actual ${network.chainId}`,
         'INIT'
@@ -94,26 +94,26 @@ async function initializeProvider(config: ValidatedConfig): Promise<ethers.provi
  */
 async function initializeWallet(
   config: ValidatedConfig,
-  provider: ethers.providers.JsonRpcProvider
-): Promise<{ wallet: ethers.Wallet; signer: ethers.Signer }> {
+  provider: JsonRpcProvider
+): Promise<{ wallet: Wallet; signer: Signer }> {
   logger.info('Initializing wallet...', 'INIT');
   
   try {
-    const wallet = new ethers.Wallet(config.privateKey, provider);
+    const wallet = new Wallet(config.privateKey, provider);
     const signer = wallet.connect(provider);
     
     // Log wallet address (never log private key!)
     logger.info(`✓ Wallet address: ${wallet.address}`, 'INIT');
     
     // Check wallet balance
-    const balance = await wallet.getBalance();
-    const balanceEth = ethers.utils.formatEther(balance);
+    const balance = await provider.getBalance(wallet.address);
+    const balanceEth = formatEther(balance);
     logger.info(`✓ Wallet balance: ${balanceEth} ETH`, 'INIT');
     
     const MIN_BALANCE_ETH = '0.01';
-    if (balance.eq(0)) {
+    if (balance === 0n) {
       logger.warn('⚠ Wallet balance is 0 - bot will not be able to execute trades', 'INIT');
-    } else if (balance.lt(ethers.utils.parseEther(MIN_BALANCE_ETH))) {
+    } else if (balance < parseEther(MIN_BALANCE_ETH)) {
       logger.warn(
         `⚠ Low wallet balance (${balanceEth} ETH) - may not be sufficient for trading`,
         'INIT'
@@ -134,7 +134,7 @@ async function initializeWallet(
  * Initialize gas oracle and estimator
  */
 async function initializeGasComponents(
-  provider: ethers.providers.JsonRpcProvider,
+  provider: JsonRpcProvider,
   config: ValidatedConfig
 ): Promise<{ gasOracle: GasPriceOracle; gasEstimator: AdvancedGasEstimator }> {
   logger.info('Initializing gas oracle and estimator...', 'INIT');
@@ -219,7 +219,7 @@ function initializeDEXRegistry(): DEXRegistry {
  */
 function initializeArbitrageOrchestrators(
   dexRegistry: DEXRegistry,
-  provider: ethers.providers.JsonRpcProvider,
+  provider: JsonRpcProvider,
   gasOracle: GasPriceOracle,
   gasEstimator: AdvancedGasEstimator,
   config: ValidatedConfig
@@ -295,7 +295,7 @@ function initializeArbitrageOrchestrators(
  */
 function initializeHealthMonitor(
   config: ValidatedConfig,
-  provider: ethers.providers.JsonRpcProvider
+  provider: JsonRpcProvider
 ): SystemHealthMonitor {
   logger.info('Initializing health monitor...', 'INIT');
   
