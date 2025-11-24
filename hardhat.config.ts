@@ -1,7 +1,7 @@
 // hardhat.config.ts
 import { HardhatUserConfig } from "hardhat/config";
-import "@nomiclabs/hardhat-ethers";
-import "@nomiclabs/hardhat-etherscan";
+import "@nomicfoundation/hardhat-ethers";
+import "@nomicfoundation/hardhat-verify";
 import "hardhat-gas-reporter";
 // import "hardhat-tracer";
 import "solidity-coverage";
