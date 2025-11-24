@@ -20,6 +20,11 @@ export interface ChainTokens {
   USDbC?: TokenInfo;
   DAI?: TokenInfo;
   ARB?: TokenInfo;
+  cbETH?: TokenInfo;
+  AERO?: TokenInfo;
+  cbBTC?: TokenInfo;
+  WSTETH?: TokenInfo;
+  [key: string]: TokenInfo | undefined;  // Allow dynamic token types
 }
 
 /**
@@ -52,19 +57,19 @@ export function getTokensByChainId(chainId: number): ChainTokens {
 
 /**
  * Get an array of token addresses for scanning
- * Returns the most liquid tokens for the given chain
+ * Returns all available tokens for the given chain
  */
 export function getScanTokens(chainId: number): string[] {
   const tokens = getTokensByChainId(chainId);
   const addresses: string[] = [];
   
-  // Prioritize most liquid tokens
-  if (tokens.WETH) addresses.push(tokens.WETH.address);
-  if (tokens.WMATIC) addresses.push(tokens.WMATIC.address);
-  if (tokens.USDC) addresses.push(tokens.USDC.address);
-  if (tokens.USDbC) addresses.push(tokens.USDbC.address);
-  if (tokens.USDT) addresses.push(tokens.USDT.address);
-  if (tokens.DAI) addresses.push(tokens.DAI.address);
+  // Dynamically include all available tokens for the chain
+  // This ensures we don't miss any configured tokens
+  for (const [symbol, tokenInfo] of Object.entries(tokens)) {
+    if (tokenInfo && tokenInfo.address) {
+      addresses.push(tokenInfo.address);
+    }
+  }
   
   return addresses;
 }
