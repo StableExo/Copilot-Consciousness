@@ -7,7 +7,7 @@
  * 3. Pool liquidity checking
  */
 
-import { ethers, JsonRpcProvider } from 'ethers';
+import { ethers, JsonRpcProvider, ZeroAddress } from 'ethers';
 import { V3_LIQUIDITY_SCALE_FACTOR, UNISWAP_V3_FEE_TIERS } from '../src/arbitrage/constants';
 
 // Base network RPC

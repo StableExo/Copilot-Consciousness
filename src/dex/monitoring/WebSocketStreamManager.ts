@@ -6,7 +6,7 @@
  */
 
 import { EventEmitter } from 'events';
-import { ethers } from 'ethers';
+import { Contract, ContractEventPayload, WebSocketProvider } from 'ethers';
 import { WebSocketEndpoint, RetryConfig } from '../../config/realtime.config';
 
 /**
@@ -45,14 +45,14 @@ export enum ConnectionStatus {
  * Manages WebSocket connections and pool event subscriptions using EventEmitter pattern.
  */
 export class WebSocketStreamManager extends EventEmitter {
-  private provider: ethers.providers.WebSocketProvider | null = null;
+  private provider: WebSocketProvider | null = null;
   private endpoints: WebSocketEndpoint[];
   private currentEndpointIndex: number = 0;
   private retryConfig: RetryConfig;
   private connectionStatus: ConnectionStatus = ConnectionStatus.DISCONNECTED;
   private reconnectAttempts: number = 0;
   private reconnectTimer: NodeJS.Timeout | null = null;
-  private poolSubscriptions: Map<string, ethers.Contract> = new Map();
+  private poolSubscriptions: Map<string, Contract> = new Map();
   private isShuttingDown: boolean = false;
 
   // Standard Uniswap V2 pool ABI for events
@@ -86,7 +86,7 @@ export class WebSocketStreamManager extends EventEmitter {
     try {
       const endpoint = this.endpoints[this.currentEndpointIndex];
       
-      this.provider = new ethers.providers.WebSocketProvider(endpoint.url);
+      this.provider = new WebSocketProvider(endpoint.url);
 
       // Set up provider event listeners
       this.setupProviderListeners();
@@ -183,18 +183,18 @@ export class WebSocketStreamManager extends EventEmitter {
       return; // Already subscribed
     }
 
-    const poolContract = new ethers.Contract(poolAddress, this.POOL_ABI, this.provider);
+    const poolContract = new Contract(poolAddress, this.POOL_ABI, this.provider);
 
     // Listen to Sync events
-    poolContract.on('Sync', async (reserve0: ethers.BigNumber, reserve1: ethers.BigNumber, event: ethers.Event) => {
+    poolContract.on('Sync', async (reserve0: bigint, reserve1: bigint, event: ContractEventPayload) => {
       const poolEvent: PoolEvent = {
         eventType: 'Sync',
         poolAddress,
-        blockNumber: event.blockNumber,
-        transactionHash: event.transactionHash,
+        blockNumber: event.log.blockNumber,
+        transactionHash: event.log.transactionHash,
         timestamp: Date.now(),
-        reserve0: BigInt(reserve0.toString()),
-        reserve1: BigInt(reserve1.toString()),
+        reserve0: reserve0,
+        reserve1: reserve1,
       };
       this.emit('poolEvent', poolEvent);
     });
@@ -202,24 +202,24 @@ export class WebSocketStreamManager extends EventEmitter {
     // Listen to Swap events
     poolContract.on('Swap', async (
       sender: string,
-      amount0In: ethers.BigNumber,
-      amount1In: ethers.BigNumber,
-      amount0Out: ethers.BigNumber,
-      amount1Out: ethers.BigNumber,
+      amount0In: bigint,
+      amount1In: bigint,
+      amount0Out: bigint,
+      amount1Out: bigint,
       to: string,
-      event: ethers.Event
+      event: ContractEventPayload
     ) => {
       const poolEvent: PoolEvent = {
         eventType: 'Swap',
         poolAddress,
-        blockNumber: event.blockNumber,
-        transactionHash: event.transactionHash,
+        blockNumber: event.log.blockNumber,
+        transactionHash: event.log.transactionHash,
         timestamp: Date.now(),
         sender,
-        amount0In: BigInt(amount0In.toString()),
-        amount1In: BigInt(amount1In.toString()),
-        amount0Out: BigInt(amount0Out.toString()),
-        amount1Out: BigInt(amount1Out.toString()),
+        amount0In: amount0In,
+        amount1In: amount1In,
+        amount0Out: amount0Out,
+        amount1Out: amount1Out,
         to,
       };
       this.emit('poolEvent', poolEvent);
@@ -228,19 +228,19 @@ export class WebSocketStreamManager extends EventEmitter {
     // Listen to Mint events
     poolContract.on('Mint', async (
       sender: string,
-      amount0: ethers.BigNumber,
-      amount1: ethers.BigNumber,
-      event: ethers.Event
+      amount0: bigint,
+      amount1: bigint,
+      event: ContractEventPayload
     ) => {
       const poolEvent: PoolEvent = {
         eventType: 'Mint',
         poolAddress,
-        blockNumber: event.blockNumber,
-        transactionHash: event.transactionHash,
+        blockNumber: event.log.blockNumber,
+        transactionHash: event.log.transactionHash,
         timestamp: Date.now(),
         sender,
-        amount0In: BigInt(amount0.toString()),
-        amount1In: BigInt(amount1.toString()),
+        amount0In: amount0,
+        amount1In: amount1,
       };
       this.emit('poolEvent', poolEvent);
     });
@@ -248,20 +248,20 @@ export class WebSocketStreamManager extends EventEmitter {
     // Listen to Burn events
     poolContract.on('Burn', async (
       sender: string,
-      amount0: ethers.BigNumber,
-      amount1: ethers.BigNumber,
+      amount0: bigint,
+      amount1: bigint,
       to: string,
-      event: ethers.Event
+      event: ContractEventPayload
     ) => {
       const poolEvent: PoolEvent = {
         eventType: 'Burn',
         poolAddress,
-        blockNumber: event.blockNumber,
-        transactionHash: event.transactionHash,
+        blockNumber: event.log.blockNumber,
+        transactionHash: event.log.transactionHash,
         timestamp: Date.now(),
         sender,
-        amount0Out: BigInt(amount0.toString()),
-        amount1Out: BigInt(amount1.toString()),
+        amount0Out: amount0,
+        amount1Out: amount1,
         to,
       };
       this.emit('poolEvent', poolEvent);

@@ -14,7 +14,7 @@
  * - Gas spike protection
  */
 
-import { ethers, providers, BigNumber } from 'ethers';
+import { BigNumber, ethers, formatUnits, getAddress, providers } from 'ethers';
 import { Mutex } from 'async-mutex';
 import { logger } from '../utils/logger';
 import { NonceManager } from './NonceManager';
@@ -140,7 +140,7 @@ const DEFAULT_GAS_SPIKE_CONFIG: GasSpikeConfig = {
  * - Reorg detection and recovery
  */
 export class TransactionManager {
-  private provider: providers.Provider;
+  private provider: Provider;
   private nonceManager: NonceManager;
   private retryConfig: RetryConfig;
   private gasSpikeConfig: GasSpikeConfig;
@@ -170,7 +170,7 @@ export class TransactionManager {
   };
 
   constructor(
-    provider: providers.Provider,
+    provider: Provider,
     nonceManager: NonceManager,
     retryConfig: Partial<RetryConfig> = {},
     gasSpikeConfig: Partial<GasSpikeConfig> = {}

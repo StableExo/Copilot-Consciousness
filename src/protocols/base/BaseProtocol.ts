@@ -4,7 +4,7 @@
  * Provides common functionality and utilities for protocol adapters.
  */
 
-import { ethers, Contract, Provider } from 'ethers';
+import { Contract, Provider, ethers, isAddress } from 'ethers';
 import {
   IProtocol,
   ProtocolMetadata,

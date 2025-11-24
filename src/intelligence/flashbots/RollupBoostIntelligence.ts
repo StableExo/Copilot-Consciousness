@@ -14,7 +14,7 @@
  * Based on: https://rollup-boost.flashbots.net/
  */
 
-import { ethers, providers } from 'ethers';
+import { ethers} from 'ethers';
 import { logger } from '../../utils/logger';
 
 /**
@@ -180,11 +180,11 @@ export class RollupBoostIntelligence {
   private flashblockConfig: FlashblockConfig;
   private sidecarConfig?: BuilderSidecarConfig;
   private flashblockHistory: FlashblockStatus[];
-  private provider: providers.JsonRpcProvider;
+  private provider: JsonRpcProvider;
   private activeExtensions: Set<RollupExtension>;
 
   constructor(
-    provider: providers.JsonRpcProvider,
+    provider: JsonRpcProvider,
     l2Network: L2Network,
     flashblockConfig?: Partial<FlashblockConfig>,
     sidecarConfig?: BuilderSidecarConfig

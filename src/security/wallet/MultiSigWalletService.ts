@@ -3,7 +3,7 @@
  * Gnosis Safe Integration with M-of-N threshold signatures
  */
 
-import { ethers, JsonRpcProvider } from 'ethers';
+import { JsonRpcProvider, ZeroAddress, ethers } from 'ethers';
 
 export interface MultiSigConfig {
   safeAddress: string;

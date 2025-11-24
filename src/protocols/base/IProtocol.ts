@@ -5,7 +5,6 @@
  * Defines the contract that all DEX protocol adapters must follow.
  */
 
-import { BigNumber } from 'ethers';
 
 export interface SwapParams {
   tokenIn: string;

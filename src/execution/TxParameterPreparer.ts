@@ -7,7 +7,7 @@
  * including provider detection, builder selection, and validation logic.
  */
 
-import { ethers, JsonRpcProvider, Provider } from 'ethers';
+import { JsonRpcProvider, Provider, ethers, isAddress } from 'ethers';
 
 interface TransactionParameters {
     to: string;
@@ -18,7 +18,7 @@ interface TransactionParameters {
 
 /**
  * Detects the provider used by the application.
- * @returns {ethers.providers.Provider} The detected provider instance.
+ * @returns {ethers.Provider} The detected provider instance.
  */
 function detectProvider(): Provider {
     // Logic to detect provider
@@ -29,7 +29,7 @@ function detectProvider(): Provider {
 
 /**
  * Validates a provider instance.
- * @param {ethers.providers.Provider} provider - The provider instance.
+ * @param {ethers.Provider} provider - The provider instance.
  * @returns {boolean} True if valid.
  */
 function validateProvider(provider: Provider): boolean {

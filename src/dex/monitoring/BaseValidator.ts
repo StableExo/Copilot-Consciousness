@@ -1,6 +1,6 @@
 import { DEXRegistry } from '../core/DEXRegistry';
 import { DEXValidator, DEXEvent, ValidatorStatus, DEXConfig } from '../types';
-import { ethers, Provider } from 'ethers';
+import { JsonRpcProvider, Provider, ethers } from 'ethers';
 
 /**
  * Base validator class providing common functionality for all DEX validators

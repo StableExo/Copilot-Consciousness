@@ -7,7 +7,7 @@
  */
 
 import { getAlchemyClient } from './AlchemyClient';
-import { utils } from 'ethers';
+import { formatEther, utils } from 'ethers';
 
 export interface WebhookEvent {
   type: 'ADDRESS_ACTIVITY' | 'MINED_TRANSACTION' | 'DROPPED_TRANSACTION' | 'CUSTOM';

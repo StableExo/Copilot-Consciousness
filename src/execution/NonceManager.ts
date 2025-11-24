@@ -14,7 +14,7 @@
  * - Compares against 'pending' nonce to stay in sync with the mempool.
  */
 
-import { Signer, Provider, TransactionRequest, TransactionResponse } from 'ethers';
+import { Provider, Signer, TransactionRequest, TransactionResponse, getAddress } from 'ethers';
 import { Mutex } from 'async-mutex';
 import { logger } from '../utils/logger'; // Assuming you have a logger utility
 

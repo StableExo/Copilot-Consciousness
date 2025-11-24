@@ -3,7 +3,7 @@
  * Ledger and Trezor integration for cold storage signing
  */
 
-import { ethers } from 'ethers';
+import { ethers, getAddress } from 'ethers';
 
 export enum HardwareWalletType {
   LEDGER = 'LEDGER',

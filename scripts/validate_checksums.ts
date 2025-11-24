@@ -1,4 +1,5 @@
 import hre from "hardhat";
+import { getAddress } from "ethers";
 
 /**
  * Validation script to verify all addresses in deployFlashSwapV2.ts have correct checksums

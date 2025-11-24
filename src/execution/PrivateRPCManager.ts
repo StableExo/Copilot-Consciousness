@@ -14,7 +14,7 @@
  * - Health monitoring
  */
 
-import { ethers, providers, Wallet } from 'ethers';
+import { JsonRpcProvider, Wallet, ethers, providers } from 'ethers';
 import { logger } from '../utils/logger';
 import {
   PrivateRelayType,

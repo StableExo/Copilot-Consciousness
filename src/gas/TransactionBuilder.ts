@@ -5,7 +5,7 @@
  * Now integrated with AdvancedGasEstimator for pre-execution validation
  */
 
-import { ethers, JsonRpcProvider } from 'ethers';
+import { JsonRpcProvider, ethers, toUtf8String } from 'ethers';
 import { GasPriceOracle, GasPriceTier } from './GasPriceOracle';
 import { ArbitragePath } from '../arbitrage/types';
 import { AdvancedGasEstimator, ValidationResult } from './AdvancedGasEstimator';
@@ -129,7 +129,7 @@ export class TransactionBuilder {
       
       if (error.data) {
         try {
-          errorMessage = ethers.utils.toUtf8String(error.data);
+          errorMessage = toUtf8String(error.data);
         } catch {
           errorMessage = error.data;
         }

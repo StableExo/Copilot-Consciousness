@@ -4,7 +4,7 @@
  * Extends DEX registry functionality to support multi-token paths
  */
 
-import { ethers, JsonRpcProvider, Provider } from 'ethers';
+import { Interface, JsonRpcProvider, Provider, ZeroAddress, getCreate2Address, keccak256, solidityPacked } from 'ethers';
 import { DEXRegistry } from '../dex/core/DEXRegistry';
 import { DEXConfig } from '../dex/types';
 import { PoolEdge, Token } from './types';
@@ -29,7 +29,7 @@ interface PoolData {
 
 export class MultiHopDataFetcher {
   private registry: DEXRegistry;
-  private providers: Map<string, ethers.providers.Provider>;
+  private providers: Map<string, Provider>;
   private poolCache: Map<string, PoolData>;
   private mode: 'polling' | 'event-driven' = 'polling';
   private cacheTTL: number = 60000; // 1 minute default TTL
@@ -349,10 +349,10 @@ export class MultiHopDataFetcher {
       // Uniswap V2 style pool address calculation
       if (dex.initCodeHash) {
         const salt = keccak256(
-          ethers.utils.solidityPack(['address', 'address'], [tokenA, tokenB])
+          solidityPacked(['address', 'address'], [tokenA, tokenB])
         );
         
-        const poolAddress = ethers.utils.getCreate2Address(
+        const poolAddress = getCreate2Address(
           dex.factory,
           salt,
           dex.initCodeHash

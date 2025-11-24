@@ -11,7 +11,7 @@
  */
 
 import { EventEmitter } from 'events';
-import { providers } from 'ethers';
+import { getAddress, providers } from 'ethers';
 import { logger } from '../utils/logger';
 import { ArbitrageOrchestrator } from '../arbitrage/ArbitrageOrchestrator';
 import { ExecutionPipeline } from '../execution/ExecutionPipeline';

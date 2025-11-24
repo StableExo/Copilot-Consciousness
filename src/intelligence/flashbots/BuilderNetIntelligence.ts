@@ -14,7 +14,7 @@
  * Based on: https://buildernet.org/docs/architecture
  */
 
-import { ethers, providers } from 'ethers';
+import { ethers, keccak256, providers, toUtf8Bytes } from 'ethers';
 import { logger } from '../../utils/logger';
 
 /**
@@ -420,11 +420,11 @@ export class BuilderNetIntelligence {
     const attestation: TEEAttestation = {
       nodeId,
       attestationHash: keccak256(
-        ethers.utils.toUtf8Bytes(`${nodeId}-${now}-${platform}`)
+        toUtf8Bytes(`${nodeId}-${now}-${platform}`)
       ),
       platform,
       codeMeasurement: keccak256(
-        ethers.utils.toUtf8Bytes('buildernet-v1.2-verified-code')
+        toUtf8Bytes('buildernet-v1.2-verified-code')
       ),
       timestamp: now,
       expiresAt: now + this.hubConfig.maxAttestationAge * 1000,

@@ -4,7 +4,7 @@
  * Implements the IProtocol interface for SushiSwap V3
  */
 
-import { ethers, Provider } from 'ethers';
+import { Provider, ZeroAddress, ethers } from 'ethers';
 import { BaseProtocol } from '../../base/BaseProtocol';
 import {
   SwapParams,

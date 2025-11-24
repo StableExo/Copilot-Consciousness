@@ -15,7 +15,7 @@
  * - Swap step encoding for contract calls
  */
 
-import { ethers, Contract, Provider } from 'ethers';
+import { Contract, Provider, ethers, formatEther, isAddress, parseUnits } from 'ethers';
 import { logger } from '../utils/logger';
 import { ArbitrageOpportunity } from '../arbitrage/models';
 

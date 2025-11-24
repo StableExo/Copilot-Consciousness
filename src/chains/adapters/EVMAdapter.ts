@@ -4,7 +4,7 @@
  * Supports Ethereum, BSC, Polygon, Avalanche, Arbitrum, Optimism, Base
  */
 
-import { ethers, JsonRpcProvider } from 'ethers';
+import { Contract, JsonRpcProvider, Signer, ZeroAddress } from 'ethers';
 import { ChainAdapter, TokenBalance, SwapEstimate, SwapParams, TokenPrice } from './ChainAdapter';
 
 // Minimal ERC20 ABI for balance and approval
@@ -25,12 +25,12 @@ export class EVMAdapter extends ChainAdapter {
   chainId: number;
   readonly chainType = 'EVM';
   private provider: JsonRpcProvider;
-  private signer?: ethers.Signer;
+  private signer?: Signer;
 
   constructor(
     chainId: number,
     provider: JsonRpcProvider,
-    signer?: ethers.Signer
+    signer?: Signer
   ) {
     super();
     this.chainId = chainId;
@@ -57,7 +57,7 @@ export class EVMAdapter extends ChainAdapter {
         };
       }
 
-      const tokenContract = new ethers.Contract(tokenAddress, ERC20_ABI, this.provider);
+      const tokenContract = new Contract(tokenAddress, ERC20_ABI, this.provider);
       const [balance, decimals] = await Promise.all([
         tokenContract.balanceOf(walletAddress),
         tokenContract.decimals()
@@ -83,7 +83,7 @@ export class EVMAdapter extends ChainAdapter {
     dexAddress: string
   ): Promise<number> {
     try {
-      const router = new ethers.Contract(dexAddress, UNISWAP_V2_ROUTER_ABI, this.provider);
+      const router = new Contract(dexAddress, UNISWAP_V2_ROUTER_ABI, this.provider);
       const path = [tokenIn, tokenOut];
       
       // Estimate gas for the swap
@@ -114,12 +114,12 @@ export class EVMAdapter extends ChainAdapter {
     }
 
     try {
-      const router = new ethers.Contract(dexAddress, UNISWAP_V2_ROUTER_ABI, this.signer);
+      const router = new Contract(dexAddress, UNISWAP_V2_ROUTER_ABI, this.signer);
       const path = [params.tokenIn, params.tokenOut];
 
       // Approve token spending if needed (skip for native token)
       if (params.tokenIn !== ZeroAddress) {
-        const tokenContract = new ethers.Contract(params.tokenIn, ERC20_ABI, this.signer);
+        const tokenContract = new Contract(params.tokenIn, ERC20_ABI, this.signer);
         const approveTx = await tokenContract.approve(dexAddress, params.amountIn.toString());
         await approveTx.wait();
       }
@@ -163,7 +163,7 @@ export class EVMAdapter extends ChainAdapter {
     dexAddress: string
   ): Promise<SwapEstimate> {
     try {
-      const router = new ethers.Contract(dexAddress, UNISWAP_V2_ROUTER_ABI, this.provider);
+      const router = new Contract(dexAddress, UNISWAP_V2_ROUTER_ABI, this.provider);
       const path = [tokenIn, tokenOut];
 
       // Get amounts out
@@ -245,7 +245,7 @@ export class EVMAdapter extends ChainAdapter {
   /**
    * Set signer for transaction execution
    */
-  setSigner(signer: ethers.Signer): void {
+  setSigner(signer: Signer): void {
     this.signer = signer;
   }
 }
