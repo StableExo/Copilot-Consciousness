@@ -342,7 +342,7 @@ export class PrivateRPCManager {
       
       // Submit directly to Flashbots Protect RPC
       // Flashbots Protect automatically creates a bundle
-      const response = await flashbotsProvider.sendTransaction(signedTx);
+      const response = await flashbotsProvider.broadcastTransaction(signedTx);
 
       logger.info(
         `[PrivateRPCManager] Transaction submitted to Flashbots Protect: ${response.hash}`
@@ -456,7 +456,7 @@ export class PrivateRPCManager {
     try {
       const builderProvider = new JsonRpcProvider(relay.endpoint);
       const signedTx = await this.signer.signTransaction(transaction);
-      const response = await builderProvider.sendTransaction(signedTx);
+      const response = await builderProvider.broadcastTransaction(signedTx);
 
       logger.info(
         `[PrivateRPCManager] Transaction submitted to builder RPC: ${response.hash}`
@@ -488,7 +488,7 @@ export class PrivateRPCManager {
   ): Promise<PrivateTransactionResult> {
     try {
       const signedTx = await this.signer.signTransaction(transaction);
-      const response = await this.provider.sendTransaction(signedTx);
+      const response = await this.provider.broadcastTransaction(signedTx);
 
       logger.warn(
         `[PrivateRPCManager] Transaction submitted to public mempool: ${response.hash}`
@@ -1211,7 +1211,7 @@ export class PrivateRPCManager {
       const bundleProvider = new JsonRpcProvider(rpcUrl);
       
       // Send the signed transaction to the bundle cache
-      const tx = await bundleProvider.sendTransaction(signedTx);
+      const tx = await bundleProvider.broadcastTransaction(signedTx);
       
       logger.info(`[BundleCache] Added transaction ${tx.hash} to bundle ${bundleId}`);
 

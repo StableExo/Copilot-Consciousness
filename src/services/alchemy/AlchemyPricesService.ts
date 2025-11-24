@@ -6,7 +6,7 @@
  */
 
 import { getAlchemyClient } from './AlchemyClient';
-import { BigNumber, formatUnits, utils } from 'ethers';
+import { formatUnits } from 'ethers';
 
 export interface TokenPrice {
   token: string;

@@ -176,9 +176,9 @@ export class PoolDataFetcher {
   private async calculateReserves(
     token0: string,
     token1: string,
-    liquidity: ethers.BigNumber,
-    sqrtPriceX96: ethers.BigNumber
-  ): Promise<{ reserve0: ethers.BigNumber; reserve1: ethers.BigNumber }> {
+    liquidity: bigint,
+    sqrtPriceX96: bigint
+  ): Promise<{ reserve0: bigint; reserve1: bigint }> {
     try {
       // Get token decimals for proper scaling
       const token0Contract = new ethers.Contract(token0, ERC20_ABI, this.config.provider);
@@ -194,12 +194,12 @@ export class PoolDataFetcher {
       // reserve1 ≈ L * sqrt(P)
       
       // Convert sqrtPriceX96 to a usable price
-      const Q96 = ethers.BigNumber.from(2).pow(96);
-      const price = sqrtPriceX96.mul(sqrtPriceX96).div(Q96).div(Q96);
+      const Q96 = 2n ** 96n;
+      const price = (sqrtPriceX96 * sqrtPriceX96) / Q96 / Q96;
 
       // Approximate reserves (this is simplified; real V3 math is more complex)
-      const reserve0 = liquidity.mul(parseUnits('1', decimals0)).div(sqrtPriceX96);
-      const reserve1 = liquidity.mul(sqrtPriceX96).div(Q96);
+      const reserve0 = (liquidity * parseUnits('1', decimals0)) / sqrtPriceX96;
+      const reserve1 = (liquidity * sqrtPriceX96) / Q96;
 
       return { reserve0, reserve1 };
     } catch (error: any) {

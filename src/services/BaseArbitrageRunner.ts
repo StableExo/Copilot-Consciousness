@@ -955,7 +955,7 @@ export class BaseArbitrageRunner extends EventEmitter {
     const balance = await this.provider.getBalance(this.wallet.address);
     console.log(`[BaseArbitrageRunner] Wallet balance: ${formatEther(balance)} ETH`);
     
-    if (balance.isZero()) {
+    if (balance === 0n) {
       console.warn('[BaseArbitrageRunner] WARNING: Wallet has zero balance!');
     }
   }

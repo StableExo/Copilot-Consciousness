@@ -130,6 +130,24 @@ export class NonceManager extends Signer {
     return this.signer.resolveName(name);
   }
 
+  // Required for ethers v6 Signer compatibility
+  async populateAuthorization(tx: any): Promise<any> {
+    // Delegate to underlying signer if available, otherwise return as-is
+    if (typeof (this.signer as any).populateAuthorization === 'function') {
+      return (this.signer as any).populateAuthorization(tx);
+    }
+    return tx;
+  }
+
+  // Required for ethers v6 Signer compatibility  
+  async authorize(tx: any): Promise<any> {
+    // Delegate to underlying signer if available, otherwise no-op
+    if (typeof (this.signer as any).authorize === 'function') {
+      return (this.signer as any).authorize(tx);
+    }
+    return tx;
+  }
+
   async sendTransaction(tx: TransactionRequest): Promise<TransactionResponse> {
     const functionSig = `[NonceManager Address: ${this.address}]`;
     logger.debug(`${functionSig} sendTransaction called...`);

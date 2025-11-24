@@ -3,7 +3,7 @@
  * Gnosis Safe Integration with M-of-N threshold signatures
  */
 
-import { JsonRpcProvider, ZeroAddress, ethers } from 'ethers';
+import { JsonRpcProvider, ZeroAddress, ethers, getBytes, TypedDataEncoder, concat } from 'ethers';
 
 export interface MultiSigConfig {
   safeAddress: string;
@@ -126,7 +126,7 @@ export class MultiSigWalletService {
     const txHash = await this.getTransactionHash(proposal);
     
     // Sign the hash
-    const signature = await signer.signMessage(ethers.utils.arrayify(txHash));
+    const signature = await signer.signMessage(getBytes(txHash));
 
     // Store signature
     proposal.signatures.set(signer.address, signature);
@@ -222,7 +222,7 @@ export class MultiSigWalletService {
     }
 
     // Check if adding this amount would exceed limit
-    const newSpent = ethers.BigNumber.from(limit.spent).add(amount);
+    const newSpent = BigInt(limit.spent) + BigInt(amount);
     const limitAmount = BigInt(limit.amount);
 
     if (newSpent > limitAmount) {
@@ -275,7 +275,7 @@ export class MultiSigWalletService {
       nonce: proposal.nonce
     };
 
-    return ethers.utils._TypedDataEncoder.hash(domain, types, message);
+    return TypedDataEncoder.hash(domain, types, message);
   }
 
   /**
@@ -287,7 +287,7 @@ export class MultiSigWalletService {
       .sort((a, b) => a[0].toLowerCase().localeCompare(b[0].toLowerCase()))
       .map(([_, sig]) => sig);
 
-    return ethers.utils.hexConcat(sortedSignatures);
+    return concat(sortedSignatures);
   }
 
   /**

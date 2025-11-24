@@ -167,7 +167,7 @@ export class MempoolCongestionSensor {
       // Extract base fees (EIP-1559)
       const baseFees = blocks
         .filter((b) => b.baseFeePerGas !== undefined && b.baseFeePerGas !== null)
-        .map((b) => b.baseFeePerGas!.toNumber());
+        .map((b) => Number(b.baseFeePerGas));
 
       if (baseFees.length < 2) {
         return 0;
