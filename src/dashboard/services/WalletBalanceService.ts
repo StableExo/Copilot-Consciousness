@@ -4,7 +4,7 @@
  * Provides real-time wallet balance information for native and ERC20 tokens
  */
 
-import { ethers } from 'ethers';
+import { ethers, Provider } from 'ethers';
 import { WalletBalance } from '../types';
 
 // Minimal ERC20 ABI for balance checks
@@ -21,7 +21,7 @@ export interface TokenConfig {
 }
 
 export interface WalletBalanceConfig {
-  provider: ethers.providers.Provider;
+  provider: Provider;
   walletAddress: string;
   chainId: number;
   chainName: string;

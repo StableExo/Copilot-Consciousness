@@ -377,7 +377,7 @@ export class TransactionManager {
             .mul(Math.floor(retryConfig.gasPriceIncrement * 100))
             .div(100);
           logger.info(
-            `[TransactionManager] Increasing gas price to ${ethers.utils.formatUnits(currentGasPrice, 'gwei')} Gwei`
+            `[TransactionManager] Increasing gas price to ${formatUnits(currentGasPrice, 'gwei')} Gwei`
           );
         }
 
@@ -506,7 +506,7 @@ export class TransactionManager {
   private async checkGasSpike(): Promise<{ safe: boolean; reason?: string }> {
     try {
       const gasPrice = await this.provider.getGasPrice();
-      const gasPriceGwei = parseFloat(ethers.utils.formatUnits(gasPrice, 'gwei'));
+      const gasPriceGwei = parseFloat(formatUnits(gasPrice, 'gwei'));
 
       // Update history
       this.gasPriceHistory.push({
@@ -531,7 +531,7 @@ export class TransactionManager {
       // Check for recent spike
       if (this.gasPriceHistory.length > 1) {
         const oldestPrice = this.gasPriceHistory[0].gasPrice;
-        const oldestPriceGwei = parseFloat(ethers.utils.formatUnits(oldestPrice, 'gwei'));
+        const oldestPriceGwei = parseFloat(formatUnits(oldestPrice, 'gwei'));
         const increase = ((gasPriceGwei - oldestPriceGwei) / oldestPriceGwei) * 100;
 
         if (increase > this.gasSpikeConfig.spikeThreshold) {
@@ -612,9 +612,9 @@ export class TransactionManager {
 
       // Calculate minimum replacement gas price (10% higher)
       const originalGasPrice = originalTx.gasPrice || originalTx.maxFeePerGas || BigNumber.from(0);
-      const minReplacementGas = originalGasPrice.mul(110).div(100);
+      const minReplacementGas = originalGasPrice * 110n / 100n;
       
-      const replacementGasPrice = newGasPrice.gt(minReplacementGas)
+      const replacementGasPrice = newGasPrice > minReplacementGas
         ? newGasPrice
         : minReplacementGas;
 

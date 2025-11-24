@@ -8,7 +8,7 @@
  * reducing scan time from 60+ seconds to under 10 seconds.
  */
 
-import { ethers } from 'ethers';
+import { ethers, Provider, Interface } from 'ethers';
 
 export interface MulticallRequest {
   target: string;
@@ -35,13 +35,13 @@ const MULTICALL3_ABI = [
 export const MULTICALL3_ADDRESS = '0xcA11bde05977b3631167028862bE2a173976CA11';
 
 export class MulticallBatcher {
-  private provider: ethers.providers.Provider;
+  private provider: Provider;
   private multicallAddress: string;
   private multicallContract: ethers.Contract;
   private batchSize: number;
 
   constructor(
-    provider: ethers.providers.Provider,
+    provider: Provider,
     multicallAddress: string = MULTICALL3_ADDRESS,
     batchSize: number = 100
   ) {
@@ -124,14 +124,14 @@ export class MulticallBatcher {
   /**
    * Encode a contract function call for multicall
    */
-  static encodeCall(contractInterface: ethers.utils.Interface, functionName: string, params: any[]): string {
+  static encodeCall(contractInterface: Interface, functionName: string, params: any[]): string {
     return contractInterface.encodeFunctionData(functionName, params);
   }
 
   /**
    * Decode a contract function result from multicall
    */
-  static decodeResult(contractInterface: ethers.utils.Interface, functionName: string, data: string): any {
+  static decodeResult(contractInterface: Interface, functionName: string, data: string): any {
     return contractInterface.decodeFunctionResult(functionName, data);
   }
 }
@@ -143,7 +143,7 @@ export class MulticallBatcher {
  * batch them all into a single multicall request.
  */
 export async function batchCheckPoolsExist(
-  provider: ethers.providers.Provider,
+  provider: Provider,
   poolAddresses: string[]
 ): Promise<Map<string, boolean>> {
   const batcher = new MulticallBatcher(provider);
@@ -167,7 +167,7 @@ export async function batchCheckPoolsExist(
   // Create multicall requests for code checks
   // We use eth_getCode which isn't directly supported by multicall,
   // so we'll use a different approach: call a standard function that all pools have
-  const poolInterface = new ethers.utils.Interface([
+  const poolInterface = new Interface([
     'function token0() external view returns (address)',
   ]);
 
@@ -194,7 +194,7 @@ export async function batchCheckPoolsExist(
  * Fetches token0, token1, and reserves/liquidity for multiple pools in one call.
  */
 export async function batchFetchPoolData(
-  provider: ethers.providers.Provider,
+  provider: Provider,
   poolAddresses: string[],
   isV3: boolean
 ): Promise<Map<string, any>> {
@@ -208,14 +208,14 @@ export async function batchFetchPoolData(
   }
 
   // Create interface for pool calls
-  const v3Interface = new ethers.utils.Interface([
+  const v3Interface = new Interface([
     'function token0() external view returns (address)',
     'function token1() external view returns (address)',
     'function liquidity() external view returns (uint128)',
     'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
   ]);
 
-  const v2Interface = new ethers.utils.Interface([
+  const v2Interface = new Interface([
     'function token0() external view returns (address)',
     'function token1() external view returns (address)',
     'function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)',

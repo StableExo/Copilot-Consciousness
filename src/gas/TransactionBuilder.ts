@@ -5,7 +5,7 @@
  * Now integrated with AdvancedGasEstimator for pre-execution validation
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider } from 'ethers';
 import { GasPriceOracle, GasPriceTier } from './GasPriceOracle';
 import { ArbitragePath } from '../arbitrage/types';
 import { AdvancedGasEstimator, ValidationResult } from './AdvancedGasEstimator';
@@ -38,13 +38,13 @@ export interface BuildTransactionOptions {
 }
 
 export class TransactionBuilder {
-  private provider: ethers.providers.JsonRpcProvider;
+  private provider: JsonRpcProvider;
   private oracle: GasPriceOracle;
   private gasBuffer: number = 1.1; // 10% buffer on gas estimates
   private advancedEstimator?: AdvancedGasEstimator;
 
   constructor(
-    provider: ethers.providers.JsonRpcProvider, 
+    provider: JsonRpcProvider, 
     oracle: GasPriceOracle,
     advancedEstimator?: AdvancedGasEstimator
   ) {
@@ -113,7 +113,7 @@ export class TransactionBuilder {
         to: tx.to,
         data: tx.data,
         value: tx.value,
-        from: from || ethers.constants.AddressZero,
+        from: from || ZeroAddress,
         gasLimit: tx.gasLimit
       });
 

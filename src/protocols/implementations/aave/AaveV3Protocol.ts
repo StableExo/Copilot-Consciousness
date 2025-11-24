@@ -4,7 +4,7 @@
  * Implements the IProtocol interface for Aave V3 flash loans
  */
 
-import { ethers, BigNumber } from 'ethers';
+import { ethers, Provider } from 'ethers';
 import { BaseProtocol } from '../../base/BaseProtocol';
 import {
   SwapParams,
@@ -16,7 +16,7 @@ import {
 
 export class AaveV3Protocol extends BaseProtocol {
   constructor(
-    provider: ethers.providers.Provider,
+    provider: Provider,
     chainId: number,
     signer?: ethers.Signer
   ) {

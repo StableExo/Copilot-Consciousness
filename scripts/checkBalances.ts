@@ -1,5 +1,5 @@
 import hre from 'hardhat';
-import { ethers } from 'ethers';
+import { ethers, formatEther, formatUnits } from 'ethers';
 
 /**
  * Check Token Balances Script
@@ -35,7 +35,7 @@ async function main() {
   console.log('Address:', addr);
 
   const ethBal = await hreEthers.provider.getBalance(addr);
-  console.log('ETH (native) balance:', ethers.utils.formatEther(ethBal));
+  console.log('ETH (native) balance:', formatEther(ethBal));
 
   const WETH = '0x4200000000000000000000000000000000000006';
   const USDC = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
@@ -58,8 +58,8 @@ async function main() {
     usdc.symbol(),
   ]);
 
-  console.log(`${wethSym} balance:`, ethers.utils.formatUnits(wethBal, wethDec));
-  console.log(`${usdcSym} balance:`, ethers.utils.formatUnits(usdcBal, usdcDec));
+  console.log(`${wethSym} balance:`, formatUnits(wethBal, wethDec));
+  console.log(`${usdcSym} balance:`, formatUnits(usdcBal, usdcDec));
 }
 
 main().catch((error) => {

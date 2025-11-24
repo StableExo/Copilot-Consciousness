@@ -4,7 +4,7 @@
  * Provides common functionality and utilities for protocol adapters.
  */
 
-import { ethers, BigNumber, Contract } from 'ethers';
+import { ethers, Contract, Provider } from 'ethers';
 import {
   IProtocol,
   ProtocolMetadata,
@@ -15,7 +15,7 @@ import {
 } from './IProtocol';
 
 export abstract class BaseProtocol implements IProtocol {
-  protected provider: ethers.providers.Provider;
+  protected provider: Provider;
   protected signer?: ethers.Signer;
   protected metadata: ProtocolMetadata;
   protected routerContract?: Contract;
@@ -23,7 +23,7 @@ export abstract class BaseProtocol implements IProtocol {
   protected quoterContract?: Contract;
 
   constructor(
-    provider: ethers.providers.Provider,
+    provider: Provider,
     metadata: ProtocolMetadata,
     signer?: ethers.Signer
   ) {
@@ -81,19 +81,19 @@ export abstract class BaseProtocol implements IProtocol {
    * Validate swap parameters
    */
   protected validateSwapParams(params: SwapParams): void {
-    if (!ethers.utils.isAddress(params.tokenIn)) {
+    if (!isAddress(params.tokenIn)) {
       throw new Error(`Invalid tokenIn address: ${params.tokenIn}`);
     }
-    if (!ethers.utils.isAddress(params.tokenOut)) {
+    if (!isAddress(params.tokenOut)) {
       throw new Error(`Invalid tokenOut address: ${params.tokenOut}`);
     }
-    if (!ethers.utils.isAddress(params.recipient)) {
+    if (!isAddress(params.recipient)) {
       throw new Error(`Invalid recipient address: ${params.recipient}`);
     }
-    if (params.amountIn.lte(0)) {
+    if (params.amountIn <= 0n) {
       throw new Error('Amount in must be greater than 0');
     }
-    if (params.amountOutMinimum.lt(0)) {
+    if (params.amountOutMinimum < 0n) {
       throw new Error('Amount out minimum cannot be negative');
     }
   }

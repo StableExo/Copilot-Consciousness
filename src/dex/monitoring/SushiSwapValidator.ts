@@ -1,6 +1,6 @@
 import { BaseValidator } from './BaseValidator';
 import { ValidatorStatus, ComponentStatus } from '../types';
-import { ethers } from 'ethers';
+import { ethers, formatEther } from 'ethers';
 
 /**
  * SushiSwap DEX validator
@@ -159,14 +159,14 @@ export class SushiSwapValidator extends BaseValidator {
         try {
           const [reserve0, reserve1, lastUpdate] = await pairContract.getReserves();
           
-          const isHealthy = reserve0.gt(0) && reserve1.gt(0);
+          const isHealthy = reserve0 > 0n && reserve1 > 0n;
           
           components.push({
             name: `Pair: ${pair.name}`,
             status: isHealthy ? 'active' : 'inactive',
             details: {
               address: pair.address,
-              reserve0: ethers.utils.formatEther(reserve0),
+              reserve0: formatEther(reserve0),
               lastUpdate: lastUpdate.toString(),
             },
           });

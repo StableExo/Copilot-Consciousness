@@ -12,7 +12,7 @@ describe('NonceManager', () => {
 
   beforeEach(async () => {
     // Create a mock provider
-    provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');
+    provider = new JsonRpcProvider('http://localhost:8545');
     
     // Create a wallet with the provider
     wallet = ethers.Wallet.createRandom().connect(provider);
@@ -60,7 +60,7 @@ describe('NonceManager', () => {
   describe('connect', () => {
     it('should create a new NonceManager with new provider', async () => {
       const manager = await NonceManager.create(wallet);
-      const newProvider = new ethers.providers.JsonRpcProvider('http://localhost:8546');
+      const newProvider = new JsonRpcProvider('http://localhost:8546');
       const newManager = manager.connect(newProvider);
       
       expect(newManager).toBeInstanceOf(NonceManager);
@@ -85,7 +85,7 @@ describe('NonceManager', () => {
   describe('signTransaction', () => {
     it('should delegate signTransaction to underlying signer', async () => {
       const manager = await NonceManager.create(wallet);
-      const tx = { to: '0x' + '0'.repeat(40), value: ethers.utils.parseEther('1.0') };
+      const tx = { to: '0x' + '0'.repeat(40), value: parseEther('1.0') };
       
       const signTxSpy = jest.spyOn(wallet, 'signTransaction');
       await manager.signTransaction(tx);
@@ -223,7 +223,7 @@ describe('NonceManager', () => {
       jest.spyOn(provider, 'getNetwork').mockResolvedValue({ chainId: 1, name: 'homestead' } as any);
       jest.spyOn(wallet, 'sendTransaction').mockResolvedValue(mockTxResponse);
       
-      const tx = { to: '0x' + '0'.repeat(40), value: ethers.utils.parseEther('1.0') };
+      const tx = { to: '0x' + '0'.repeat(40), value: parseEther('1.0') };
       const response = await manager.sendTransaction(tx);
       
       expect(response).toBe(mockTxResponse);
@@ -249,7 +249,7 @@ describe('NonceManager', () => {
       
       const resyncSpy = jest.spyOn(manager, 'resyncNonce').mockResolvedValue();
       
-      const tx = { to: '0x' + '0'.repeat(40), value: ethers.utils.parseEther('1.0') };
+      const tx = { to: '0x' + '0'.repeat(40), value: parseEther('1.0') };
       
       await expect(manager.sendTransaction(tx)).rejects.toThrow('nonce expired');
       
@@ -270,7 +270,7 @@ describe('NonceManager', () => {
       
       const resyncSpy = jest.spyOn(manager, 'resyncNonce').mockResolvedValue();
       
-      const tx = { to: '0x' + '0'.repeat(40), value: ethers.utils.parseEther('1.0') };
+      const tx = { to: '0x' + '0'.repeat(40), value: parseEther('1.0') };
       
       await expect(manager.sendTransaction(tx)).rejects.toThrow('nonce too low');
       
@@ -291,7 +291,7 @@ describe('NonceManager', () => {
       
       const resyncSpy = jest.spyOn(manager, 'resyncNonce');
       
-      const tx = { to: '0x' + '0'.repeat(40), value: ethers.utils.parseEther('1.0') };
+      const tx = { to: '0x' + '0'.repeat(40), value: parseEther('1.0') };
       
       await expect(manager.sendTransaction(tx)).rejects.toThrow('insufficient funds');
       expect(resyncSpy).not.toHaveBeenCalled();

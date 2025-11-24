@@ -5,7 +5,7 @@
  * This eliminates the need to scan pools on every restart, dramatically reducing startup time.
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider } from 'ethers';
 import dotenv from 'dotenv';
 import { DEXRegistry } from '../src/dex/core/DEXRegistry';
 import { MultiHopDataFetcher } from '../src/arbitrage/MultiHopDataFetcher';
@@ -99,7 +99,7 @@ async function preloadChain(
 
   try {
     // Create provider for this chain
-    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const provider = new JsonRpcProvider(rpcUrl);
     
     // Verify connection
     const network = await provider.getNetwork();

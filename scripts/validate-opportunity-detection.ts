@@ -19,7 +19,7 @@
  *   MIN_PROFIT_THRESHOLD - Minimum profit in USD (default: 1.0)
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider, parseEther } from 'ethers';
 import dotenv from 'dotenv';
 import { DEXRegistry } from '../src/dex/core/DEXRegistry';
 import { OptimizedPoolScanner } from '../src/arbitrage/OptimizedPoolScanner';
@@ -156,7 +156,7 @@ function estimatePathProfit(
   // - Price impact
   
   // Convert to bigint from ether string
-  const startAmount = BigInt(ethers.utils.parseEther(startAmountEth).toString());
+  const startAmount = BigInt(parseEther(startAmountEth).toString());
   let currentAmount = startAmount;
   const edgeMap = new Map(edges.map(e => [e.poolAddress, e]));
   
@@ -245,7 +245,7 @@ async function main() {
   console.log(`RPC: ${process.env.BASE_RPC_URL}`);
   
   // Initialize components
-  const provider = new ethers.providers.JsonRpcProvider(
+  const provider = new JsonRpcProvider(
     process.env.BASE_RPC_URL
   );
   

@@ -16,7 +16,7 @@
  * Based on PROJECT-HAVOC design patterns and AxionCitadel learnings
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider, Wallet, Contract, formatEther, formatUnits, parseEther } from 'ethers';
 import dotenv from 'dotenv';
 import { EventEmitter } from 'events';
 import { logger } from './utils/logger';
@@ -228,8 +228,8 @@ function getRpcUrlForChain(chainId: number): string | undefined {
  */
 class TheWarden extends EventEmitter {
   private config: WardenConfig;
-  private provider: ethers.providers.JsonRpcProvider;
-  private wallet: ethers.Wallet;
+  private provider: JsonRpcProvider;
+  private wallet: Wallet;
   private dexRegistry: DEXRegistry;
   private advancedOrchestrator?: AdvancedOrchestrator;
   private integratedOrchestrator?: IntegratedArbitrageOrchestrator;
@@ -261,10 +261,10 @@ class TheWarden extends EventEmitter {
     this.config = config;
     
     // Initialize provider
-    this.provider = new ethers.providers.JsonRpcProvider(config.rpcUrl);
+    this.provider = new JsonRpcProvider(config.rpcUrl);
     
     // Initialize wallet
-    this.wallet = new ethers.Wallet(config.walletPrivateKey, this.provider);
+    this.wallet = new Wallet(config.walletPrivateKey, this.provider);
     
     // Initialize DEX registry
     this.dexRegistry = new DEXRegistry();
@@ -289,21 +289,21 @@ class TheWarden extends EventEmitter {
       logger.info(`Connected to network: ${network.name} (chainId: ${network.chainId})`);
       
       // Validate that the connected network matches the configured chain ID
-      if (network.chainId !== this.config.chainId) {
+      if (Number(network.chainId) !== this.config.chainId) {
         const errorMsg = `Chain ID mismatch! Configured: ${this.config.chainId}, Connected: ${network.chainId}. Please check your RPC_URL configuration.`;
         logger.error(errorMsg);
         throw new Error(errorMsg);
       }
       
       // Verify wallet
-      const balance = await this.wallet.getBalance();
+      const balance = await this.provider.getBalance(this.wallet.address);
       logger.info(`Wallet address: ${this.wallet.address}`);
-      logger.info(`Wallet balance: ${ethers.utils.formatEther(balance)} ETH`);
+      logger.info(`Wallet balance: ${formatEther(balance)} ETH`);
       
       // Check token balances for common tokens based on chain
       await this.checkTokenBalances();
       
-      if (balance.eq(0)) {
+      if (balance === 0n) {
         logger.warn('WARNING: Wallet balance is 0 - bot will not be able to execute trades');
       }
       
@@ -493,9 +493,9 @@ class TheWarden extends EventEmitter {
       // Check each token balance
       for (const token of tokens) {
         try {
-          const contract = new ethers.Contract(token.address, ERC20_ABI, this.provider);
+          const contract = new Contract(token.address, ERC20_ABI, this.provider);
           const balance = await contract.balanceOf(this.wallet.address);
-          const formattedBalance = ethers.utils.formatUnits(balance, token.decimals);
+          const formattedBalance = formatUnits(balance, token.decimals);
           logger.info(`${token.symbol} balance: ${formattedBalance}`);
         } catch (error) {
           logger.warn(`Could not fetch ${token.symbol} balance: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -527,12 +527,12 @@ class TheWarden extends EventEmitter {
     for (let i = 0; i < topPaths.length; i++) {
       const path = topPaths[i];
       
-      logger.info(`[OpportunityAnalysis] Analyzing opportunity ${i + 1}: ${ethers.utils.formatEther(path.netProfit.toString())} ETH profit`);
+      logger.info(`[OpportunityAnalysis] Analyzing opportunity ${i + 1}: ${formatEther(path.netProfit.toString())} ETH profit`);
       
       // Calculate market metrics from real data
       const blockNumber = await this.provider.getBlockNumber().catch(() => 0);
-      const gasPrice = await this.provider.getGasPrice().catch(() => BigInt(0));
-      const gasPriceGwei = Number(ethers.utils.formatUnits(gasPrice, 'gwei'));
+      const gasPrice = await this.provider.getFeeData().then(f => f.gasPrice || 0n).catch(() => 0n);
+      const gasPriceGwei = Number(formatUnits(gasPrice, 'gwei'));
       
       // Calculate congestion from gas price (0-1 scale, normalized against 100 gwei)
       const congestion = Math.min(gasPriceGwei / 100, 1.0);
@@ -544,7 +544,7 @@ class TheWarden extends EventEmitter {
       // Build opportunity context with real data
       const context: OpportunityContext = {
         opportunity: {
-          profit: Number(ethers.utils.formatEther(path.netProfit.toString())),
+          profit: Number(formatEther(path.netProfit.toString())),
           netProfit: path.netProfit,
           pools: path.hops.map(h => h.poolAddress),
           path: path.hops.map(h => `${h.tokenIn} -> ${h.tokenOut}`),
@@ -583,7 +583,7 @@ class TheWarden extends EventEmitter {
         
         // Calculate risk score from opportunity characteristics
         const complexityRisk = Math.min(path.hops.length / 5, 1.0); // More hops = more risk
-        const gasCostRisk = Number(ethers.utils.formatEther(path.totalGasCost.toString())) / Number(ethers.utils.formatEther(path.netProfit.toString()));
+        const gasCostRisk = Number(formatEther(path.totalGasCost.toString())) / Number(formatEther(path.netProfit.toString()));
         const congestionRisk = congestion;
         const riskScore = (complexityRisk * 0.3 + gasCostRisk * 0.4 + congestionRisk * 0.3);
         
@@ -769,7 +769,7 @@ class TheWarden extends EventEmitter {
         this.stats.tradesExecuted++;
         if (result.profit) {
           this.stats.totalProfit += result.profit;
-          logger.info(`Trade executed successfully. Profit: ${ethers.utils.formatEther(result.profit)} ETH`);
+          logger.info(`Trade executed successfully. Profit: ${formatEther(result.profit)} ETH`);
         }
       });
       
@@ -848,7 +848,7 @@ class TheWarden extends EventEmitter {
         logger.info(`  DEXes: ${dexes.length} (${dexes.map(d => d.name).join(', ')})`);
       }
       
-      const startAmount = ethers.utils.parseEther('1.0').toBigInt();
+      const startAmount = parseEther('1.0');
       
       // Find opportunities using advanced orchestrator
       // Only log fetching pool data every 10 cycles to reduce verbosity
@@ -879,8 +879,8 @@ class TheWarden extends EventEmitter {
           const bestPath = paths[0];
           logger.info('Processing best opportunity...');
           logger.info(`  Network: ${getNetworkName(chainId)}`);
-          logger.info(`  Estimated profit: ${ethers.utils.formatEther(bestPath.netProfit.toString())} ETH`);
-          logger.info(`  Gas cost: ${ethers.utils.formatEther(bestPath.totalGasCost.toString())} ETH`);
+          logger.info(`  Estimated profit: ${formatEther(bestPath.netProfit.toString())} ETH`);
+          logger.info(`  Gas cost: ${formatEther(bestPath.totalGasCost.toString())} ETH`);
           logger.info(`  Hops: ${bestPath.hops.length}`);
           
           // For now, we just log the opportunity
@@ -890,8 +890,8 @@ class TheWarden extends EventEmitter {
           const bestPath = paths[0];
           logger.info('[DRY RUN] Best opportunity:');
           logger.info(`  Network: ${getNetworkName(chainId)}`);
-          logger.info(`  Estimated profit: ${ethers.utils.formatEther(bestPath.netProfit.toString())} ETH`);
-          logger.info(`  Gas cost: ${ethers.utils.formatEther(bestPath.totalGasCost.toString())} ETH`);
+          logger.info(`  Estimated profit: ${formatEther(bestPath.netProfit.toString())} ETH`);
+          logger.info(`  Gas cost: ${formatEther(bestPath.totalGasCost.toString())} ETH`);
           logger.info(`  Hops: ${bestPath.hops.length}`);
         }
       }
@@ -1034,7 +1034,7 @@ class TheWarden extends EventEmitter {
     logger.info(`Cycles completed: ${this.stats.cyclesCompleted}`);
     logger.info(`Opportunities found: ${this.stats.opportunitiesFound}`);
     logger.info(`Trades executed: ${this.stats.tradesExecuted}`);
-    logger.info(`Total profit: ${ethers.utils.formatEther(this.stats.totalProfit)} ETH`);
+    logger.info(`Total profit: ${formatEther(this.stats.totalProfit)} ETH`);
     logger.info(`Errors: ${this.stats.errors}`);
     
     // Phase 3 Status
@@ -1158,7 +1158,7 @@ class EnhancedTheWarden extends EventEmitter {
         this.stats.tradesExecuted++;
         if (result.profit) {
           this.stats.totalProfit += result.profit;
-          logger.info(`Trade executed successfully. Profit: ${ethers.utils.formatEther(result.profit)} ETH`, 'ARBITRAGE');
+          logger.info(`Trade executed successfully. Profit: ${formatEther(result.profit)} ETH`, 'ARBITRAGE');
         }
         this.healthCheckServer.updateStats(this.stats);
       });
@@ -1201,7 +1201,7 @@ class EnhancedTheWarden extends EventEmitter {
         logger.info(`  DEXes: ${dexes.length} (${dexes.map(d => d.name).join(', ')})`, 'ARBITRAGE');
       }
       
-      const startAmount = ethers.utils.parseEther('1.0').toBigInt();
+      const startAmount = parseEther('1.0');
       
       // Find opportunities
       // Only log fetching pool data every 10 cycles to reduce verbosity
@@ -1222,14 +1222,14 @@ class EnhancedTheWarden extends EventEmitter {
         if (!this.components.config.dryRun && this.components.integratedOrchestrator && paths.length > 0) {
           const bestPath = paths[0];
           logger.info('Processing best opportunity...', 'ARBITRAGE');
-          logger.info(`  Estimated profit: ${ethers.utils.formatEther(bestPath.netProfit.toString())} ETH`, 'ARBITRAGE');
-          logger.info(`  Gas cost: ${ethers.utils.formatEther(bestPath.totalGasCost.toString())} ETH`, 'ARBITRAGE');
+          logger.info(`  Estimated profit: ${formatEther(bestPath.netProfit.toString())} ETH`, 'ARBITRAGE');
+          logger.info(`  Gas cost: ${formatEther(bestPath.totalGasCost.toString())} ETH`, 'ARBITRAGE');
           logger.info(`  Hops: ${bestPath.hops.length}`, 'ARBITRAGE');
         } else if (this.components.config.dryRun && paths.length > 0) {
           const bestPath = paths[0];
           logger.info('[DRY RUN] Best opportunity:', 'ARBITRAGE');
-          logger.info(`  Estimated profit: ${ethers.utils.formatEther(bestPath.netProfit.toString())} ETH`, 'ARBITRAGE');
-          logger.info(`  Gas cost: ${ethers.utils.formatEther(bestPath.totalGasCost.toString())} ETH`, 'ARBITRAGE');
+          logger.info(`  Estimated profit: ${formatEther(bestPath.netProfit.toString())} ETH`, 'ARBITRAGE');
+          logger.info(`  Gas cost: ${formatEther(bestPath.totalGasCost.toString())} ETH`, 'ARBITRAGE');
           logger.info(`  Hops: ${bestPath.hops.length}`, 'ARBITRAGE');
         }
       }
@@ -1325,7 +1325,7 @@ class EnhancedTheWarden extends EventEmitter {
     logger.info(`Cycles completed: ${this.stats.cyclesCompleted}`, 'STATUS');
     logger.info(`Opportunities found: ${this.stats.opportunitiesFound}`, 'STATUS');
     logger.info(`Trades executed: ${this.stats.tradesExecuted}`, 'STATUS');
-    logger.info(`Total profit: ${ethers.utils.formatEther(this.stats.totalProfit)} ETH`, 'STATUS');
+    logger.info(`Total profit: ${formatEther(this.stats.totalProfit)} ETH`, 'STATUS');
     logger.info(`Errors: ${this.stats.errors}`, 'STATUS');
     logger.info('─────────────────────────────────────────────────────────', 'STATUS');
   }

@@ -111,11 +111,11 @@ describe('MEV Awareness Intelligence Layer', () => {
   });
 
   describe('Integration - Sensor System', () => {
-    let provider: ethers.providers.Provider;
+    let provider: Provider;
 
     beforeEach(() => {
       // Create a mock provider for testing
-      provider = new ethers.providers.JsonRpcProvider();
+      provider = new JsonRpcProvider();
     });
 
     it('should create MempoolCongestion sensor', () => {

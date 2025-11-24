@@ -11,7 +11,7 @@
  * Expected performance: 60+ pool scan in under 10 seconds (down from 60+ seconds)
  */
 
-import { ethers } from 'ethers';
+import { Provider } from 'ethers';
 import { DEXRegistry } from '../dex/core/DEXRegistry';
 import { DEXConfig } from '../dex/types';
 import { PoolEdge } from './types';
@@ -50,7 +50,7 @@ interface V3PoolDiscovery {
 
 export class OptimizedPoolScanner {
   private registry: DEXRegistry;
-  private provider: ethers.providers.Provider;
+  private provider: Provider;
   private poolCache: Map<string, CachedPoolData>;
   private cacheTTL: number = 60000; // 1 minute default TTL
   private currentChainId?: number;
@@ -58,7 +58,7 @@ export class OptimizedPoolScanner {
 
   constructor(
     registry: DEXRegistry,
-    provider: ethers.providers.Provider,
+    provider: Provider,
     chainId?: number
   ) {
     this.registry = registry;
@@ -106,7 +106,7 @@ export class OptimizedPoolScanner {
       ? [token0, token1] 
       : [token1, token0];
 
-    const factoryInterface = new ethers.utils.Interface([
+    const factoryInterface = new Interface([
       'function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)'
     ]);
 
@@ -121,7 +121,7 @@ export class OptimizedPoolScanner {
       for (const fee of UNISWAP_V3_FEE_TIERS) {
         try {
           const poolAddress = await factoryContract.getPool(tokenA, tokenB, fee);
-          if (poolAddress && poolAddress !== ethers.constants.AddressZero) {
+          if (poolAddress && poolAddress !== ZeroAddress) {
             const code = await this.provider.getCode(poolAddress);
             discoveries.push({
               address: poolAddress,
@@ -152,7 +152,7 @@ export class OptimizedPoolScanner {
       if (result.success) {
         try {
           const poolAddress = factoryInterface.decodeFunctionResult('getPool', result.returnData)[0];
-          if (poolAddress && poolAddress !== ethers.constants.AddressZero) {
+          if (poolAddress && poolAddress !== ZeroAddress) {
             poolsToCheck.push({ address: poolAddress, fee: UNISWAP_V3_FEE_TIERS[i] });
           }
         } catch {
@@ -163,7 +163,7 @@ export class OptimizedPoolScanner {
 
     // Batch pool existence checks
     if (poolsToCheck.length > 0) {
-      const poolInterface = new ethers.utils.Interface([
+      const poolInterface = new Interface([
         'function token0() external view returns (address)',
       ]);
 
@@ -388,7 +388,7 @@ export class OptimizedPoolScanner {
         ? [token0, token1] 
         : [token1, token0];
 
-      const salt = ethers.utils.keccak256(
+      const salt = keccak256(
         ethers.utils.solidityPack(['address', 'address'], [tokenA, tokenB])
       );
       

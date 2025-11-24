@@ -5,7 +5,7 @@
  * Periodically updates sensor readings in background thread
  */
 
-import { ethers } from 'ethers';
+import { ethers, Provider } from 'ethers';
 import { MempoolCongestionSensor } from './MempoolCongestionSensor';
 import { SearcherDensitySensor } from './SearcherDensitySensor';
 import { MEVRiskParams } from '../types/TransactionType';
@@ -19,7 +19,7 @@ export class MEVSensorHub {
   private lastUpdate: MEVRiskParams;
 
   constructor(
-    provider: ethers.providers.Provider,
+    provider: Provider,
     updateInterval: number = 5000 // 5 seconds default
   ) {
     this.congestionSensor = new MempoolCongestionSensor(provider);

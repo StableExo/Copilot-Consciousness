@@ -4,7 +4,7 @@
  * Integrates with Arbitrum, Optimism, and Base for cheaper execution
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider } from 'ethers';
 import { ArbitragePath } from '../arbitrage/types';
 import { GasPriceOracle } from './GasPriceOracle';
 
@@ -34,7 +34,7 @@ export interface DEXAvailability {
 
 export class Layer2Manager {
   private chains: Map<SupportedChain, ChainConfig>;
-  private providers: Map<SupportedChain, ethers.providers.JsonRpcProvider>;
+  private providers: Map<SupportedChain, JsonRpcProvider>;
   private oracles: Map<SupportedChain, GasPriceOracle>;
   private dexAvailability: Map<string, Set<SupportedChain>>;
 
@@ -120,7 +120,7 @@ export class Layer2Manager {
     this.chains.set(config.name, config);
     
     // Create provider for this chain
-    const provider = new ethers.providers.JsonRpcProvider(config.rpcUrl);
+    const provider = new JsonRpcProvider(config.rpcUrl);
     this.providers.set(config.name, provider);
     
     // Create oracle for this chain
@@ -174,7 +174,7 @@ export class Layer2Manager {
   /**
    * Get provider for a chain
    */
-  getProvider(chain: SupportedChain): ethers.providers.JsonRpcProvider | undefined {
+  getProvider(chain: SupportedChain): JsonRpcProvider | undefined {
     return this.providers.get(chain);
   }
 

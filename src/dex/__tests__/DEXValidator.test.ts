@@ -43,7 +43,7 @@ describe('DEX Validator Tests', () => {
         for (const dex of dexes) {
             console.log(`Validating ${dex.name}...`);
 
-            const provider = new ethers.providers.JsonRpcProvider();
+            const provider = new JsonRpcProvider();
 
             const routerCode = await provider.getCode(dex.router);
             expect(routerCode).not.toBe('0x');
@@ -54,7 +54,7 @@ describe('DEX Validator Tests', () => {
     });
 
     it('should fail validation for a DEX with an invalid address', async () => {
-        const provider = new ethers.providers.JsonRpcProvider();
+        const provider = new JsonRpcProvider();
         const invalidAddress = '0xInvalidAddress';
         const code = await provider.getCode(invalidAddress);
         expect(code).toBe('0x');

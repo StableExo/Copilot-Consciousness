@@ -10,7 +10,7 @@
  * on unprofitable or reverting transactions.
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider } from 'ethers';
 import { ArbitragePath, ArbitrageHop } from '../arbitrage/types';
 import { GasPriceOracle, GasPrice } from './GasPriceOracle';
 
@@ -197,7 +197,7 @@ const DEFAULT_DEX_CONFIGS: Record<string, DEXGasConfig> = {
 };
 
 export class AdvancedGasEstimator {
-  private provider: ethers.providers.JsonRpcProvider;
+  private provider: JsonRpcProvider;
   private oracle: GasPriceOracle;
   private config: GasEstimationConfig;
   
@@ -211,7 +211,7 @@ export class AdvancedGasEstimator {
   };
 
   constructor(
-    provider: ethers.providers.JsonRpcProvider,
+    provider: JsonRpcProvider,
     oracle: GasPriceOracle,
     config?: Partial<GasEstimationConfig>
   ) {
@@ -601,7 +601,7 @@ export class AdvancedGasEstimator {
    */
   private buildTransactionData(path: ArbitragePath): string {
     // Simplified encoding - replace with actual executor contract interface
-    const iface = new ethers.utils.Interface([
+    const iface = new Interface([
       'function executeArbitrage(address[] tokens, address[] pools, uint256 amountIn)'
     ]);
     

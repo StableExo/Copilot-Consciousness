@@ -12,7 +12,7 @@
  * 7. Log all reasoning
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider } from 'ethers';
 import dotenv from 'dotenv';
 import { DEXRegistry } from '../src/dex/core/DEXRegistry';
 import { OptimizedPoolScanner } from '../src/arbitrage/OptimizedPoolScanner';
@@ -65,7 +65,7 @@ async function runEndToEndDryRun(): Promise<void> {
     console.log(`RPC: ${rpcUrl}`);
     console.log(`Mode: DRY RUN (no actual trades)\n`);
 
-    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const provider = new JsonRpcProvider(rpcUrl);
     const registry = new DEXRegistry();
     const scanner = new OptimizedPoolScanner(registry, provider, 8453);
     const consciousness = new ArbitrageConsciousness(0.05, 1000);

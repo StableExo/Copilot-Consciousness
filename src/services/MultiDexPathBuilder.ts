@@ -10,7 +10,7 @@
  * - FlashLoanExecutor for execution
  */
 
-import { ethers } from 'ethers';
+import { ethers, Provider } from 'ethers';
 import { SpatialArbEngine, PoolState } from '../arbitrage/engines/SpatialArbEngine';
 import { TriangularArbEngine } from '../arbitrage/engines/TriangularArbEngine';
 import { ArbitrageOpportunity, ArbitrageType } from '../arbitrage/models/ArbitrageOpportunity';
@@ -63,7 +63,7 @@ export interface ArbitragePath {
  */
 export interface MultiDexPathBuilderConfig {
   /** Provider for fetching pool data */
-  provider: ethers.providers.Provider;
+  provider: Provider;
   /** Minimum profit threshold in ETH */
   minProfitThresholdEth: number;
   /** Maximum slippage in basis points */

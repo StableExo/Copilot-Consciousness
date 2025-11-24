@@ -13,7 +13,7 @@ const mockProvider = {
   getBlock: jest.fn(),
   getFeeData: jest.fn(),
   call: jest.fn()
-} as unknown as ethers.providers.JsonRpcProvider;
+} as unknown as JsonRpcProvider;
 
 // Mock oracle
 class MockGasPriceOracle extends GasPriceOracle {

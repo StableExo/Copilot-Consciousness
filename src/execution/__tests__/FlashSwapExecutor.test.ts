@@ -111,7 +111,7 @@ describe('FlashSwapExecutor', () => {
 
       const arbParams = executor.buildArbParams(opportunity);
 
-      expect(arbParams.flashLoanAmount).toEqual(ethers.utils.parseEther('1'));
+      expect(arbParams.flashLoanAmount).toEqual(parseEther('1'));
       expect(arbParams.flashLoanToken).toBe('0xWETH');
       expect(arbParams.flashLoanPool).toBe('0xAavePool');
       expect(arbParams.swapSteps.length).toBe(3);
@@ -144,7 +144,7 @@ describe('FlashSwapExecutor', () => {
       const customSlippage = 0.02; // 2%
       const arbParams = executor.buildArbParams(opportunity, customSlippage);
 
-      const expectedOutput = ethers.utils.parseEther('2000');
+      const expectedOutput = parseEther('2000');
       const expectedMinOutput = expectedOutput
         .mul(Math.floor((1 - customSlippage) * 10000))
         .div(10000);
@@ -194,7 +194,7 @@ describe('FlashSwapExecutor', () => {
 
   describe('validateArbParams', () => {
     const createValidArbParams = (): ArbParams => ({
-      flashLoanAmount: ethers.utils.parseEther('1'),
+      flashLoanAmount: parseEther('1'),
       flashLoanToken: '0x1234567890123456789012345678901234567890',
       flashLoanPool: '0x2234567890123456789012345678901234567890',
       swapSteps: [
@@ -202,20 +202,20 @@ describe('FlashSwapExecutor', () => {
           poolAddress: '0x3234567890123456789012345678901234567890',
           tokenIn: '0x4234567890123456789012345678901234567890',
           tokenOut: '0x5234567890123456789012345678901234567890',
-          amountIn: ethers.utils.parseEther('1'),
-          minAmountOut: ethers.utils.parseEther('0.99'),
+          amountIn: parseEther('1'),
+          minAmountOut: parseEther('0.99'),
           protocol: SwapProtocol.UNISWAP_V3,
         },
         {
           poolAddress: '0x6234567890123456789012345678901234567890',
           tokenIn: '0x5234567890123456789012345678901234567890',
           tokenOut: '0x4234567890123456789012345678901234567890',
-          amountIn: ethers.utils.parseEther('0.99'),
-          minAmountOut: ethers.utils.parseEther('1.01'),
+          amountIn: parseEther('0.99'),
+          minAmountOut: parseEther('1.01'),
           protocol: SwapProtocol.SUSHISWAP,
         },
       ],
-      expectedProfit: ethers.utils.parseEther('0.01'),
+      expectedProfit: parseEther('0.01'),
       deadline: Math.floor(Date.now() / 1000) + 300,
     });
 
@@ -312,7 +312,7 @@ describe('FlashSwapExecutor', () => {
   describe('estimateGas', () => {
     it('should estimate gas with buffer', () => {
       const arbParams: ArbParams = {
-        flashLoanAmount: ethers.utils.parseEther('1'),
+        flashLoanAmount: parseEther('1'),
         flashLoanToken: '0x1234567890123456789012345678901234567890',
         flashLoanPool: '0x2234567890123456789012345678901234567890',
         swapSteps: [
@@ -320,12 +320,12 @@ describe('FlashSwapExecutor', () => {
             poolAddress: '0x3234567890123456789012345678901234567890',
             tokenIn: '0x4234567890123456789012345678901234567890',
             tokenOut: '0x5234567890123456789012345678901234567890',
-            amountIn: ethers.utils.parseEther('1'),
-            minAmountOut: ethers.utils.parseEther('0.99'),
+            amountIn: parseEther('1'),
+            minAmountOut: parseEther('0.99'),
             protocol: SwapProtocol.UNISWAP_V3,
           },
         ],
-        expectedProfit: ethers.utils.parseEther('0.01'),
+        expectedProfit: parseEther('0.01'),
         deadline: Math.floor(Date.now() / 1000) + 300,
       };
 
@@ -339,7 +339,7 @@ describe('FlashSwapExecutor', () => {
 
     it('should scale gas estimate with number of swaps', () => {
       const singleSwapParams: ArbParams = {
-        flashLoanAmount: ethers.utils.parseEther('1'),
+        flashLoanAmount: parseEther('1'),
         flashLoanToken: '0x1234567890123456789012345678901234567890',
         flashLoanPool: '0x2234567890123456789012345678901234567890',
         swapSteps: [
@@ -347,12 +347,12 @@ describe('FlashSwapExecutor', () => {
             poolAddress: '0x3234567890123456789012345678901234567890',
             tokenIn: '0x4234567890123456789012345678901234567890',
             tokenOut: '0x5234567890123456789012345678901234567890',
-            amountIn: ethers.utils.parseEther('1'),
-            minAmountOut: ethers.utils.parseEther('0.99'),
+            amountIn: parseEther('1'),
+            minAmountOut: parseEther('0.99'),
             protocol: SwapProtocol.UNISWAP_V3,
           },
         ],
-        expectedProfit: ethers.utils.parseEther('0.01'),
+        expectedProfit: parseEther('0.01'),
         deadline: Math.floor(Date.now() / 1000) + 300,
       };
 
@@ -377,7 +377,7 @@ describe('FlashSwapExecutor', () => {
   describe('executeArbitrage', () => {
     it('should execute dry run successfully', async () => {
       const arbParams: ArbParams = {
-        flashLoanAmount: ethers.utils.parseEther('1'),
+        flashLoanAmount: parseEther('1'),
         flashLoanToken: '0x1234567890123456789012345678901234567890',
         flashLoanPool: '0x2234567890123456789012345678901234567890',
         swapSteps: [
@@ -385,12 +385,12 @@ describe('FlashSwapExecutor', () => {
             poolAddress: '0x3234567890123456789012345678901234567890',
             tokenIn: '0x4234567890123456789012345678901234567890',
             tokenOut: '0x5234567890123456789012345678901234567890',
-            amountIn: ethers.utils.parseEther('1'),
-            minAmountOut: ethers.utils.parseEther('0.99'),
+            amountIn: parseEther('1'),
+            minAmountOut: parseEther('0.99'),
             protocol: SwapProtocol.UNISWAP_V3,
           },
         ],
-        expectedProfit: ethers.utils.parseEther('0.01'),
+        expectedProfit: parseEther('0.01'),
         deadline: Math.floor(Date.now() / 1000) + 300,
       };
 
@@ -408,7 +408,7 @@ describe('FlashSwapExecutor', () => {
         flashLoanToken: '0x1234567890123456789012345678901234567890',
         flashLoanPool: '0x2234567890123456789012345678901234567890',
         swapSteps: [],
-        expectedProfit: ethers.utils.parseEther('0.01'),
+        expectedProfit: parseEther('0.01'),
         deadline: Math.floor(Date.now() / 1000) + 300,
       };
 
@@ -424,7 +424,7 @@ describe('FlashSwapExecutor', () => {
       executor.setContract(mockContract);
 
       const arbParams: ArbParams = {
-        flashLoanAmount: ethers.utils.parseEther('1'),
+        flashLoanAmount: parseEther('1'),
         flashLoanToken: '0x1234567890123456789012345678901234567890',
         flashLoanPool: '0x2234567890123456789012345678901234567890',
         swapSteps: [
@@ -432,12 +432,12 @@ describe('FlashSwapExecutor', () => {
             poolAddress: '0x3234567890123456789012345678901234567890',
             tokenIn: '0x4234567890123456789012345678901234567890',
             tokenOut: '0x5234567890123456789012345678901234567890',
-            amountIn: ethers.utils.parseEther('1'),
-            minAmountOut: ethers.utils.parseEther('0.99'),
+            amountIn: parseEther('1'),
+            minAmountOut: parseEther('0.99'),
             protocol: SwapProtocol.UNISWAP_V3,
           },
         ],
-        expectedProfit: ethers.utils.parseEther('0.01'),
+        expectedProfit: parseEther('0.01'),
         deadline: Math.floor(Date.now() / 1000) + 300,
       };
 
@@ -456,7 +456,7 @@ describe('FlashSwapExecutor', () => {
   describe('simulateArbitrage', () => {
     it('should simulate execution successfully', async () => {
       const arbParams: ArbParams = {
-        flashLoanAmount: ethers.utils.parseEther('1'),
+        flashLoanAmount: parseEther('1'),
         flashLoanToken: '0x1234567890123456789012345678901234567890',
         flashLoanPool: '0x2234567890123456789012345678901234567890',
         swapSteps: [
@@ -464,12 +464,12 @@ describe('FlashSwapExecutor', () => {
             poolAddress: '0x3234567890123456789012345678901234567890',
             tokenIn: '0x4234567890123456789012345678901234567890',
             tokenOut: '0x5234567890123456789012345678901234567890',
-            amountIn: ethers.utils.parseEther('1'),
-            minAmountOut: ethers.utils.parseEther('0.99'),
+            amountIn: parseEther('1'),
+            minAmountOut: parseEther('0.99'),
             protocol: SwapProtocol.UNISWAP_V3,
           },
         ],
-        expectedProfit: ethers.utils.parseEther('0.01'),
+        expectedProfit: parseEther('0.01'),
         deadline: Math.floor(Date.now() / 1000) + 300,
       };
 
@@ -486,7 +486,7 @@ describe('FlashSwapExecutor', () => {
         flashLoanToken: 'invalid',
         flashLoanPool: '0x2234567890123456789012345678901234567890',
         swapSteps: [],
-        expectedProfit: ethers.utils.parseEther('0.01'),
+        expectedProfit: parseEther('0.01'),
         deadline: Math.floor(Date.now() / 1000) + 300,
       };
 
@@ -499,28 +499,28 @@ describe('FlashSwapExecutor', () => {
 
   describe('calculateFlashLoanFee', () => {
     it('should calculate Aave flash loan fee correctly', () => {
-      const amount = ethers.utils.parseEther('100');
+      const amount = parseEther('100');
       const fee = FlashSwapExecutor.calculateFlashLoanFee(amount, 'aave');
 
       // 0.09% of 100 = 0.09
-      const expectedFee = ethers.utils.parseEther('0.09');
+      const expectedFee = parseEther('0.09');
       expect(fee).toEqual(expectedFee);
     });
 
     it('should calculate Uniswap V3 flash loan fee correctly', () => {
-      const amount = ethers.utils.parseEther('100');
+      const amount = parseEther('100');
       const fee = FlashSwapExecutor.calculateFlashLoanFee(amount, 'uniswap_v3');
 
       // 0.05% of 100 = 0.05
-      const expectedFee = ethers.utils.parseEther('0.05');
+      const expectedFee = parseEther('0.05');
       expect(fee).toEqual(expectedFee);
     });
 
     it('should default to Aave fee when provider not specified', () => {
-      const amount = ethers.utils.parseEther('100');
+      const amount = parseEther('100');
       const fee = FlashSwapExecutor.calculateFlashLoanFee(amount);
 
-      const expectedFee = ethers.utils.parseEther('0.09');
+      const expectedFee = parseEther('0.09');
       expect(fee).toEqual(expectedFee);
     });
   });
@@ -529,7 +529,7 @@ describe('FlashSwapExecutor', () => {
     it('should calculate success rate correctly when using actual execution', async () => {
       // For this test, just validate that validation works
       const validParams: ArbParams = {
-        flashLoanAmount: ethers.utils.parseEther('1'),
+        flashLoanAmount: parseEther('1'),
         flashLoanToken: '0x1234567890123456789012345678901234567890',
         flashLoanPool: '0x2234567890123456789012345678901234567890',
         swapSteps: [
@@ -537,12 +537,12 @@ describe('FlashSwapExecutor', () => {
             poolAddress: '0x3234567890123456789012345678901234567890',
             tokenIn: '0x4234567890123456789012345678901234567890',
             tokenOut: '0x5234567890123456789012345678901234567890',
-            amountIn: ethers.utils.parseEther('1'),
-            minAmountOut: ethers.utils.parseEther('0.99'),
+            amountIn: parseEther('1'),
+            minAmountOut: parseEther('0.99'),
             protocol: SwapProtocol.UNISWAP_V3,
           },
         ],
-        expectedProfit: ethers.utils.parseEther('0.01'),
+        expectedProfit: parseEther('0.01'),
         deadline: Math.floor(Date.now() / 1000) + 300,
       };
 

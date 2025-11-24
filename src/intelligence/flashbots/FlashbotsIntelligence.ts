@@ -188,8 +188,8 @@ export class FlashbotsIntelligence {
     }
 
     logger.info(
-      `[FlashbotsIntelligence] Recorded MEV refund: ${ethers.utils.formatEther(refund.refundAmount)} ETH ` +
-      `from ${ethers.utils.formatEther(refund.mevExtracted)} ETH extracted`
+      `[FlashbotsIntelligence] Recorded MEV refund: ${formatEther(refund.refundAmount)} ETH ` +
+      `from ${formatEther(refund.mevExtracted)} ETH extracted`
     );
   }
 
@@ -395,8 +395,8 @@ export class FlashbotsIntelligence {
       },
       refunds: {
         total: this.mevRefunds.length,
-        totalExtracted: ethers.utils.formatEther(refundStats.totalExtracted),
-        totalRefunded: ethers.utils.formatEther(refundStats.totalRefunded),
+        totalExtracted: formatEther(refundStats.totalExtracted),
+        totalRefunded: formatEther(refundStats.totalRefunded),
         refundRate: refundStats.refundRate,
       },
     };

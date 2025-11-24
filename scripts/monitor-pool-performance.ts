@@ -12,7 +12,7 @@
  *   BASE_RPC_URL - RPC endpoint for Base network
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider } from 'ethers';
 import dotenv from 'dotenv';
 import { DEXRegistry } from '../src/dex/core/DEXRegistry';
 import { MultiHopDataFetcher } from '../src/arbitrage/MultiHopDataFetcher';
@@ -43,7 +43,7 @@ async function measureStandardScanner(
 ): Promise<PerformanceMetrics> {
   console.log('\n📊 Testing Standard MultiHopDataFetcher...');
   
-  const provider = new ethers.providers.JsonRpcProvider(
+  const provider = new JsonRpcProvider(
     process.env.BASE_RPC_URL || 'https://mainnet.base.org'
   );
 
@@ -73,7 +73,7 @@ async function measureOptimizedScanner(
 ): Promise<PerformanceMetrics> {
   console.log('\n⚡ Testing Optimized Pool Scanner...');
   
-  const provider = new ethers.providers.JsonRpcProvider(
+  const provider = new JsonRpcProvider(
     process.env.BASE_RPC_URL || 'https://mainnet.base.org'
   );
 
@@ -169,7 +169,7 @@ async function main() {
     console.log('\n🔄 Testing Cache Performance (Second Run)...');
     const startTime = Date.now();
     
-    const provider = new ethers.providers.JsonRpcProvider(
+    const provider = new JsonRpcProvider(
       process.env.BASE_RPC_URL || 'https://mainnet.base.org'
     );
     const scanner = new OptimizedPoolScanner(registry, provider, 8453);

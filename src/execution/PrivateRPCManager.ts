@@ -335,7 +335,7 @@ export class PrivateRPCManager {
   ): Promise<PrivateTransactionResult> {
     try {
       // Create a provider connected to Flashbots RPC
-      const flashbotsProvider = new ethers.providers.JsonRpcProvider(relay.endpoint);
+      const flashbotsProvider = new JsonRpcProvider(relay.endpoint);
       
       // Sign the transaction
       const signedTx = await this.signer.signTransaction(transaction);
@@ -423,7 +423,7 @@ export class PrivateRPCManager {
       };
 
       // Submit to MEV-Share endpoint using ethers provider
-      const mevShareProvider = new ethers.providers.JsonRpcProvider(relay.endpoint);
+      const mevShareProvider = new JsonRpcProvider(relay.endpoint);
       const data = await mevShareProvider.send('mev_sendBundle', mevSharePayload.params);
 
       logger.info(`[PrivateRPCManager] Transaction submitted to MEV-Share`);
@@ -454,7 +454,7 @@ export class PrivateRPCManager {
     transaction: providers.TransactionRequest
   ): Promise<PrivateTransactionResult> {
     try {
-      const builderProvider = new ethers.providers.JsonRpcProvider(relay.endpoint);
+      const builderProvider = new JsonRpcProvider(relay.endpoint);
       const signedTx = await this.signer.signTransaction(transaction);
       const response = await builderProvider.sendTransaction(signedTx);
 
@@ -560,7 +560,7 @@ export class PrivateRPCManager {
       };
 
       // Submit bundle using ethers provider
-      const flashbotsProvider = new ethers.providers.JsonRpcProvider(flashbotsRelay.endpoint);
+      const flashbotsProvider = new JsonRpcProvider(flashbotsRelay.endpoint);
       const data = await flashbotsProvider.send('eth_sendBundle', [payload]);
 
       logger.info('[PrivateRPCManager] Flashbots bundle submitted successfully');
@@ -604,7 +604,7 @@ export class PrivateRPCManager {
     }
 
     try {
-      const provider = new ethers.providers.JsonRpcProvider(relay.endpoint);
+      const provider = new JsonRpcProvider(relay.endpoint);
       await provider.getBlockNumber();
       
       const stats = this.stats.get(type);
@@ -665,7 +665,7 @@ export class PrivateRPCManager {
     }
 
     try {
-      const provider = new ethers.providers.JsonRpcProvider(flashbotsRelay.endpoint);
+      const provider = new JsonRpcProvider(flashbotsRelay.endpoint);
       
       const payload = {
         txs: bundle.signedTransactions,
@@ -730,7 +730,7 @@ export class PrivateRPCManager {
     }
 
     try {
-      const provider = new ethers.providers.JsonRpcProvider(flashbotsRelay.endpoint);
+      const provider = new JsonRpcProvider(flashbotsRelay.endpoint);
       await provider.send('eth_cancelBundle', [{ bundleHash }]);
 
       // Update stats
@@ -763,7 +763,7 @@ export class PrivateRPCManager {
     }
 
     try {
-      const provider = new ethers.providers.JsonRpcProvider(flashbotsRelay.endpoint);
+      const provider = new JsonRpcProvider(flashbotsRelay.endpoint);
       const result = await provider.send('eth_getBundleStats', [bundleHash]);
 
       if (!result) {
@@ -916,7 +916,7 @@ export class PrivateRPCManager {
       }
 
       // Submit to Flashbots Protect RPC
-      const flashbotsProvider = new ethers.providers.JsonRpcProvider(relay.endpoint);
+      const flashbotsProvider = new JsonRpcProvider(relay.endpoint);
       const result = await flashbotsProvider.send('eth_sendPrivateTransaction', [params]);
 
       logger.info(`[PrivateRPCManager] Private transaction submitted: ${result}`);
@@ -960,7 +960,7 @@ export class PrivateRPCManager {
         throw new Error('Flashbots Protect relay not configured');
       }
 
-      const flashbotsProvider = new ethers.providers.JsonRpcProvider(relay.endpoint);
+      const flashbotsProvider = new JsonRpcProvider(relay.endpoint);
       const result = await flashbotsProvider.send('eth_cancelPrivateTransaction', [
         { txHash },
       ]);
@@ -1032,7 +1032,7 @@ export class PrivateRPCManager {
         replacementUuid, // UUID for replacement/cancellation
       };
 
-      const flashbotsProvider = new ethers.providers.JsonRpcProvider(relay.endpoint);
+      const flashbotsProvider = new JsonRpcProvider(relay.endpoint);
       const data = await flashbotsProvider.send('eth_sendBundle', [payload]);
 
       logger.info(
@@ -1208,7 +1208,7 @@ export class PrivateRPCManager {
 
     try {
       // Create a provider connected to the bundle cache RPC
-      const bundleProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
+      const bundleProvider = new JsonRpcProvider(rpcUrl);
       
       // Send the signed transaction to the bundle cache
       const tx = await bundleProvider.sendTransaction(signedTx);

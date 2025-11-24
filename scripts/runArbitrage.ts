@@ -57,14 +57,14 @@ async function main() {
   // For testnet: 0.1 WETH
   const isBaseMainnet = network.name === "base";
   const LOAN_AMOUNT = isBaseMainnet 
-    ? ethers.utils.parseUnits("0.001", 18) // MAINNET: Start with 0.001 WETH for safety
-    : ethers.utils.parseUnits("0.1", 18);   // TESTNET: 0.1 WETH
+    ? parseUnits("0.001", 18) // MAINNET: Start with 0.001 WETH for safety
+    : parseUnits("0.1", 18);   // TESTNET: 0.1 WETH
 
   // MAINNET: Increase to 1000+ for profitable trades
   
   console.log(`\n=== Network: ${network.name} ===`);
   console.log(`Flash Loan Asset: WETH (${FLASH_LOAN_ASSET})`);
-  console.log(`Loan Amount: ${ethers.utils.formatUnits(LOAN_AMOUNT, 18)} WETH`);
+  console.log(`Loan Amount: ${formatUnits(LOAN_AMOUNT, 18)} WETH`);
   if (isBaseMainnet) {
     console.log("⚠️  BASE MAINNET: Using minimal 0.001 WETH for initial safety test");
     console.log("   Increase amount after confirming successful execution\n");
@@ -163,11 +163,11 @@ async function main() {
   console.log("\nConstructed arbitrage parameters:", JSON.stringify(arbitrageParams, null, 2));
 
   // --- 3. Execute Flash Loan ---
-  console.log(`\nRequesting flash loan of ${ethers.utils.formatUnits(LOAN_AMOUNT, 18)} WETH...`);
+  console.log(`\nRequesting flash loan of ${formatUnits(LOAN_AMOUNT, 18)} WETH...`);
 
   try {
     // First, try to estimate gas to catch errors before sending transaction
-    const encodedParams = ethers.utils.defaultAbiCoder.encode(
+    const encodedParams = AbiCoder.defaultAbiCoder().encode(
       ["tuple(tuple(address pool, address tokenIn, address tokenOut, uint24 fee, uint256 minOut, uint8 dexType)[] path, address initiator)"],
       [arbitrageParams]
     );

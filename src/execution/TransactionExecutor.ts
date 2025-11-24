@@ -10,7 +10,7 @@
  * Supports multi-DEX execution: Uniswap V2/V3, SushiSwap, Curve, Aave, Balancer
  */
 
-import { ethers, providers } from 'ethers';
+import { ethers, JsonRpcProvider, isAddress, Interface, AbiCoder } from 'ethers';
 import { logger } from '../utils/logger';
 import { NonceManager } from './NonceManager';
 import { buildTwoHopParams, buildTriangularParams, buildAavePathParams } from './ParamBuilder';
@@ -46,7 +46,7 @@ interface ParamResult {
  * Transaction Executor Configuration
  */
 export interface TransactionExecutorConfig {
-  provider: providers.JsonRpcProvider;
+  provider: JsonRpcProvider;
   gasOracle: GasPriceOracle;
   gasEstimator: AdvancedGasEstimator;
   arbitrageConfig: ArbitrageConfig;
@@ -196,11 +196,11 @@ export class TransactionExecutor {
     request: TransactionExecutionRequest
   ): Promise<{ valid: boolean; reason?: string }> {
     // Validate addresses
-    if (!ethers.utils.isAddress(request.from)) {
+    if (!isAddress(request.from)) {
       return { valid: false, reason: 'Invalid from address' };
     }
 
-    if (!ethers.utils.isAddress(request.executorAddress)) {
+    if (!isAddress(request.executorAddress)) {
       return { valid: false, reason: 'Invalid executor address' };
     }
 
@@ -385,9 +385,9 @@ export class TransactionExecutor {
     txParams: MultiDEXTransactionParams,
     gasEstimation: GasEstimationResult,
     gasPrice: bigint
-  ): Promise<providers.TransactionRequest> {
+  ): Promise<ethers.TransactionRequest> {
     // Encode function call
-    const iface = new ethers.utils.Interface([
+    const iface = new Interface([
       this.getFunctionSignature(txParams.functionName, txParams.dexType)
     ]);
 
@@ -422,7 +422,7 @@ export class TransactionExecutor {
    * Encode transaction data
    */
   private encodeTransaction(
-    iface: ethers.utils.Interface,
+    iface: Interface,
     txParams: MultiDEXTransactionParams
   ): string {
     const fn = txParams.functionName;
@@ -433,7 +433,7 @@ export class TransactionExecutor {
       return iface.encodeFunctionData(fn, [
         [txParams.borrowTokenAddress],            // assets
         [txParams.borrowAmount],                  // amounts
-        ethers.utils.defaultAbiCoder.encode(
+        AbiCoder.defaultAbiCoder().encode(
           ['tuple(tuple(address pool,address tokenIn,address tokenOut,uint24 fee,uint256 minOut,uint8 dexType)[] path,address initiator,address titheRecipient)'],
           [[
             p.path.map((step: AavePathStep) => [
@@ -462,7 +462,7 @@ export class TransactionExecutor {
   private encodeParams(txParams: MultiDEXTransactionParams): string {
     if (txParams.functionName === 'initiateUniswapV3FlashLoan') {
       const p = txParams.params as UniswapV3TwoHopParams;
-      return ethers.utils.defaultAbiCoder.encode(
+      return AbiCoder.defaultAbiCoder().encode(
         ['tuple(address tokenIntermediate,uint24 feeA,uint24 feeB,uint256 amountOutMinimum1,uint256 amountOutMinimum2,address titheRecipient)'],
         [[
           p.tokenIntermediate,
@@ -475,7 +475,7 @@ export class TransactionExecutor {
       );
     } else if (txParams.functionName === 'initiateTriangularFlashSwap') {
       const p = txParams.params as TriangularFlashSwapParams;
-      return ethers.utils.defaultAbiCoder.encode(
+      return AbiCoder.defaultAbiCoder().encode(
         ['tuple(address tokenA,address tokenB,address tokenC,uint24 fee1,uint24 fee2,uint24 fee3,uint256 amountOutMinimumFinal,address titheRecipient)'],
         [[
           p.tokenA,

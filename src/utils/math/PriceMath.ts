@@ -11,7 +11,7 @@
  * - Uniswap V3 tick math
  */
 
-import { ethers } from 'ethers';
+import { ethers, formatUnits } from 'ethers';
 import { logger } from '../logger';
 
 // Constants for price calculations
@@ -271,7 +271,7 @@ export async function convertToNativeWei(
 
   const amountNativeWei = numerator / denominator;
   logger.debug(
-    `${logPrefix} Converted ${ethers.utils.formatUnits(amountWeiBigInt, tokenObject.decimals)} ${tokenObject.symbol} to ${ethers.utils.formatUnits(amountNativeWei, nativeCurrencyToken.decimals)} ${nativeCurrencyToken.symbol}`
+    `${logPrefix} Converted ${formatUnits(amountWeiBigInt, tokenObject.decimals)} ${tokenObject.symbol} to ${formatUnits(amountNativeWei, nativeCurrencyToken.decimals)} ${nativeCurrencyToken.symbol}`
   );
   return amountNativeWei;
 }

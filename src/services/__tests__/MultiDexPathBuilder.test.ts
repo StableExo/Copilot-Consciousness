@@ -10,7 +10,7 @@ import { ethers } from 'ethers';
 
 describe('MultiDexPathBuilder', () => {
   let pathBuilder: MultiDexPathBuilder;
-  let mockProvider: ethers.providers.Provider;
+  let mockProvider: Provider;
 
   beforeEach(() => {
     // Create mock provider

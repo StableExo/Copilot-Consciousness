@@ -9,7 +9,7 @@
  * 4. End-to-End Dry Run
  */
 
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider } from 'ethers';
 import dotenv from 'dotenv';
 import { ArbitrageConsciousness } from '../src/consciousness/ArbitrageConsciousness';
 import { CognitiveCoordinator, OpportunityContext } from '../src/consciousness/coordination/CognitiveCoordinator';
@@ -63,7 +63,7 @@ async function validateOpportunityDetection(): Promise<void> {
     console.log(`RPC: ${rpcUrl}\n`);
 
     // Initialize components
-    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const provider = new JsonRpcProvider(rpcUrl);
     const registry = new DEXRegistry();
     const scanner = new OptimizedPoolScanner(registry, provider, 8453);
 
@@ -237,7 +237,7 @@ async function validateEndToEnd(): Promise<void> {
     const rpcUrl = process.env.BASE_RPC_URL || process.env.RPC_URL;
 
     // Initialize all components
-    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const provider = new JsonRpcProvider(rpcUrl);
     const registry = new DEXRegistry();
     const scanner = new OptimizedPoolScanner(registry, provider, 8453);
     const consciousness = new ArbitrageConsciousness(0.05, 1000);

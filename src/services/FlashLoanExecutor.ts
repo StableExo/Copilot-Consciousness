@@ -11,7 +11,7 @@
  * - MEV risk assessment integration
  */
 
-import { ethers } from 'ethers';
+import { ethers, Provider } from 'ethers';
 
 // Dynamic import for artifact - may not exist if contracts haven't been compiled
 let FlashSwapV2Artifact: any;
@@ -81,7 +81,7 @@ export interface FlashLoanExecutorConfig {
   /** Aave V3 Pool address */
   aavePoolAddress: string;
   /** Provider for blockchain interaction */
-  provider: ethers.providers.Provider;
+  provider: Provider;
   /** Signer for transaction submission */
   signer: ethers.Signer;
 }
@@ -131,7 +131,7 @@ export class FlashLoanExecutor {
     try {
       console.log('[FlashLoanExecutor] Preparing flashloan execution...');
       console.log(`  Borrow token: ${params.borrowToken}`);
-      console.log(`  Borrow amount: ${ethers.utils.formatEther(params.borrowAmount)} ETH`);
+      console.log(`  Borrow amount: ${formatEther(params.borrowAmount)} ETH`);
       console.log(`  Swap path steps: ${params.swapPath.length}`);
       console.log(`  Expected profit: ${params.expectedProfit} ETH`);
 
@@ -215,7 +215,7 @@ export class FlashLoanExecutor {
     }));
 
     // Get initiator address (the account that initiated this call)
-    const initiatorAddress = ethers.constants.AddressZero; // Placeholder; FlashSwapV2 validates this
+    const initiatorAddress = ZeroAddress; // Placeholder; FlashSwapV2 validates this
 
     // Encode as ArbParams struct
     const types = [
@@ -225,7 +225,7 @@ export class FlashLoanExecutor {
 
     const values = [pathStruct, initiatorAddress];
 
-    return ethers.utils.defaultAbiCoder.encode(types, values);
+    return AbiCoder.defaultAbiCoder().encode(types, values);
   }
 
   /**

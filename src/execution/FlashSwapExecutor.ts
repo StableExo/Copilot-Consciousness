@@ -15,7 +15,7 @@
  * - Swap step encoding for contract calls
  */
 
-import { ethers, BigNumber, Contract } from 'ethers';
+import { ethers, Contract, Provider } from 'ethers';
 import { logger } from '../utils/logger';
 import { ArbitrageOpportunity } from '../arbitrage/models';
 
@@ -72,7 +72,7 @@ export interface FlashSwapExecutorConfig {
   /** Address of FlashSwap contract */
   contractAddress: string;
   /** Provider for blockchain interaction */
-  provider: ethers.providers.Provider;
+  provider: Provider;
   /** Signer for transactions */
   signer?: ethers.Signer;
   /** Gas estimation buffer multiplier (default 1.2 = 20%) */
@@ -115,7 +115,7 @@ export interface ValidationResult {
  */
 export class FlashSwapExecutor {
   private contractAddress: string;
-  private provider: ethers.providers.Provider;
+  private provider: Provider;
   private signer?: ethers.Signer;
   private contract?: Contract;
   private gasBuffer: number;
@@ -165,7 +165,7 @@ export class FlashSwapExecutor {
 
     // Extract flash loan parameters
     const flashLoanAmount = opportunity.flashLoanAmount
-      ? ethers.utils.parseUnits(opportunity.flashLoanAmount.toString(), 'ether')
+      ? parseUnits(opportunity.flashLoanAmount.toString(), 'ether')
       : BigNumber.from(0);
     
     const flashLoanToken = opportunity.flashLoanToken || '';
@@ -176,7 +176,7 @@ export class FlashSwapExecutor {
 
     for (const step of opportunity.path) {
       // Calculate minimum output with slippage protection
-      const expectedOutput = ethers.utils.parseUnits(
+      const expectedOutput = parseUnits(
         step.expectedOutput.toString(),
         'ether'
       );
@@ -188,7 +188,7 @@ export class FlashSwapExecutor {
         poolAddress: step.poolAddress,
         tokenIn: step.tokenIn,
         tokenOut: step.tokenOut,
-        amountIn: ethers.utils.parseUnits(step.amountIn.toString(), 'ether'),
+        amountIn: parseUnits(step.amountIn.toString(), 'ether'),
         minAmountOut: minOutput,
         protocol: this.parseProtocol(step.protocol),
       };
@@ -240,7 +240,7 @@ export class FlashSwapExecutor {
 
     logger.debug(`[FlashSwapExecutor] Encoded swap steps: ${JSON.stringify(encoded)}`);
 
-    // In production: return ethers.utils.defaultAbiCoder.encode(...)
+    // In production: return AbiCoder.defaultAbiCoder().encode(...)
     return JSON.stringify(encoded);  // Placeholder
   }
 
@@ -273,7 +273,7 @@ export class FlashSwapExecutor {
    */
   validateArbParams(arbParams: ArbParams): ValidationResult {
     // Check flash loan amount
-    if (arbParams.flashLoanAmount.lte(0)) {
+    if (arbParams.flashLoanAmount <= 0n) {
       return {
         isValid: false,
         errorMessage: 'Invalid flash loan amount',
@@ -281,7 +281,7 @@ export class FlashSwapExecutor {
     }
 
     // Check flash loan token
-    if (!arbParams.flashLoanToken || !ethers.utils.isAddress(arbParams.flashLoanToken)) {
+    if (!arbParams.flashLoanToken || !isAddress(arbParams.flashLoanToken)) {
       return {
         isValid: false,
         errorMessage: 'Invalid flash loan token address',
@@ -289,7 +289,7 @@ export class FlashSwapExecutor {
     }
 
     // Check flash loan pool
-    if (!arbParams.flashLoanPool || !ethers.utils.isAddress(arbParams.flashLoanPool)) {
+    if (!arbParams.flashLoanPool || !isAddress(arbParams.flashLoanPool)) {
       return {
         isValid: false,
         errorMessage: 'Invalid flash loan pool address',
@@ -305,7 +305,7 @@ export class FlashSwapExecutor {
     }
 
     // Check expected profit
-    if (arbParams.expectedProfit.lte(0)) {
+    if (arbParams.expectedProfit <= 0n) {
       return {
         isValid: false,
         errorMessage: 'Expected profit must be positive',
@@ -325,21 +325,21 @@ export class FlashSwapExecutor {
     for (let i = 0; i < arbParams.swapSteps.length; i++) {
       const step = arbParams.swapSteps[i];
 
-      if (!ethers.utils.isAddress(step.poolAddress)) {
+      if (!isAddress(step.poolAddress)) {
         return {
           isValid: false,
           errorMessage: `Invalid pool address in step ${i}`,
         };
       }
 
-      if (step.amountIn.lte(0)) {
+      if (step.amountIn <= 0n) {
         return {
           isValid: false,
           errorMessage: `Invalid amount_in in step ${i}`,
         };
       }
 
-      if (step.minAmountOut.lte(0)) {
+      if (step.minAmountOut <= 0n) {
         return {
           isValid: false,
           errorMessage: `Invalid min_amount_out in step ${i}`,
@@ -399,7 +399,7 @@ export class FlashSwapExecutor {
           `${arbParams.swapSteps.length} steps`
         );
         logger.info(
-          `[FlashSwapExecutor] Expected profit: ${ethers.utils.formatEther(arbParams.expectedProfit)} ETH`
+          `[FlashSwapExecutor] Expected profit: ${formatEther(arbParams.expectedProfit)} ETH`
         );
         
         return {
@@ -417,12 +417,12 @@ export class FlashSwapExecutor {
 
       logger.info('[FlashSwapExecutor] Executing arbitrage transaction');
       logger.info(
-        `[FlashSwapExecutor] Flash loan: ${ethers.utils.formatEther(arbParams.flashLoanAmount)} ` +
+        `[FlashSwapExecutor] Flash loan: ${formatEther(arbParams.flashLoanAmount)} ` +
         `${arbParams.flashLoanToken}`
       );
       logger.info(`[FlashSwapExecutor] Swap steps: ${arbParams.swapSteps.length}`);
       logger.info(
-        `[FlashSwapExecutor] Expected profit: ${ethers.utils.formatEther(arbParams.expectedProfit)} ETH`
+        `[FlashSwapExecutor] Expected profit: ${formatEther(arbParams.expectedProfit)} ETH`
       );
 
       // In production, this would be:
@@ -482,7 +482,7 @@ export class FlashSwapExecutor {
 
       logger.info('[FlashSwapExecutor] Simulating arbitrage execution');
       logger.info(
-        `[FlashSwapExecutor] Expected profit: ${ethers.utils.formatEther(arbParams.expectedProfit)} ETH`
+        `[FlashSwapExecutor] Expected profit: ${formatEther(arbParams.expectedProfit)} ETH`
       );
 
       // In production, this would call the contract's simulation function
@@ -520,7 +520,7 @@ export class FlashSwapExecutor {
       successfulExecutions: this.stats.successfulExecutions,
       failedExecutions: this.stats.failedExecutions,
       totalGasUsed: this.stats.totalGasUsed.toString(),
-      totalProfit: ethers.utils.formatEther(this.stats.totalProfit),
+      totalProfit: formatEther(this.stats.totalProfit),
       successRate,
       avgGasPerExecution,
     };

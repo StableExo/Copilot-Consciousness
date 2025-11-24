@@ -1,5 +1,5 @@
 import { DEXRegistry } from '../core/DEXRegistry';
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider, Provider, formatUnits } from 'ethers';
 import chalk from 'chalk';
 
 class CurveHealthCheck {
@@ -38,7 +38,7 @@ class CurveHealthCheck {
 
     private async checkCoreComponents(curve: any): Promise<boolean> {
         try {
-            const provider = new ethers.providers.JsonRpcProvider();
+            const provider = new JsonRpcProvider();
 
             // Check registry contract
             const registry = new ethers.Contract(
@@ -81,7 +81,7 @@ class CurveHealthCheck {
 
     private async checkKeyPools(curve: any): Promise<boolean> {
         try {
-            const provider = new ethers.providers.JsonRpcProvider();
+            const provider = new JsonRpcProvider();
 
             // Check major stablecoin pools
             const criticalPools = [
@@ -109,12 +109,12 @@ class CurveHealthCheck {
 
                 const virtualPrice = await poolContract.get_virtual_price();
                 console.log(`├── ${pool.name}:`);
-                console.log(`│   ├── Virtual Price: ${ethers.utils.formatUnits(virtualPrice, 18)}`);
+                console.log(`│   ├── Virtual Price: ${formatUnits(virtualPrice, 18)}`);
                 
                 // Check balances for each token
                 for (let i = 0; i < pool.tokens.length; i++) {
                     const balance = await poolContract.balances(i);
-                    console.log(`│   ├── ${pool.tokens[i]} Balance: ${ethers.utils.formatUnits(balance, 18)}`);
+                    console.log(`│   ├── ${pool.tokens[i]} Balance: ${formatUnits(balance, 18)}`);
                 }
             }
 
@@ -127,7 +127,7 @@ class CurveHealthCheck {
 
     private async checkPoolHealth(
         poolAddress: string,
-        provider: ethers.providers.Provider
+        provider: Provider
     ): Promise<boolean> {
         try {
             const pool = new ethers.Contract(
@@ -137,7 +137,7 @@ class CurveHealthCheck {
             );
 
             const virtualPrice = await pool.get_virtual_price();
-            return virtualPrice.gt(0);
+            return virtualPrice > 0n;
         } catch {
             return false;
         }

@@ -47,16 +47,16 @@ async function main() {
   console.log("📋 Check 2: Deployer Wallet");
   const deployerAddress = await deployer.getAddress();
   const deployerBalance = await ethers.provider.getBalance(deployerAddress);
-  const minRequiredBalance = ethers.utils.parseEther("0.01"); // At least 0.01 ETH for deployment
+  const minRequiredBalance = parseEther("0.01"); // At least 0.01 ETH for deployment
   
   results.push({
-    passed: deployerBalance.gte(minRequiredBalance),
+    passed: deployerBalance >= minRequiredBalance,
     message: `Deployer: ${deployerAddress}`,
     critical: true
   });
   results.push({
-    passed: deployerBalance.gte(minRequiredBalance),
-    message: `Balance: ${ethers.utils.formatEther(deployerBalance)} ETH (min: 0.01 ETH)`,
+    passed: deployerBalance >= minRequiredBalance,
+    message: `Balance: ${formatEther(deployerBalance)} ETH (min: 0.01 ETH)`,
     critical: true
   });
   
@@ -121,12 +121,12 @@ async function main() {
       usdc.decimals()
     ]);
     
-    const wethFormatted = ethers.utils.formatUnits(wethBal, wethDec);
-    const usdcFormatted = ethers.utils.formatUnits(usdcBal, usdcDec);
+    const wethFormatted = formatUnits(wethBal, wethDec);
+    const usdcFormatted = formatUnits(usdcBal, usdcDec);
     
     // Recommendations: Have at least 0.003 WETH and 10 USDC for testing
-    const hasMinWETH = wethBal.gte(ethers.utils.parseUnits("0.003", 18));
-    const hasMinUSDC = usdcBal.gte(ethers.utils.parseUnits("10", 6));
+    const hasMinWETH = wethBal >= parseUnits("0.003", 18);
+    const hasMinUSDC = usdcBal >= parseUnits("10", 6);
     
     results.push({
       passed: hasMinWETH,
