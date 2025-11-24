@@ -39,7 +39,7 @@ describe('DEXRegistry', () => {
 
   it('should initialize with the correct number of DEXes', () => {
     const allDEXes = registry.getAllDEXes();
-    expect(allDEXes.length).toBe(12); // Updated: Added Uniswap V3, Aerodrome, and BaseSwap on Base
+    expect(allDEXes.length).toBe(14); // Updated: Added PancakeSwap V3 and Velodrome on Base
   });
 
   it('should include Raydium in the list of DEXes', () => {
@@ -62,18 +62,20 @@ describe('DEXRegistry', () => {
   it('should validate all DEXes successfully', async () => {
     const isValid = await registry.validateDEXes();
     expect(isValid).toBe(true);
-    expect(getCodeMock).toHaveBeenCalledTimes(11); // Updated: Now 11 EVM DEXes (was 8)
+    expect(getCodeMock).toHaveBeenCalledTimes(13); // Updated: Now 13 EVM DEXes (added 2 more on Base)
     expect(getAccountInfoMock).toHaveBeenCalledTimes(1);
   });
 
   it('should return the correct DEXes for Base network (8453)', () => {
     const baseDEXes = registry.getDEXesByNetwork('8453');
-    expect(baseDEXes.length).toBe(5);
+    expect(baseDEXes.length).toBe(7); // Updated: Added PancakeSwap V3 and Velodrome
     
     const dexNames = baseDEXes.map(d => d.name);
     expect(dexNames).toContain('Uniswap V3 on Base');
     expect(dexNames).toContain('Aerodrome on Base');
     expect(dexNames).toContain('BaseSwap');
+    expect(dexNames).toContain('PancakeSwap V3 on Base');
+    expect(dexNames).toContain('Velodrome on Base');
     
     // Verify high-priority DEXes come first
     expect(baseDEXes[0].name).toBe('Uniswap V3 on Base');
