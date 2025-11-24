@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import hre from "hardhat";
 
 /**
  * Validation script to verify all addresses in deployFlashSwapV2.ts have correct checksums
@@ -21,6 +21,7 @@ const BASE_MAINNET = {
 };
 
 async function main() {
+  const ethers = (hre as any).ethers;
   let allValid = true;
 
   console.log("Validating BASE_TESTNET addresses:\n");

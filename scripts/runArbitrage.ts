@@ -1,4 +1,4 @@
-import { ethers, network } from "hardhat";
+import hre from "hardhat";
 import { ADDRESSES, NetworkKey, requireAddress } from "../config/addresses";
 
 /**
@@ -27,6 +27,8 @@ function decodeAaveError(error: any): string {
 }
 
 async function main() {
+  const ethers = (hre as any).ethers;
+  const network = hre.network;
   console.log("Starting arbitrage script...");
 
   // --- 1. Configuration ---

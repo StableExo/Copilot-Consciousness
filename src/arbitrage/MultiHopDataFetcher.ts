@@ -88,7 +88,10 @@ export class MultiHopDataFetcher {
       return false;
     }
     const age = Date.now() - this.preloadedTimestamp;
-    const maxAge = parseInt(process.env.POOL_CACHE_DURATION || '3600') * 1000; // 1 hour default
+    const cacheDurationEnv = process.env.POOL_CACHE_DURATION;
+    const maxAge = cacheDurationEnv && !isNaN(parseInt(cacheDurationEnv))
+      ? parseInt(cacheDurationEnv) * 1000
+      : 3600000; // 1 hour default
     return age < maxAge;
   }
 

@@ -98,8 +98,8 @@ export class PoolDataStore {
       // Reconstruct BigInt values from serialized data
       const pools = cache.pools.map(pool => ({
         ...pool,
-        reserve0: typeof pool.reserve0 === 'string' ? BigInt(pool.reserve0) : pool.reserve0,
-        reserve1: typeof pool.reserve1 === 'string' ? BigInt(pool.reserve1) : pool.reserve1,
+        reserve0: typeof pool.reserve0 === 'string' ? BigInt(pool.reserve0) : BigInt(String(pool.reserve0)),
+        reserve1: typeof pool.reserve1 === 'string' ? BigInt(pool.reserve1) : BigInt(String(pool.reserve1)),
       }));
 
       // Store in memory cache
