@@ -190,3 +190,5 @@ build/
 .memory/**/*.d.ts
 .memory/**/*.d.ts.map
 
+# Pool data cache
+.pool-cache/

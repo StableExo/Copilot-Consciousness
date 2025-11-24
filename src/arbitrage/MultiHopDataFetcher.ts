@@ -14,6 +14,7 @@ import {
   V3_LIQUIDITY_SCALE_FACTOR, 
   isV3StyleProtocol 
 } from './constants';
+import { PoolDataStore } from './PoolDataStore';
 
 /**
  * Interface for pool data
@@ -35,12 +36,16 @@ export class MultiHopDataFetcher {
   private cacheTimestamps: Map<string, number> = new Map();
   private currentChainId?: number; // Track current chain for filtering
   private loggedPools: Set<string> = new Set(); // Track logged pools to avoid repetitive logs
+  private poolDataStore: PoolDataStore;
+  private preloadedEdges: PoolEdge[] | null = null;
+  private preloadedTimestamp: number = 0;
 
-  constructor(registry: DEXRegistry, chainId?: number) {
+  constructor(registry: DEXRegistry, chainId?: number, poolDataStore?: PoolDataStore) {
     this.registry = registry;
     this.providers = new Map();
     this.poolCache = new Map();
     this.currentChainId = chainId;
+    this.poolDataStore = poolDataStore || new PoolDataStore();
   }
   
   /**
@@ -48,6 +53,43 @@ export class MultiHopDataFetcher {
    */
   setChainId(chainId: number): void {
     this.currentChainId = chainId;
+  }
+
+  /**
+   * Load preloaded pool data from disk cache
+   */
+  async loadPreloadedData(chainId?: number): Promise<boolean> {
+    const targetChainId = chainId || this.currentChainId;
+    if (!targetChainId) {
+      logger.warn('Cannot load preloaded data: no chain ID specified', 'DATAFETCH');
+      return false;
+    }
+
+    try {
+      const pools = await this.poolDataStore.loadFromDisk(targetChainId);
+      if (pools && pools.length > 0) {
+        this.preloadedEdges = pools;
+        this.preloadedTimestamp = Date.now();
+        logger.info(`✓ Loaded ${pools.length} preloaded pools for chain ${targetChainId}`, 'DATAFETCH');
+        return true;
+      }
+      return false;
+    } catch (error) {
+      logger.warn(`Failed to load preloaded data: ${error instanceof Error ? error.message : String(error)}`, 'DATAFETCH');
+      return false;
+    }
+  }
+
+  /**
+   * Check if preloaded data is still valid (within 1 hour by default)
+   */
+  private isPreloadedDataValid(): boolean {
+    if (!this.preloadedEdges || this.preloadedEdges.length === 0) {
+      return false;
+    }
+    const age = Date.now() - this.preloadedTimestamp;
+    const maxAge = parseInt(process.env.POOL_CACHE_DURATION || '3600') * 1000; // 1 hour default
+    return age < maxAge;
   }
 
   /**
@@ -123,6 +165,13 @@ export class MultiHopDataFetcher {
    * Build graph edges for all available token pairs across DEXs
    */
   async buildGraphEdges(tokens: string[]): Promise<PoolEdge[]> {
+    // Try to use preloaded data first
+    if (this.isPreloadedDataValid()) {
+      logger.debug('Using preloaded pool data', 'DATAFETCH');
+      return this.preloadedEdges!;
+    }
+
+    // If preloaded data is not available or stale, fetch from network
     const edges: PoolEdge[] = [];
     
     // Get DEXes - filter by current chain if set

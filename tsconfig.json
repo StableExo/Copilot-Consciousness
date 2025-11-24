@@ -18,7 +18,8 @@
   },
   "include": [
     "src/**/*",
-    "consciousness/**/*"
+    "consciousness/**/*",
+    "scripts/**/*.ts"
   ],
   "exclude": [
     "node_modules",

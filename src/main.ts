@@ -48,6 +48,7 @@ import { ArbitrageConsciousness } from './consciousness/ArbitrageConsciousness';
 import { CognitiveCoordinator, OpportunityContext, ModuleInsight } from './consciousness/coordination/CognitiveCoordinator';
 import { EmergenceDetector, DecisionContext } from './consciousness/coordination/EmergenceDetector';
 import { ArbitragePath } from './arbitrage/types';
+import { PoolDataStore } from './arbitrage/PoolDataStore';
 
 // Phase 3 Imports
 import { loadPhase3Config, validatePhase3Config, getPhase3ConfigSummary } from './config/phase3.config';
@@ -318,10 +319,16 @@ class TheWarden extends EventEmitter {
       
       const gasEstimator = new AdvancedGasEstimator(this.provider, gasOracle);
       
-      // Initialize arbitrage configuration
+  // Initialize arbitrage configuration
       const arbitrageConfig: ArbitrageConfig = {
         SLIPPAGE_TOLERANCE_BPS: Math.floor(this.config.minProfitPercent * 100),
       };
+      
+      // Initialize pool data store
+      const cacheDuration = process.env.POOL_CACHE_DURATION 
+        ? parseInt(process.env.POOL_CACHE_DURATION) * 1000 
+        : 3600000; // 1 hour default
+      const poolDataStore = new PoolDataStore({ cacheDuration });
       
       // Initialize advanced orchestrator for opportunity finding
       logger.info('Initializing arbitrage orchestrator...');
@@ -330,8 +337,19 @@ class TheWarden extends EventEmitter {
       this.advancedOrchestrator = new AdvancedOrchestrator(
         this.dexRegistry,
         advancedConfig,
-        this.config.chainId // Pass chain ID during construction
+        this.config.chainId, // Pass chain ID during construction
+        poolDataStore // Pass pool data store
       );
+      
+      // Load preloaded pool data if available
+      logger.info('Loading preloaded pool data...');
+      const preloadSuccess = await this.advancedOrchestrator.loadPreloadedData(this.config.chainId);
+      if (preloadSuccess) {
+        logger.info('✓ Preloaded pool data loaded successfully - fast startup enabled');
+      } else {
+        logger.info('No preloaded pool data found - will fetch pools from network (slower startup)');
+        logger.info('Tip: Run "npm run preload:pools" to speed up future startups');
+      }
       
       logger.info(`Configured orchestrator for chain ${this.config.chainId}`);
       

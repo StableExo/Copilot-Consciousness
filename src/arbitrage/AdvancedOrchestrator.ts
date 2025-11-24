@@ -82,7 +82,7 @@ export class AdvancedOrchestrator {
   private dataFetcher: MultiHopDataFetcher;
   private mode: OrchestratorMode = 'polling';
 
-  constructor(registry: DEXRegistry, config: AdvancedOrchestratorConfig, chainId?: number) {
+  constructor(registry: DEXRegistry, config: AdvancedOrchestratorConfig, chainId?: number, poolDataStore?: import('./PoolDataStore').PoolDataStore) {
     this.registry = registry;
     this.config = config;
     
@@ -101,7 +101,7 @@ export class AdvancedOrchestrator {
     );
     
     this.profitCalculator = new ProfitabilityCalculator(config.pathfinding.gasPrice);
-    this.dataFetcher = new MultiHopDataFetcher(registry, chainId);
+    this.dataFetcher = new MultiHopDataFetcher(registry, chainId, poolDataStore);
     
     // Initialize advanced components if enabled
     if (config.enableAdvancedFeatures) {
@@ -114,6 +114,13 @@ export class AdvancedOrchestrator {
    */
   setChainId(chainId: number): void {
     this.dataFetcher.setChainId(chainId);
+  }
+  
+  /**
+   * Load preloaded pool data from disk cache
+   */
+  async loadPreloadedData(chainId?: number): Promise<boolean> {
+    return this.dataFetcher.loadPreloadedData(chainId);
   }
   
   /**

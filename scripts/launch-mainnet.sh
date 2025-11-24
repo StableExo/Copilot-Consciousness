@@ -52,6 +52,26 @@ if [ ! -d "dist/src" ] || [ ! -f "dist/src/main.js" ]; then
     echo ""
 fi
 
+# Preload pool data (skip if valid cache exists)
+echo "🔄 Checking pool data cache..."
+if [ -f "dist/scripts/preload-pools.js" ]; then
+    node dist/scripts/preload-pools.js --skip-if-valid
+    PRELOAD_EXIT=$?
+    if [ $PRELOAD_EXIT -ne 0 ]; then
+        echo ""
+        echo "⚠️  Pool preload had issues but continuing..."
+        echo "   TheWarden will fetch pools from network (slower)"
+        echo ""
+    fi
+else
+    echo "⚠️  Preload script not found. Building..."
+    npm run build
+    if [ -f "dist/scripts/preload-pools.js" ]; then
+        node dist/scripts/preload-pools.js --skip-if-valid
+    fi
+fi
+echo ""
+
 # Safety confirmation (only if running interactively)
 if [ -t 0 ]; then
     echo "⚠️  WARNING: You are about to run TheWarden on mainnet"
