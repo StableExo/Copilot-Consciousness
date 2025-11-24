@@ -21,6 +21,7 @@
  */
 
 import { EventEmitter } from 'events';
+import { logger } from '../utils/logger';
 import { OpportunityFeatures } from './types';
 
 interface NNScorerConfig {
@@ -89,7 +90,7 @@ export class OpportunityNNScorer extends EventEmitter {
     // Initialize network weights
     this.weights = this.initializeWeights();
     
-    console.log('[OpportunityNNScorer] Initialized with hidden layer size:', this.config.hiddenLayerSize);
+    logger.info(`[OpportunityNNScorer] Initialized with hidden layer size: ${this.config.hiddenLayerSize}`);
   }
   
   /**
@@ -601,6 +602,6 @@ export class OpportunityNNScorer extends EventEmitter {
       this.featureStds = new Map(data.featureStds);
     }
     
-    console.log('[OpportunityNNScorer] Imported model');
+    logger.info('[OpportunityNNScorer] Imported model');
   }
 }

@@ -20,6 +20,7 @@
  */
 
 import { EventEmitter } from 'events';
+import { logger } from '../utils/logger';
 import {
   ExecutionEpisode,
   ExecutionState,
@@ -80,7 +81,7 @@ export class StrategyRLAgent extends EventEmitter {
     // Initialize parameter bounds for safe exploration
     this.initializeParameterBounds();
     
-    console.log('[StrategyRLAgent] Initialized with config:', this.config);
+    logger.info(`[StrategyRLAgent] Initialized with learning rate: ${this.config.learningRate}`);
   }
   
   /**
@@ -526,6 +527,6 @@ export class StrategyRLAgent extends EventEmitter {
       this.qTable.set(stateKey, stateActions);
     }
     
-    console.log(`[StrategyRLAgent] Imported policy with ${this.qTable.size} states`);
+    logger.info(`[StrategyRLAgent] Imported policy with ${this.qTable.size} states`);
   }
 }
