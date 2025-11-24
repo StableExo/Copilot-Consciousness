@@ -167,6 +167,8 @@ export class DEXRegistry {
             network: '8453',
             router: '0xa062aE8A9c5e11aaA026fc2670B0D65cCc8B2858',
             factory: '0x31832f2a97Fd20664D76Cc421207669b55CE4BC0',
+            // Note: Velodrome Slipstream uses Uniswap V3-style concentrated liquidity
+            // Pool addresses are calculated via factory.getPool() rather than CREATE2 with initCodeHash
             initCodeHash: '0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54',
             priority: 5,
             liquidityThreshold: BigInt(ethers.utils.parseEther('50').toString()),

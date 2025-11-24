@@ -5,7 +5,7 @@
  * Provides type-safe access to protocol metadata, addresses, and features.
  */
 
-export type ProtocolType = 'uniswap-v3' | 'sushiswap-v3' | 'curve' | 'balancer' | 'uniswap-v2' | 'sushiswap-v2' | 'aerodrome' | 'baseswap' | 'velodrome' | 'pancakeswap-v3' | 'maverick';
+export type ProtocolType = 'uniswap-v3' | 'sushiswap-v3' | 'curve' | 'balancer' | 'uniswap-v2' | 'sushiswap-v2' | 'aerodrome' | 'baseswap' | 'velodrome' | 'pancakeswap-v3';
 
 export interface ProtocolConfig {
   name: string;
