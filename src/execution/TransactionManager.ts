@@ -221,7 +221,7 @@ export class TransactionManager {
   async confirmTransaction(
     txHash: string,
     timeout: number = 60000
-  ): Promise<ethers.providers.TransactionReceipt> {
+  ): Promise<ethers.TransactionReceipt> {
     const startTime = Date.now();
 
     while (Date.now() - startTime < timeout) {
@@ -364,7 +364,7 @@ export class TransactionManager {
         );
 
         // Build transaction
-        const tx: providers.TransactionRequest = {
+        const tx: TransactionRequest = {
           to,
           data,
           gasLimit: options.gasLimit,
@@ -478,13 +478,13 @@ export class TransactionManager {
     txHash: string,
     deadline?: number,
     confirmations: number = 1
-  ): Promise<providers.TransactionReceipt> {
+  ): Promise<TransactionReceipt> {
     const timeout = deadline ? deadline - Date.now() : 120000; // Default 2 minutes
     
     try {
       const receipt = await Promise.race([
         this.provider.waitForTransaction(txHash, confirmations),
-        this.timeoutPromise<providers.TransactionReceipt>(timeout),
+        this.timeoutPromise<TransactionReceipt>(timeout),
       ]);
 
       if (!receipt) {
@@ -617,7 +617,7 @@ export class TransactionManager {
         : minReplacementGas;
 
       // Build replacement transaction with same nonce but higher gas
-      const replacementTx: providers.TransactionRequest = {
+      const replacementTx: TransactionRequest = {
         to: originalTx.to!,
         data: originalTx.data,
         gasLimit: originalTx.gasLimit,

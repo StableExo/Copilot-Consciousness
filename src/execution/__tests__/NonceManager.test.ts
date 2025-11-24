@@ -6,7 +6,7 @@ import { ethers, Wallet, providers } from 'ethers';
 import { NonceManager, NonceError } from '../NonceManager';
 
 describe('NonceManager', () => {
-  let provider: providers.JsonRpcProvider;
+  let provider: JsonRpcProvider;
   let wallet: Wallet;
   let nonceManager: NonceManager;
 

@@ -87,7 +87,7 @@ export interface FlashSwapExecutorConfig {
 export interface ExecutionResult {
   success: boolean;
   txHash?: string;
-  receipt?: ethers.providers.TransactionReceipt;
+  receipt?: ethers.TransactionReceipt;
   gasLimit?: number;
   expectedProfit?: BigNumber;
   actualProfit?: BigNumber;

@@ -11,7 +11,7 @@
  */
 
 import { EventEmitter } from 'events';
-import { getAddress } from 'ethers';
+import { JsonRpcProvider, getAddress } from 'ethers';
 import { logger } from '../utils/logger';
 import { ArbitrageOrchestrator } from '../arbitrage/ArbitrageOrchestrator';
 import { ExecutionPipeline } from '../execution/ExecutionPipeline';
@@ -50,7 +50,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
   private errorRecovery: ErrorRecovery;
   
   // Supporting components
-  private provider: providers.JsonRpcProvider;
+  private provider: JsonRpcProvider;
   private nonceManager?: NonceManager;
   private gasOracle: GasPriceOracle;
   private gasEstimator: AdvancedGasEstimator;
@@ -79,7 +79,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
 
   constructor(
     baseOrchestrator: ArbitrageOrchestrator,
-    provider: providers.JsonRpcProvider,
+    provider: JsonRpcProvider,
     gasOracle: GasPriceOracle,
     gasEstimator: AdvancedGasEstimator,
     executorAddress: string,

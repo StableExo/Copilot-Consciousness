@@ -50,10 +50,10 @@ function isValidTransaction(params: TransactionParameters): boolean {
 /**
  * Prepares the transaction parameters.
  * @param {TransactionParameters} params - The transaction parameters.
- * @returns {ethers.providers.TransactionRequest} The prepared transaction request.
+ * @returns {ethers.TransactionRequest} The prepared transaction request.
  * @throws {Error} If validation fails.
  */
-function prepareTransaction(params: TransactionParameters): ethers.providers.TransactionRequest {
+function prepareTransaction(params: TransactionParameters): ethers.TransactionRequest {
     const provider = detectProvider();
 
     // Validation logic
@@ -65,7 +65,7 @@ function prepareTransaction(params: TransactionParameters): ethers.providers.Tra
     }
 
     // Build transaction request
-    const txRequest: ethers.providers.TransactionRequest = {
+    const txRequest: ethers.TransactionRequest = {
         to: params.to,
         value: params.value,
     };

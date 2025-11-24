@@ -143,10 +143,10 @@ export class BuilderNetIntelligence {
   private attestations: Map<string, TEEAttestation>;
   private hubConfig: BuilderHubConfig;
   private privacyConfig: OrderflowPrivacyConfig;
-  private provider: providers.JsonRpcProvider;
+  private provider: JsonRpcProvider;
 
   constructor(
-    provider: providers.JsonRpcProvider,
+    provider: JsonRpcProvider,
     hubConfig?: Partial<BuilderHubConfig>,
     privacyConfig?: Partial<OrderflowPrivacyConfig>
   ) {

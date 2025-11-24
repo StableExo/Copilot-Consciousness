@@ -19,12 +19,12 @@ export interface SwapSimulatorConfig {
 }
 
 export class SwapSimulator {
-    private provider: providers.Provider;
+    private provider: Provider;
     private config: SwapSimulatorConfig;
     private quoterContract: Contract | null;
     private dodoPoolContractCache: { [address: string]: Contract | null } = {};
 
-    constructor(provider: providers.Provider, config: SwapSimulatorConfig) {
+    constructor(provider: Provider, config: SwapSimulatorConfig) {
         logger.debug('[SwapSimulator v1.10] Initializing...');
         this.provider = provider;
         this.config = config;

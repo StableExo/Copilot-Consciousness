@@ -107,7 +107,7 @@ export class MempoolCongestionSensor {
   private async calculateGasDeviation(): Promise<number> {
     try {
       const currentBlockNumber = await this.provider.getBlockNumber();
-      const blocks: ethers.providers.Block[] = [];
+      const blocks: ethers.Block[] = [];
 
       // Fetch recent blocks
       for (let i = 0; i < this.windowSize; i++) {
@@ -152,7 +152,7 @@ export class MempoolCongestionSensor {
   private async calculateFeeVelocity(): Promise<number> {
     try {
       const currentBlockNumber = await this.provider.getBlockNumber();
-      const blocks: ethers.providers.Block[] = [];
+      const blocks: ethers.Block[] = [];
 
       // Fetch recent blocks
       for (let i = 0; i < this.windowSize; i++) {
