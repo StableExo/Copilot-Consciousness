@@ -70,11 +70,11 @@ export abstract class BaseProtocol implements IProtocol {
    * Calculate minimum amount out with slippage
    */
   protected calculateMinAmountOut(
-    amountOut: BigNumber,
+    amountOut: bigint,
     slippageTolerance: number = 0.5
-  ): BigNumber {
+  ): bigint {
     const slippageBps = Math.floor(slippageTolerance * 100); // Convert to basis points
-    return amountOut.mul(10000 - slippageBps).div(10000);
+    return (amountOut * BigInt(10000 - slippageBps)) / 10000n;
   }
 
   /**

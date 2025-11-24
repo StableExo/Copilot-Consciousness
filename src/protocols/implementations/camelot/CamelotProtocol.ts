@@ -36,10 +36,10 @@ export class CamelotProtocol extends BaseProtocol {
   async getQuote(params: QuoteParams): Promise<QuoteResult> {
     // Placeholder implementation - would need proper Camelot router integration
     return {
-      amountOut: BigNumber.from(0),
+      amountOut: BigInt(0),
       path: [params.tokenIn, params.tokenOut],
       fees: [params.fee || 3000], // Camelot uses dynamic fees
-      gasEstimate: BigNumber.from(150000),
+      gasEstimate: BigInt(150000),
     };
   }
 
@@ -61,7 +61,7 @@ export class CamelotProtocol extends BaseProtocol {
       token0,
       token1,
       fee: fee || 3000,
-      liquidity: BigNumber.from(0),
+      liquidity: BigInt(0),
     };
   }
 }

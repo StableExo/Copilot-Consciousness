@@ -9,8 +9,8 @@
 export interface SwapParams {
   tokenIn: string;
   tokenOut: string;
-  amountIn: BigNumber;
-  amountOutMinimum: BigNumber;
+  amountIn: bigint;
+  amountOutMinimum: bigint;
   recipient: string;
   deadline?: number;
   slippageTolerance?: number;
@@ -19,15 +19,15 @@ export interface SwapParams {
 export interface QuoteParams {
   tokenIn: string;
   tokenOut: string;
-  amountIn: BigNumber;
+  amountIn: bigint;
   fee?: number;
 }
 
 export interface QuoteResult {
-  amountOut: BigNumber;
+  amountOut: bigint;
   path: string[];
   fees: number[];
-  gasEstimate?: BigNumber;
+  gasEstimate?: bigint;
 }
 
 export interface PoolInfo {
@@ -35,8 +35,8 @@ export interface PoolInfo {
   token0: string;
   token1: string;
   fee: number;
-  liquidity: BigNumber;
-  sqrtPriceX96?: BigNumber;
+  liquidity: bigint;
+  sqrtPriceX96?: bigint;
 }
 
 export interface ProtocolMetadata {
