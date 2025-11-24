@@ -6,7 +6,7 @@
  */
 
 import axios from 'axios';
-import { ethers } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
 
 export interface GasPrice {
   gasPrice: bigint;           // Legacy gas price (for non-EIP-1559)
@@ -25,7 +25,7 @@ interface GasPriceCache {
 }
 
 export class GasPriceOracle {
-  private provider: ethers.providers.JsonRpcProvider;
+  private provider: JsonRpcProvider;
   private etherscanApiKey?: string;
   private cache: GasPriceCache;
   private refreshInterval: number;
@@ -38,7 +38,7 @@ export class GasPriceOracle {
     refreshInterval: number = 12000, // 12 seconds
     fallbackGasPrice: bigint = BigInt(50) * BigInt(10 ** 9) // 50 gwei
   ) {
-    this.provider = new ethers.providers.JsonRpcProvider(providerUrl);
+    this.provider = new JsonRpcProvider(providerUrl);
     this.etherscanApiKey = etherscanApiKey;
     this.refreshInterval = refreshInterval;
     this.fallbackGasPrice = fallbackGasPrice;
