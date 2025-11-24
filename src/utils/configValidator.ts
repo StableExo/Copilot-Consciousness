@@ -212,7 +212,7 @@ function validatePrivateKey(key: string): void {
  * Validate Ethereum address format
  */
 function validateAddress(address: string, name: string): void {
-  if (!ethers.utils.isAddress(address)) {
+  if (!isAddress(address)) {
     throw new ConfigValidationError(
       `Invalid Ethereum address for ${name}: "${address}"\n` +
       `Address must be a valid Ethereum address (0x followed by 40 hex characters)`

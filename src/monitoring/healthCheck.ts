@@ -156,7 +156,7 @@ export class HealthCheckServer {
     if (this.components?.wallet) {
       try {
         const balance = await this.components.wallet.getBalance();
-        if (balance.eq(0)) {
+        if (balance === 0n) {
           components.wallet = { status: 'degraded', message: 'Zero balance' };
           if (overallStatus === 'healthy') overallStatus = 'degraded';
         } else {

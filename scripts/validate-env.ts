@@ -96,7 +96,7 @@ async function validateRpcUrl(name: string, category: ValidationResult['category
   // Test connection
   try {
     const network = networkDetails[name];
-    const provider = new ethers.providers.JsonRpcProvider(url, network);
+    const provider = new JsonRpcProvider(url, network);
     const blockNumber = await Promise.race([
       provider.getBlockNumber(),
       new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))

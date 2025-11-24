@@ -9,7 +9,7 @@ import { ethers } from 'ethers';
 import { logger } from '../utils/logger';
 import { FLASHSWAP_ABI } from '../abis/FlashSwapABI';
 
-const flashSwapInterface = new ethers.utils.Interface(FLASHSWAP_ABI);
+const flashSwapInterface = new Interface(FLASHSWAP_ABI);
 const logPrefix = '[TxEncoder]';
 logger.debug(`${logPrefix} Initialized with FlashSwap ABI.`);
 

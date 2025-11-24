@@ -5,7 +5,7 @@
  * on Base network. Provides real-time data for arbitrage opportunity detection.
  */
 
-import { ethers } from 'ethers';
+import { ethers } ,Provider } from 'ethers';
 import { PoolInfo } from './MultiDexPathBuilder';
 
 /**
@@ -44,7 +44,7 @@ export interface PoolConfig {
  */
 export interface PoolDataFetcherConfig {
   /** Provider for blockchain calls */
-  provider: ethers.providers.Provider;
+  provider: Provider;
   /** Cache duration in milliseconds */
   cacheDurationMs?: number;
 }
@@ -198,7 +198,7 @@ export class PoolDataFetcher {
       const price = sqrtPriceX96.mul(sqrtPriceX96).div(Q96).div(Q96);
 
       // Approximate reserves (this is simplified; real V3 math is more complex)
-      const reserve0 = liquidity.mul(ethers.utils.parseUnits('1', decimals0)).div(sqrtPriceX96);
+      const reserve0 = liquidity.mul(parseUnits('1', decimals0)).div(sqrtPriceX96);
       const reserve1 = liquidity.mul(sqrtPriceX96).div(Q96);
 
       return { reserve0, reserve1 };
@@ -206,8 +206,8 @@ export class PoolDataFetcher {
       console.warn('[PoolDataFetcher] Error calculating reserves, using defaults:', error.message);
       // Return non-zero defaults to avoid division by zero
       return {
-        reserve0: ethers.utils.parseEther('100'),
-        reserve1: ethers.utils.parseUnits('200000', 6), // Assuming USDC decimals
+        reserve0: parseEther('100'),
+        reserve1: parseUnits('200000', 6), // Assuming USDC decimals
       };
     }
   }

@@ -271,7 +271,7 @@ export async function convertToNativeWei(
 
   const amountNativeWei = numerator / denominator;
   logger.debug(
-    `${logPrefix} Converted ${ethers.utils.formatUnits(amountWeiBigInt, tokenObject.decimals)} ${tokenObject.symbol} to ${ethers.utils.formatUnits(amountNativeWei, nativeCurrencyToken.decimals)} ${nativeCurrencyToken.symbol}`
+    `${logPrefix} Converted ${formatUnits(amountWeiBigInt, tokenObject.decimals)} ${tokenObject.symbol} to ${formatUnits(amountNativeWei, nativeCurrencyToken.decimals)} ${nativeCurrencyToken.symbol}`
   );
   return amountNativeWei;
 }

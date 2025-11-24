@@ -33,7 +33,7 @@ export class DEXRegistry {
             factory: '0x1F98431c8aD98523631AE4a59f267346ea31F984',
             initCodeHash: '0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54',
             priority: 1,
-            liquidityThreshold: BigInt(ethers.utils.parseEther('100000').toString()),
+            liquidityThreshold: BigInt(parseEther('100000').toString()),
             gasEstimate: 150000
         });
 
@@ -46,7 +46,7 @@ export class DEXRegistry {
             factory: '0xB9fC157394Af804a3578134A6585C0dc9cc990d4',
             initCodeHash: '0x0f345e9d36a98a0d18fb9d8724c163499968dd2f130657141ba7a3557fd7854c',
             priority: 2,
-            liquidityThreshold: BigInt(ethers.utils.parseEther('50000').toString()),
+            liquidityThreshold: BigInt(parseEther('50000').toString()),
             gasEstimate: 180000
         });
 
@@ -59,7 +59,7 @@ export class DEXRegistry {
             factory: '0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac',
             initCodeHash: '0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303',
             priority: 3,
-            liquidityThreshold: BigInt(ethers.utils.parseEther('25000').toString()),
+            liquidityThreshold: BigInt(parseEther('25000').toString()),
             gasEstimate: 130000
         });
 
@@ -72,7 +72,7 @@ export class DEXRegistry {
             factory: '0x8E9aa87E45e92bad84D5F8DD1bff34Fb92637dE9',
             initCodeHash: '0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f',
             priority: 4,
-            liquidityThreshold: BigInt(ethers.utils.parseEther('40000').toString()),
+            liquidityThreshold: BigInt(parseEther('40000').toString()),
             gasEstimate: 200000
         });
 
@@ -85,7 +85,7 @@ export class DEXRegistry {
             factory: '0x1111111254fb6c44bAC0beD2854e76F90643097d',
             initCodeHash: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
             priority: 5,
-            liquidityThreshold: BigInt(ethers.utils.parseEther('30000').toString()),
+            liquidityThreshold: BigInt(parseEther('30000').toString()),
             gasEstimate: 160000
         });
     }
@@ -117,7 +117,7 @@ export class DEXRegistry {
         
         for (const dex of this.getAllDEXes()) {
             try {
-                const provider = new ethers.providers.JsonRpcProvider();
+                const provider = new JsonRpcProvider();
                 
                 // Check if contracts exist
                 const code = await provider.getCode(dex.router);

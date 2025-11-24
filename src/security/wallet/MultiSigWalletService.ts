@@ -42,7 +42,7 @@ export interface SpendingLimit {
 
 export class MultiSigWalletService {
   private config: MultiSigConfig;
-  private provider: ethers.providers.JsonRpcProvider;
+  private provider: JsonRpcProvider;
   private proposals: Map<string, TransactionProposal>;
   private spendingLimits: Map<string, SpendingLimit>;
 
@@ -57,7 +57,7 @@ export class MultiSigWalletService {
 
   constructor(config: MultiSigConfig) {
     this.config = config;
-    this.provider = new ethers.providers.JsonRpcProvider(config.rpcUrl);
+    this.provider = new JsonRpcProvider(config.rpcUrl);
     this.proposals = new Map();
     this.spendingLimits = new Map();
   }
@@ -88,8 +88,8 @@ export class MultiSigWalletService {
       safeTxGas: '0',
       baseGas: '0',
       gasPrice: '0',
-      gasToken: ethers.constants.AddressZero,
-      refundReceiver: ethers.constants.AddressZero,
+      gasToken: ZeroAddress,
+      refundReceiver: ZeroAddress,
       nonce: nonce.toNumber(),
       signatures: new Map(),
       approvalCount: 0,
@@ -156,8 +156,8 @@ export class MultiSigWalletService {
     }
 
     // Check spending limits
-    if (ethers.BigNumber.from(proposal.value).gt(0)) {
-      await this.checkSpendingLimit(ethers.constants.AddressZero, proposal.value);
+    if (BigInt(proposal.value) > 0n) {
+      await this.checkSpendingLimit(ZeroAddress, proposal.value);
     }
 
     // Combine signatures
@@ -223,9 +223,9 @@ export class MultiSigWalletService {
 
     // Check if adding this amount would exceed limit
     const newSpent = ethers.BigNumber.from(limit.spent).add(amount);
-    const limitAmount = ethers.BigNumber.from(limit.amount);
+    const limitAmount = BigInt(limit.amount);
 
-    if (newSpent.gt(limitAmount)) {
+    if (newSpent > limitAmount) {
       throw new Error(`Spending limit exceeded for ${token}`);
     }
 

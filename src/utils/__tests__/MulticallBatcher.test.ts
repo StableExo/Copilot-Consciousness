@@ -6,12 +6,12 @@ import { ethers } from 'ethers';
 import { MulticallBatcher, batchCheckPoolsExist, batchFetchPoolData, MULTICALL3_ADDRESS } from '../MulticallBatcher';
 
 describe('MulticallBatcher', () => {
-  let provider: ethers.providers.Provider;
+  let provider: Provider;
   let batcher: MulticallBatcher;
 
   beforeEach(() => {
     // Use a mock provider for testing
-    provider = new ethers.providers.JsonRpcProvider('https://mainnet.base.org');
+    provider = new JsonRpcProvider('https://mainnet.base.org');
     batcher = new MulticallBatcher(provider);
   });
 
@@ -41,7 +41,7 @@ describe('MulticallBatcher', () => {
 
   describe('encoding and decoding', () => {
     it('should encode function call correctly', () => {
-      const iface = new ethers.utils.Interface([
+      const iface = new Interface([
         'function balanceOf(address owner) view returns (uint256)',
       ]);
 
@@ -57,7 +57,7 @@ describe('MulticallBatcher', () => {
     });
 
     it('should decode function result correctly', () => {
-      const iface = new ethers.utils.Interface([
+      const iface = new Interface([
         'function balanceOf(address owner) view returns (uint256)',
       ]);
 
@@ -71,10 +71,10 @@ describe('MulticallBatcher', () => {
 });
 
 describe('batchCheckPoolsExist', () => {
-  let provider: ethers.providers.Provider;
+  let provider: Provider;
 
   beforeEach(() => {
-    provider = new ethers.providers.JsonRpcProvider('https://mainnet.base.org');
+    provider = new JsonRpcProvider('https://mainnet.base.org');
   });
 
   it('should return empty map for empty addresses', async () => {
@@ -84,10 +84,10 @@ describe('batchCheckPoolsExist', () => {
 });
 
 describe('batchFetchPoolData', () => {
-  let provider: ethers.providers.Provider;
+  let provider: Provider;
 
   beforeEach(() => {
-    provider = new ethers.providers.JsonRpcProvider('https://mainnet.base.org');
+    provider = new JsonRpcProvider('https://mainnet.base.org');
   });
 
   it('should return empty map for empty addresses', async () => {

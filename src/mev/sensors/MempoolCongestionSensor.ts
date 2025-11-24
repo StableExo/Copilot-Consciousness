@@ -8,7 +8,7 @@
  * 3. Base fee velocity (EIP-1559 dynamics)
  */
 
-import { ethers } from 'ethers';
+import { ethers } ,Provider } from 'ethers';
 import { SensorReading } from '../types/TransactionType';
 
 export interface CongestionWeights {
@@ -24,12 +24,12 @@ const DEFAULT_WEIGHTS: CongestionWeights = {
 };
 
 export class MempoolCongestionSensor {
-  private provider: ethers.providers.Provider;
+  private provider: Provider;
   private weights: CongestionWeights;
   private windowSize: number;
 
   constructor(
-    provider: ethers.providers.Provider,
+    provider: Provider,
     windowSize: number = 5,
     weights?: Partial<CongestionWeights>
   ) {
@@ -125,8 +125,8 @@ export class MempoolCongestionSensor {
 
       // Calculate gas usage ratios
       const gasRatios = blocks
-        .filter((b) => b.gasLimit.gt(0))
-        .map((b) => b.gasUsed.toNumber() / b.gasLimit.toNumber());
+        .filter((b) => b.gasLimit > 0n)
+        .map((b) => Number(b.gasUsed) / Number(b.gasLimit));
 
       if (gasRatios.length < 2) {
         return 0;

@@ -25,7 +25,7 @@ describe('encodeFlashSwapCall', () => {
             expect(result.length).toBeGreaterThan(10);
 
             // Verify it can be decoded
-            const flashSwapInterface = new ethers.utils.Interface([
+            const flashSwapInterface = new Interface([
                 "function initiateUniswapV3FlashLoan(tuple(address tokenIntermediate, uint24 feeA, uint24 feeB, uint256 amountOutMinimum1, uint256 amountOutMinimum2, address titheRecipient) params)"
             ]);
             const decoded = flashSwapInterface.decodeFunctionData('initiateUniswapV3FlashLoan', result);
@@ -57,7 +57,7 @@ describe('encodeFlashSwapCall', () => {
             expect(result.startsWith('0x')).toBe(true);
 
             // Verify it can be decoded
-            const flashSwapInterface = new ethers.utils.Interface([
+            const flashSwapInterface = new Interface([
                 "function initiateTriangularFlashSwap(tuple(address tokenA, address tokenB, address tokenC, uint24 fee1, uint24 fee2, uint24 fee3, uint256 amountOutMinimumFinal, address titheRecipient) params)"
             ]);
             const decoded = flashSwapInterface.decodeFunctionData('initiateTriangularFlashSwap', result);
@@ -103,7 +103,7 @@ describe('encodeFlashSwapCall', () => {
             expect(result.startsWith('0x')).toBe(true);
 
             // Verify it can be decoded
-            const flashSwapInterface = new ethers.utils.Interface([
+            const flashSwapInterface = new Interface([
                 "function initiateAaveFlashLoan(tuple(tuple(address pool, address tokenIn, address tokenOut, uint24 fee, uint256 minOut, uint8 dexType)[] path, address initiator, address titheRecipient) params)"
             ]);
             const decoded = flashSwapInterface.decodeFunctionData('initiateAaveFlashLoan', result);

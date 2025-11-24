@@ -35,7 +35,7 @@ async function testPoolDetection() {
   try {
     // Initialize provider
     console.log(`Connecting to Base network: ${BASE_RPC_URL}`);
-    const provider = new ethers.providers.JsonRpcProvider(BASE_RPC_URL);
+    const provider = new JsonRpcProvider(BASE_RPC_URL);
     
     // Check connection
     const network = await provider.getNetwork();
@@ -62,7 +62,7 @@ async function testPoolDetection() {
       try {
         const poolAddress = await factory.getPool(WETH, USDC, fee);
         
-        if (poolAddress && poolAddress !== ethers.constants.AddressZero) {
+        if (poolAddress && poolAddress !== ZeroAddress) {
           poolsFound++;
           console.log(`✓ Fee ${label} (${fee}): Pool found at ${poolAddress}`);
           

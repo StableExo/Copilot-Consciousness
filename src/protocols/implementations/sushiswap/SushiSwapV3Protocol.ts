@@ -4,7 +4,7 @@
  * Implements the IProtocol interface for SushiSwap V3
  */
 
-import { ethers, BigNumber } from 'ethers';
+import { ethers, BigNumber } ,Provider } from 'ethers';
 import { BaseProtocol } from '../../base/BaseProtocol';
 import {
   SwapParams,
@@ -16,7 +16,7 @@ import {
 
 export class SushiSwapV3Protocol extends BaseProtocol {
   constructor(
-    provider: ethers.providers.Provider,
+    provider: Provider,
     chainId: number,
     signer?: ethers.Signer
   ) {
@@ -58,7 +58,7 @@ export class SushiSwapV3Protocol extends BaseProtocol {
   async getPool(token0: string, token1: string, fee: number = 3000): Promise<PoolInfo> {
     // Placeholder - would need proper SushiSwap V3 factory integration
     return {
-      address: ethers.constants.AddressZero,
+      address: ZeroAddress,
       token0,
       token1,
       fee,

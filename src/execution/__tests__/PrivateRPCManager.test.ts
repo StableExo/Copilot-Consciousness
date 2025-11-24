@@ -15,13 +15,13 @@ import {
 } from '../types/PrivateRPCTypes';
 
 describe('PrivateRPCManager', () => {
-  let provider: ethers.providers.JsonRpcProvider;
+  let provider: JsonRpcProvider;
   let signer: Wallet;
   let manager: PrivateRPCManager;
 
   beforeEach(() => {
     // Create mock provider and signer
-    provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');
+    provider = new JsonRpcProvider('http://localhost:8545');
     signer = Wallet.createRandom().connect(provider);
 
     manager = new PrivateRPCManager(provider, signer, {
@@ -136,7 +136,7 @@ describe('PrivateRPCManager', () => {
 
       const tx = {
         to: '0x0000000000000000000000000000000000000001',
-        value: ethers.utils.parseEther('0.1'),
+        value: parseEther('0.1'),
       };
 
       const result = await managerNoFallback.submitPrivateTransaction(tx, {
@@ -151,7 +151,7 @@ describe('PrivateRPCManager', () => {
     it('should handle privacy level NONE', async () => {
       const tx = {
         to: '0x0000000000000000000000000000000000000001',
-        value: ethers.utils.parseEther('0.1'),
+        value: parseEther('0.1'),
       };
 
       // With NONE privacy level and fallback disabled, should fail
@@ -199,12 +199,12 @@ describe('PrivateRPCManager', () => {
       const transactions = [
         {
           to: '0x0000000000000000000000000000000000000001',
-          value: ethers.utils.parseEther('0.1'),
+          value: parseEther('0.1'),
           gasLimit: 21000,
         },
         {
           to: '0x0000000000000000000000000000000000000002',
-          value: ethers.utils.parseEther('0.2'),
+          value: parseEther('0.2'),
           gasLimit: 21000,
         },
       ];

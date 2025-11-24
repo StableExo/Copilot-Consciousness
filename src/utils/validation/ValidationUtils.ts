@@ -30,7 +30,7 @@ export function validateAndNormalizeAddress(
   try {
     const cleanAddress = addressString.replace(/^['"]+|['"]+$/g, '');
     
-    if (!ethers.utils.isAddress(cleanAddress)) {
+    if (!isAddress(cleanAddress)) {
       const errorMsg = `[ValidationUtils] ${contextName}: Invalid address format "${cleanAddress}".`;
       if (isRequired) {
         logger.error(`CRITICAL: ${errorMsg}`);
@@ -40,7 +40,7 @@ export function validateAndNormalizeAddress(
       return null;
     }
 
-    return ethers.utils.getAddress(cleanAddress);
+    return getAddress(cleanAddress);
   } catch (error: any) {
     const errorMsg = `[ValidationUtils] ${contextName}: Validation error for "${rawAddress}" - ${error.message}`;
     if (isRequired) {

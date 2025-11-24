@@ -99,7 +99,7 @@ async function preloadChain(
 
   try {
     // Create provider for this chain
-    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const provider = new JsonRpcProvider(rpcUrl);
     
     // Verify connection
     const network = await provider.getNetwork();

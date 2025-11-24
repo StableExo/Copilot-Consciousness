@@ -20,10 +20,10 @@ interface TransactionParameters {
  * Detects the provider used by the application.
  * @returns {ethers.providers.Provider} The detected provider instance.
  */
-function detectProvider(): ethers.providers.Provider {
+function detectProvider(): Provider {
     // Logic to detect provider
     // This is a placeholder implementation
-    const provider = new ethers.providers.JsonRpcProvider();  // Replace with actual detection logic
+    const provider = new JsonRpcProvider();  // Replace with actual detection logic
     return provider;
 }
 
@@ -32,7 +32,7 @@ function detectProvider(): ethers.providers.Provider {
  * @param {ethers.providers.Provider} provider - The provider instance.
  * @returns {boolean} True if valid.
  */
-function validateProvider(provider: ethers.providers.Provider): boolean {
+function validateProvider(provider: Provider): boolean {
     // Basic validation
     return provider !== null && provider !== undefined;
 }
@@ -44,7 +44,7 @@ function validateProvider(provider: ethers.providers.Provider): boolean {
  */
 function isValidTransaction(params: TransactionParameters): boolean {
     // Basic validation
-    return !!(params.to && ethers.utils.isAddress(params.to));
+    return !!(params.to && isAddress(params.to));
 }
 
 /**

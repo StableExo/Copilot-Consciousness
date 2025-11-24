@@ -29,7 +29,7 @@ export class SwapSimulator {
         this.provider = provider;
         this.config = config;
 
-        if (!config.QUOTER_ADDRESS || !ethers.utils.isAddress(config.QUOTER_ADDRESS)) {
+        if (!config.QUOTER_ADDRESS || !isAddress(config.QUOTER_ADDRESS)) {
             throw new Error('Valid QUOTER_ADDRESS missing from config.');
         }
 
@@ -117,8 +117,8 @@ export class SwapSimulator {
         const isSellingBase = tokenIn.address.toLowerCase() === baseTokenAddress.toLowerCase();
         try {
             const queryResult = isSellingBase
-                ? await poolContract.callStatic.querySellBase(ethers.constants.AddressZero, amountIn)
-                : await poolContract.callStatic.querySellQuote(ethers.constants.AddressZero, amountIn);
+                ? await poolContract.callStatic.querySellBase(ZeroAddress, amountIn)
+                : await poolContract.callStatic.querySellQuote(ZeroAddress, amountIn);
             return { success: true, amountOut: BigInt(queryResult[0].toString()), error: null };
         } catch (error: unknown) {
             const reason = (error as { reason?: string }).reason || (error instanceof Error ? error.message : String(error));

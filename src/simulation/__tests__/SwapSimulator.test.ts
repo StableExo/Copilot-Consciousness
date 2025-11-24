@@ -349,7 +349,7 @@ describe('SwapSimulator', () => {
             expect(result.amountOut).toBe(900000n);
             expect(result.error).toBeNull();
             expect(mockDodoContract.callStatic.querySellBase).toHaveBeenCalledWith(
-                ethers.constants.AddressZero,
+                ZeroAddress,
                 1000000n
             );
         });
@@ -383,7 +383,7 @@ describe('SwapSimulator', () => {
             expect(result.success).toBe(true);
             expect(result.amountOut).toBe(1100000n);
             expect(mockDodoContract.callStatic.querySellQuote).toHaveBeenCalledWith(
-                ethers.constants.AddressZero,
+                ZeroAddress,
                 1000000n
             );
         });

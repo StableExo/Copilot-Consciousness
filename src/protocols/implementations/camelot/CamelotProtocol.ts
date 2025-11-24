@@ -4,7 +4,7 @@
  * Implements the IProtocol interface for Camelot DEX (Arbitrum)
  */
 
-import { ethers, BigNumber } from 'ethers';
+import { ethers, BigNumber } ,Provider } from 'ethers';
 import { BaseProtocol } from '../../base/BaseProtocol';
 import {
   SwapParams,
@@ -16,7 +16,7 @@ import {
 
 export class CamelotProtocol extends BaseProtocol {
   constructor(
-    provider: ethers.providers.Provider,
+    provider: Provider,
     chainId: number = 42161, // Arbitrum One
     signer?: ethers.Signer
   ) {
@@ -57,7 +57,7 @@ export class CamelotProtocol extends BaseProtocol {
   async getPool(token0: string, token1: string, fee?: number): Promise<PoolInfo> {
     // Placeholder - would need proper Camelot factory integration
     return {
-      address: ethers.constants.AddressZero,
+      address: ZeroAddress,
       token0,
       token1,
       fee: fee || 3000,

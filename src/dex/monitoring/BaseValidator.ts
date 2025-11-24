@@ -1,6 +1,6 @@
 import { DEXRegistry } from '../core/DEXRegistry';
 import { DEXValidator, DEXEvent, ValidatorStatus, DEXConfig } from '../types';
-import { ethers } from 'ethers';
+import { ethers } ,Provider } from 'ethers';
 
 /**
  * Base validator class providing common functionality for all DEX validators
@@ -25,8 +25,8 @@ export abstract class BaseValidator implements DEXValidator {
   /**
    * Get an ethers provider
    */
-  protected getProvider(): ethers.providers.Provider {
-    return new ethers.providers.JsonRpcProvider();
+  protected getProvider(): Provider {
+    return new JsonRpcProvider();
   }
 
   /**

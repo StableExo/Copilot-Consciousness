@@ -419,11 +419,11 @@ export class BuilderNetIntelligence {
     // Generate simulated attestation
     const attestation: TEEAttestation = {
       nodeId,
-      attestationHash: ethers.utils.keccak256(
+      attestationHash: keccak256(
         ethers.utils.toUtf8Bytes(`${nodeId}-${now}-${platform}`)
       ),
       platform,
-      codeMeasurement: ethers.utils.keccak256(
+      codeMeasurement: keccak256(
         ethers.utils.toUtf8Bytes('buildernet-v1.2-verified-code')
       ),
       timestamp: now,

@@ -38,7 +38,7 @@ class SushiSwapHealthCheck {
 
     private async checkCoreComponents(sushiswap: any): Promise<boolean> {
         try {
-            const provider = new ethers.providers.JsonRpcProvider();
+            const provider = new JsonRpcProvider();
 
             // Check Factory contract
             const factory = new ethers.Contract(
@@ -91,7 +91,7 @@ class SushiSwapHealthCheck {
 
     private async checkKeyPairs(sushiswap: any): Promise<boolean> {
         try {
-            const provider = new ethers.providers.JsonRpcProvider();
+            const provider = new JsonRpcProvider();
 
             // Check major trading pairs
             const criticalPairs = [
@@ -133,13 +133,13 @@ class SushiSwapHealthCheck {
                     
                     console.log(`├── ${pair.name}:`);
                     console.log(`│   ├── Address: ${pair.address}`);
-                    console.log(`│   ├── ${pair.token0} Reserve: ${ethers.utils.formatEther(reserve0)}`);
-                    console.log(`│   ├── ${pair.token1} Reserve: ${ethers.utils.formatUnits(reserve1, 6)}`);
+                    console.log(`│   ├── ${pair.token0} Reserve: ${formatEther(reserve0)}`);
+                    console.log(`│   ├── ${pair.token1} Reserve: ${formatUnits(reserve1, 6)}`);
                     console.log(`│   ├── Last Update: ${lastUpdate}`);
                     console.log(`│   ├── K-Last: ${kLast.toString()}`);
                     
                     // Check if reserves are healthy (non-zero)
-                    const isHealthy = reserve0.gt(0) && reserve1.gt(0);
+                    const isHealthy = reserve0 > 0n && reserve1 > 0n;
                     console.log(`│   └── Health: ${isHealthy ? '✅' : '❌'}`);
                 } catch (error) {
                     console.log(`├── ${pair.name}: ⚠️  (Pair query failed)`);

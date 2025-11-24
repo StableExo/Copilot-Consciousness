@@ -82,10 +82,10 @@ async function main() {
   const pathConfig: PathfindingConfig = {
     maxHops: 4,
     minProfitThreshold: isBaseMainnet 
-      ? BigInt(ethers.utils.parseEther("0.0001").toString()) // MAINNET: 0.0001 ETH for initial test
-      : BigInt(ethers.utils.parseEther("0.01").toString()),  // TESTNET: 0.01 ETH
+      ? BigInt(parseEther("0.0001").toString()) // MAINNET: 0.0001 ETH for initial test
+      : BigInt(parseEther("0.01").toString()),  // TESTNET: 0.01 ETH
     maxSlippage: 0.05,
-    gasPrice: BigInt(ethers.utils.parseUnits("50", "gwei").toString())
+    gasPrice: BigInt(parseUnits("50", "gwei").toString())
   };
 
   const orchestrator = new ArbitrageOrchestrator(registry, pathConfig, pathConfig.gasPrice);
@@ -97,8 +97,8 @@ async function main() {
   if (DAI_ADDRESS) tokens.push(DAI_ADDRESS);
   
   const startAmount = isBaseMainnet
-    ? BigInt(ethers.utils.parseEther("0.001").toString()) // MAINNET: 0.001 WETH for safety
-    : BigInt(ethers.utils.parseEther("0.1").toString());  // TESTNET: 0.1 WETH
+    ? BigInt(parseEther("0.001").toString()) // MAINNET: 0.001 WETH for safety
+    : BigInt(parseEther("0.1").toString());  // TESTNET: 0.1 WETH
 
   console.log("\nSearching for multi-hop arbitrage opportunities...");
   console.log(`Available tokens: ${tokens.length} (WETH${USDC_ADDRESS ? ', USDC' : ''}${DAI_ADDRESS ? ', DAI' : ''})`);
@@ -135,8 +135,8 @@ async function main() {
     const bestPath = paths[0];
     console.log("\nBest Path Details:");
     console.log(`  Hops: ${bestPath.hops.length}`);
-    console.log(`  Estimated Profit: ${ethers.utils.formatEther(bestPath.estimatedProfit.toString())} tokens`);
-    console.log(`  Net Profit: ${ethers.utils.formatEther(bestPath.netProfit.toString())} tokens`);
+    console.log(`  Estimated Profit: ${formatEther(bestPath.estimatedProfit.toString())} tokens`);
+    console.log(`  Net Profit: ${formatEther(bestPath.netProfit.toString())} tokens`);
 
     // --- 4. Prepare Multi-Hop Execution Parameters ---
     const [deployer] = await ethers.getSigners();
@@ -179,7 +179,7 @@ async function main() {
 
     try {
       // Encode the arbitrage parameters as ArbParams struct
-      const encodedParams = ethers.utils.defaultAbiCoder.encode(
+      const encodedParams = AbiCoder.defaultAbiCoder().encode(
         ["tuple(tuple(address pool, address tokenIn, address tokenOut, uint24 fee, uint256 minOut, uint8 dexType)[] path, address initiator)"],
         [multiHopParams]
       );

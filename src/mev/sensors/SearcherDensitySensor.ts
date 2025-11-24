@@ -8,7 +8,7 @@
  * 3. Bot clustering (unique high-gas addresses)
  */
 
-import { ethers } from 'ethers';
+import { ethers } ,Provider } from 'ethers';
 import { SensorReading } from '../types/TransactionType';
 
 export interface DensityWeights {
@@ -31,13 +31,13 @@ const DEFAULT_MEV_CONTRACTS = {
 };
 
 export class SearcherDensitySensor {
-  private provider: ethers.providers.Provider;
+  private provider: Provider;
   private weights: DensityWeights;
   private lookbackBlocks: number;
   private mevContracts: Set<string>;
 
   constructor(
-    provider: ethers.providers.Provider,
+    provider: Provider,
     lookbackBlocks: number = 20,
     weights?: Partial<DensityWeights>,
     mevContracts?: string[]
@@ -53,7 +53,7 @@ export class SearcherDensitySensor {
     // Only add valid checksummed addresses
     for (const addr of contracts) {
       try {
-        this.mevContracts.add(ethers.utils.getAddress(addr));
+        this.mevContracts.add(getAddress(addr));
       } catch (error) {
         console.warn(`Invalid MEV contract address ignored: ${addr}`);
       }
@@ -122,7 +122,7 @@ export class SearcherDensitySensor {
         for (const tx of block.transactions) {
           if (tx.to) {
             try {
-              const checksummedTo = ethers.utils.getAddress(tx.to);
+              const checksummedTo = getAddress(tx.to);
               if (this.mevContracts.has(checksummedTo)) {
                 mevTxCount++;
               }
@@ -218,7 +218,7 @@ export class SearcherDensitySensor {
         for (const tx of block.transactions) {
           if (tx.from && tx.gasPrice && tx.gasPrice.toNumber() > highGasThreshold) {
             try {
-              const checksummedFrom = ethers.utils.getAddress(tx.from);
+              const checksummedFrom = getAddress(tx.from);
               botAddresses.add(checksummedFrom);
             } catch {
               // Skip malformed addresses
@@ -241,13 +241,13 @@ export class SearcherDensitySensor {
    * Add MEV contract address to monitor
    */
   addMEVContract(address: string): void {
-    this.mevContracts.add(ethers.utils.getAddress(address));
+    this.mevContracts.add(getAddress(address));
   }
 
   /**
    * Remove MEV contract address from monitoring
    */
   removeMEVContract(address: string): void {
-    this.mevContracts.delete(ethers.utils.getAddress(address));
+    this.mevContracts.delete(getAddress(address));
   }
 }

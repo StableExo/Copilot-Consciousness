@@ -98,7 +98,7 @@ export class MultiHopDataFetcher {
   /**
    * Get or create provider for a specific network
    */
-  private getProvider(network: string): ethers.providers.Provider {
+  private getProvider(network: string): Provider {
     if (!this.providers.has(network)) {
       // In production, these should come from configuration
       const rpcUrls: Record<string, string> = {
@@ -107,7 +107,7 @@ export class MultiHopDataFetcher {
       };
       
       const rpcUrl = rpcUrls[network] || 'https://eth.llamarpc.com';
-      const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+      const provider = new JsonRpcProvider(rpcUrl);
       this.providers.set(network, provider);
     }
     
@@ -305,7 +305,7 @@ export class MultiHopDataFetcher {
     dex: DEXConfig,
     token0: string,
     token1: string,
-    provider: ethers.providers.Provider
+    provider: Provider
   ): Promise<string | null> {
     try {
       // Sort tokens
@@ -315,7 +315,7 @@ export class MultiHopDataFetcher {
 
       // Uniswap V3 style - check multiple fee tiers using factory.getPool()
       if (isV3StyleProtocol(dex.protocol)) {
-        const factoryInterface = new ethers.utils.Interface([
+        const factoryInterface = new Interface([
           'function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)'
         ]);
         
@@ -325,7 +325,7 @@ export class MultiHopDataFetcher {
           try {
             const poolAddress = await factory.getPool(tokenA, tokenB, fee);
             
-            if (poolAddress && poolAddress !== ethers.constants.AddressZero) {
+            if (poolAddress && poolAddress !== ZeroAddress) {
               // Verify pool has liquidity
               const code = await provider.getCode(poolAddress);
               if (code !== '0x') {
@@ -348,7 +348,7 @@ export class MultiHopDataFetcher {
 
       // Uniswap V2 style pool address calculation
       if (dex.initCodeHash) {
-        const salt = ethers.utils.keccak256(
+        const salt = keccak256(
           ethers.utils.solidityPack(['address', 'address'], [tokenA, tokenB])
         );
         
@@ -376,13 +376,13 @@ export class MultiHopDataFetcher {
    */
   private async getReserves(
     poolAddress: string,
-    provider: ethers.providers.Provider,
+    provider: Provider,
     protocol: string
   ): Promise<{ reserve0: bigint; reserve1: bigint } | null> {
     try {
       // Uniswap V3 style pools use slot0 and liquidity instead of reserves
       if (isV3StyleProtocol(protocol)) {
-        const poolInterface = new ethers.utils.Interface([
+        const poolInterface = new Interface([
           'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
           'function liquidity() external view returns (uint128)',
           'function token0() external view returns (address)',
@@ -418,7 +418,7 @@ export class MultiHopDataFetcher {
       }
 
       // Standard Uniswap V2 getReserves function
-      const poolInterface = new ethers.utils.Interface([
+      const poolInterface = new Interface([
         'function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)'
       ]);
 

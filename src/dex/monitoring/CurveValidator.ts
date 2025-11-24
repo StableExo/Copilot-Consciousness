@@ -145,7 +145,7 @@ export class CurveValidator extends BaseValidator {
             status: 'active',
             details: {
               address: pool.address,
-              virtualPrice: ethers.utils.formatUnits(virtualPrice, 18),
+              virtualPrice: formatUnits(virtualPrice, 18),
             },
           });
         } catch {
@@ -166,7 +166,7 @@ export class CurveValidator extends BaseValidator {
 
   private async checkPoolHealth(
     poolAddress: string,
-    provider: ethers.providers.Provider
+    provider: Provider
   ): Promise<boolean> {
     try {
       const pool = new ethers.Contract(
@@ -176,7 +176,7 @@ export class CurveValidator extends BaseValidator {
       );
 
       const virtualPrice = await pool.get_virtual_price();
-      return virtualPrice.gt(0);
+      return virtualPrice > 0n;
     } catch {
       return false;
     }

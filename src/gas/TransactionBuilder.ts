@@ -38,13 +38,13 @@ export interface BuildTransactionOptions {
 }
 
 export class TransactionBuilder {
-  private provider: ethers.providers.JsonRpcProvider;
+  private provider: JsonRpcProvider;
   private oracle: GasPriceOracle;
   private gasBuffer: number = 1.1; // 10% buffer on gas estimates
   private advancedEstimator?: AdvancedGasEstimator;
 
   constructor(
-    provider: ethers.providers.JsonRpcProvider, 
+    provider: JsonRpcProvider, 
     oracle: GasPriceOracle,
     advancedEstimator?: AdvancedGasEstimator
   ) {
@@ -113,7 +113,7 @@ export class TransactionBuilder {
         to: tx.to,
         data: tx.data,
         value: tx.value,
-        from: from || ethers.constants.AddressZero,
+        from: from || ZeroAddress,
         gasLimit: tx.gasLimit
       });
 

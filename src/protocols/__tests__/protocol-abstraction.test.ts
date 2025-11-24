@@ -18,10 +18,10 @@ import {
 } from '../index';
 
 describe('Protocol Abstraction Layer', () => {
-  let provider: ethers.providers.Provider;
+  let provider: Provider;
 
   beforeEach(() => {
-    provider = new ethers.providers.JsonRpcProvider();
+    provider = new JsonRpcProvider();
   });
 
   describe('Protocol Registry', () => {
@@ -199,11 +199,11 @@ describe('Protocol Abstraction Layer', () => {
 
       it('should reject swap execution', async () => {
         const params: SwapParams = {
-          tokenIn: ethers.constants.AddressZero,
-          tokenOut: ethers.constants.AddressZero,
+          tokenIn: ZeroAddress,
+          tokenOut: ZeroAddress,
           amountIn: BigNumber.from(0),
           amountOutMinimum: BigNumber.from(0),
-          recipient: ethers.constants.AddressZero,
+          recipient: ZeroAddress,
         };
 
         await expect(protocol.executeSwap(params)).rejects.toThrow(
@@ -266,8 +266,8 @@ describe('Protocol Abstraction Layer', () => {
 
         it('should implement getQuote', async () => {
           const params: QuoteParams = {
-            tokenIn: ethers.constants.AddressZero,
-            tokenOut: ethers.constants.AddressZero,
+            tokenIn: ZeroAddress,
+            tokenOut: ZeroAddress,
             amountIn: BigNumber.from(1000),
           };
 
@@ -279,8 +279,8 @@ describe('Protocol Abstraction Layer', () => {
 
         it('should implement getPool', async () => {
           const pool = await protocol.getPool(
-            ethers.constants.AddressZero,
-            ethers.constants.AddressZero
+            ZeroAddress,
+            ZeroAddress
           );
           expect(pool).toBeDefined();
           expect(pool.token0).toBeDefined();

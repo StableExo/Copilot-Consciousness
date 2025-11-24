@@ -43,12 +43,12 @@ async function main() {
   // Use small amount for simulation
   const FLASH_LOAN_ASSET = WETH_ADDRESS;
   const LOAN_AMOUNT = isBaseMainnet 
-    ? ethers.utils.parseUnits("0.001", 18)
-    : ethers.utils.parseUnits("0.01", 18);
+    ? parseUnits("0.001", 18)
+    : parseUnits("0.01", 18);
 
   console.log(`Network: ${network.name}`);
   console.log(`Flash Loan Asset: WETH (${FLASH_LOAN_ASSET})`);
-  console.log(`Simulation Amount: ${ethers.utils.formatUnits(LOAN_AMOUNT, 18)} WETH`);
+  console.log(`Simulation Amount: ${formatUnits(LOAN_AMOUNT, 18)} WETH`);
   console.log();
 
   // --- 2. Connect to Contract ---
@@ -120,7 +120,7 @@ async function main() {
   console.log();
 
   // --- 4. Encode Parameters ---
-  const encodedParams = ethers.utils.defaultAbiCoder.encode(
+  const encodedParams = AbiCoder.defaultAbiCoder().encode(
     ["tuple(tuple(address pool, address tokenIn, address tokenOut, uint24 fee, uint256 minOut, uint8 dexType)[] path, address initiator)"],
     [arbitrageParams]
   );
@@ -146,15 +146,15 @@ async function main() {
 
     // Calculate cost estimates at different gas prices
     const gasPrices = [
-      { label: "Low (0.01 gwei)", price: ethers.utils.parseUnits("0.01", "gwei") },
-      { label: "Medium (0.05 gwei)", price: ethers.utils.parseUnits("0.05", "gwei") },
-      { label: "High (0.1 gwei)", price: ethers.utils.parseUnits("0.1", "gwei") }
+      { label: "Low (0.01 gwei)", price: parseUnits("0.01", "gwei") },
+      { label: "Medium (0.05 gwei)", price: parseUnits("0.05", "gwei") },
+      { label: "High (0.1 gwei)", price: parseUnits("0.1", "gwei") }
     ];
 
     console.log("Estimated Transaction Costs:");
     for (const { label, price } of gasPrices) {
       const cost = gasEstimate.mul(price);
-      const costInEth = ethers.utils.formatEther(cost);
+      const costInEth = formatEther(cost);
       console.log(`  ${label}: ${costInEth} ETH ($${(parseFloat(costInEth) * 2000).toFixed(2)} @ $2000/ETH)`);
     }
     console.log();
@@ -162,8 +162,8 @@ async function main() {
     // Get current gas price
     const currentGasPrice = await ethers.provider.getGasPrice();
     const currentCost = gasEstimate.mul(currentGasPrice);
-    console.log(`Current Network Gas Price: ${ethers.utils.formatUnits(currentGasPrice, "gwei")} gwei`);
-    console.log(`Estimated Cost at Current Price: ${ethers.utils.formatEther(currentCost)} ETH`);
+    console.log(`Current Network Gas Price: ${formatUnits(currentGasPrice, "gwei")} gwei`);
+    console.log(`Estimated Cost at Current Price: ${formatEther(currentCost)} ETH`);
     console.log();
 
     // --- 6. Route Validation ---
@@ -199,9 +199,9 @@ async function main() {
     console.log();
     console.log("Key Findings:");
     console.log(`  • Estimated Gas: ${gasEstimate.toString()}`);
-    console.log(`  • Estimated Cost: ${ethers.utils.formatEther(currentCost)} ETH`);
+    console.log(`  • Estimated Cost: ${formatEther(currentCost)} ETH`);
     console.log(`  • Route: WETH → USDC → WETH`);
-    console.log(`  • Flash Loan Amount: ${ethers.utils.formatUnits(LOAN_AMOUNT, 18)} WETH`);
+    console.log(`  • Flash Loan Amount: ${formatUnits(LOAN_AMOUNT, 18)} WETH`);
     console.log();
     console.log("⚠️  IMPORTANT NOTES:");
     console.log("  • This is a gas estimation only - actual execution may differ");

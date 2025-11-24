@@ -27,7 +27,7 @@ async function main() {
   console.log("Validating BASE_TESTNET addresses:\n");
   for (const [name, addr] of Object.entries(BASE_TESTNET)) {
     try {
-      const checksummed = ethers.utils.getAddress(addr);
+      const checksummed = getAddress(addr);
       if (checksummed === addr) {
         console.log(`✓ ${name}: ${addr}`);
       } else {
@@ -45,7 +45,7 @@ async function main() {
   console.log("\nValidating BASE_MAINNET addresses:\n");
   for (const [name, addr] of Object.entries(BASE_MAINNET)) {
     try {
-      const checksummed = ethers.utils.getAddress(addr);
+      const checksummed = getAddress(addr);
       if (checksummed === addr) {
         console.log(`✓ ${name}: ${addr}`);
       } else {

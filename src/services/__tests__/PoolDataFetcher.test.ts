@@ -9,7 +9,7 @@ import { ethers } from 'ethers';
 
 describe('PoolDataFetcher', () => {
   let fetcher: PoolDataFetcher;
-  let mockProvider: ethers.providers.Provider;
+  let mockProvider: Provider;
 
   beforeEach(() => {
     // Create mock provider

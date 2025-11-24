@@ -38,7 +38,7 @@ class BalancerHealthCheck {
 
     private async checkCoreComponents(balancer: any): Promise<boolean> {
         try {
-            const provider = new ethers.providers.JsonRpcProvider();
+            const provider = new JsonRpcProvider();
 
             // Check Vault contract (main contract for Balancer V2)
             const vault = new ethers.Contract(
@@ -87,7 +87,7 @@ class BalancerHealthCheck {
 
     private async checkWeightedPools(balancer: any): Promise<boolean> {
         try {
-            const provider = new ethers.providers.JsonRpcProvider();
+            const provider = new JsonRpcProvider();
 
             // Check major weighted pools
             const criticalPools = [
@@ -123,7 +123,7 @@ class BalancerHealthCheck {
                     console.log(`│   ├── Token Count: ${tokens.length}`);
                     
                     for (let i = 0; i < Math.min(tokens.length, pool.tokens.length); i++) {
-                        console.log(`│   ├── ${pool.tokens[i]} Balance: ${ethers.utils.formatEther(balances[i])}`);
+                        console.log(`│   ├── ${pool.tokens[i]} Balance: ${formatEther(balances[i])}`);
                     }
                 } catch (error) {
                     console.log(`├── ${pool.name}: ⚠️  (Pool query failed)`);

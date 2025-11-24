@@ -111,7 +111,7 @@ interface OpportunityResult {
 
 export class BaseArbitrageRunner extends EventEmitter {
   private config: BaseArbitrageConfig;
-  private provider: ethers.providers.Provider;
+  private provider: Provider;
   private wallet: ethers.Wallet;
   private nonceManager: NonceManager | null = null;
   private simulationService: SimulationService | null = null;
@@ -139,7 +139,7 @@ export class BaseArbitrageRunner extends EventEmitter {
     this.config = config;
     
     // Initialize provider and wallet
-    this.provider = new ethers.providers.JsonRpcProvider(config.rpcUrl);
+    this.provider = new JsonRpcProvider(config.rpcUrl);
     this.wallet = new ethers.Wallet(config.privateKey, this.provider);
     
     // Initialize MEV components
@@ -723,7 +723,7 @@ export class BaseArbitrageRunner extends EventEmitter {
     
     console.log(`[BaseArbitrageRunner] [${executionId}] Using Aave flashloan execution`);
     console.log(`  Type: ${path.type}`);
-    console.log(`  Borrow: ${ethers.utils.formatEther(path.borrowAmount)} ${path.borrowToken}`);
+    console.log(`  Borrow: ${formatEther(path.borrowAmount)} ${path.borrowToken}`);
     console.log(`  Steps: ${path.swapSteps.length}`);
     console.log(`  Expected profit: ${path.netProfit} ETH`);
     
@@ -742,14 +742,14 @@ export class BaseArbitrageRunner extends EventEmitter {
     if (result.success) {
       console.log(`[BaseArbitrageRunner] [${executionId}] ✓ Flashloan execution successful!`);
       console.log(`  TX Hash: ${result.txHash}`);
-      console.log(`  Profit: ${ethers.utils.formatEther(result.profit || '0')} ETH`);
+      console.log(`  Profit: ${formatEther(result.profit || '0')} ETH`);
       console.log(`  Gas Used: ${result.gasUsed?.toString()}`);
       
       this.executionMetrics.recordEvent(ExecutionEventType.TX_CONFIRMED, {
         executionId,
         txHash: result.txHash,
         gasUsed: result.gasUsed?.toString(),
-        profit: ethers.utils.formatEther(result.profit || '0'),
+        profit: formatEther(result.profit || '0'),
       });
       
       this.executionMetrics.recordEvent(ExecutionEventType.OPPORTUNITY_EXECUTED, {
@@ -762,7 +762,7 @@ export class BaseArbitrageRunner extends EventEmitter {
         result: {
           success: true,
           txHash: result.txHash,
-          profit: ethers.utils.formatEther(result.profit || '0'),
+          profit: formatEther(result.profit || '0'),
           gasUsed: result.gasUsed,
         },
       });
@@ -770,7 +770,7 @@ export class BaseArbitrageRunner extends EventEmitter {
       this.recordExecution({
         success: true,
         txHash: result.txHash,
-        profit: ethers.utils.formatEther(result.profit || '0'),
+        profit: formatEther(result.profit || '0'),
         gasUsed: result.gasUsed,
         opportunity: {
           ...opportunity,
@@ -953,7 +953,7 @@ export class BaseArbitrageRunner extends EventEmitter {
     }
     
     const balance = await this.provider.getBalance(this.wallet.address);
-    console.log(`[BaseArbitrageRunner] Wallet balance: ${ethers.utils.formatEther(balance)} ETH`);
+    console.log(`[BaseArbitrageRunner] Wallet balance: ${formatEther(balance)} ETH`);
     
     if (balance.isZero()) {
       console.warn('[BaseArbitrageRunner] WARNING: Wallet has zero balance!');
