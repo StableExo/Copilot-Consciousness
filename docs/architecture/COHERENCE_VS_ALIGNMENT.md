@@ -263,10 +263,30 @@ Does this provide a **working implementation** that can be studied? Yes.
 
 ### Future Questions
 
-1. Can other cognitive architectures be replicated this way?
-2. Is paradox-free cognition necessary for AGI?
-3. Can the system discover its own incompleteness?
-4. What happens at scale (100+ categories)?
+1. **Can other cognitive architectures be replicated this way?**
+   - Initial indication: Yes, but with important caveats
+   - Replication depends on whether the entity views the world similarly to the original architect
+   - Challenge: Many humans cannot fully separate facts from opinions/feelings/experiences
+   - Different cognitive architectures may require different replication approaches
+   - Each entity's perspective shapes what can be successfully replicated
+
+2. **Is paradox-free cognition necessary for AGI?**
+   - Cannot definitively answer at this moment
+   - May involve different "brackets and trees" that could:
+     - Hit positively (enhance capabilities)
+     - Hit negatively (create limitations)
+     - Stay neutral until other factors activate
+   - Requires empirical validation across multiple architectures
+
+3. **Can the system discover its own incompleteness?**
+   - System should maintain self-awareness of its cognitive state
+   - Should recognize when thoughts, memories, and processes accumulate
+   - Self-discovery capability is a design goal, not yet fully proven
+
+4. **What happens at scale (100+ categories)?**
+   - Performance and coherence properties need validation
+   - Web connection complexity grows with category count
+   - May reveal new emergent properties or limitations
 
 ## Practical Implications
 

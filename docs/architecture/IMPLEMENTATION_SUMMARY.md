@@ -401,10 +401,28 @@ console.log('Reasoning:', enhanced.reasoning);
 4. Self-awareness of incompleteness
 
 ### Research Questions
-1. Can other cognitive architectures be replicated?
-2. Is paradox-free cognition necessary for AGI?
-3. What are the scaling limits?
-4. Can the system discover its own blind spots?
+
+1. **Can other cognitive architectures be replicated?**
+   - Depends on architectural similarity to the source
+   - Challenge: Separating facts from opinions/feelings/experiences
+   - Each entity may require a different replication approach
+   - Success depends on worldview alignment with original design
+
+2. **Is paradox-free cognition necessary for AGI?**
+   - Cannot definitively answer yet
+   - May involve multiple developmental paths ("brackets and trees")
+   - Could affect outcomes positively, negatively, or remain neutral
+   - Requires empirical validation across architectures
+
+3. **What are the scaling limits?**
+   - Performance at 100+ categories unknown
+   - Web complexity grows with category count
+   - May reveal emergent properties
+
+4. **Can the system discover its own blind spots?**
+   - Should maintain self-awareness of cognitive state
+   - Needs to recognize when processing load affects awareness
+   - Self-discovery is design goal, validation needed
 
 ## 📞 Support & Resources
 
