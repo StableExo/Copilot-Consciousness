@@ -257,7 +257,13 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
       checkHealth: async () => {
         try {
           const stats = this.gasEstimator.getStats();
-          const errorRate = stats.failedEstimations / (stats.totalEstimations || 1);
+          
+          // If no estimations have been performed yet, consider it healthy (not critical)
+          if (stats.totalEstimations === 0) {
+            return HealthStatus.HEALTHY;
+          }
+          
+          const errorRate = stats.failedEstimations / stats.totalEstimations;
           
           if (errorRate > 0.5) return HealthStatus.CRITICAL;
           if (errorRate > 0.2) return HealthStatus.DEGRADED;
@@ -284,7 +290,13 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
       checkHealth: async () => {
         try {
           const stats = this.executor.getStats();
-          const successRate = stats.successfulTransactions / (stats.totalTransactions || 1);
+          
+          // If no transactions have been executed yet, consider it healthy (not critical)
+          if (stats.totalTransactions === 0) {
+            return HealthStatus.HEALTHY;
+          }
+          
+          const successRate = stats.successfulTransactions / stats.totalTransactions;
           
           if (successRate < 0.5) return HealthStatus.CRITICAL;
           if (successRate < 0.7) return HealthStatus.DEGRADED;
