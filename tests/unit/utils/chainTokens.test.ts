@@ -4,6 +4,9 @@
 
 import { getScanTokens, getTokensByChainId, getNetworkName } from '../../../src/utils/chainTokens';
 
+// Ethereum address pattern for validation
+const ETH_ADDRESS_PATTERN = /^0x[a-fA-F0-9]{40}$/;
+
 describe('chainTokens', () => {
   describe('getScanTokens', () => {
     it('should return all Base tokens including cbETH, AERO, cbBTC, and WSTETH', () => {
@@ -62,7 +65,7 @@ describe('chainTokens', () => {
       const tokens = getScanTokens(8453);
       tokens.forEach(address => {
         expect(address).toBeDefined();
-        expect(address).toMatch(/^0x[a-fA-F0-9]{40}$/);
+        expect(address).toMatch(ETH_ADDRESS_PATTERN);
       });
     });
   });

@@ -24,7 +24,7 @@ export interface ChainTokens {
   AERO?: TokenInfo;
   cbBTC?: TokenInfo;
   WSTETH?: TokenInfo;
-  [key: string]: TokenInfo | undefined;  // Allow dynamic token types
+  [key: string]: TokenInfo | undefined;  // Allow additional token symbols beyond the predefined ones
 }
 
 /**
