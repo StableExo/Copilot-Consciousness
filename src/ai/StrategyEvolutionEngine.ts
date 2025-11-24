@@ -20,6 +20,7 @@
  */
 
 import { EventEmitter } from 'events';
+import { logger } from '../utils/logger';
 import {
   StrategyParameters,
   ConfigVariant,
@@ -82,7 +83,7 @@ export class StrategyEvolutionEngine extends EventEmitter {
     this.initializeParameterBounds();
     this.initializePopulation();
     
-    console.log('[StrategyEvolutionEngine] Initialized with population size:', this.config.populationSize);
+    logger.info(`[StrategyEvolutionEngine] Initialized with population size: ${this.config.populationSize}`);
   }
   
   /**
@@ -116,7 +117,7 @@ export class StrategyEvolutionEngine extends EventEmitter {
       this.state.population.push(variant);
     }
     
-    console.log(`[StrategyEvolutionEngine] Initialized population with ${this.state.population.length} variants`);
+    logger.info(`[StrategyEvolutionEngine] Initialized population with ${this.state.population.length} variants`);
   }
   
   /**
@@ -237,9 +238,9 @@ export class StrategyEvolutionEngine extends EventEmitter {
       duration,
     });
     
-    console.log(`[StrategyEvolutionEngine] Evolved to generation ${nextGenNumber} (${duration}ms)`);
-    console.log(`  Best fitness: ${sorted[0]?.fitnessScore?.toFixed(4) ?? 'N/A'}`);
-    console.log(`  Convergence: ${(this.state.convergenceScore * 100).toFixed(1)}%`);
+    logger.info(`[StrategyEvolutionEngine] Evolved to generation ${nextGenNumber} (${duration}ms)`);
+    logger.info(`  Best fitness: ${sorted[0]?.fitnessScore?.toFixed(4) ?? 'N/A'}`);
+    logger.info(`  Convergence: ${(this.state.convergenceScore * 100).toFixed(1)}%`);
   }
   
   /**
@@ -566,6 +567,6 @@ export class StrategyEvolutionEngine extends EventEmitter {
       this.baseConfig = data.baseConfig;
     }
     
-    console.log(`[StrategyEvolutionEngine] Imported state at generation ${this.state.currentGeneration}`);
+    logger.info(`[StrategyEvolutionEngine] Imported state at generation ${this.state.currentGeneration}`);
   }
 }
