@@ -5,7 +5,7 @@
  * automatic failover, and connection pooling
  */
 
-import { ethers } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
 import { Connection, ConnectionConfig } from '@solana/web3.js';
 import { ChainConfig } from '../config/cross-chain.config';
 
@@ -20,7 +20,7 @@ export interface ProviderHealth {
 
 export interface ChainProvider {
   chainId: number | string;
-  provider: ethers.providers.JsonRpcProvider | Connection;
+  provider: JsonRpcProvider | Connection;
   config: ChainConfig;
   health: ProviderHealth;
   type: 'EVM' | 'Solana';
@@ -56,7 +56,7 @@ export class ChainProviderManager {
         // Initialize multiple providers for failover
         for (const rpcUrl of config.rpcUrls) {
           try {
-            const provider = new ethers.providers.JsonRpcProvider(
+            const provider = new JsonRpcProvider(
               rpcUrl,
               typeof config.chainId === 'number' ? config.chainId : undefined
             );
@@ -116,7 +116,7 @@ export class ChainProviderManager {
   /**
    * Get a healthy provider for a specific chain
    */
-  getProvider(chainId: number | string): ethers.providers.JsonRpcProvider | null {
+  getProvider(chainId: number | string): JsonRpcProvider | null {
     const chainProviders = this.providers.get(chainId);
     if (!chainProviders || chainProviders.length === 0) {
       return null;
@@ -131,12 +131,12 @@ export class ChainProviderManager {
     // Find first healthy provider
     const healthyProvider = evmProviders.find(cp => cp.health.isHealthy);
     if (healthyProvider) {
-      return healthyProvider.provider as ethers.providers.JsonRpcProvider;
+      return healthyProvider.provider as JsonRpcProvider;
     }
 
     // If no healthy provider, return first one and mark for health check
     console.warn(`No healthy provider for chain ${chainId}, using fallback`);
-    return evmProviders[0].provider as ethers.providers.JsonRpcProvider;
+    return evmProviders[0].provider as JsonRpcProvider;
   }
 
   /**
@@ -211,7 +211,7 @@ export class ChainProviderManager {
     
     try {
       if (chainProvider.type === 'EVM') {
-        const provider = chainProvider.provider as ethers.providers.JsonRpcProvider;
+        const provider = chainProvider.provider as JsonRpcProvider;
         const blockNumber = await Promise.race([
           provider.getBlockNumber(),
           new Promise<number>((_, reject) => 

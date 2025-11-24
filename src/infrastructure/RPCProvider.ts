@@ -1,13 +1,13 @@
-import { ethers } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
 
 export class RPCProvider {
-  private provider: ethers.providers.JsonRpcProvider;
+  private provider: JsonRpcProvider;
 
   constructor(rpcUrl: string) {
-    this.provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    this.provider = new JsonRpcProvider(rpcUrl);
   }
 
-  public getProvider(): ethers.providers.JsonRpcProvider {
+  public getProvider(): JsonRpcProvider {
     return this.provider;
   }
 }
