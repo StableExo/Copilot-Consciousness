@@ -81,7 +81,7 @@ export class StrategyRLAgent extends EventEmitter {
     // Initialize parameter bounds for safe exploration
     this.initializeParameterBounds();
     
-    logger.info(`[StrategyRLAgent] Initialized with config: ${JSON.stringify(this.config)}`);
+    logger.info(`[StrategyRLAgent] Initialized with learning rate: ${this.config.learningRate}`);
   }
   
   /**
