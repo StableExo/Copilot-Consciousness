@@ -14,7 +14,7 @@
  * - Gas spike protection
  */
 
-import { BigNumber, ethers, formatUnits, getAddress, providers } from 'ethers';
+import { Provider, formatUnits, getAddress } from 'ethers';
 import { Mutex } from 'async-mutex';
 import { logger } from '../utils/logger';
 import { NonceManager } from './NonceManager';

@@ -3,7 +3,7 @@
  *
  * A TypeScript port of the v1.10 SwapSimulator from PROJECT-HAVOC.
  */
-import { Contract, ethers, isAddress, providers } from 'ethers';
+import { Contract, ethers, isAddress } from 'ethers';
 import { logger } from '../utils/logger';
 import { IQUOTERV2_ABI, DODOV1V2_POOL_ABI } from '../abis/SwapSimulatorABIs';
 import { Token, PoolState } from '../types/definitions';

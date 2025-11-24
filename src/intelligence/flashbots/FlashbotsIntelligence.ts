@@ -10,7 +10,7 @@
  * Based on Flashbots documentation: https://docs.flashbots.net/
  */
 
-import { ethers, formatEther, providers } from 'ethers';
+import { ethers, formatEther } from 'ethers';
 import { logger } from '../../utils/logger';
 import {
   BuilderReputation,

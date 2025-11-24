@@ -130,7 +130,7 @@ export class CrossChainScanner extends EventEmitter {
           const provider = this.providerManager.getProvider(chainId);
           if (provider) {
             const network = await provider.getNetwork();
-            if (network.chainId !== chainId) {
+            if (Number(network.chainId) !== chainId) {
               console.error(
                 `⚠️ PROVIDER MISMATCH: Expected chain ${chainId} but provider is connected to chain ${network.chainId}`
               );

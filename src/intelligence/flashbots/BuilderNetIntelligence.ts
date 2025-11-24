@@ -14,7 +14,7 @@
  * Based on: https://buildernet.org/docs/architecture
  */
 
-import { ethers, keccak256, providers, toUtf8Bytes } from 'ethers';
+import { ethers, keccak256, toUtf8Bytes } from 'ethers';
 import { logger } from '../../utils/logger';
 
 /**

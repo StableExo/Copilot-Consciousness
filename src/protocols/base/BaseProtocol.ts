@@ -52,7 +52,7 @@ export abstract class BaseProtocol implements IProtocol {
   async isActive(): Promise<boolean> {
     try {
       const network = await this.provider.getNetwork();
-      return network.chainId === this.metadata.chainId;
+      return Number(network.chainId) === this.metadata.chainId;
     } catch (error) {
       console.error('Error checking protocol active status:', error);
       return false;

@@ -4,7 +4,7 @@
  * Extends DEX registry functionality to support multi-token paths
  */
 
-import { Interface, JsonRpcProvider, Provider, ZeroAddress, getCreate2Address, keccak256, solidityPacked } from 'ethers';
+import { Contract, Interface, JsonRpcProvider, Provider, ZeroAddress, getCreate2Address, keccak256, solidityPacked } from 'ethers';
 import { DEXRegistry } from '../dex/core/DEXRegistry';
 import { DEXConfig } from '../dex/types';
 import { PoolEdge, Token } from './types';
@@ -319,7 +319,7 @@ export class MultiHopDataFetcher {
           'function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)'
         ]);
         
-        const factory = new ethers.Contract(dex.factory, factoryInterface, provider);
+        const factory = new Contract(dex.factory, factoryInterface, provider);
         
         for (const fee of UNISWAP_V3_FEE_TIERS) {
           try {
@@ -389,7 +389,7 @@ export class MultiHopDataFetcher {
           'function token1() external view returns (address)'
         ]);
 
-        const contract = new ethers.Contract(poolAddress, poolInterface, provider);
+        const contract = new Contract(poolAddress, poolInterface, provider);
         
         // Get liquidity and price
         const liquidity = await contract.liquidity();
@@ -422,7 +422,7 @@ export class MultiHopDataFetcher {
         'function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)'
       ]);
 
-      const contract = new ethers.Contract(poolAddress, poolInterface, provider);
+      const contract = new Contract(poolAddress, poolInterface, provider);
       const reserves = await contract.getReserves();
 
       return {
