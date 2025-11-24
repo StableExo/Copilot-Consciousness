@@ -5,7 +5,7 @@
  * Provides type-safe access to protocol metadata, addresses, and features.
  */
 
-export type ProtocolType = 'uniswap-v3' | 'sushiswap-v3' | 'curve' | 'balancer' | 'uniswap-v2' | 'sushiswap-v2' | 'aerodrome' | 'baseswap';
+export type ProtocolType = 'uniswap-v3' | 'sushiswap-v3' | 'curve' | 'balancer' | 'uniswap-v2' | 'sushiswap-v2' | 'aerodrome' | 'baseswap' | 'velodrome' | 'pancakeswap-v3' | 'maverick';
 
 export interface ProtocolConfig {
   name: string;
@@ -184,6 +184,25 @@ protocolRegistry.loadFromConfig([
     factory: '0xFDa619b6d20975be80A10332cD39b9a4b0FAa8BB',
     supportedChains: [8453], // Base only
     features: ['flash-swap', 'constant-product'],
+    version: '2'
+  },
+  {
+    name: 'PancakeSwap V3 Base',
+    type: 'pancakeswap-v3',
+    router: '0x1b81D678ffb9C0263b24A97847620C99d213eB14',
+    factory: '0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865',
+    quoter: '0xB048Bbc1Ee6b733FFfCFb9e9CeF7375518e25997',
+    supportedChains: [8453], // Base
+    features: ['flash-swap', 'concentrated-liquidity', 'multiple-fee-tiers'],
+    version: '3'
+  },
+  {
+    name: 'Velodrome',
+    type: 'velodrome',
+    router: '0xa062aE8A9c5e11aaA026fc2670B0D65cCc8B2858',
+    factory: '0x31832f2a97Fd20664D76Cc421207669b55CE4BC0',
+    supportedChains: [8453], // Base (Velodrome Slipstream on Base)
+    features: ['flash-swap', 'concentrated-liquidity', 'variable-fee'],
     version: '2'
   }
 ]);

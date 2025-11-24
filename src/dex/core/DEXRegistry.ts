@@ -146,6 +146,33 @@ export class DEXRegistry {
             gasEstimate: 130000
         });
 
+        // New DEXes on Base - Expansion Phase
+        this.addDEX({
+            name: 'PancakeSwap V3 on Base',
+            protocol: 'PancakeSwapV3',
+            chainType: 'EVM',
+            network: '8453',
+            router: '0x1b81D678ffb9C0263b24A97847620C99d213eB14',
+            factory: '0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865',
+            initCodeHash: '0x6ce8eb472fa82df5469c6ab6d485f17c3ad13c8cd7af59b3d4a8026c5ce0f7e2',
+            priority: 4,
+            liquidityThreshold: BigInt(ethers.utils.parseEther('50').toString()),
+            gasEstimate: 150000
+        });
+
+        this.addDEX({
+            name: 'Velodrome on Base',
+            protocol: 'Velodrome',
+            chainType: 'EVM',
+            network: '8453',
+            router: '0xa062aE8A9c5e11aaA026fc2670B0D65cCc8B2858',
+            factory: '0x31832f2a97Fd20664D76Cc421207669b55CE4BC0',
+            initCodeHash: '0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54',
+            priority: 5,
+            liquidityThreshold: BigInt(ethers.utils.parseEther('50').toString()),
+            gasEstimate: 150000
+        });
+
         // Low liquidity DEXes on Base - kept for fallback
         this.addDEX({
             name: 'Uniswap V2 on Base',
