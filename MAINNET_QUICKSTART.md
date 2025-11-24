@@ -22,21 +22,33 @@ CHAIN_ID=8453
 BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR-API-KEY
 WALLET_PRIVATE_KEY=0xYOUR_PRIVATE_KEY_HERE
 
-# 4. Build and launch
-npm run build
-npm start
+# 4. Build and launch (with automatic pool preloading)
+npm run start:mainnet
 ```
 
-**That's it!** TheWarden is now running on Base mainnet.
+**That's it!** TheWarden is now running on Base mainnet with pre-loaded pools for instant startup.
+
+> **🚀 NEW**: TheWarden now automatically preloads pool data, reducing startup time from 2+ minutes to under 5 seconds! See [Pool Preloading Guide](docs/POOL_PRELOADING.md) for details.
 
 ## What You'll See
 
 ```
 ═══════════════════════════════════════════════════════════
+  🚀 THEWARDEN POOL PRELOADER
+═══════════════════════════════════════════════════════════
+✓ Connected to Base
+✓ Found 4 tokens to scan
+✓ Found 5 DEXes
+✓ Found 47 valid pools in 12s
+✓ Saved pool data to cache
+
+═══════════════════════════════════════════════════════════
   AEV WARDEN.BOT – AUTONOMOUS EXTRACTED VALUE ENGINE
 ═══════════════════════════════════════════════════════════
 AEV status: ONLINE
 Role: Warden.bot – monitoring flow, judging opportunities…
+
+✓ Preloaded pool data loaded successfully - fast startup enabled
 
 🚀 INITIALIZING PHASE 3: Advanced AI & AEV Evolution 🚀
 ✓ Phase 3 initialization complete
