@@ -3,7 +3,7 @@
  *
  * A TypeScript port of the v1.10 SwapSimulator from PROJECT-HAVOC.
  */
-import { ethers, Contract, providers } from 'ethers';
+import { Contract, ethers, isAddress } from 'ethers';
 import { logger } from '../utils/logger';
 import { IQUOTERV2_ABI, DODOV1V2_POOL_ABI } from '../abis/SwapSimulatorABIs';
 import { Token, PoolState } from '../types/definitions';
@@ -19,12 +19,12 @@ export interface SwapSimulatorConfig {
 }
 
 export class SwapSimulator {
-    private provider: providers.Provider;
+    private provider: Provider;
     private config: SwapSimulatorConfig;
     private quoterContract: Contract | null;
     private dodoPoolContractCache: { [address: string]: Contract | null } = {};
 
-    constructor(provider: providers.Provider, config: SwapSimulatorConfig) {
+    constructor(provider: Provider, config: SwapSimulatorConfig) {
         logger.debug('[SwapSimulator v1.10] Initializing...');
         this.provider = provider;
         this.config = config;

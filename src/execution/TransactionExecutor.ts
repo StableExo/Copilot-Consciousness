@@ -10,7 +10,7 @@
  * Supports multi-DEX execution: Uniswap V2/V3, SushiSwap, Curve, Aave, Balancer
  */
 
-import { ethers, JsonRpcProvider, isAddress, Interface, AbiCoder } from 'ethers';
+import { JsonRpcProvider, TransactionReceipt, TransactionResponse, isAddress, Interface, AbiCoder } from 'ethers';
 import { logger } from '../utils/logger';
 import { NonceManager } from './NonceManager';
 import { buildTwoHopParams, buildTriangularParams, buildAavePathParams } from './ParamBuilder';
@@ -59,7 +59,7 @@ export interface TransactionExecutorConfig {
  * TransactionExecutor - Unified transaction handling with full integration
  */
 export class TransactionExecutor {
-  private provider: providers.JsonRpcProvider;
+  private provider: JsonRpcProvider;
   private gasOracle: GasPriceOracle;
   private gasEstimator: AdvancedGasEstimator;
   private arbitrageConfig: ArbitrageConfig;
@@ -497,7 +497,7 @@ export class TransactionExecutor {
    * Monitor transaction until confirmation
    */
   private async monitorTransaction(
-    txResponse: providers.TransactionResponse
+    txResponse: TransactionResponse
   ): Promise<TransactionMonitoringInfo> {
     const startTime = Date.now();
     const info: TransactionMonitoringInfo = {
@@ -512,9 +512,9 @@ export class TransactionExecutor {
       logger.info(`[TransactionExecutor] Monitoring transaction ${txResponse.hash}`);
 
       // Wait for confirmation with timeout
-      const receipt = await Promise.race<providers.TransactionReceipt>([
-        txResponse.wait(this.confirmations) as Promise<providers.TransactionReceipt>,
-        new Promise<providers.TransactionReceipt>((_, reject) =>
+      const receipt = await Promise.race<TransactionReceipt>([
+        txResponse.wait(this.confirmations) as Promise<TransactionReceipt>,
+        new Promise<TransactionReceipt>((_, reject) =>
           setTimeout(() => reject(new Error('Confirmation timeout')), this.confirmationTimeout)
         )
       ]);

@@ -5,7 +5,7 @@
  * Throws descriptive errors for missing or invalid values.
  */
 
-import { ethers } from 'ethers';
+import { ethers, isAddress } from 'ethers';
 
 export interface ValidatedConfig {
   // Network configuration

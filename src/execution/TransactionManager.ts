@@ -14,7 +14,7 @@
  * - Gas spike protection
  */
 
-import { ethers, providers, BigNumber } from 'ethers';
+import { Provider, formatUnits, getAddress } from 'ethers';
 import { Mutex } from 'async-mutex';
 import { logger } from '../utils/logger';
 import { NonceManager } from './NonceManager';
@@ -52,15 +52,15 @@ export interface RetryConfig {
  */
 export interface TransactionOptions {
   /** Gas limit */
-  gasLimit?: BigNumber;
+  gasLimit?: bigint;
   /** Gas price */
-  gasPrice?: BigNumber;
+  gasPrice?: bigint;
   /** Max fee per gas (EIP-1559) */
-  maxFeePerGas?: BigNumber;
+  maxFeePerGas?: bigint;
   /** Max priority fee per gas (EIP-1559) */
-  maxPriorityFeePerGas?: BigNumber;
+  maxPriorityFeePerGas?: bigint;
   /** Transaction value */
-  value?: BigNumber;
+  value?: bigint;
   /** Nonce override */
   nonce?: number;
   /** Transaction deadline timestamp */
@@ -80,8 +80,8 @@ export interface TransactionMetadata {
   attempts: number;
   submittedAt?: Date;
   confirmedAt?: Date;
-  gasPrice?: BigNumber;
-  gasUsed?: BigNumber;
+  gasPrice?: bigint;
+  gasUsed?: bigint;
   error?: string;
   replacedBy?: string;
 }
@@ -92,7 +92,7 @@ export interface TransactionMetadata {
 export interface TransactionResult {
   success: boolean;
   txHash?: string;
-  receipt?: providers.TransactionReceipt;
+  receipt?: any; // TransactionReceipt type
   metadata: TransactionMetadata;
   error?: string;
 }
@@ -140,7 +140,7 @@ const DEFAULT_GAS_SPIKE_CONFIG: GasSpikeConfig = {
  * - Reorg detection and recovery
  */
 export class TransactionManager {
-  private provider: providers.Provider;
+  private provider: Provider;
   private nonceManager: NonceManager;
   private retryConfig: RetryConfig;
   private gasSpikeConfig: GasSpikeConfig;
@@ -149,7 +149,7 @@ export class TransactionManager {
   private transactionRegistry: Map<string, TransactionMetadata>;
   
   // Gas price history for spike detection
-  private gasPriceHistory: Array<{ timestamp: number; gasPrice: BigNumber }>;
+  private gasPriceHistory: Array<{ timestamp: number; gasPrice: bigint }>;
   
   // Nonce management with mutex for thread-safety
   private nonceMutex = new Mutex();
@@ -166,11 +166,11 @@ export class TransactionManager {
     retriedTransactions: 0,
     replacedTransactions: 0,
     timeoutTransactions: 0,
-    totalGasUsed: BigNumber.from(0),
+    totalGasUsed: 0n,
   };
 
   constructor(
-    provider: providers.Provider,
+    provider: Provider,
     nonceManager: NonceManager,
     retryConfig: Partial<RetryConfig> = {},
     gasSpikeConfig: Partial<GasSpikeConfig> = {}
@@ -221,7 +221,7 @@ export class TransactionManager {
   async confirmTransaction(
     txHash: string,
     timeout: number = 60000
-  ): Promise<ethers.providers.TransactionReceipt> {
+  ): Promise<ethers.TransactionReceipt> {
     const startTime = Date.now();
 
     while (Date.now() - startTime < timeout) {
@@ -364,7 +364,7 @@ export class TransactionManager {
         );
 
         // Build transaction
-        const tx: providers.TransactionRequest = {
+        const tx: TransactionRequest = {
           to,
           data,
           gasLimit: options.gasLimit,
@@ -373,9 +373,7 @@ export class TransactionManager {
 
         // Set gas price (increase on retries)
         if (attempt > 0 && currentGasPrice) {
-          currentGasPrice = currentGasPrice
-            .mul(Math.floor(retryConfig.gasPriceIncrement * 100))
-            .div(100);
+          currentGasPrice = (currentGasPrice * BigInt(Math.floor(retryConfig.gasPriceIncrement * 100))) / 100n;
           logger.info(
             `[TransactionManager] Increasing gas price to ${formatUnits(currentGasPrice, 'gwei')} Gwei`
           );
@@ -415,7 +413,7 @@ export class TransactionManager {
           metadata.state = TransactionState.CONFIRMED;
           metadata.confirmedAt = new Date();
           metadata.gasUsed = receipt.gasUsed;
-          this.stats.totalGasUsed = this.stats.totalGasUsed.add(receipt.gasUsed);
+          this.stats.totalGasUsed = this.stats.totalGasUsed + receipt.gasUsed;
 
           logger.info(
             `[TransactionManager] Transaction confirmed: ${response.hash} (gas used: ${receipt.gasUsed})`
@@ -480,13 +478,13 @@ export class TransactionManager {
     txHash: string,
     deadline?: number,
     confirmations: number = 1
-  ): Promise<providers.TransactionReceipt> {
+  ): Promise<TransactionReceipt> {
     const timeout = deadline ? deadline - Date.now() : 120000; // Default 2 minutes
     
     try {
       const receipt = await Promise.race([
         this.provider.waitForTransaction(txHash, confirmations),
-        this.timeoutPromise<providers.TransactionReceipt>(timeout),
+        this.timeoutPromise<TransactionReceipt>(timeout),
       ]);
 
       if (!receipt) {
@@ -580,7 +578,7 @@ export class TransactionManager {
    */
   async replaceTransaction(
     txId: string,
-    newGasPrice: BigNumber
+    newGasPrice: bigint
   ): Promise<TransactionResult> {
     const metadata = this.transactionRegistry.get(txId);
     if (!metadata) {
@@ -611,7 +609,7 @@ export class TransactionManager {
       }
 
       // Calculate minimum replacement gas price (10% higher)
-      const originalGasPrice = originalTx.gasPrice || originalTx.maxFeePerGas || BigNumber.from(0);
+      const originalGasPrice = originalTx.gasPrice || originalTx.maxFeePerGas || 0n;
       const minReplacementGas = originalGasPrice * 110n / 100n;
       
       const replacementGasPrice = newGasPrice > minReplacementGas
@@ -619,7 +617,7 @@ export class TransactionManager {
         : minReplacementGas;
 
       // Build replacement transaction with same nonce but higher gas
-      const replacementTx: providers.TransactionRequest = {
+      const replacementTx: TransactionRequest = {
         to: originalTx.to!,
         data: originalTx.data,
         gasLimit: originalTx.gasLimit,

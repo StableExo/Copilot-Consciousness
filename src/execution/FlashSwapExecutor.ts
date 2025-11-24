@@ -15,7 +15,7 @@
  * - Swap step encoding for contract calls
  */
 
-import { ethers, Contract, Provider } from 'ethers';
+import { Contract, Provider, ethers, formatEther, isAddress, parseUnits } from 'ethers';
 import { logger } from '../utils/logger';
 import { ArbitrageOpportunity } from '../arbitrage/models';
 
@@ -87,7 +87,7 @@ export interface FlashSwapExecutorConfig {
 export interface ExecutionResult {
   success: boolean;
   txHash?: string;
-  receipt?: ethers.providers.TransactionReceipt;
+  receipt?: ethers.TransactionReceipt;
   gasLimit?: number;
   expectedProfit?: BigNumber;
   actualProfit?: BigNumber;

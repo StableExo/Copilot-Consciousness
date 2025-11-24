@@ -8,7 +8,7 @@
  * 3. Bot clustering (unique high-gas addresses)
  */
 
-import { ethers, Provider } from 'ethers';
+import { Provider, ethers, getAddress } from 'ethers';
 import { SensorReading } from '../types/TransactionType';
 
 export interface DensityWeights {
@@ -114,7 +114,7 @@ export class SearcherDensitySensor {
         const blockNumber = currentBlockNumber - i;
         if (blockNumber < 0) break;
 
-        const block = await this.provider.getBlockWithTransactions(blockNumber);
+        const block = await this.provider.getBlock(blockNumber, true);
         if (!block) continue;
 
         totalTxCount += block.transactions.length;
@@ -154,7 +154,7 @@ export class SearcherDensitySensor {
         const blockNumber = currentBlockNumber - i;
         if (blockNumber < 0) break;
 
-        const block = await this.provider.getBlockWithTransactions(blockNumber);
+        const block = await this.provider.getBlock(blockNumber, true);
         if (!block) continue;
 
         for (const tx of block.transactions) {
@@ -192,7 +192,7 @@ export class SearcherDensitySensor {
   private async calculateClustering(currentBlockNumber: number): Promise<number> {
     try {
       // First, get average gas price from latest block
-      const latestBlock = await this.provider.getBlockWithTransactions('latest');
+      const latestBlock = await this.provider.getBlock('latest', true);
       if (!latestBlock || latestBlock.transactions.length === 0) {
         return 0;
       }
@@ -212,7 +212,7 @@ export class SearcherDensitySensor {
         const blockNumber = currentBlockNumber - i;
         if (blockNumber < 0) break;
 
-        const block = await this.provider.getBlockWithTransactions(blockNumber);
+        const block = await this.provider.getBlock(blockNumber, true);
         if (!block) continue;
 
         for (const tx of block.transactions) {

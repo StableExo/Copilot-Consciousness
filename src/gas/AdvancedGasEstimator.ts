@@ -10,7 +10,7 @@
  * on unprofitable or reverting transactions.
  */
 
-import { ethers, JsonRpcProvider } from 'ethers';
+import { Interface, JsonRpcProvider, ethers } from 'ethers';
 import { ArbitragePath, ArbitrageHop } from '../arbitrage/types';
 import { GasPriceOracle, GasPrice } from './GasPriceOracle';
 

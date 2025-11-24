@@ -11,7 +11,7 @@
  * - MEV risk assessment integration
  */
 
-import { ethers, Provider } from 'ethers';
+import { Provider, ethers, formatEther } from 'ethers';
 
 // Dynamic import for artifact - may not exist if contracts haven't been compiled
 let FlashSwapV2Artifact: any;
@@ -232,7 +232,7 @@ export class FlashLoanExecutor {
    * Extract profit from transaction receipt
    * Looks for TradeProfit event emitted by FlashSwapV2
    */
-  private extractProfitFromReceipt(receipt: ethers.providers.TransactionReceipt): string | null {
+  private extractProfitFromReceipt(receipt: ethers.TransactionReceipt): string | null {
     try {
       // Parse logs for TradeProfit event
       // event TradeProfit(bytes32 indexed pathHash, address indexed tokenBorrowed, uint256 grossProfit, uint256 feePaid, uint256 netProfit)

@@ -14,7 +14,7 @@
  * - Health monitoring
  */
 
-import { ethers, providers, Wallet } from 'ethers';
+import { JsonRpcProvider, TransactionRequest, Wallet } from 'ethers';
 import { logger } from '../utils/logger';
 import {
   PrivateRelayType,
@@ -54,13 +54,13 @@ const MEV_SHARE_ENDPOINT = 'https://relay.flashbots.net';
  */
 export class PrivateRPCManager {
   private relays: Map<PrivateRelayType, PrivateRelayConfig>;
-  private provider: providers.JsonRpcProvider;
+  private provider: JsonRpcProvider;
   private signer: Wallet;
   private config: PrivateRPCManagerConfig;
   private stats: Map<PrivateRelayType, RelayStats>;
 
   constructor(
-    provider: providers.JsonRpcProvider,
+    provider: JsonRpcProvider,
     signer: Wallet,
     config: Partial<PrivateRPCManagerConfig> = {}
   ) {
@@ -143,7 +143,7 @@ export class PrivateRPCManager {
    * Submit a transaction privately
    */
   async submitPrivateTransaction(
-    transaction: providers.TransactionRequest,
+    transaction: TransactionRequest,
     options: PrivateTransactionOptions = {}
   ): Promise<PrivateTransactionResult> {
     const startTime = Date.now();
@@ -274,7 +274,7 @@ export class PrivateRPCManager {
    */
   private async submitToRelay(
     relay: PrivateRelayConfig,
-    transaction: providers.TransactionRequest,
+    transaction: TransactionRequest,
     options: PrivateTransactionOptions,
     startTime: number
   ): Promise<PrivateTransactionResult> {
@@ -330,7 +330,7 @@ export class PrivateRPCManager {
    */
   private async submitToFlashbotsProtect(
     relay: PrivateRelayConfig,
-    transaction: providers.TransactionRequest,
+    transaction: TransactionRequest,
     options: PrivateTransactionOptions
   ): Promise<PrivateTransactionResult> {
     try {
@@ -385,7 +385,7 @@ export class PrivateRPCManager {
    */
   private async submitToMEVShare(
     relay: PrivateRelayConfig,
-    transaction: providers.TransactionRequest,
+    transaction: TransactionRequest,
     options: PrivateTransactionOptions
   ): Promise<PrivateTransactionResult> {
     try {
@@ -451,7 +451,7 @@ export class PrivateRPCManager {
    */
   private async submitToBuilderRPC(
     relay: PrivateRelayConfig,
-    transaction: providers.TransactionRequest
+    transaction: TransactionRequest
   ): Promise<PrivateTransactionResult> {
     try {
       const builderProvider = new JsonRpcProvider(relay.endpoint);
@@ -484,7 +484,7 @@ export class PrivateRPCManager {
    * Fallback to public mempool
    */
   private async submitToPublicMempool(
-    transaction: providers.TransactionRequest
+    transaction: TransactionRequest
   ): Promise<PrivateTransactionResult> {
     try {
       const signedTx = await this.signer.signTransaction(transaction);
@@ -516,7 +516,7 @@ export class PrivateRPCManager {
    * Create a Flashbots bundle with multiple transactions
    */
   async createFlashbotsBundle(
-    transactions: providers.TransactionRequest[],
+    transactions: TransactionRequest[],
     targetBlockNumber: number
   ): Promise<FlashbotsBundle> {
     const signedTransactions: string[] = [];
@@ -873,7 +873,7 @@ export class PrivateRPCManager {
    * @see https://docs.flashbots.net/flashbots-protect/additional-documentation/eth-sendPrivateTransaction
    */
   async sendPrivateTransaction(
-    transaction: providers.TransactionRequest,
+    transaction: TransactionRequest,
     options?: {
       maxBlockNumber?: number;
       fast?: boolean;

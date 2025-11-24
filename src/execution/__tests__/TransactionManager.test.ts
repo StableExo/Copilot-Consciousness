@@ -10,7 +10,7 @@ import { NonceManager } from '../NonceManager';
 
 describe('TransactionManager', () => {
   let manager: TransactionManager;
-  let mockProvider: jest.Mocked<ethers.providers.Provider>;
+  let mockProvider: jest.Mocked<ethers.Provider>;
   let mockNonceManager: jest.Mocked<NonceManager>;
   let mockSigner: jest.Mocked<ethers.Wallet>;
 

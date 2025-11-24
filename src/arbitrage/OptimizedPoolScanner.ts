@@ -11,7 +11,7 @@
  * Expected performance: 60+ pool scan in under 10 seconds (down from 60+ seconds)
  */
 
-import { Provider } from 'ethers';
+import { Contract, Interface, Provider, ZeroAddress, getCreate2Address, keccak256, solidityPacked } from 'ethers';
 import { DEXRegistry } from '../dex/core/DEXRegistry';
 import { DEXConfig } from '../dex/types';
 import { PoolEdge } from './types';
@@ -117,7 +117,7 @@ export class OptimizedPoolScanner {
         `Falling back to sequential RPC calls (slower performance expected).`,
         'POOLSCAN'
       );
-      const factoryContract = new ethers.Contract(factory, factoryInterface, this.provider);
+      const factoryContract = new Contract(factory, factoryInterface, this.provider);
       for (const fee of UNISWAP_V3_FEE_TIERS) {
         try {
           const poolAddress = await factoryContract.getPool(tokenA, tokenB, fee);
@@ -389,10 +389,10 @@ export class OptimizedPoolScanner {
         : [token1, token0];
 
       const salt = keccak256(
-        ethers.utils.solidityPack(['address', 'address'], [tokenA, tokenB])
+        solidityPacked(['address', 'address'], [tokenA, tokenB])
       );
       
-      const poolAddress = ethers.utils.getCreate2Address(
+      const poolAddress = getCreate2Address(
         dex.factory,
         salt,
         dex.initCodeHash

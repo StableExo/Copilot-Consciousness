@@ -14,7 +14,7 @@
  * - Compares against 'pending' nonce to stay in sync with the mempool.
  */
 
-import { Signer, Provider, TransactionRequest, TransactionResponse } from 'ethers';
+import { Provider, Signer, TransactionRequest, TransactionResponse, getAddress } from 'ethers';
 import { Mutex } from 'async-mutex';
 import { logger } from '../utils/logger'; // Assuming you have a logger utility
 
@@ -36,14 +36,15 @@ export class NonceManager extends Signer {
   private _address?: string;
   private currentNonce: number = -1;
   private readonly mutex = new Mutex();
+  provider: Provider | null;
 
   constructor(public readonly signer: Signer) {
     super();
     if (!signer || !signer.provider || typeof signer.getAddress !== 'function') {
       throw new Error("NonceManager requires a valid Ethers Signer instance with a provider.");
     }
-    // Provider is defined on Signer base class
-    ethers.utils.defineReadOnly(this, 'provider', signer.provider);
+    // Set provider from signer
+    this.provider = signer.provider;
   }
 
   // Connect the async constructor pattern
@@ -88,6 +89,45 @@ export class NonceManager extends Signer {
       throw new Error('signTransaction is not supported by the parent signer');
     }
     return this.signer.signTransaction(transaction);
+  }
+
+  async signTypedData(
+    domain: any,
+    types: Record<string, Array<any>>,
+    value: Record<string, any>
+  ): Promise<string> {
+    return this.signer.signTypedData(domain, types, value);
+  }
+
+  async getNonce(blockTag?: any): Promise<number> {
+    return await this.getNextNonce();
+  }
+
+  async populateCall(tx: TransactionRequest): Promise<TransactionRequest> {
+    if (!this.signer.populateCall) {
+      throw new Error('populateCall is not supported by the parent signer');
+    }
+    return this.signer.populateCall(tx);
+  }
+
+  async populateTransaction(tx: TransactionRequest): Promise<TransactionRequest> {
+    if (!this.signer.populateTransaction) {
+      throw new Error('populateTransaction is not supported by the parent signer');
+    }
+    const nonce = await this.getNextNonce();
+    return this.signer.populateTransaction({ ...tx, nonce });
+  }
+
+  async estimateGas(tx: TransactionRequest): Promise<bigint> {
+    return this.signer.estimateGas(tx);
+  }
+
+  async call(tx: TransactionRequest): Promise<string> {
+    return this.signer.call(tx);
+  }
+
+  async resolveName(name: string): Promise<string | null> {
+    return this.signer.resolveName(name);
   }
 
   async sendTransaction(tx: TransactionRequest): Promise<TransactionResponse> {

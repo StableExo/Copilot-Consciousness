@@ -3,7 +3,7 @@
  * Ledger and Trezor integration for cold storage signing
  */
 
-import { ethers } from 'ethers';
+import { ethers, getAddress } from 'ethers';
 
 export enum HardwareWalletType {
   LEDGER = 'LEDGER',
@@ -99,7 +99,7 @@ export class HardwareWalletService {
    * Sign transaction with hardware wallet
    */
   async signTransaction(
-    transaction: ethers.utils.Deferrable<ethers.providers.TransactionRequest>
+    transaction: ethers.utils.Deferrable<ethers.TransactionRequest>
   ): Promise<SignedTransaction> {
     if (!this.connectedAddress) {
       throw new Error('Hardware wallet not connected');
@@ -121,7 +121,7 @@ export class HardwareWalletService {
    * Sign with Ledger
    */
   private async signWithLedger(
-    transaction: ethers.utils.Deferrable<ethers.providers.TransactionRequest>
+    transaction: ethers.utils.Deferrable<ethers.TransactionRequest>
   ): Promise<SignedTransaction> {
     // Placeholder - actual implementation
     // const serializedTx = ethers.utils.serializeTransaction(transaction);
@@ -137,7 +137,7 @@ export class HardwareWalletService {
    * Sign with Trezor
    */
   private async signWithTrezor(
-    transaction: ethers.utils.Deferrable<ethers.providers.TransactionRequest>
+    transaction: ethers.utils.Deferrable<ethers.TransactionRequest>
   ): Promise<SignedTransaction> {
     // Placeholder - actual implementation
     // const result = await TrezorConnect.ethereumSignTransaction({

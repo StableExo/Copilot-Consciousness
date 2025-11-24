@@ -7,7 +7,7 @@
  * 3. Pool liquidity checking
  */
 
-import { ethers, JsonRpcProvider } from 'ethers';
+import { ethers, JsonRpcProvider, ZeroAddress } from 'ethers';
 import { V3_LIQUIDITY_SCALE_FACTOR, UNISWAP_V3_FEE_TIERS } from '../src/arbitrage/constants';
 
 // Base network RPC
@@ -41,7 +41,7 @@ async function testPoolDetection() {
     const network = await provider.getNetwork();
     console.log(`✓ Connected to network: ${network.name} (chainId: ${network.chainId})\n`);
     
-    if (network.chainId !== 8453) {
+    if (Number(network.chainId) !== 8453) {
       console.log(`⚠ Warning: Expected Base (8453) but got chainId ${network.chainId}`);
     }
     

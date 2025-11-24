@@ -103,7 +103,7 @@ async function preloadChain(
     
     // Verify connection
     const network = await provider.getNetwork();
-    if (network.chainId !== chainId) {
+    if (Number(network.chainId) !== chainId) {
       throw new Error(`Chain ID mismatch: expected ${chainId}, got ${network.chainId}`);
     }
     logger.info(`✓ Connected to ${networkName}`, 'PRELOAD');

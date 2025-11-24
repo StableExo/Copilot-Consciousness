@@ -17,7 +17,7 @@ import { createArbitrageOpportunity, createPathStep } from '../../arbitrage/mode
 
 describe('FlashSwapExecutor', () => {
   let executor: FlashSwapExecutor;
-  let mockProvider: jest.Mocked<ethers.providers.Provider>;
+  let mockProvider: jest.Mocked<ethers.Provider>;
   let mockSigner: jest.Mocked<ethers.Signer>;
 
   beforeEach(() => {

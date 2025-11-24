@@ -10,7 +10,7 @@
  * Based on Flashbots documentation: https://docs.flashbots.net/
  */
 
-import { ethers, providers } from 'ethers';
+import { ethers, formatEther } from 'ethers';
 import { logger } from '../../utils/logger';
 import {
   BuilderReputation,
@@ -60,10 +60,10 @@ export class FlashbotsIntelligence {
   private config: FlashbotsIntelligenceConfig;
   private builderReputations: Map<string, BuilderReputation>;
   private mevRefunds: MEVRefund[];
-  private provider: providers.JsonRpcProvider;
+  private provider: JsonRpcProvider;
 
   constructor(
-    provider: providers.JsonRpcProvider,
+    provider: JsonRpcProvider,
     config: Partial<FlashbotsIntelligenceConfig> = {}
   ) {
     this.provider = provider;

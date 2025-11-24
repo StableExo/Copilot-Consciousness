@@ -5,7 +5,7 @@
  * on Base network. Provides real-time data for arbitrage opportunity detection.
  */
 
-import { ethers, Provider } from 'ethers';
+import { Provider, ethers, parseEther, parseUnits } from 'ethers';
 import { PoolInfo } from './MultiDexPathBuilder';
 
 /**

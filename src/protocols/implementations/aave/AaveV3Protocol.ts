@@ -35,13 +35,13 @@ export class AaveV3Protocol extends BaseProtocol {
 
   async getQuote(params: QuoteParams): Promise<QuoteResult> {
     // For Aave, quote is just the flash loan fee calculation
-    const flashLoanFee = params.amountIn.mul(9).div(10000); // 0.09% fee
+    const flashLoanFee = (params.amountIn * 9n) / 10000n; // 0.09% fee
 
     return {
-      amountOut: params.amountIn.sub(flashLoanFee),
+      amountOut: params.amountIn - flashLoanFee,
       path: [params.tokenIn],
       fees: [9], // 9 basis points
-      gasEstimate: BigNumber.from(200000),
+      gasEstimate: 200000n,
     };
   }
 
@@ -56,7 +56,7 @@ export class AaveV3Protocol extends BaseProtocol {
       token0,
       token1,
       fee: 9, // Flash loan fee in basis points
-      liquidity: BigNumber.from(0),
+      liquidity: 0n,
     };
   }
 
