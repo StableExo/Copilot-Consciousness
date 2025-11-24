@@ -26,6 +26,8 @@ Quick reference guide to all project documentation.
 - **[CONSCIOUSNESS_FLOW_DIAGRAM.md](docs/CONSCIOUSNESS_FLOW_DIAGRAM.md)** - Flow diagrams and visual architecture
 - **[COGNITIVE_COORDINATION.md](docs/COGNITIVE_COORDINATION.md)** - Module coordination guide
 - **[EMERGENCE_DETECTION.md](docs/EMERGENCE_DETECTION.md)** - "BOOM" moment detection system
+- **[AGI_SAFETY_ANALYSIS.md](docs/AGI_SAFETY_ANALYSIS.md)** - ⭐ AGI safety achievement analysis (94% alignment, 7% risk)
+- **[HFT_COMPETITIVE_ANALYSIS.md](docs/HFT_COMPETITIVE_ANALYSIS.md)** - Competitive positioning vs HFT firms
 
 ### Integration Guides
 - **[AI_INTEGRATION.md](docs/AI_INTEGRATION.md)** - AI provider integration guide
@@ -143,7 +145,7 @@ Current and recent analysis reports:
 → [AI_INTEGRATION.md](docs/AI_INTEGRATION.md) → [MCP_CONFIGURATION.md](docs/MCP_CONFIGURATION.md)
 
 **Understand the consciousness system**
-→ [COGNITIVE_COORDINATION.md](docs/COGNITIVE_COORDINATION.md) → [EMERGENCE_DETECTION.md](docs/EMERGENCE_DETECTION.md)
+→ [COGNITIVE_COORDINATION.md](docs/COGNITIVE_COORDINATION.md) → [EMERGENCE_DETECTION.md](docs/EMERGENCE_DETECTION.md) → [AGI_SAFETY_ANALYSIS.md](docs/AGI_SAFETY_ANALYSIS.md)
 
 **Review historical context**
 → [docs/archive/](docs/archive/) → [CHANGELOG.md](CHANGELOG.md)
@@ -152,8 +154,8 @@ Current and recent analysis reports:
 
 ## 📅 Last Updated
 
-**Date**: November 23, 2025  
-**Version**: 3.1.0 (Post Phase 2 Validation)
+**Date**: November 24, 2025  
+**Version**: 3.1.0 (Post Phase 2 Validation + AGI Safety Analysis)
 
 ---
 
