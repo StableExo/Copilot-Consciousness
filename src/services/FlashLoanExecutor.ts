@@ -11,7 +11,7 @@
  * - MEV risk assessment integration
  */
 
-import { Provider, ethers, formatEther } from 'ethers';
+import { Provider, ethers, formatEther, ZeroAddress, AbiCoder, id } from 'ethers';
 
 // Dynamic import for artifact - may not exist if contracts haven't been compiled
 let FlashSwapV2Artifact: any;
@@ -147,7 +147,7 @@ export class FlashLoanExecutor {
 
       // Build transaction
       console.log('[FlashLoanExecutor] Building flashloan transaction...');
-      const tx = await this.aavePoolContract.populateTransaction.flashLoan(
+      const tx = await (this.aavePoolContract as any).flashLoan.populateTransaction(
         this.config.flashSwapAddress, // Receiver (FlashSwapV2)
         assets,
         amounts,
@@ -159,7 +159,7 @@ export class FlashLoanExecutor {
 
       // Set gas limit if provided
       if (params.gasEstimate) {
-        tx.gasLimit = ethers.BigNumber.from(params.gasEstimate.toString());
+        tx.gasLimit = params.gasEstimate;
       }
 
       // Submit transaction
@@ -170,7 +170,7 @@ export class FlashLoanExecutor {
       // Wait for confirmation
       const receipt = await txResponse.wait();
 
-      if (receipt.status === 1) {
+      if (receipt && receipt.status === 1) {
         console.log('[FlashLoanExecutor] ✓ Flashloan execution successful!');
         
         // Parse profit from events (TradeProfit event)
@@ -178,9 +178,9 @@ export class FlashLoanExecutor {
 
         return {
           success: true,
-          txHash: receipt.transactionHash,
+          txHash: receipt.hash,
           profit: profit || '0',
-          gasUsed: BigInt(receipt.gasUsed.toString()),
+          gasUsed: receipt.gasUsed,
         };
       } else {
         return {
@@ -236,13 +236,15 @@ export class FlashLoanExecutor {
     try {
       // Parse logs for TradeProfit event
       // event TradeProfit(bytes32 indexed pathHash, address indexed tokenBorrowed, uint256 grossProfit, uint256 feePaid, uint256 netProfit)
-      const tradeProfitTopic = ethers.utils.id('TradeProfit(bytes32,address,uint256,uint256,uint256)');
+      const tradeProfitTopic = id('TradeProfit(bytes32,address,uint256,uint256,uint256)');
 
       for (const log of receipt.logs) {
         if (log.topics[0] === tradeProfitTopic) {
           const parsedLog = this.flashSwapContract.interface.parseLog(log);
-          const netProfit = parsedLog.args.netProfit;
-          return netProfit.toString();
+          if (parsedLog) {
+            const netProfit = parsedLog.args.netProfit;
+            return netProfit.toString();
+          }
         }
       }
 
@@ -266,7 +268,7 @@ export class FlashLoanExecutor {
       const referralCode = 0;
       const encodedParams = this.encodeSwapPath(params.swapPath);
 
-      const gasEstimate = await this.aavePoolContract.estimateGas.flashLoan(
+      const gasEstimate = await (this.aavePoolContract as any).flashLoan.estimateGas(
         this.config.flashSwapAddress,
         assets,
         amounts,
@@ -276,7 +278,7 @@ export class FlashLoanExecutor {
         referralCode
       );
 
-      return BigInt(gasEstimate.toString());
+      return gasEstimate;
     } catch (error: any) {
       console.error('[FlashLoanExecutor] Gas estimation failed:', error.message);
       // Return a conservative default

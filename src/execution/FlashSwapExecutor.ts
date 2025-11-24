@@ -40,9 +40,9 @@ export interface SwapStep {
   /** Output token address */
   tokenOut: string;
   /** Input amount (in Wei) */
-  amountIn: BigNumber;
+  amountIn: bigint;
   /** Minimum acceptable output amount */
-  minAmountOut: BigNumber;
+  minAmountOut: bigint;
   /** DEX protocol identifier */
   protocol: SwapProtocol;
 }
@@ -52,7 +52,7 @@ export interface SwapStep {
  */
 export interface ArbParams {
   /** Amount to borrow via flash loan (Wei) */
-  flashLoanAmount: BigNumber;
+  flashLoanAmount: bigint;
   /** Token to borrow */
   flashLoanToken: string;
   /** Pool to borrow from */
@@ -60,7 +60,7 @@ export interface ArbParams {
   /** Ordered list of swap steps to execute */
   swapSteps: SwapStep[];
   /** Expected profit after all swaps (Wei) */
-  expectedProfit: BigNumber;
+  expectedProfit: bigint;
   /** Transaction deadline timestamp */
   deadline: number;
 }
@@ -89,8 +89,8 @@ export interface ExecutionResult {
   txHash?: string;
   receipt?: ethers.TransactionReceipt;
   gasLimit?: number;
-  expectedProfit?: BigNumber;
-  actualProfit?: BigNumber;
+  expectedProfit?: bigint;
+  actualProfit?: bigint;
   swapSteps?: number;
   error?: string;
 }
@@ -126,8 +126,8 @@ export class FlashSwapExecutor {
     totalExecutions: 0,
     successfulExecutions: 0,
     failedExecutions: 0,
-    totalGasUsed: BigNumber.from(0),
-    totalProfit: BigNumber.from(0),
+    totalGasUsed: 0n,
+    totalProfit: 0n,
   };
 
   // Flash loan fee constants
@@ -166,7 +166,7 @@ export class FlashSwapExecutor {
     // Extract flash loan parameters
     const flashLoanAmount = opportunity.flashLoanAmount
       ? parseUnits(opportunity.flashLoanAmount.toString(), 'ether')
-      : BigNumber.from(0);
+      : 0n;
     
     const flashLoanToken = opportunity.flashLoanToken || '';
     const flashLoanPool = opportunity.flashLoanPool || '';
@@ -180,9 +180,7 @@ export class FlashSwapExecutor {
         step.expectedOutput.toString(),
         'ether'
       );
-      const minOutput = expectedOutput
-        .mul(Math.floor((1 - actualSlippage) * 10000))
-        .div(10000);
+      const minOutput = (expectedOutput * BigInt(Math.floor((1 - actualSlippage) * 10000))) / 10000n;
 
       const swapStep: SwapStep = {
         poolAddress: step.poolAddress,
@@ -199,13 +197,11 @@ export class FlashSwapExecutor {
     // Calculate expected profit (final amount - flash loan - fees)
     const finalAmount = swapSteps.length > 0
       ? swapSteps[swapSteps.length - 1].minAmountOut
-      : BigNumber.from(0);
+      : 0n;
 
-    const flashLoanFee = flashLoanAmount
-      .mul(Math.floor(FlashSwapExecutor.AAVE_FLASH_LOAN_FEE * 10000))
-      .div(10000);
+    const flashLoanFee = (flashLoanAmount * BigInt(Math.floor(FlashSwapExecutor.AAVE_FLASH_LOAN_FEE * 10000))) / 10000n;
 
-    const expectedProfit = finalAmount.sub(flashLoanAmount).sub(flashLoanFee);
+    const expectedProfit = finalAmount - flashLoanAmount - flashLoanFee;
 
     // Set deadline (current time + 5 minutes if not provided)
     const deadline = opportunity.metadata?.deadline
@@ -368,7 +364,7 @@ export class FlashSwapExecutor {
    */
   async executeArbitrage(
     arbParams: ArbParams,
-    gasPrice?: BigNumber,
+    gasPrice?: bigint,
     dryRun: boolean = false
   ): Promise<ExecutionResult> {
     this.stats.totalExecutions++;
@@ -442,8 +438,8 @@ export class FlashSwapExecutor {
 
       // Update statistics
       this.stats.successfulExecutions++;
-      this.stats.totalGasUsed = this.stats.totalGasUsed.add(gasLimit);
-      this.stats.totalProfit = this.stats.totalProfit.add(arbParams.expectedProfit);
+      this.stats.totalGasUsed = this.stats.totalGasUsed + BigInt(gasLimit);
+      this.stats.totalProfit = this.stats.totalProfit + arbParams.expectedProfit;
 
       return {
         success: true,
@@ -512,7 +508,7 @@ export class FlashSwapExecutor {
       : 0;
 
     const avgGasPerExecution = this.stats.totalExecutions > 0
-      ? this.stats.totalGasUsed.div(this.stats.totalExecutions).toNumber()
+      ? Number(this.stats.totalGasUsed / BigInt(this.stats.totalExecutions))
       : 0;
 
     return {
@@ -553,14 +549,14 @@ export class FlashSwapExecutor {
    * Calculate flash loan fee for given amount and provider
    */
   static calculateFlashLoanFee(
-    amount: BigNumber,
+    amount: bigint,
     provider: 'aave' | 'uniswap_v3' = 'aave'
-  ): BigNumber {
+  ): bigint {
     const feeRate = provider === 'aave'
       ? FlashSwapExecutor.AAVE_FLASH_LOAN_FEE
       : FlashSwapExecutor.UNISWAP_V3_FLASH_FEE;
 
-    return amount.mul(Math.floor(feeRate * 10000)).div(10000);
+    return (amount * BigInt(Math.floor(feeRate * 10000))) / 10000n;
   }
 
   /**

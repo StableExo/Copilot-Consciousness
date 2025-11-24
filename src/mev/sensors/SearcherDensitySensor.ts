@@ -8,7 +8,7 @@
  * 3. Bot clustering (unique high-gas addresses)
  */
 
-import { Provider, ethers, getAddress } from 'ethers';
+import { Provider, ethers, getAddress, TransactionResponse } from 'ethers';
 import { SensorReading } from '../types/TransactionType';
 
 export interface DensityWeights {
@@ -119,7 +119,11 @@ export class SearcherDensitySensor {
 
         totalTxCount += block.transactions.length;
 
-        for (const tx of block.transactions) {
+        for (const txOrHash of block.transactions) {
+          // In ethers v6, transactions can be TransactionResponse or string (hash)
+          const tx = typeof txOrHash === 'string' ? await this.provider.getTransaction(txOrHash) : txOrHash as TransactionResponse;
+          if (!tx) continue;
+          
           if (tx.to) {
             try {
               const checksummedTo = getAddress(tx.to);
@@ -157,9 +161,13 @@ export class SearcherDensitySensor {
         const block = await this.provider.getBlock(blockNumber, true);
         if (!block) continue;
 
-        for (const tx of block.transactions) {
+        for (const txOrHash of block.transactions) {
+          // In ethers v6, transactions can be TransactionResponse or string (hash)
+          const tx = typeof txOrHash === 'string' ? await this.provider.getTransaction(txOrHash) : txOrHash as TransactionResponse;
+          if (!tx) continue;
+          
           if (tx.gasPrice) {
-            gasPrices.push(tx.gasPrice.toNumber());
+            gasPrices.push(Number(tx.gasPrice));
           }
         }
       }
@@ -199,9 +207,10 @@ export class SearcherDensitySensor {
 
       const avgGasPrice =
         latestBlock.transactions
-          .filter((tx) => tx.gasPrice)
-          .reduce((sum, tx) => sum + tx.gasPrice!.toNumber(), 0) /
-        Math.max(latestBlock.transactions.filter((tx) => tx.gasPrice).length, 1);
+          .map((txOrHash) => typeof txOrHash === 'string' ? null : (txOrHash as TransactionResponse))
+          .filter((tx): tx is TransactionResponse => tx !== null && tx.gasPrice !== null)
+          .reduce((sum, tx) => sum + Number(tx.gasPrice), 0) /
+        Math.max(latestBlock.transactions.filter((txOrHash) => typeof txOrHash !== 'string' && (txOrHash as TransactionResponse).gasPrice).length, 1);
 
       const highGasThreshold = avgGasPrice * 5; // 5x average
       const botAddresses = new Set<string>();
@@ -215,8 +224,12 @@ export class SearcherDensitySensor {
         const block = await this.provider.getBlock(blockNumber, true);
         if (!block) continue;
 
-        for (const tx of block.transactions) {
-          if (tx.from && tx.gasPrice && tx.gasPrice.toNumber() > highGasThreshold) {
+        for (const txOrHash of block.transactions) {
+          // In ethers v6, transactions can be TransactionResponse or string (hash)
+          const tx = typeof txOrHash === 'string' ? await this.provider.getTransaction(txOrHash) : txOrHash as TransactionResponse;
+          if (!tx) continue;
+          
+          if (tx.from && tx.gasPrice && Number(tx.gasPrice) > highGasThreshold) {
             try {
               const checksummedFrom = getAddress(tx.from);
               botAddresses.add(checksummedFrom);
