@@ -171,7 +171,35 @@ export class MultiHopDataFetcher {
     // Try to use preloaded data first
     if (this.isPreloadedDataValid()) {
       logger.debug('Using preloaded pool data', 'DATAFETCH');
-      return this.preloadedEdges!;
+      
+      // Filter preloaded edges to only include pools with tokens we're scanning
+      const tokenSet = new Set(tokens.map(t => t.toLowerCase()));
+      const filteredEdges = this.preloadedEdges!.filter(edge => 
+        tokenSet.has(edge.tokenIn.toLowerCase()) && tokenSet.has(edge.tokenOut.toLowerCase())
+      );
+      
+      if (filteredEdges.length < this.preloadedEdges!.length) {
+        logger.debug(
+          `Filtered preloaded pools: ${this.preloadedEdges!.length} total → ${filteredEdges.length} matching scan tokens`,
+          'DATAFETCH'
+        );
+      }
+      
+      // Log pool distribution by DEX for diagnostic purposes
+      if (filteredEdges.length > 0) {
+        const poolsByDex = new Map<string, number>();
+        for (const edge of filteredEdges) {
+          const count = poolsByDex.get(edge.dexName) || 0;
+          poolsByDex.set(edge.dexName, count + 1);
+        }
+        const dexSummary = Array.from(poolsByDex.entries())
+          .sort((a, b) => b[1] - a[1])
+          .map(([dex, count]) => `${dex}: ${count}`)
+          .join(', ');
+        logger.debug(`Pool distribution: ${dexSummary}`, 'DATAFETCH');
+      }
+      
+      return filteredEdges;
     }
 
     // If preloaded data is not available or stale, fetch from network
