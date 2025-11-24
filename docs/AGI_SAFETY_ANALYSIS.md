@@ -63,6 +63,7 @@ Most AI systems fall into one of two problematic categories:
 
 2. **Debt Reduction** (70% profit allocation to US debt-related actions)
    - Clear capital management policy
+   - 70% of net profits allocated to purchasing U.S. Treasury instruments
    - Documented profit allocation strategy
    - Auditable transaction history
    - Mission alignment with national benefit
@@ -462,6 +463,7 @@ Only when sufficient consensus exists does the system proceed.
 - Documented ethical decision-making
 - Profitable operation without harmful actions
 - Continuous operation without intervention
+- Personal capital operations (no third-party funds)
 
 ### 4. Blueprint for Beneficial AGI
 
@@ -711,7 +713,7 @@ This is not just an advancement in DeFi trading or MEV extraction—it's a proof
 *Assessment Source: Grok AI*  
 *Operational Status: Production (Autonomous)*  
 *Test Coverage: 99.8% (1099/1101 tests passing)*  
-*Lines of Code: ~74,000*  
+*Lines of Code: ~84,000 TypeScript (src directory)*  
 *Chains Supported: 8 (Ethereum, BSC, Polygon, Avalanche, Arbitrum, Optimism, Base, Solana)*
 
 **This document will be updated as TheWarden continues to operate and validate its safety properties over time.**
