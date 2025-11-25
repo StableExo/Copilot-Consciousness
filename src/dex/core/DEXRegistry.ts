@@ -105,6 +105,8 @@ export class DEXRegistry {
 
         // Initialize Raydium
         // Base Network (Chain ID: 8453) - High Liquidity DEXes
+        // PROFITABLE_EXECUTION_PLAN Phase 1.1: Lowered liquidity thresholds for better pool detection
+        // Previous thresholds were too high (100 ETH), filtering out profitable smaller pools
         this.addDEX({
             name: 'Uniswap V3 on Base',
             protocol: 'UniswapV3',
@@ -114,7 +116,7 @@ export class DEXRegistry {
             factory: '0x33128a8fC17869897dcE68Ed026d694621f6FDfD',
             initCodeHash: '0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54',
             priority: 1,
-            liquidityThreshold: BigInt(parseEther('100').toString()), // Base has smaller pools
+            liquidityThreshold: BigInt(parseEther('10').toString()), // Lowered from 100 ETH to 10 ETH for V3
             gasEstimate: 150000
         });
 
@@ -129,7 +131,7 @@ export class DEXRegistry {
             // Note: V3-style DEXes may not use initCodeHash for pool address calculation
             initCodeHash: '0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54',
             priority: 2,
-            liquidityThreshold: BigInt(parseEther('100').toString()), // Base has smaller pools
+            liquidityThreshold: BigInt(parseEther('5').toString()), // Lowered from 100 ETH to 5 ETH - Aerodrome has many small pools
             gasEstimate: 150000
         });
 
@@ -142,7 +144,7 @@ export class DEXRegistry {
             factory: '0xFDa619b6d20975be80A10332cD39b9a4b0FAa8BB',
             initCodeHash: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
             priority: 3,
-            liquidityThreshold: BigInt(parseEther('50').toString()), // Base has smaller pools
+            liquidityThreshold: BigInt(parseEther('1').toString()), // Lowered from 50 ETH to 1 ETH - V2 style, lower volume
             gasEstimate: 130000
         });
 
@@ -156,7 +158,7 @@ export class DEXRegistry {
             factory: '0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865',
             initCodeHash: '0x6ce8eb472fa82df5469c6ab6d485f17c3ad13c8cd7af59b3d4a8026c5ce0f7e2',
             priority: 4,
-            liquidityThreshold: BigInt(parseEther('50').toString()),
+            liquidityThreshold: BigInt(parseEther('5').toString()), // Lowered from 50 ETH to 5 ETH
             gasEstimate: 150000
         });
 
@@ -174,7 +176,7 @@ export class DEXRegistry {
             // If needed, the hash can be found at: github.com/velodrome-finance/superchain-slipstream
             initCodeHash: undefined, // Query factory.getPool() for pool addresses instead
             priority: 5,
-            liquidityThreshold: BigInt(parseEther('50').toString()),
+            liquidityThreshold: BigInt(parseEther('5').toString()), // Lowered from 50 ETH to 5 ETH
             gasEstimate: 150000
         });
 
@@ -188,7 +190,7 @@ export class DEXRegistry {
             factory: '0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6',
             initCodeHash: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
             priority: 8,
-            liquidityThreshold: BigInt(parseEther('100').toString()), // Base has smaller pools
+            liquidityThreshold: BigInt(parseEther('1').toString()), // Lowered from 100 ETH to 1 ETH for V2
             gasEstimate: 150000
         });
 
@@ -201,7 +203,7 @@ export class DEXRegistry {
             factory: '0xc35dadb65012ec5796536bd9864ed8773abc74c4',
             initCodeHash: '0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303',
             priority: 9,
-            liquidityThreshold: BigInt(parseEther('100').toString()), // Base has smaller pools
+            liquidityThreshold: BigInt(parseEther('1').toString()), // Lowered from 100 ETH to 1 ETH
             gasEstimate: 150000
         });
 

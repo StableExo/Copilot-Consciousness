@@ -41,6 +41,7 @@ Quick reference guide to all project documentation.
 - **[🔥 MAINNET_DEPLOYMENT.md](docs/MAINNET_DEPLOYMENT.md)** - **Live Fire Guide: Run TheWarden on mainnet**
 - **[🔑 PRIVATE_KEY_SETUP.md](docs/PRIVATE_KEY_SETUP.md)** - **Private key format and verification guide**
 - **[MAIN_RUNNER.md](docs/MAIN_RUNNER.md)** - TheWarden operational guide
+- **[PROFITABLE_EXECUTION_PLAN.md](docs/PROFITABLE_EXECUTION_PLAN.md)** - Path to profitable execution implementation plan
 - **[QUICK_START_PRODUCTION.md](docs/QUICK_START_PRODUCTION.md)** - Production deployment guide
 - **[ENV_PRODUCTION_READINESS_REVIEW.md](docs/ENV_PRODUCTION_READINESS_REVIEW.md)** - Environment configuration review
 - **[MCP_CONFIGURATION.md](docs/MCP_CONFIGURATION.md)** - Model Context Protocol setup
@@ -137,6 +138,9 @@ Current and recent analysis reports:
 
 **See current project status**
 → [NEXT_PHASE_PLANNING.md](NEXT_PHASE_PLANNING.md) → [PHASE2_VALIDATION_REPORT.md](PHASE2_VALIDATION_REPORT.md)
+
+**Improve profitability and execution**
+→ [PROFITABLE_EXECUTION_PLAN.md](docs/PROFITABLE_EXECUTION_PLAN.md) → [MEV_INTELLIGENCE_SUITE.md](docs/MEV_INTELLIGENCE_SUITE.md)
 
 **Configure for production**
 → [ENV_PRODUCTION_READINESS_REVIEW.md](docs/ENV_PRODUCTION_READINESS_REVIEW.md) → [MAIN_RUNNER.md](docs/MAIN_RUNNER.md)

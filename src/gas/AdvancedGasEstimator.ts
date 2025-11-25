@@ -193,6 +193,21 @@ const DEFAULT_DEX_CONFIGS: Record<string, DEXGasConfig> = {
     gasPerHop: 30000,
     overhead: 21000,
     complexity: 1.0
+  },
+  // Added from PROFITABLE_EXECUTION_PLAN Phase 2.1
+  'PancakeSwap V3 on Base': {
+    dexName: 'PancakeSwap V3 on Base',
+    baseGas: 120000,
+    gasPerHop: 35000,
+    overhead: 21000,
+    complexity: 1.2
+  },
+  'Velodrome on Base': {
+    dexName: 'Velodrome on Base',
+    baseGas: 120000,
+    gasPerHop: 35000,
+    overhead: 21000,
+    complexity: 1.2
   }
 };
 
