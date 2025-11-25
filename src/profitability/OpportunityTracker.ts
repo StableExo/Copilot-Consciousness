@@ -129,7 +129,7 @@ export class OpportunityTracker {
    * Generate unique opportunity ID
    */
   private generateId(): string {
-    return `opp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `opp_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   }
 
   /**
@@ -245,6 +245,70 @@ export class OpportunityTracker {
   }
 
   /**
+   * Calculate statistics directly from a list of opportunities (efficient for filtering)
+   */
+  private calculateStatsFromOpportunities(opps: OpportunityLog[]): OpportunityStats {
+    const stats = this.initializeStats();
+    
+    for (const entry of opps) {
+      stats.totalOpportunities++;
+      stats.totalEstimatedProfit += entry.estimatedProfit;
+
+      if (entry.executed) {
+        stats.executedOpportunities++;
+        if (entry.executionResult === 'success') {
+          stats.successfulExecutions++;
+          if (entry.actualProfit) {
+            stats.totalActualProfit += entry.actualProfit;
+          }
+        } else {
+          stats.failedExecutions++;
+        }
+        if (entry.actualGasCost) {
+          stats.totalGasCost += entry.actualGasCost;
+        }
+      } else {
+        stats.missedOpportunities++;
+      }
+
+      if (entry.competitorTook) {
+        stats.competitorsTookOpportunities++;
+      }
+
+      // Update by DEX
+      for (const dex of entry.dexes) {
+        stats.byDex.set(dex, (stats.byDex.get(dex) || 0) + 1);
+      }
+
+      // Update by chain
+      stats.byChain.set(entry.chainId, (stats.byChain.get(entry.chainId) || 0) + 1);
+
+      // Update by reason
+      if (entry.reason) {
+        stats.byReason.set(entry.reason, (stats.byReason.get(entry.reason) || 0) + 1);
+      }
+    }
+
+    // Calculate averages
+    if (opps.length > 0) {
+      let totalProfit = 0;
+      let totalSlippage = 0;
+      for (const opp of opps) {
+        totalProfit += opp.profitPercentage;
+        totalSlippage += opp.slippageEstimate;
+      }
+      stats.avgProfitPercentage = totalProfit / opps.length;
+      stats.avgSlippage = totalSlippage / opps.length;
+    }
+
+    if (stats.executedOpportunities > 0) {
+      stats.successRate = (stats.successfulExecutions / stats.executedOpportunities) * 100;
+    }
+
+    return stats;
+  }
+
+  /**
    * Recalculate average values
    */
   private recalculateAverages(): void {
@@ -348,12 +412,8 @@ export class OpportunityTracker {
 
     const filtered = this.opportunities.filter(o => o.timestamp >= start && o.timestamp <= end);
     
-    // Recalculate stats for filtered data
-    const tempTracker = new OpportunityTracker({ enabled: false });
-    for (const opp of filtered) {
-      tempTracker.logOpportunity(opp);
-    }
-    const periodStats = tempTracker.getStats();
+    // Calculate stats directly from filtered data (more efficient than creating new tracker)
+    const periodStats = this.calculateStatsFromOpportunities(filtered);
 
     // Top DEXes
     const topDexes = Array.from(periodStats.byDex.entries())

@@ -107,6 +107,18 @@ const DEFAULT_CONFIG: ProfitabilityConfig = {
 };
 
 /**
+ * Safely parse a float from environment variable with validation
+ */
+function safeParseFloat(value: string | undefined, defaultValue: number, min?: number, max?: number): number {
+  if (!value) return defaultValue;
+  const parsed = parseFloat(value);
+  if (isNaN(parsed)) return defaultValue;
+  if (min !== undefined && parsed < min) return defaultValue;
+  if (max !== undefined && parsed > max) return defaultValue;
+  return parsed;
+}
+
+/**
  * Load configuration from environment variables
  */
 export function loadConfigFromEnv(): ProfitabilityConfig {
@@ -114,25 +126,41 @@ export function loadConfigFromEnv(): ProfitabilityConfig {
   
   // Min profit configuration
   if (process.env.MIN_PROFIT_ABSOLUTE) {
-    config.minProfit.absoluteMin = parseEther(process.env.MIN_PROFIT_ABSOLUTE);
-  }
-  if (process.env.MIN_PROFIT_PERCENT) {
-    config.minProfit.percentageMin = parseFloat(process.env.MIN_PROFIT_PERCENT);
-  }
-  if (process.env.GAS_MULTIPLIER) {
-    config.minProfit.gasMultiplier = parseFloat(process.env.GAS_MULTIPLIER);
+    try {
+      config.minProfit.absoluteMin = parseEther(process.env.MIN_PROFIT_ABSOLUTE);
+    } catch {
+      // Keep default if parsing fails
+    }
   }
   
-  // Slippage configuration
-  if (process.env.MEV_BUFFER) {
-    config.slippage.mevBuffer = parseFloat(process.env.MEV_BUFFER);
-  }
-  if (process.env.BASE_SLIPPAGE) {
-    config.slippage.baseSlippage = parseFloat(process.env.BASE_SLIPPAGE);
-  }
-  if (process.env.MAX_SLIPPAGE) {
-    config.slippage.maxSlippage = parseFloat(process.env.MAX_SLIPPAGE);
-  }
+  // Parse with validation: percentage (0-100), multiplier (0.1-10)
+  config.minProfit.percentageMin = safeParseFloat(
+    process.env.MIN_PROFIT_PERCENT,
+    DEFAULT_CONFIG.minProfit.percentageMin,
+    0, 100
+  );
+  config.minProfit.gasMultiplier = safeParseFloat(
+    process.env.GAS_MULTIPLIER,
+    DEFAULT_CONFIG.minProfit.gasMultiplier,
+    0.1, 10
+  );
+  
+  // Slippage configuration with validation (0-1 range for percentages)
+  config.slippage.mevBuffer = safeParseFloat(
+    process.env.MEV_BUFFER,
+    DEFAULT_CONFIG.slippage.mevBuffer,
+    0, 0.5
+  );
+  config.slippage.baseSlippage = safeParseFloat(
+    process.env.BASE_SLIPPAGE,
+    DEFAULT_CONFIG.slippage.baseSlippage,
+    0, 0.5
+  );
+  config.slippage.maxSlippage = safeParseFloat(
+    process.env.MAX_SLIPPAGE,
+    DEFAULT_CONFIG.slippage.maxSlippage,
+    0, 1
+  );
   
   return config;
 }
