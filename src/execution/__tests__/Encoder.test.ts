@@ -3,7 +3,7 @@
  */
 
 import { encodeFlashSwapCall } from '../Encoder';
-import { ethers } from 'ethers';
+import { Interface } from 'ethers';
 
 describe('encodeFlashSwapCall', () => {
     describe('encodeFlashSwapCall', () => {
@@ -31,8 +31,9 @@ describe('encodeFlashSwapCall', () => {
             const decoded = flashSwapInterface.decodeFunctionData('initiateUniswapV3FlashLoan', result);
             
             expect(decoded.params.tokenIntermediate.toLowerCase()).toBe(params.tokenIntermediate.toLowerCase());
-            expect(decoded.params.feeA).toBe(params.feeA);
-            expect(decoded.params.feeB).toBe(params.feeB);
+            // ethers v6 returns bigint for uint24, so compare as numbers
+            expect(Number(decoded.params.feeA)).toBe(params.feeA);
+            expect(Number(decoded.params.feeB)).toBe(params.feeB);
             expect(decoded.params.amountOutMinimum1.toString()).toBe(params.amountOutMinimum1.toString());
             expect(decoded.params.amountOutMinimum2.toString()).toBe(params.amountOutMinimum2.toString());
             expect(decoded.params.titheRecipient.toLowerCase()).toBe(params.titheRecipient.toLowerCase());
@@ -65,9 +66,10 @@ describe('encodeFlashSwapCall', () => {
             expect(decoded.params.tokenA.toLowerCase()).toBe(params.tokenA.toLowerCase());
             expect(decoded.params.tokenB.toLowerCase()).toBe(params.tokenB.toLowerCase());
             expect(decoded.params.tokenC.toLowerCase()).toBe(params.tokenC.toLowerCase());
-            expect(decoded.params.fee1).toBe(params.fee1);
-            expect(decoded.params.fee2).toBe(params.fee2);
-            expect(decoded.params.fee3).toBe(params.fee3);
+            // ethers v6 returns bigint for uint24, so compare as numbers
+            expect(Number(decoded.params.fee1)).toBe(params.fee1);
+            expect(Number(decoded.params.fee2)).toBe(params.fee2);
+            expect(Number(decoded.params.fee3)).toBe(params.fee3);
             expect(decoded.params.amountOutMinimumFinal.toString()).toBe(params.amountOutMinimumFinal.toString());
             expect(decoded.params.titheRecipient.toLowerCase()).toBe(params.titheRecipient.toLowerCase());
         });
@@ -114,9 +116,10 @@ describe('encodeFlashSwapCall', () => {
             expect(decoded.params.path[0].pool.toLowerCase()).toBe(params.path[0].pool.toLowerCase());
             expect(decoded.params.path[0].tokenIn.toLowerCase()).toBe(params.path[0].tokenIn.toLowerCase());
             expect(decoded.params.path[0].tokenOut.toLowerCase()).toBe(params.path[0].tokenOut.toLowerCase());
-            expect(decoded.params.path[0].fee).toBe(params.path[0].fee);
+            // ethers v6 returns bigint for uint24 and uint8
+            expect(Number(decoded.params.path[0].fee)).toBe(params.path[0].fee);
             expect(decoded.params.path[0].minOut.toString()).toBe(params.path[0].minOut.toString());
-            expect(decoded.params.path[0].dexType).toBe(params.path[0].dexType);
+            expect(Number(decoded.params.path[0].dexType)).toBe(params.path[0].dexType);
             expect(decoded.params.path[1].minOut.toString()).toBe(params.path[1].minOut.toString());
         });
 

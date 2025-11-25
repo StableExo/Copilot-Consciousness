@@ -1,26 +1,15 @@
 /**
  * Tests for SwapSimulator
  */
-import { ethers } from 'ethers';
+import { Provider, ZeroAddress } from 'ethers';
 import { SwapSimulator } from '../SwapSimulator';
 import { PoolState, Token } from '../../types/definitions';
 
-// Create a proper mock provider that extends BaseProvider
-class MockProvider extends ethers.providers.BaseProvider {
-    async getNetwork(): Promise<ethers.providers.Network> {
-        return { chainId: 1, name: 'mainnet' };
-    }
-
-    async detectNetwork(): Promise<ethers.providers.Network> {
-        return { chainId: 1, name: 'mainnet' };
-    }
-
-    async perform(_method: string, _params: any): Promise<any> {
-        return null;
-    }
-}
-
-const mockProvider = new MockProvider(1);
+// Create a proper mock provider for ethers v6
+const mockProvider = {
+    getNetwork: jest.fn().mockResolvedValue({ chainId: BigInt(1), name: 'mainnet' }),
+    call: jest.fn(),
+} as unknown as Provider;
 
 // Sample tokens
 const token0: Token = {
@@ -251,14 +240,14 @@ describe('SwapSimulator', () => {
                 reserve1: 2000000n,
             };
 
-            // Mock the quoter response
+            // Mock the quoter response - ethers v6 returns bigint
             const mockQuoterContract = {
-                callStatic: {
-                    quoteExactInputSingle: jest.fn().mockResolvedValue([
-                        ethers.BigNumber.from('500000000000000000'), // 0.5 WETH
-                        ethers.BigNumber.from('0'),
+                quoteExactInputSingle: {
+                    staticCall: jest.fn().mockResolvedValue([
+                        BigInt('500000000000000000'), // 0.5 WETH
+                        BigInt('0'),
                         0,
-                        ethers.BigNumber.from('0'),
+                        BigInt('0'),
                     ]),
                 },
             };
@@ -272,7 +261,7 @@ describe('SwapSimulator', () => {
             expect(result.success).toBe(true);
             expect(result.amountOut).toBe(500000000000000000n);
             expect(result.error).toBeNull();
-            expect(mockQuoterContract.callStatic.quoteExactInputSingle).toHaveBeenCalledWith({
+            expect(mockQuoterContract.quoteExactInputSingle.staticCall).toHaveBeenCalledWith({
                 tokenIn: token0.address,
                 tokenOut: token1.address,
                 fee: 3000,
@@ -292,10 +281,10 @@ describe('SwapSimulator', () => {
                 reserve1: 2000000n,
             };
 
-            // Mock the quoter to throw error
+            // Mock the quoter to throw error - ethers v6 uses staticCall
             const mockQuoterContract = {
-                callStatic: {
-                    quoteExactInputSingle: jest.fn().mockRejectedValue(new Error('Insufficient liquidity')),
+                quoteExactInputSingle: {
+                    staticCall: jest.fn().mockRejectedValue(new Error('Insufficient liquidity')),
                 },
             };
 
@@ -330,14 +319,16 @@ describe('SwapSimulator', () => {
                 baseTokenAddress: token0.address,
             };
 
-            // Mock DODO pool contract
+            // Mock DODO pool contract - ethers v6 uses staticCall
             const mockDodoContract = {
-                callStatic: {
-                    querySellBase: jest.fn().mockResolvedValue([
-                        ethers.BigNumber.from('900000'),
-                        ethers.BigNumber.from('100'),
+                querySellBase: {
+                    staticCall: jest.fn().mockResolvedValue([
+                        BigInt('900000'),
+                        BigInt('100'),
                     ]),
-                    querySellQuote: jest.fn(),
+                },
+                querySellQuote: {
+                    staticCall: jest.fn(),
                 },
             };
 
@@ -348,7 +339,7 @@ describe('SwapSimulator', () => {
             expect(result.success).toBe(true);
             expect(result.amountOut).toBe(900000n);
             expect(result.error).toBeNull();
-            expect(mockDodoContract.callStatic.querySellBase).toHaveBeenCalledWith(
+            expect(mockDodoContract.querySellBase.staticCall).toHaveBeenCalledWith(
                 ZeroAddress,
                 1000000n
             );
@@ -367,11 +358,13 @@ describe('SwapSimulator', () => {
             };
 
             const mockDodoContract = {
-                callStatic: {
-                    querySellBase: jest.fn(),
-                    querySellQuote: jest.fn().mockResolvedValue([
-                        ethers.BigNumber.from('1100000'),
-                        ethers.BigNumber.from('100'),
+                querySellBase: {
+                    staticCall: jest.fn(),
+                },
+                querySellQuote: {
+                    staticCall: jest.fn().mockResolvedValue([
+                        BigInt('1100000'),
+                        BigInt('100'),
                     ]),
                 },
             };
@@ -382,7 +375,7 @@ describe('SwapSimulator', () => {
 
             expect(result.success).toBe(true);
             expect(result.amountOut).toBe(1100000n);
-            expect(mockDodoContract.callStatic.querySellQuote).toHaveBeenCalledWith(
+            expect(mockDodoContract.querySellQuote.staticCall).toHaveBeenCalledWith(
                 ZeroAddress,
                 1000000n
             );
@@ -401,9 +394,11 @@ describe('SwapSimulator', () => {
             };
 
             const mockDodoContract = {
-                callStatic: {
-                    querySellBase: jest.fn(),
-                    querySellQuote: jest.fn(),
+                querySellBase: {
+                    staticCall: jest.fn(),
+                },
+                querySellQuote: {
+                    staticCall: jest.fn(),
                 },
             };
 
@@ -428,8 +423,8 @@ describe('SwapSimulator', () => {
             };
 
             const mockDodoContract = {
-                callStatic: {
-                    querySellBase: jest.fn().mockRejectedValue({
+                querySellBase: {
+                    staticCall: jest.fn().mockRejectedValue({
                         reason: 'BALANCE_NOT_ENOUGH',
                         message: 'BALANCE_NOT_ENOUGH',
                     }),

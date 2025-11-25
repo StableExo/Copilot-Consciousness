@@ -5,7 +5,6 @@
  */
 
 import { FlashLoanExecutor, FlashLoanArbitrageParams, SwapStep } from '../FlashLoanExecutor';
-import { ethers } from 'ethers';
 
 describe('FlashLoanExecutor', () => {
   let executor: FlashLoanExecutor;
@@ -13,12 +12,12 @@ describe('FlashLoanExecutor', () => {
   let mockSigner: any;
 
   beforeEach(() => {
-    // Create proper mock provider with all required methods
+    // Create proper mock provider with all required methods - ethers v6 uses bigint
     mockProvider = {
-      getNetwork: jest.fn().mockResolvedValue({ chainId: 8453, name: 'base' }),
+      getNetwork: jest.fn().mockResolvedValue({ chainId: BigInt(8453), name: 'base' }),
       getBlockNumber: jest.fn().mockResolvedValue(1000),
       call: jest.fn().mockResolvedValue('0x'),
-      estimateGas: jest.fn().mockResolvedValue(ethers.BigNumber.from(500000)),
+      estimateGas: jest.fn().mockResolvedValue(BigInt(500000)),
     };
 
     // Create proper mock signer with provider
@@ -30,7 +29,7 @@ describe('FlashLoanExecutor', () => {
         wait: jest.fn().mockResolvedValue({
           status: 1,
           transactionHash: '0xabcdef',
-          gasUsed: ethers.BigNumber.from(300000),
+          gasUsed: BigInt(300000),
           logs: [],
         }),
       }),

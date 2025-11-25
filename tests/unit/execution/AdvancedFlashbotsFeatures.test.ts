@@ -2,18 +2,18 @@
  * Tests for Advanced Flashbots Features
  */
 
-import { ethers } from 'ethers';
+import { JsonRpcProvider, Wallet } from 'ethers';
 import { PrivateRPCManager, createFlashbotsProtectConfig } from '../../../src/execution';
 import { PrivateRelayType } from '../../../src/execution/types/PrivateRPCTypes';
 
 describe('Advanced Flashbots Features', () => {
-  let provider: ethers.providers.JsonRpcProvider;
-  let wallet: ethers.Wallet;
+  let provider: JsonRpcProvider;
+  let wallet: Wallet;
   let manager: PrivateRPCManager;
 
   beforeEach(() => {
-    provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');
-    wallet = ethers.Wallet.createRandom().connect(provider);
+    provider = new JsonRpcProvider('http://localhost:8545');
+    wallet = Wallet.createRandom().connect(provider);
     
     manager = new PrivateRPCManager(provider, wallet, {
       relays: [createFlashbotsProtectConfig(1)],

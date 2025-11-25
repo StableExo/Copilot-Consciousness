@@ -1,31 +1,27 @@
 import { DEXRegistry } from '../core/DEXRegistry';
-import { ethers } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
 
 jest.mock('ethers', () => {
     const originalEthers = jest.requireActual('ethers');
     let validAddresses: Set<string>;
 
     return {
-        ethers: {
-            providers: {
-                JsonRpcProvider: jest.fn().mockImplementation(() => ({
-                    getCode: jest.fn().mockImplementation(address => {
-                        if (!validAddresses) {
-                            const { DEXRegistry } = jest.requireActual('../core/DEXRegistry');
-                            const registry = new DEXRegistry();
-                            validAddresses = new Set(
-                                registry.getAllDEXes().flatMap(dex => [dex.router, dex.factory])
-                            );
-                        }
-                        if (validAddresses.has(address)) {
-                            return Promise.resolve('0x12345');
-                        }
-                        return Promise.resolve('0x');
-                    }),
-                })),
-            },
-            utils: originalEthers.ethers.utils,
-        },
+        ...originalEthers,
+        JsonRpcProvider: jest.fn().mockImplementation(() => ({
+            getCode: jest.fn().mockImplementation(address => {
+                if (!validAddresses) {
+                    const { DEXRegistry } = jest.requireActual('../core/DEXRegistry');
+                    const registry = new DEXRegistry();
+                    validAddresses = new Set(
+                        registry.getAllDEXes().flatMap(dex => [dex.router, dex.factory])
+                    );
+                }
+                if (validAddresses.has(address)) {
+                    return Promise.resolve('0x12345');
+                }
+                return Promise.resolve('0x');
+            }),
+        })),
     };
 });
 

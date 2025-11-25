@@ -3,7 +3,7 @@
  * Validates protocol registry, base classes, and implementations
  */
 
-import { ethers, BigNumber } from 'ethers';
+import { JsonRpcProvider, ZeroAddress } from 'ethers';
 import {
   IProtocol,
   BaseProtocol,
@@ -18,7 +18,7 @@ import {
 } from '../index';
 
 describe('Protocol Abstraction Layer', () => {
-  let provider: Provider;
+  let provider: JsonRpcProvider;
 
   beforeEach(() => {
     provider = new JsonRpcProvider();
@@ -118,7 +118,7 @@ describe('Protocol Abstraction Layer', () => {
         const params: QuoteParams = {
           tokenIn: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
           tokenOut: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-          amountIn: BigNumber.from('1000000000000000000'),
+          amountIn: BigInt('1000000000000000000'),
           fee: 3000,
         };
 
@@ -185,7 +185,7 @@ describe('Protocol Abstraction Layer', () => {
         const params: QuoteParams = {
           tokenIn: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
           tokenOut: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-          amountIn: BigNumber.from('1000000000000000000'), // 1 ETH
+          amountIn: BigInt('1000000000000000000'), // 1 ETH
         };
 
         const quote = await protocol.getQuote(params);
@@ -201,8 +201,8 @@ describe('Protocol Abstraction Layer', () => {
         const params: SwapParams = {
           tokenIn: ZeroAddress,
           tokenOut: ZeroAddress,
-          amountIn: BigNumber.from(0),
-          amountOutMinimum: BigNumber.from(0),
+          amountIn: BigInt(0),
+          amountOutMinimum: BigInt(0),
           recipient: ZeroAddress,
         };
 
@@ -268,7 +268,7 @@ describe('Protocol Abstraction Layer', () => {
           const params: QuoteParams = {
             tokenIn: ZeroAddress,
             tokenOut: ZeroAddress,
-            amountIn: BigNumber.from(1000),
+            amountIn: BigInt(1000),
           };
 
           const quote = await protocol.getQuote(params);

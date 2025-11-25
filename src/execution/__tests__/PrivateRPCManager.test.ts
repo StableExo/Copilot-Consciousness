@@ -2,7 +2,7 @@
  * Tests for PrivateRPCManager
  */
 
-import { ethers, Wallet } from 'ethers';
+import { Wallet, JsonRpcProvider, parseEther } from 'ethers';
 import {
   PrivateRPCManager,
   createFlashbotsProtectConfig,

@@ -4,19 +4,19 @@
  * Tests for Flashbots Bundle Cache API integration
  */
 
-import { ethers } from 'ethers';
+import { JsonRpcProvider, Wallet, parseEther } from 'ethers';
 import { PrivateRPCManager } from '../../../src/execution/PrivateRPCManager';
 import { PrivacyLevel } from '../../../src/execution/types/PrivateRPCTypes';
 
 describe('Bundle Cache API', () => {
-  let provider: ethers.providers.JsonRpcProvider;
-  let signer: ethers.Wallet;
+  let provider: JsonRpcProvider;
+  let signer: Wallet;
   let privateRPC: PrivateRPCManager;
 
   beforeEach(() => {
     // Create mock provider and signer
-    provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');
-    signer = ethers.Wallet.createRandom().connect(provider);
+    provider = new JsonRpcProvider('http://localhost:8545');
+    signer = Wallet.createRandom().connect(provider);
     
     privateRPC = new PrivateRPCManager(provider, signer, {
       defaultPrivacyLevel: PrivacyLevel.ENHANCED,
@@ -136,7 +136,7 @@ describe('Bundle Cache API', () => {
       // Step 2: Create transaction (would add to cache in real scenario)
       const tx = {
         to: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
-        value: ethers.utils.parseEther('0.1'),
+        value: parseEther('0.1'),
         gasLimit: 21000,
       };
 

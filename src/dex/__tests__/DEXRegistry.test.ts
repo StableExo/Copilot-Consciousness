@@ -1,5 +1,5 @@
 import DEXRegistry from '../core/DEXRegistry';
-import { ethers } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
 import { Connection } from '@solana/web3.js';
 
 const getAccountInfoMock = jest.fn().mockResolvedValue({
@@ -25,7 +25,8 @@ describe('DEXRegistry', () => {
     const mockProvider = {
         getCode: getCodeMock,
     };
-    jest.spyOn(ethers.providers, 'JsonRpcProvider').mockImplementation(() => mockProvider as any);
+    // In ethers v6, JsonRpcProvider is exported directly, so we mock the whole module
+    jest.spyOn(JsonRpcProvider.prototype, 'getCode').mockImplementation(getCodeMock);
 
     (Connection as jest.Mock).mockClear();
     getAccountInfoMock.mockClear();

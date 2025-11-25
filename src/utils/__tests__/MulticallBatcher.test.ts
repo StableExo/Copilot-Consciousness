@@ -2,7 +2,7 @@
  * Tests for MulticallBatcher
  */
 
-import { ethers } from 'ethers';
+import { Provider, JsonRpcProvider, Interface } from 'ethers';
 import { MulticallBatcher, batchCheckPoolsExist, batchFetchPoolData, MULTICALL3_ADDRESS } from '../MulticallBatcher';
 
 describe('MulticallBatcher', () => {
@@ -43,7 +43,7 @@ describe('MulticallBatcher', () => {
     it('should encode function call correctly', () => {
       const iface = new Interface([
         'function balanceOf(address owner) view returns (uint256)',
-      ]);
+      ] as string[]);
 
       const callData = MulticallBatcher.encodeCall(
         iface,
@@ -59,7 +59,7 @@ describe('MulticallBatcher', () => {
     it('should decode function result correctly', () => {
       const iface = new Interface([
         'function balanceOf(address owner) view returns (uint256)',
-      ]);
+      ] as string[]);
 
       // Encoded result for uint256(1000)
       const encodedResult = '0x00000000000000000000000000000000000000000000000000000000000003e8';

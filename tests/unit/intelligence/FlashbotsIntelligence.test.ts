@@ -2,16 +2,16 @@
  * Unit tests for FlashbotsIntelligence
  */
 
-import { ethers } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
 import { FlashbotsIntelligence } from '../../../src/intelligence/flashbots/FlashbotsIntelligence';
 import { BundleSimulationResult } from '../../../src/execution/types/PrivateRPCTypes';
 
 describe('FlashbotsIntelligence', () => {
-  let provider: ethers.providers.JsonRpcProvider;
+  let provider: JsonRpcProvider;
   let intelligence: FlashbotsIntelligence;
 
   beforeEach(() => {
-    provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');
+    provider = new JsonRpcProvider('http://localhost:8545');
     intelligence = new FlashbotsIntelligence(provider, {
       minBuilderSuccessRate: 0.7,
       reputationWindowBlocks: 7200,
@@ -393,10 +393,14 @@ describe('FlashbotsIntelligence', () => {
 
   describe('Fast Mode Recommendations', () => {
     beforeEach(() => {
-      // Mock provider methods
-      jest.spyOn(provider, 'getGasPrice').mockResolvedValue(ethers.BigNumber.from('50000000000')); // 50 gwei
+      // Mock provider methods - getFeeData returns bigint in ethers v6
+      jest.spyOn(provider, 'getFeeData').mockResolvedValue({
+        gasPrice: BigInt('50000000000'), // 50 gwei
+        maxFeePerGas: BigInt('50000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      } as any);
       jest.spyOn(provider, 'getBlock').mockResolvedValue({
-        baseFeePerGas: ethers.BigNumber.from('40000000000'), // 40 gwei base fee
+        baseFeePerGas: BigInt('40000000000'), // 40 gwei base fee
       } as any);
     });
 
@@ -409,9 +413,13 @@ describe('FlashbotsIntelligence', () => {
 
     it('should recommend normal mode for low urgency and low congestion', async () => {
       // Mock low priority fee
-      jest.spyOn(provider, 'getGasPrice').mockResolvedValue(ethers.BigNumber.from('45000000000')); // 45 gwei
+      jest.spyOn(provider, 'getFeeData').mockResolvedValue({
+        gasPrice: BigInt('45000000000'), // 45 gwei
+        maxFeePerGas: BigInt('45000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      } as any);
       jest.spyOn(provider, 'getBlock').mockResolvedValue({
-        baseFeePerGas: ethers.BigNumber.from('40000000000'), // 40 gwei base fee, only 12.5% priority
+        baseFeePerGas: BigInt('40000000000'), // 40 gwei base fee, only 12.5% priority
       } as any);
 
       const recommendation = await intelligence.recommendFastMode(0.1);
@@ -422,9 +430,13 @@ describe('FlashbotsIntelligence', () => {
 
     it('should recommend fast mode for high network congestion', async () => {
       // Mock high priority fee
-      jest.spyOn(provider, 'getGasPrice').mockResolvedValue(ethers.BigNumber.from('100000000000')); // 100 gwei
+      jest.spyOn(provider, 'getFeeData').mockResolvedValue({
+        gasPrice: BigInt('100000000000'), // 100 gwei
+        maxFeePerGas: BigInt('100000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      } as any);
       jest.spyOn(provider, 'getBlock').mockResolvedValue({
-        baseFeePerGas: ethers.BigNumber.from('40000000000'), // 40 gwei base fee, 150% priority
+        baseFeePerGas: BigInt('40000000000'), // 40 gwei base fee, 150% priority
       } as any);
 
       const recommendation = await intelligence.recommendFastMode(0.3);
