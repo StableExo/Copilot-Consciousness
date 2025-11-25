@@ -204,9 +204,8 @@ describe('TransactionManager', () => {
       mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
 
       const initialGasPrice = BigInt('50000000000');
-      const expectedIncreasedGasPrice = initialGasPrice
-        .mul(110)
-        .div(100); // 10% increase
+      // ethers v6 uses native bigint - multiply and divide using BigInt math
+      const expectedIncreasedGasPrice = initialGasPrice * BigInt(110) / BigInt(100); // 10% increase
 
       mockNonceManager.sendTransaction
         .mockRejectedValueOnce(new Error('Network error'))

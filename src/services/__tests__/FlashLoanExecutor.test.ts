@@ -136,7 +136,8 @@ describe('FlashLoanExecutor', () => {
     it('should return FlashSwapV2 contract instance', () => {
       const contract = executor.getContract();
       expect(contract).toBeDefined();
-      expect(contract.address).toBe('0x1111111111111111111111111111111111111111');
+      // ethers v6: contracts use .target instead of .address
+      expect(contract.target).toBe('0x1111111111111111111111111111111111111111');
     });
   });
 });
