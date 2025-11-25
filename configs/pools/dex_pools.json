@@ -32,7 +32,88 @@
     "uniswapV3": {
       "factory": "0x33128a8fC17869897dcE68Ed026d694621f6FDfD",
       "router": "0x2626664c2603336E57B271c5C0b26F421741e481",
-      "quoter": "0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a"
+      "quoter": "0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a",
+      "quoterV2": "0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a",
+      "pools": [
+        {
+          "token0": "0x4200000000000000000000000000000000000006",
+          "token0Symbol": "WETH",
+          "token1": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "token1Symbol": "USDC",
+          "fee": 500,
+          "address": "0xd0b53D9277642d899DF5C87A3966A349A798F224",
+          "description": "Primary WETH/USDC pool - highest volume"
+        },
+        {
+          "token0": "0x4200000000000000000000000000000000000006",
+          "token0Symbol": "WETH",
+          "token1": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "token1Symbol": "USDC",
+          "fee": 3000,
+          "address": "0x4C36388bE6F416A29C8d8Eee81C771cE6bE14B18",
+          "description": "WETH/USDC 0.3% fee tier"
+        },
+        {
+          "token0": "0x4200000000000000000000000000000000000006",
+          "token0Symbol": "WETH",
+          "token1": "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
+          "token1Symbol": "USDbC",
+          "fee": 500,
+          "address": "0x4b0Aaf3EBb163Dd45F663b38B6d93F6093EBC2D3",
+          "description": "WETH/USDbC bridged USDC pool"
+        },
+        {
+          "token0": "0x4200000000000000000000000000000000000006",
+          "token0Symbol": "WETH",
+          "token1": "0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22",
+          "token1Symbol": "cbETH",
+          "fee": 500,
+          "address": "0x10648BA41B8565907Cfa1496765fA4D95390aa0d",
+          "description": "WETH/cbETH LST arbitrage pool"
+        },
+        {
+          "token0": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "token0Symbol": "USDC",
+          "token1": "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
+          "token1Symbol": "USDbC",
+          "fee": 100,
+          "address": "0x06959273E9A65433De71F5A452D529544d07b2fB",
+          "description": "USDC/USDbC stable pool - low fee tier"
+        }
+      ]
+    },
+    "aerodrome": {
+      "factory": "0x420DD381b31aEf6683db6B902084cB0FFECe40Da",
+      "router": "0xcF77a3Ba9A5CA399B7c97c74d54e5b1Beb874E43",
+      "pools": [
+        {
+          "token0": "0x4200000000000000000000000000000000000006",
+          "token0Symbol": "WETH",
+          "token1": "0x940181a94A35A4569E4529A3CDfB74e38FD98631",
+          "token1Symbol": "AERO",
+          "stable": false,
+          "address": "0x7f670f78B17dEC44d5Ef68a48740b6f8849cc2e6",
+          "description": "Primary WETH/AERO volatile pool"
+        },
+        {
+          "token0": "0x4200000000000000000000000000000000000006",
+          "token0Symbol": "WETH",
+          "token1": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "token1Symbol": "USDC",
+          "stable": false,
+          "address": "0xB4885Bc63399BF5518b994c1d0C153334Ee579D0",
+          "description": "Aerodrome WETH/USDC pool"
+        },
+        {
+          "token0": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "token0Symbol": "USDC",
+          "token1": "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
+          "token1Symbol": "USDbC",
+          "stable": true,
+          "address": "0xf52B4b69123CbcF07798ae8265642793b2e8990C",
+          "description": "Aerodrome stable USDC/USDbC pool"
+        }
+      ]
     },
     "sushiswap": {
       "factory": "0x71524B4f93c58fcbF659783284E38825f0622859",
@@ -40,7 +121,11 @@
     },
     "aaveV3": {
       "addressesProvider": "0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D",
-      "pool": "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5"
+      "pool": "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+      "flashLoanFee": 0.0009,
+      "flashLoanFeePercent": "0.09%",
+      "supportedAssets": ["WETH", "USDC", "USDbC"],
+      "description": "Aave V3 on Base for flash loans - 0.09% fee"
     }
   }
 }
