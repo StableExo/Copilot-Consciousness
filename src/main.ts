@@ -58,6 +58,9 @@ import { extractOpportunityFeatures, featuresToArray } from './ai/featureExtract
 // Bootstrap module (refactored initialization)
 import { WardenBootstrap } from './core/bootstrap';
 
+// Long-running process manager
+import { LongRunningManager } from './monitoring/LongRunningManager';
+
 // Load environment variables
 dotenv.config();
 
@@ -251,6 +254,9 @@ class TheWarden extends EventEmitter {
   
   // Phase 3 components
   private phase3Components?: Phase3Components;
+  
+  // Long-running process manager
+  private longRunningManager?: LongRunningManager;
   
   // Statistics
   private stats = {
@@ -792,6 +798,33 @@ class TheWarden extends EventEmitter {
   }
   
   /**
+   * Set up event handlers for long-running manager
+   */
+  private setupLongRunningEventHandlers(): void {
+    if (!this.longRunningManager) return;
+    
+    this.longRunningManager.on('memory-warning', (data) => {
+      logger.warn(`[LongRunning] Memory warning: ${data.percentage.toFixed(1)}% heap used`);
+    });
+    
+    this.longRunningManager.on('memory-critical', (data) => {
+      logger.error(`[LongRunning] CRITICAL: Memory at ${data.percentage.toFixed(1)}% - consider restart`);
+    });
+    
+    this.longRunningManager.on('memory-leak-warning', (data) => {
+      logger.warn(`[LongRunning] Potential memory leak: ${data.increasePercent.toFixed(1)}% increase detected`);
+    });
+    
+    this.longRunningManager.on('heartbeat-timeout', (data) => {
+      logger.warn(`[LongRunning] Heartbeat timeout: ${data.timeSinceLastBeat}ms since last beat`);
+    });
+    
+    this.longRunningManager.on('heartbeat-critical', () => {
+      logger.error('[LongRunning] CRITICAL: Process may be unresponsive - too many missed heartbeats');
+    });
+  }
+  
+  /**
    * Main scanning loop - continuously search for arbitrage opportunities
    */
   private async scanCycle(): Promise<void> {
@@ -799,6 +832,20 @@ class TheWarden extends EventEmitter {
     
     try {
       this.stats.cyclesCompleted++;
+      
+      // Record heartbeat to indicate the process is alive and responsive
+      if (this.longRunningManager) {
+        this.longRunningManager.heartbeat();
+        
+        // Update stats in long-running manager for persistence
+        this.longRunningManager.updateStats({
+          cyclesCompleted: this.stats.cyclesCompleted,
+          opportunitiesFound: this.stats.opportunitiesFound,
+          tradesExecuted: this.stats.tradesExecuted,
+          totalProfit: this.stats.totalProfit,
+          errors: this.stats.errors,
+        });
+      }
       
       // Get chains to scan - use scanChains if configured, otherwise default to primary chainId
       const chainsToScan = this.config.scanChains && this.config.scanChains.length > 0 
@@ -924,6 +971,26 @@ class TheWarden extends EventEmitter {
     logger.info('Role: Warden.bot – monitoring flow, judging opportunities…');
     logger.info('═══════════════════════════════════════════════════════════');
     
+    // Initialize long-running process manager for production stability
+    logger.info('[LongRunning] Initializing long-running process manager...');
+    this.longRunningManager = new LongRunningManager({
+      persistInterval: 60000, // Persist stats every 60 seconds
+      memoryCheckInterval: 60000, // Check memory every 60 seconds
+      memoryWarningThreshold: 80, // Warn at 80% heap usage
+      memoryCriticalThreshold: 95, // Critical at 95% heap usage
+      logStatsInterval: 300000, // Log stats every 5 minutes
+      heartbeat: {
+        interval: 30000, // Heartbeat every 30 seconds
+        timeout: 90000, // Timeout after 90 seconds
+        maxMissedBeats: 3,
+      },
+    });
+    
+    // Set up long-running manager event handlers
+    this.setupLongRunningEventHandlers();
+    
+    await this.longRunningManager.start();
+    
     await this.initialize();
     
     // ═══════════════════════════════════════════════════════════
@@ -1016,6 +1083,12 @@ class TheWarden extends EventEmitter {
       await shutdownPhase3Components(this.phase3Components);
     }
     
+    // Stop long-running manager and persist final stats
+    if (this.longRunningManager) {
+      logger.info('[LongRunning] Stopping long-running process manager...');
+      await this.longRunningManager.stop('graceful_shutdown');
+    }
+    
     // Log final statistics
     this.logStatus();
     
@@ -1032,16 +1105,43 @@ class TheWarden extends EventEmitter {
     const uptime = Date.now() - this.stats.startTime;
     const uptimeSeconds = Math.floor(uptime / 1000);
     const uptimeMinutes = Math.floor(uptimeSeconds / 60);
+    const uptimeHours = Math.floor(uptimeMinutes / 60);
     
     logger.info('─────────────────────────────────────────────────────────');
     logger.info('TheWarden STATUS');
     logger.info('─────────────────────────────────────────────────────────');
-    logger.info(`Uptime: ${uptimeMinutes}m ${uptimeSeconds % 60}s`);
+    
+    // Enhanced uptime display for long-running processes
+    if (uptimeHours > 0) {
+      logger.info(`Session Uptime: ${uptimeHours}h ${uptimeMinutes % 60}m ${uptimeSeconds % 60}s`);
+    } else {
+      logger.info(`Session Uptime: ${uptimeMinutes}m ${uptimeSeconds % 60}s`);
+    }
+    
     logger.info(`Cycles completed: ${this.stats.cyclesCompleted}`);
     logger.info(`Opportunities found: ${this.stats.opportunitiesFound}`);
     logger.info(`Trades executed: ${this.stats.tradesExecuted}`);
     logger.info(`Total profit: ${formatEther(this.stats.totalProfit)} ETH`);
     logger.info(`Errors: ${this.stats.errors}`);
+    
+    // Long-running process status
+    if (this.longRunningManager) {
+      const longRunningUptime = this.longRunningManager.getUptime();
+      const totalUptimeHours = (longRunningUptime.totalUptime / 3600000).toFixed(2);
+      const memUsage = process.memoryUsage();
+      const heapUsedMB = (memUsage.heapUsed / 1024 / 1024).toFixed(1);
+      const heapTotalMB = (memUsage.heapTotal / 1024 / 1024).toFixed(1);
+      
+      logger.info('─────────────────────────────────────────────────────────');
+      logger.info('LONG-RUNNING STATUS');
+      logger.info('─────────────────────────────────────────────────────────');
+      logger.info(`Total Uptime (all sessions): ${totalUptimeHours} hours`);
+      logger.info(`Restart Count: ${longRunningUptime.restartCount}`);
+      logger.info(`Memory: ${heapUsedMB}MB / ${heapTotalMB}MB heap`);
+      if (longRunningUptime.lastRestartReason) {
+        logger.info(`Last Restart Reason: ${longRunningUptime.lastRestartReason}`);
+      }
+    }
     
     // Phase 3 Status
     if (this.phase3Components) {
