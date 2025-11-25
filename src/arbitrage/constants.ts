@@ -47,10 +47,14 @@ export const V3_LIQUIDITY_SCALE_FACTOR = 1000000;
  * Includes both naming conventions for compatibility
  */
 export const V3_STYLE_PROTOCOLS = [
-  'UniswapV3',    // DEXRegistry naming
-  'uniswap_v3',   // Legacy test naming
-  'Aerodrome',    // DEXRegistry naming
-  'aerodrome'     // Legacy naming
+  'UniswapV3',      // DEXRegistry naming
+  'uniswap_v3',     // Legacy test naming
+  'Aerodrome',      // DEXRegistry naming
+  'aerodrome',      // Legacy naming
+  'PancakeSwapV3',  // PancakeSwap V3 concentrated liquidity
+  'pancakeswapv3',  // Legacy naming
+  'Velodrome',      // Velodrome Slipstream concentrated liquidity
+  'velodrome'       // Legacy naming
 ] as const;
 
 /**
