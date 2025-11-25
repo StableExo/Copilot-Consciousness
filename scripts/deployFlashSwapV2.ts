@@ -16,7 +16,7 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   
   console.log("Deploying FlashSwapV2 with account:", deployer.address);
-  // ethers v6: Use provider.getBalance() instead of signer.getBalance()
+  // In ethers v6, use provider.getBalance(address) - works with both ethers.provider or deployer.provider
   const balance = await ethers.provider.getBalance(deployer.address);
   console.log("Account balance:", balance.toString());
   
@@ -68,10 +68,12 @@ async function main() {
   
   // Wait for a few blocks before verification
   console.log("\nWaiting for 5 block confirmations...");
-  // ethers v6: Use deploymentTransaction() instead of deployTransaction
+  // ethers v6: deploymentTransaction() returns the tx or null; we check for null before waiting
   const deployTx = flashSwapV2.deploymentTransaction();
   if (deployTx) {
     await deployTx.wait(5);
+  } else {
+    console.log("Note: Deployment transaction not available, skipping confirmation wait");
   }
   
   console.log("\n📝 To verify the contract on Basescan, run:");
