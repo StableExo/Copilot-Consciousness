@@ -1,5 +1,5 @@
 import hre from "hardhat";
-import { ADDRESSES, NetworkKey, requireAddress } from "../config/addresses";
+import { ADDRESSES, NetworkKey, requireAddress } from "../src/config/addresses";
 
 /**
  * Deployment script for FlashSwapV2 contract

@@ -36,8 +36,8 @@ import {
   getConfigByName,
 } from './config/advanced-arbitrage.config';
 import { ArbitrageConfig } from './types/definitions';
-import { SensoryMemory } from '../consciousness/sensory_memory';
-import { TemporalAwarenessFramework } from '../consciousness/temporal_awareness';
+import { SensoryMemory } from './consciousness/sensory_memory';
+import { TemporalAwarenessFramework } from './consciousness/temporal_awareness';
 import { PerceptionStream } from './services/PerceptionStream';
 import { DashboardServer } from './dashboard/DashboardServer';
 import { GasAnalytics } from './gas/GasAnalytics';

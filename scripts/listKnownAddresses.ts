@@ -1,5 +1,5 @@
 import { network } from "hardhat";
-import { ADDRESSES, NetworkKey } from "../config/addresses";
+import { ADDRESSES, NetworkKey } from "../src/config/addresses";
 
 /**
  * List Known Addresses Script

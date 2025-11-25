@@ -4,7 +4,7 @@
  * Provides token addresses for different blockchain networks
  */
 
-import tokenAddresses from '../../configs/tokens/addresses.json';
+import tokenAddresses from '../config/tokens/addresses.json';
 
 export interface TokenInfo {
   address: string;

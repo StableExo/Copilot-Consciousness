@@ -1,17 +1,40 @@
 /**
- * Intelligence Layer - Core Environmental Awareness
+ * Intelligence Layer - Consolidated AI/ML/AGI Components
  * 
- * Provides the consciousness system with intelligence capabilities
- * for perceiving and responding to the competitive MEV environment.
+ * This module consolidates all AI/ML capabilities for TheWarden/AEV
+ * by re-exporting from the specialized modules:
  * 
- * Current modules:
+ * Modules:
  * - mev-awareness: MEV risk modeling, real-time monitoring, profit calculation
  * - flashbots: Advanced Flashbots integration, bundle optimization, builder reputation
+ * - ai: Neural network scoring, RL agents, strategy evolution (Phase 3)
+ * - agi: AGI-aligned memory and neural bridge protocol
+ * - ml: ML orchestration, data collection, pattern detection
+ * - learning: Adaptive strategies, knowledge loop
  * 
- * Future modules (Phase 2+):
- * - economic-autonomy: Tithe mechanism, treasury management
- * - strategic-planning: Multi-step strategy optimization
+ * Usage:
+ * ```typescript
+ * // Import directly from intelligence module
+ * import { StrategyRLAgent, OpportunityNNScorer, MLOrchestrator } from './intelligence';
+ * 
+ * // Or import from specific submodules
+ * import { StrategyRLAgent } from './ai';
+ * import { MLOrchestrator } from './ml';
+ * ```
  */
 
+// Core MEV and Flashbots intelligence
 export * from './mev-awareness';
 export * from './flashbots';
+
+// Re-export from AI module (Phase 3: Neural networks, RL agents, strategy evolution)
+export * from '../ai';
+
+// Re-export from AGI module (Memory core, neural bridge protocol)
+export * from '../agi';
+
+// Re-export from ML module (Data collection, feature extraction, pattern detection)
+export * from '../ml';
+
+// Re-export from Learning module (Knowledge loop, adaptive strategies)
+export * from '../learning';
