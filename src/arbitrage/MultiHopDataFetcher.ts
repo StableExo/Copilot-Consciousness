@@ -290,6 +290,11 @@ export class MultiHopDataFetcher {
           ? dex.liquidityThreshold / BigInt(V3_LIQUIDITY_SCALE_FACTOR)
           : dex.liquidityThreshold;
         
+        // Log pool rejection details for debugging
+        if (poolData.reserve0 <= threshold && logger.isDebugEnabled()) {
+          logger.debug(`Pool rejected: ${dex.name} ${token0.slice(0,6)}.../${token1.slice(0,6)}... - liquidity ${poolData.reserve0} <= threshold ${threshold}`, 'DATAFETCH');
+        }
+        
         if (poolData.reserve0 > threshold) {
           poolsFound++;
           // Create edge in both directions
