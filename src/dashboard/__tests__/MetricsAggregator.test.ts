@@ -18,8 +18,8 @@ describe('MetricsAggregator', () => {
   });
 
   describe('getCurrentMetrics', () => {
-    it('should return dashboard metrics with zero values initially', () => {
-      const metrics = metricsAggregator.getCurrentMetrics();
+    it('should return dashboard metrics with zero values initially', async () => {
+      const metrics = await metricsAggregator.getCurrentMetrics();
 
       expect(metrics).toBeDefined();
       expect(metrics.totalTrades).toBe(0);
@@ -28,7 +28,7 @@ describe('MetricsAggregator', () => {
       expect(metrics.successRate).toBe(0);
     });
 
-    it('should aggregate metrics from both analytics modules', () => {
+    it('should aggregate metrics from both analytics modules', async () => {
       // Record some executions in gas analytics
       gasAnalytics.recordExecution({
         path: {
@@ -52,7 +52,7 @@ describe('MetricsAggregator', () => {
         success: true
       });
 
-      const metrics = metricsAggregator.getCurrentMetrics();
+      const metrics = await metricsAggregator.getCurrentMetrics();
 
       expect(metrics.totalTrades).toBeGreaterThan(0);
       expect(metrics.successRate).toBeGreaterThan(0);
@@ -90,10 +90,10 @@ describe('MetricsAggregator', () => {
       expect(Array.isArray(history)).toBe(true);
     });
 
-    it('should limit history with limit parameter', () => {
+    it('should limit history with limit parameter', async () => {
       // Generate some metrics
       for (let i = 0; i < 5; i++) {
-        metricsAggregator.getCurrentMetrics();
+        await metricsAggregator.getCurrentMetrics();
       }
 
       const history = metricsAggregator.getMetricsHistory(3);
@@ -102,8 +102,8 @@ describe('MetricsAggregator', () => {
   });
 
   describe('clearHistory', () => {
-    it('should clear metrics history', () => {
-      metricsAggregator.getCurrentMetrics();
+    it('should clear metrics history', async () => {
+      await metricsAggregator.getCurrentMetrics();
       expect(metricsAggregator.getMetricsHistory().length).toBeGreaterThan(0);
 
       metricsAggregator.clearHistory();

@@ -37,15 +37,14 @@ export class NonceManager extends AbstractSigner {
   private _address?: string;
   private currentNonce: number = -1;
   private readonly mutex = new Mutex();
-  provider: Provider | null;
 
   constructor(public readonly signer: AbstractSigner) {
-    super();
+    // Validate signer before calling super() to ensure we have a valid provider
     if (!signer || !signer.provider || typeof signer.getAddress !== 'function') {
       throw new Error("NonceManager requires a valid Ethers Signer instance with a provider.");
     }
-    // Set provider from signer
-    this.provider = signer.provider;
+    // Pass provider to parent AbstractSigner constructor (ethers v6 uses defineProperties to make it readonly)
+    super(signer.provider);
   }
 
   // Connect the async constructor pattern

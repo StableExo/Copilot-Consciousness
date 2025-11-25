@@ -175,7 +175,8 @@ async function main() {
     
     console.log("Estimating gas...");
     try {
-      const gasEstimate = await flashSwapV2.estimateGas.initiateAaveFlashLoan(
+      // ethers v6: Use contract.method.estimateGas() instead of contract.estimateGas.method()
+      const gasEstimate = await flashSwapV2.initiateAaveFlashLoan.estimateGas(
         FLASH_LOAN_ASSET,
         LOAN_AMOUNT,
         encodedParams
