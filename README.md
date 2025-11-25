@@ -263,7 +263,7 @@ npm run build
 cp .env.test .env
 
 # Run autonomously (will auto-restart on crash)
-./scripts/autonomous-run.sh
+./TheWarden
 
 # Monitor status in another terminal
 ./scripts/status.sh
@@ -302,7 +302,7 @@ nano .env
 
 # Build and run autonomously
 npm run build
-./scripts/autonomous-run.sh
+./TheWarden
 
 # Or use PM2 for production
 npm install -g pm2

@@ -8,7 +8,11 @@ TheWarden can now run autonomously with comprehensive monitoring, auto-restart c
 
 ### 1. Autonomous Operation Scripts ✅
 
-**`scripts/autonomous-run.sh`**
+**`./TheWarden`** (Main Entry Point)
+- Unified entry point for all autonomous mainnet operations
+- Wraps and delegates to `scripts/autonomous-run.sh`
+
+**`scripts/autonomous-run.sh`** (Core Implementation)
 - Automated startup with validation
 - Auto-restart on crashes
 - Graceful shutdown handling
@@ -25,7 +29,7 @@ TheWarden can now run autonomously with comprehensive monitoring, auto-restart c
 
 **Usage:**
 ```bash
-./scripts/autonomous-run.sh
+./TheWarden
 ```
 
 ### 2. Status Monitoring Script ✅
@@ -328,6 +332,7 @@ pm2 restart thewarden
 │   ├── MAINNET_DEPLOYMENT.md          # Comprehensive deployment guide
 │   ├── MAINNET_UPGRADE_GUIDE.md       # This document - upgrade path
 │   └── MAIN_RUNNER.md                 # Technical operations guide
+├── TheWarden                          # Main entry point (./TheWarden)
 ├── scripts/
 │   ├── autonomous-run.sh              # Autonomous operation script
 │   └── status.sh                      # Status monitoring script
