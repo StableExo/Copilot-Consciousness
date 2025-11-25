@@ -100,13 +100,29 @@ export class MultiHopDataFetcher {
    */
   private getProvider(network: string): Provider {
     if (!this.providers.has(network)) {
-      // In production, these should come from configuration
-      const rpcUrls: Record<string, string> = {
-        '1': 'https://eth.llamarpc.com',
-        '8453': 'https://mainnet.base.org'
-      };
+      // Get RPC URL from environment variables based on network/chainId
+      let rpcUrl: string;
       
-      const rpcUrl = rpcUrls[network] || 'https://eth.llamarpc.com';
+      switch (network) {
+        case '1':
+          rpcUrl = process.env.ETHEREUM_RPC_URL || process.env.MAINNET_RPC_URL || 'https://eth.llamarpc.com';
+          break;
+        case '8453':
+          rpcUrl = process.env.BASE_RPC_URL || 'https://mainnet.base.org';
+          break;
+        case '42161':
+          rpcUrl = process.env.ARBITRUM_RPC_URL || 'https://arb1.arbitrum.io/rpc';
+          break;
+        case '10':
+          rpcUrl = process.env.OPTIMISM_RPC_URL || 'https://mainnet.optimism.io';
+          break;
+        case '137':
+          rpcUrl = process.env.POLYGON_RPC_URL || 'https://polygon-rpc.com';
+          break;
+        default:
+          rpcUrl = process.env.RPC_URL || 'https://eth.llamarpc.com';
+      }
+      
       const provider = new JsonRpcProvider(rpcUrl);
       this.providers.set(network, provider);
     }
