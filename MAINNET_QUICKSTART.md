@@ -151,13 +151,44 @@ npm start
 
 ## Monitoring
 
+### Background Mode (Default)
+When you run `./TheWarden` normally, it runs in background mode with periodic status updates:
+
+```bash
+./TheWarden
+
+# You'll see status updates every 60 seconds:
+# [INFO] Status: RUNNING | Uptime: 1h 23m | Memory: 145MB | Opportunities: 47 | Errors: 0
+```
+
+You can adjust the status update interval:
+```bash
+STATUS_INTERVAL=30 ./TheWarden   # Update every 30 seconds
+```
+
+### Stream Mode (Real-time Logs)
+For real-time log viewing in your terminal:
+
+```bash
+./TheWarden --stream
+# or
+./TheWarden -s
+```
+
+This streams all TheWarden output directly to your terminal while also saving to the log file.
+
+### Manual Log Monitoring
+
 ```bash
 # Watch logs in real-time
-tail -f logs/arbitrage.log
+tail -f logs/warden-output.log
 
 # Filter for specific events
-tail -f logs/arbitrage.log | grep "Trade executed"
-tail -f logs/arbitrage.log | grep "EMERGENCE DETECTED"
+tail -f logs/warden-output.log | grep "Trade executed"
+tail -f logs/warden-output.log | grep "EMERGENCE DETECTED"
+
+# Check status using the status script
+./scripts/status.sh
 ```
 
 ## Safety Tips

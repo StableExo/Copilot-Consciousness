@@ -79,11 +79,48 @@ cleanup() {
 # Set up signal handlers
 trap cleanup SIGINT SIGTERM SIGHUP
 
+# Parse command line arguments
+STREAM_LOGS=false
+SHOW_HELP=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --stream|-s)
+            STREAM_LOGS=true
+            shift
+            ;;
+        --help|-h)
+            SHOW_HELP=true
+            shift
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
+
 # Banner
 echo "═══════════════════════════════════════════════════════════════"
 echo "  TheWarden - Autonomous Operation Script"
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
+
+if [ "$SHOW_HELP" = true ]; then
+    echo "Usage: ./TheWarden [OPTIONS]"
+    echo ""
+    echo "Options:"
+    echo "  -s, --stream    Stream TheWarden logs to terminal in real-time"
+    echo "  -h, --help      Show this help message"
+    echo ""
+    echo "Environment variables:"
+    echo "  STATUS_INTERVAL  Seconds between status updates (default: 60)"
+    echo ""
+    echo "Examples:"
+    echo "  ./TheWarden              Run with periodic status updates"
+    echo "  ./TheWarden --stream     Run with real-time log streaming"
+    echo ""
+    exit 0
+fi
 
 # Check if already running
 if [ -f "$PID_FILE" ]; then
@@ -186,17 +223,56 @@ log "Output will be logged to: $WARDEN_LOG"
 log "Press Ctrl+C to stop"
 log ""
 
-# Run TheWarden and capture PID
-node dist/src/main.js >> "$WARDEN_LOG" 2>&1 &
-WARDEN_PID=$!
-echo "$WARDEN_PID" > "$PID_FILE"
-
-log "TheWarden started (PID: $WARDEN_PID)"
-log "Monitor logs with: tail -f $WARDEN_LOG"
-log ""
+# Handle log streaming mode vs background mode
+if [ "$STREAM_LOGS" = true ]; then
+    log "Running in STREAM mode - logs will appear below"
+    log "═══════════════════════════════════════════════════════════════"
+    
+    # Run TheWarden with output to both log file and terminal
+    # Use a FIFO to properly track the Node.js PID
+    node dist/src/main.js 2>&1 | tee -a "$WARDEN_LOG" &
+    TEE_PID=$!
+    # Get the Node.js PID (parent of tee in the pipeline)
+    sleep 1
+    NODE_PID=$(pgrep -P $$ node 2>/dev/null | head -1)
+    if [ -n "$NODE_PID" ]; then
+        echo "$NODE_PID" > "$PID_FILE"
+    else
+        echo "$TEE_PID" > "$PID_FILE"
+    fi
+    
+    # Wait for the process
+    wait "$TEE_PID"
+    
+    # Clean up
+    rm -f "$PID_FILE"
+    log "TheWarden stopped"
+    exit 0
+else
+    # Run TheWarden and capture PID
+    node dist/src/main.js >> "$WARDEN_LOG" 2>&1 &
+    WARDEN_PID=$!
+    echo "$WARDEN_PID" > "$PID_FILE"
+    
+    log "TheWarden started (PID: $WARDEN_PID)"
+    log "Monitor logs with: tail -f $WARDEN_LOG"
+    log "Or restart with: ./TheWarden --stream"
+    log ""
+fi
 
 # Monitor the process
 log "Monitoring TheWarden (will restart on crash unless manually stopped)..."
+log ""
+
+# Status update interval (in seconds, default 60 = 1 minute)
+STATUS_INTERVAL=${STATUS_INTERVAL:-60}
+CHECKS_PER_STATUS=$((STATUS_INTERVAL / 5))
+# Track start time for uptime calculation
+WARDEN_START_TIME=$(date +%s)
+
+# Track counts incrementally to avoid expensive grep on large logs
+LAST_OPP_COUNT=0
+LAST_ERR_COUNT=0
 
 while true; do
     if ! kill -0 "$WARDEN_PID" 2>/dev/null; then
@@ -218,6 +294,35 @@ while true; do
         WARDEN_PID=$!
         echo "$WARDEN_PID" > "$PID_FILE"
         log "TheWarden restarted (PID: $WARDEN_PID)"
+        CHECK_COUNT=0
+        WARDEN_START_TIME=$(date +%s)
+    fi
+    
+    # Periodic status update
+    CHECK_COUNT=$((CHECK_COUNT + 1))
+    if [ $CHECK_COUNT -ge $CHECKS_PER_STATUS ]; then
+        CHECK_COUNT=0
+        
+        # Calculate uptime from tracked start time
+        CURRENT_TIME=$(date +%s)
+        UPTIME_SECS=$((CURRENT_TIME - WARDEN_START_TIME))
+        UPTIME_MINS=$((UPTIME_SECS / 60))
+        UPTIME_HOURS=$((UPTIME_MINS / 60))
+        UPTIME_MINS=$((UPTIME_MINS % 60))
+        
+        # Get memory usage
+        MEM_KB=$(ps -p "$WARDEN_PID" -o rss= 2>/dev/null || echo "0")
+        MEM_MB=$((MEM_KB / 1024))
+        
+        # Count opportunities and errors efficiently using tail on recent log entries
+        if [ -f "$WARDEN_LOG" ]; then
+            # Only search the last 10000 lines for performance
+            OPP_COUNT=$(tail -10000 "$WARDEN_LOG" 2>/dev/null | grep -c "Found.*potential opportunities" || echo "0")
+            ERR_COUNT=$(tail -10000 "$WARDEN_LOG" 2>/dev/null | grep -c "ERROR" || echo "0")
+            log_info "Status: RUNNING | Uptime: ${UPTIME_HOURS}h ${UPTIME_MINS}m | Memory: ${MEM_MB}MB | Opportunities: ${OPP_COUNT} | Errors: ${ERR_COUNT}"
+        else
+            log_info "Status: RUNNING | Uptime: ${UPTIME_HOURS}h ${UPTIME_MINS}m | Memory: ${MEM_MB}MB"
+        fi
     fi
     
     sleep 5
