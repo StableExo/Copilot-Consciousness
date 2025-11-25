@@ -2,6 +2,13 @@ import { ethers, JsonRpcProvider, parseEther } from 'ethers';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { DEXConfig, ChainType } from '../types';
 
+// Liquidity threshold constants for Base L2 network
+// V3 pools use concentrated liquidity (L = sqrt(x*y)), values are typically 10^15-10^24
+// V2 pools use raw reserves in wei, values are typically 10^18-10^24
+const V3_MIN_LIQUIDITY_THRESHOLD = BigInt(1000000000000);    // 10^12 for high liquidity V3 pools
+const V3_LOW_LIQUIDITY_THRESHOLD = BigInt(100000000000);     // 10^11 for smaller V3 pools
+const V2_MIN_LIQUIDITY_THRESHOLD = BigInt(1000000000000000); // 10^15 = ~0.001 ETH for V2 pools
+
 const getSolanaRpcEndpoint = (network: string): string => {
     if (network === 'mainnet-beta') {
         return 'https://api.mainnet-beta.solana.com';
@@ -117,7 +124,7 @@ export class DEXRegistry {
             factory: '0x33128a8fC17869897dcE68Ed026d694621f6FDfD',
             initCodeHash: '0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54',
             priority: 1,
-            liquidityThreshold: BigInt(1000000000000), // 10^12 - will become 10^6 after /1M scaling for V3
+            liquidityThreshold: V3_MIN_LIQUIDITY_THRESHOLD, // 10^12 - will become 10^6 after /1M scaling for V3
             gasEstimate: 150000
         });
 
@@ -132,7 +139,7 @@ export class DEXRegistry {
             // Note: V3-style DEXes may not use initCodeHash for pool address calculation
             initCodeHash: '0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54',
             priority: 2,
-            liquidityThreshold: BigInt(100000000000), // 10^11 - even lower for Aerodrome small pools
+            liquidityThreshold: V3_LOW_LIQUIDITY_THRESHOLD, // 10^11 - even lower for Aerodrome small pools
             gasEstimate: 150000
         });
 
@@ -145,7 +152,7 @@ export class DEXRegistry {
             factory: '0xFDa619b6d20975be80A10332cD39b9a4b0FAa8BB',
             initCodeHash: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
             priority: 3,
-            liquidityThreshold: BigInt(1000000000000000), // 10^15 = 0.001 ETH for V2 style
+            liquidityThreshold: V2_MIN_LIQUIDITY_THRESHOLD, // 10^15 = 0.001 ETH for V2 style
             gasEstimate: 130000
         });
 
@@ -159,7 +166,7 @@ export class DEXRegistry {
             factory: '0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865',
             initCodeHash: '0x6ce8eb472fa82df5469c6ab6d485f17c3ad13c8cd7af59b3d4a8026c5ce0f7e2',
             priority: 4,
-            liquidityThreshold: BigInt(100000000000), // 10^11 for V3 style
+            liquidityThreshold: V3_LOW_LIQUIDITY_THRESHOLD, // 10^11 for V3 style
             gasEstimate: 150000
         });
 
@@ -177,7 +184,7 @@ export class DEXRegistry {
             // If needed, the hash can be found at: github.com/velodrome-finance/superchain-slipstream
             initCodeHash: undefined, // Query factory.getPool() for pool addresses instead
             priority: 5,
-            liquidityThreshold: BigInt(100000000000), // 10^11 for V3 style
+            liquidityThreshold: V3_LOW_LIQUIDITY_THRESHOLD, // 10^11 for V3 style
             gasEstimate: 150000
         });
 
@@ -191,7 +198,7 @@ export class DEXRegistry {
             factory: '0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6',
             initCodeHash: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
             priority: 8,
-            liquidityThreshold: BigInt(1000000000000000), // 10^15 = 0.001 ETH for V2
+            liquidityThreshold: V2_MIN_LIQUIDITY_THRESHOLD, // 10^15 = 0.001 ETH for V2
             gasEstimate: 150000
         });
 
@@ -204,7 +211,7 @@ export class DEXRegistry {
             factory: '0xc35dadb65012ec5796536bd9864ed8773abc74c4',
             initCodeHash: '0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303',
             priority: 9,
-            liquidityThreshold: BigInt(1000000000000000), // 10^15 = 0.001 ETH for V2
+            liquidityThreshold: V2_MIN_LIQUIDITY_THRESHOLD, // 10^15 = 0.001 ETH for V2
             gasEstimate: 150000
         });
 
