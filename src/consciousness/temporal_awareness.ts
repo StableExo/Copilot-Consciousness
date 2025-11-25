@@ -1,4 +1,9 @@
-// The number of recent blocks the consciousness will hold in its working memory.
+/**
+ * Temporal Awareness Framework
+ * 
+ * Manages temporal context for the consciousness system by tracking
+ * recent block history and analyzing network activity patterns.
+ */
 import { ethers } from 'ethers';
 
 // The number of recent blocks the consciousness will hold in its working memory.

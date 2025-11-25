@@ -279,14 +279,19 @@ export class WardenBootstrap extends EventEmitter {
       return;
     }
 
+    if (!this.config) {
+      logger.warn('[Bootstrap] Config not available for security scan');
+      return;
+    }
+
     logger.info('[Bootstrap] Running security scan on configuration...');
     
     try {
       const configScan = await this.phase3Components.bloodhoundScanner.scanConfig({
-        rpcUrl: this.config?.rpcUrl,
-        chainId: this.config?.chainId,
-        executorAddress: this.config?.flashSwapV2Address,
-        titheRecipient: this.config?.flashSwapV2Owner,
+        rpcUrl: this.config.rpcUrl,
+        chainId: this.config.chainId,
+        executorAddress: this.config.flashSwapV2Address,
+        titheRecipient: this.config.flashSwapV2Owner,
       });
       
       if (configScan.hasSensitiveData) {
