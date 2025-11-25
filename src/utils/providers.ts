@@ -1,4 +1,4 @@
-import { ethers, JsonRpcProvider } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -21,9 +21,27 @@ export function getProvider(): JsonRpcProvider {
   return _provider;
 }
 
-// Export a getter for backward compatibility
-export const provider = new Proxy({} as JsonRpcProvider, {
-  get(target, prop) {
-    return getProvider()[prop as keyof JsonRpcProvider];
+/**
+ * Export a lazily-initialized provider for backward compatibility.
+ * 
+ * Note: This creates the provider instance on first import. For scenarios
+ * where the RPC URL might not be configured at import time, use getProvider()
+ * instead for deferred initialization.
+ * 
+ * The previous Proxy-based approach was incompatible with ethers v6 because
+ * methods like provider.on() verify that 'this' is an instance of AbstractProvider,
+ * which fails when called through a Proxy.
+ */
+function initializeProvider(): JsonRpcProvider {
+  const rpcUrl = process.env.ETHEREUM_RPC_URL || process.env.BASE_RPC_URL;
+  if (!rpcUrl) {
+    // Return a provider with a placeholder URL that will fail on actual use
+    // This allows the module to load even when env vars aren't set
+    console.warn('Warning: RPC URL not configured. Provider will fail on actual blockchain calls.');
+    return new JsonRpcProvider('http://localhost:8545');
   }
-});
+  return new JsonRpcProvider(rpcUrl);
+}
+
+// Export the actual provider instance (not a Proxy) for backward compatibility
+export const provider: JsonRpcProvider = initializeProvider();
