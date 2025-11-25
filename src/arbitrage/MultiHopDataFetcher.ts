@@ -273,9 +273,11 @@ export class MultiHopDataFetcher {
       );
       results.push(...batchResults);
       
-      // Log progress for long scans
-      if (i > 0 && i % 20 === 0) {
-        logger.debug(`Pool scan progress: ${i}/${fetchTasks.length} checked`, 'DATAFETCH');
+      // Log progress for long scans (every 25% or at least every 100 batches)
+      const progressInterval = Math.max(100, Math.floor(fetchTasks.length / 4));
+      if (i > 0 && i % progressInterval === 0) {
+        const percentComplete = Math.round((i / fetchTasks.length) * 100);
+        logger.debug(`Pool scan progress: ${i}/${fetchTasks.length} checked (${percentComplete}%)`, 'DATAFETCH');
       }
     }
     

@@ -885,6 +885,9 @@ class TheWarden extends EventEmitter {
     // For now, we use the primary chain's setup and scan tokens/DEXes for other chains
     // This allows discovering cross-chain arbitrage patterns via CrossChainIntelligence
     
+    // Set the chain ID to ensure DEX filtering uses the correct chain
+    this.advancedOrchestrator.setChainId(chainId);
+    
     try {
       // Get tokens to scan based on chain
       const tokens = getScanTokens(chainId);
