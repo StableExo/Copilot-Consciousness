@@ -1,6 +1,6 @@
 import hre from "hardhat";
 import { AbiCoder, formatUnits, parseUnits } from "ethers";
-import { ADDRESSES, NetworkKey, requireAddress } from "../config/addresses";
+import { ADDRESSES, NetworkKey, requireAddress } from "../src/config/addresses";
 
 /**
  * Decode Aave error codes for better debugging

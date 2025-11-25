@@ -1,0 +1,24 @@
+{
+  "dimensions": ["time", "space", "resources", "risk", "complexity"],
+  "distanceMetric": "euclidean",
+  "clusteringThreshold": 0.7,
+  "maxDimensions": 10,
+  "normalization": "minmax",
+  "minClusterSize": 3,
+  "spatialAnalysis": {
+    "enableClustering": true,
+    "enableDimensionalAnalysis": true,
+    "enablePatternDetection": true
+  },
+  "opportunityDetection": {
+    "minOpportunityScore": 0.6,
+    "maxOpportunities": 100,
+    "scoringWeights": {
+      "value": 0.3,
+      "feasibility": 0.25,
+      "complexity": 0.2,
+      "risk": 0.15,
+      "time": 0.1
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "uniswapV3": {
+    "name": "Uniswap V3",
+    "type": "concentrated_liquidity",
+    "version": "3",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["arbitrum", "ethereum", "polygon", "base"],
+    "fee_tiers": [100, 500, 3000, 10000]
+  },
+  "sushiswap": {
+    "name": "SushiSwap",
+    "type": "constant_product",
+    "version": "2",
+    "swapGasEstimate": 120000,
+    "supported_chains": ["arbitrum", "ethereum", "polygon", "base"],
+    "fee": 3000
+  },
+  "aaveV3": {
+    "name": "Aave V3",
+    "type": "lending_protocol",
+    "version": "3",
+    "flashLoanGasEstimate": 200000,
+    "supported_chains": ["arbitrum", "polygon", "base"],
+    "flashLoanFee": 9
+  }
+}

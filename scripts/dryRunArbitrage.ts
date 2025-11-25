@@ -1,6 +1,6 @@
 import hre from "hardhat";
 import { formatEther, formatUnits, parseUnits, AbiCoder } from "ethers";
-import { ADDRESSES, NetworkKey, requireAddress } from "../config/addresses";
+import { ADDRESSES, NetworkKey, requireAddress } from "../src/config/addresses";
 
 /**
  * Dry-Run Simulation for FlashSwapV2 Arbitrage

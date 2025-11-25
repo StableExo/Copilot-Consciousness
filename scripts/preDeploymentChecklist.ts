@@ -1,6 +1,6 @@
 import hre from "hardhat";
 import { formatEther, formatUnits, parseEther, parseUnits } from "ethers";
-import { ADDRESSES, NetworkKey, requireAddress } from "../config/addresses";
+import { ADDRESSES, NetworkKey, requireAddress } from "../src/config/addresses";
 
 /**
  * Pre-Deployment Checklist for Base Mainnet
