@@ -198,7 +198,13 @@ echo "✓ .env file created successfully!"
 echo ""
 echo "Configuration summary:"
 echo "  Chain ID: $CHAIN_ID"
-echo "  RPC URL: ${BASE_RPC_URL:0:40}..."
+if [ -n "$BASE_RPC_URL" ]; then
+  echo "  RPC URL: ${BASE_RPC_URL:0:40}..."
+elif [ -n "$ETHEREUM_RPC_URL" ]; then
+  echo "  RPC URL: ${ETHEREUM_RPC_URL:0:40}..."
+else
+  echo "  RPC URL: (not set)"
+fi
 echo "  Dry Run: $DRY_RUN"
 echo "  Scan Interval: ${SCAN_INTERVAL}ms"
 echo ""
