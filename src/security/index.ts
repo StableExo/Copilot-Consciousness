@@ -1,6 +1,19 @@
 /**
  * Security Module Exports
- * Enterprise-grade security system for distributed arbitrage bot
+ * 
+ * Consolidated security system for distributed arbitrage bot including:
+ * - Authentication & Authorization (auth, two-factor)
+ * - Security Services (rate limiting, IP whitelist, intrusion detection)
+ * - Secrets Management (vault integration)
+ * - Wallet Security (multi-sig, hardware wallet)
+ * - Production Safety (circuit breaker, emergency stop, position management)
+ * - Error Recovery (transaction recovery, nonce sync, gas adjustment)
+ * - Phase 3 Enhanced Security (Bloodhound, ThreatResponse, PatternLearning)
+ * 
+ * This module consolidates:
+ * - src/security/ - Core security services
+ * - src/safety/ - Production safety mechanisms
+ * - src/recovery/ - Error recovery systems
  */
 
 // Core Security Manager
@@ -58,3 +71,59 @@ export { BloodhoundScanner } from './BloodhoundScanner';
 export { ThreatResponseEngine } from './ThreatResponseEngine';
 export { SecurityPatternLearner } from './SecurityPatternLearner';
 export * from './types';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Re-exports from Safety Module (consolidated from src/safety/)
+// ═══════════════════════════════════════════════════════════════════════════
+
+export {
+  CircuitBreaker,
+  CircuitState,
+  CircuitBreakerMetrics,
+  TradeResult,
+} from '../safety/CircuitBreaker';
+export type { CircuitBreakerConfig } from '../safety/CircuitBreaker';
+
+export {
+  EmergencyStop,
+  StopReason,
+  StopState,
+} from '../safety/EmergencyStop';
+export type { EmergencyStopConfig, ShutdownCallback } from '../safety/EmergencyStop';
+
+export {
+  PositionSizeManager,
+  PositionMetrics,
+  PositionRequest,
+  PositionApproval,
+} from '../safety/PositionSizeManager';
+export type { PositionSizeConfig } from '../safety/PositionSizeManager';
+
+export {
+  ProfitLossTracker,
+  TradeRecord,
+  ProfitAllocation,
+  PerformanceMetrics,
+  TimeWindowStats,
+} from '../safety/ProfitLossTracker';
+
+export {
+  AlertSystem,
+  AlertSeverity,
+  AlertType,
+  Alert,
+  AlertChannel,
+} from '../safety/AlertSystem';
+export type { AlertSystemConfig } from '../safety/AlertSystem';
+
+export {
+  ProductionSafetyManager,
+} from '../safety';
+export type { ProductionSafetyConfig } from '../safety';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Re-exports from Recovery Module (consolidated from src/recovery/)
+// ═══════════════════════════════════════════════════════════════════════════
+
+export { ErrorRecovery } from '../recovery/ErrorRecovery';
+export type { ErrorRecoveryConfig } from '../recovery/ErrorRecovery';
