@@ -6,7 +6,7 @@
  */
 
 import { getAlchemyClient } from './AlchemyClient';
-import { BigNumber, formatUnits, utils } from 'ethers';
+import { formatEther, formatUnits } from 'ethers';
 
 export interface TokenPrice {
   token: string;
@@ -114,11 +114,11 @@ export class AlchemyPricesService {
     tokenAddress: string,
     buyPrice: number,
     sellPrice: number,
-    amount: BigNumber,
+    amount: bigint,
     decimals: number
   ): Promise<number> {
     try {
-      const amountFloat = parseFloat(utils.formatUnits(amount, decimals));
+      const amountFloat = parseFloat(formatUnits(amount, decimals));
       const priceUsd = await this.getTokenPriceUsd(tokenAddress);
       
       const buyValueUsd = buyPrice * amountFloat * priceUsd;

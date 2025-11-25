@@ -17,6 +17,8 @@ export class BlockchainPerceptionStream {
   public startListening() {
     this.rpcProvider.getProvider().on('block', async (blockNumber) => {
       const block = await this.rpcProvider.getProvider().getBlock(blockNumber);
+      if (!block) return;
+      
       const logData = {
         eventType: 'NEW_BLOCK',
         blockNumber: block.number,

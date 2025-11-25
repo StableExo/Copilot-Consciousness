@@ -3,7 +3,7 @@
  *
  * A TypeScript port of the v1.10 SwapSimulator from PROJECT-HAVOC.
  */
-import { Contract, ethers, isAddress } from 'ethers';
+import { Contract, ethers, isAddress, Provider, ZeroAddress } from 'ethers';
 import { logger } from '../utils/logger';
 import { IQUOTERV2_ABI, DODOV1V2_POOL_ABI } from '../abis/SwapSimulatorABIs';
 import { Token, PoolState } from '../types/definitions';
@@ -91,7 +91,7 @@ export class SwapSimulator {
         };
 
         try {
-            const quoteResult = await this.quoterContract.callStatic.quoteExactInputSingle(params);
+            const quoteResult = await (this.quoterContract as any).quoteExactInputSingle.staticCall(params);
             const amountOut = BigInt(quoteResult[0].toString());
             return { success: true, amountOut: amountOut, error: null };
         } catch (error: unknown) {
@@ -117,8 +117,8 @@ export class SwapSimulator {
         const isSellingBase = tokenIn.address.toLowerCase() === baseTokenAddress.toLowerCase();
         try {
             const queryResult = isSellingBase
-                ? await poolContract.callStatic.querySellBase(ZeroAddress, amountIn)
-                : await poolContract.callStatic.querySellQuote(ZeroAddress, amountIn);
+                ? await (poolContract as any).querySellBase.staticCall(ZeroAddress, amountIn)
+                : await (poolContract as any).querySellQuote.staticCall(ZeroAddress, amountIn);
             return { success: true, amountOut: BigInt(queryResult[0].toString()), error: null };
         } catch (error: unknown) {
             const reason = (error as { reason?: string }).reason || (error instanceof Error ? error.message : String(error));

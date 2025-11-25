@@ -10,7 +10,7 @@
  * Based on Flashbots documentation: https://docs.flashbots.net/
  */
 
-import { ethers, formatEther } from 'ethers';
+import { ethers, formatEther, JsonRpcProvider } from 'ethers';
 import { logger } from '../../utils/logger';
 import {
   BuilderReputation,
@@ -294,10 +294,14 @@ export class FlashbotsIntelligence {
     try {
       // Get current base fee
       const block = await this.provider.getBlock('latest');
+      if (!block) {
+        throw new Error('Failed to fetch latest block');
+      }
       const baseFee = block.baseFeePerGas ? BigInt(block.baseFeePerGas.toString()) : 0n;
 
       // Get current gas price as reference
-      const gasPrice = await this.provider.getGasPrice();
+      const feeData = await this.provider.getFeeData();
+      const gasPrice = feeData.gasPrice || feeData.maxFeePerGas || 0n;
       const gasPriceBigInt = BigInt(gasPrice.toString());
 
       // For immediate inclusion, use higher priority fee
@@ -312,7 +316,8 @@ export class FlashbotsIntelligence {
       const errorMessage = error instanceof Error ? error.message : String(error);
       logger.error('[FlashbotsIntelligence] Failed to calculate optimal gas price:', errorMessage);
       // Fallback to current gas price
-      const fallbackGasPrice = await this.provider.getGasPrice();
+      const feeData = await this.provider.getFeeData();
+      const fallbackGasPrice = feeData.gasPrice || feeData.maxFeePerGas || 0n;
       return BigInt(fallbackGasPrice.toString());
     }
   }
@@ -467,11 +472,15 @@ export class FlashbotsIntelligence {
     reasoning: string;
     estimatedInclusionBlocks: number;
   }> {
-    const gasPrice = currentGasPrice || (await this.provider.getGasPrice());
+    const feeData = await this.provider.getFeeData();
+    const gasPrice = currentGasPrice || (feeData.gasPrice || feeData.maxFeePerGas || 0n);
     const gasPriceBigInt = BigInt(gasPrice.toString());
     
     // Get base fee from latest block
     const block = await this.provider.getBlock('latest');
+    if (!block) {
+      throw new Error('Failed to fetch latest block');
+    }
     const baseFee = block.baseFeePerGas ? BigInt(block.baseFeePerGas.toString()) : 0n;
     
     // Calculate priority fee percentage

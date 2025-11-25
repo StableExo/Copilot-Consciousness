@@ -14,7 +14,8 @@
  * - Compares against 'pending' nonce to stay in sync with the mempool.
  */
 
-import { Provider, Signer, TransactionRequest, TransactionResponse, getAddress } from 'ethers';
+import { Provider, TransactionRequest, TransactionResponse, getAddress } from 'ethers';
+import { AbstractSigner } from 'ethers';
 import { Mutex } from 'async-mutex';
 import { logger } from '../utils/logger'; // Assuming you have a logger utility
 
@@ -32,13 +33,13 @@ export class NonceError extends Error {
   }
 }
 
-export class NonceManager extends Signer {
+export class NonceManager extends AbstractSigner {
   private _address?: string;
   private currentNonce: number = -1;
   private readonly mutex = new Mutex();
   provider: Provider | null;
 
-  constructor(public readonly signer: Signer) {
+  constructor(public readonly signer: AbstractSigner) {
     super();
     if (!signer || !signer.provider || typeof signer.getAddress !== 'function') {
       throw new Error("NonceManager requires a valid Ethers Signer instance with a provider.");
@@ -48,7 +49,7 @@ export class NonceManager extends Signer {
   }
 
   // Connect the async constructor pattern
-  static async create(signer: Signer): Promise<NonceManager> {
+  static async create(signer: AbstractSigner): Promise<NonceManager> {
     const manager = new NonceManager(signer);
     manager._address = await signer.getAddress();
     logger.debug(`[NonceManager] Instance created for address: ${manager._address}`);
@@ -69,15 +70,15 @@ export class NonceManager extends Signer {
     return this._address;
   }
 
-  connect(provider: Provider): NonceManager {
+  connect(provider: Provider | null): AbstractSigner {
     const newSigner = this.signer.connect(provider);
     // State (nonce) is not carried over, which is standard for `connect`
-    const newManager = new NonceManager(newSigner);
+    const newManager = new NonceManager(newSigner as AbstractSigner);
     // copy address if already initialized
     if (this._address) {
       newManager._address = this._address;
     }
-    return newManager;
+    return newManager as AbstractSigner;
   }
 
   async signMessage(message: string | Uint8Array): Promise<string> {
@@ -103,19 +104,16 @@ export class NonceManager extends Signer {
     return await this.getNextNonce();
   }
 
-  async populateCall(tx: TransactionRequest): Promise<TransactionRequest> {
-    if (!this.signer.populateCall) {
+  async populateCall(tx: any): Promise<any> {
+    if (!(this.signer as any).populateCall) {
       throw new Error('populateCall is not supported by the parent signer');
     }
-    return this.signer.populateCall(tx);
+    return (this.signer as any).populateCall(tx);
   }
 
-  async populateTransaction(tx: TransactionRequest): Promise<TransactionRequest> {
-    if (!this.signer.populateTransaction) {
-      throw new Error('populateTransaction is not supported by the parent signer');
-    }
+  async populateTransaction(tx: any): Promise<any> {
     const nonce = await this.getNextNonce();
-    return this.signer.populateTransaction({ ...tx, nonce });
+    return await this.signer.populateTransaction({ ...tx, nonce });
   }
 
   async estimateGas(tx: TransactionRequest): Promise<bigint> {
@@ -128,6 +126,24 @@ export class NonceManager extends Signer {
 
   async resolveName(name: string): Promise<string | null> {
     return this.signer.resolveName(name);
+  }
+
+  // Required for ethers v6 Signer compatibility
+  async populateAuthorization(tx: any): Promise<any> {
+    // Delegate to underlying signer if available, otherwise return as-is
+    if (typeof (this.signer as any).populateAuthorization === 'function') {
+      return (this.signer as any).populateAuthorization(tx);
+    }
+    return tx;
+  }
+
+  // Required for ethers v6 Signer compatibility  
+  async authorize(tx: any): Promise<any> {
+    // Delegate to underlying signer if available, otherwise no-op
+    if (typeof (this.signer as any).authorize === 'function') {
+      return (this.signer as any).authorize(tx);
+    }
+    return tx;
   }
 
   async sendTransaction(tx: TransactionRequest): Promise<TransactionResponse> {

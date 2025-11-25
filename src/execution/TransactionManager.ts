@@ -14,7 +14,7 @@
  * - Gas spike protection
  */
 
-import { Provider, formatUnits, getAddress } from 'ethers';
+import { Provider, formatUnits, getAddress, TransactionRequest, TransactionReceipt, TransactionResponse } from 'ethers';
 import { Mutex } from 'async-mutex';
 import { logger } from '../utils/logger';
 import { NonceManager } from './NonceManager';
@@ -221,7 +221,7 @@ export class TransactionManager {
   async confirmTransaction(
     txHash: string,
     timeout: number = 60000
-  ): Promise<ethers.TransactionReceipt> {
+  ): Promise<TransactionReceipt> {
     const startTime = Date.now();
 
     while (Date.now() - startTime < timeout) {
@@ -259,7 +259,7 @@ export class TransactionManager {
         return false;
       }
 
-      this.gasHistory.push(currentGasPrice.toBigInt());
+      this.gasHistory.push(currentGasPrice);
       if (this.gasHistory.length > 100) {
         this.gasHistory.shift();
       }
@@ -272,7 +272,7 @@ export class TransactionManager {
       const average = sum / BigInt(this.gasHistory.length);
       const threshold = average * 2n;
 
-      return currentGasPrice.toBigInt() > threshold;
+      return currentGasPrice > threshold;
 
     } catch (error) {
       logger.warn(`[TransactionManager] Gas spike check failed: ${error instanceof Error ? error.message : String(error)}`);
@@ -503,7 +503,13 @@ export class TransactionManager {
    */
   private async checkGasSpike(): Promise<{ safe: boolean; reason?: string }> {
     try {
-      const gasPrice = await this.provider.getGasPrice();
+      const feeData = await this.provider.getFeeData();
+      const gasPrice = feeData.gasPrice || feeData.maxFeePerGas;
+      
+      if (!gasPrice) {
+        return { safe: true };
+      }
+      
       const gasPriceGwei = parseFloat(formatUnits(gasPrice, 'gwei'));
 
       // Update history
