@@ -195,7 +195,7 @@ Using our autonomous runner with auto-restart:
 cp .env.mainnet .env
 
 # Run with autonomous script
-./scripts/autonomous-run.sh
+./TheWarden
 
 # Monitor logs
 tail -f logs/warden-output.log

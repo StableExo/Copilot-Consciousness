@@ -111,7 +111,8 @@
 Copilot-Consciousness/
 │
 ├── 🚀 Autonomous Operation
-│   ├── scripts/autonomous-run.sh    ← Run autonomously
+│   ├── TheWarden                   ← Main entry point
+│   ├── scripts/autonomous-run.sh    ← Core implementation
 │   ├── scripts/status.sh            ← Monitor status
 │   ├── ecosystem.config.json        ← PM2 config
 │   └── .env.test                    ← Safe test config
@@ -142,7 +143,7 @@ Copilot-Consciousness/
 │                                                         │
 │  🚀 START AUTONOMOUS                                    │
 │  $ npm run start:autonomous                             │
-│  $ ./scripts/autonomous-run.sh                          │
+│  $ ./TheWarden                                          │
 │                                                         │
 │  📊 CHECK STATUS                                        │
 │  $ npm run status                                       │
@@ -398,7 +399,8 @@ Scan Cycle (every 2-5 seconds)
 │  • WARDEN_STARTUP_LOG.md            ← Previous run     │
 │                                                          │
 │  🛠️ SCRIPTS                                             │
-│  • scripts/autonomous-run.sh         ← Run autonomous  │
+│  • ./TheWarden                      ← Main entry point │
+│  • scripts/autonomous-run.sh         ← Core runner     │
 │  • scripts/status.sh                 ← Check status    │
 │                                                          │
 │  ⚙️ CONFIGURATION                                        │

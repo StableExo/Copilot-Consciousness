@@ -172,7 +172,7 @@ if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
     echo -e "  View logs:  ${YELLOW}tail -f $WARDEN_LOG${NC}"
     echo -e "  Dashboard:  ${YELLOW}http://localhost:${DASHBOARD_PORT:-3000}${NC}"
 else
-    echo -e "  Start:      ${YELLOW}./scripts/autonomous-run.sh${NC}"
+    echo -e "  Start:      ${YELLOW}./TheWarden${NC}"
     echo -e "  Test mode:  ${YELLOW}npm run dev${NC}"
 fi
 

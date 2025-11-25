@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# ═══════════════════════════════════════════════════════════════
+# TheWarden - Main Entry Point
+# ═══════════════════════════════════════════════════════════════
+# The singular autonomous entry point for TheWarden on mainnet.
+# This script consolidates all entry points into one unified command.
+# ═══════════════════════════════════════════════════════════════
+
+# Determine the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Execute the autonomous runner script
+exec "$SCRIPT_DIR/scripts/autonomous-run.sh" "$@"

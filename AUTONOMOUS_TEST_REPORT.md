@@ -194,7 +194,7 @@ sudo systemctl enable thewarden
 
 **Option C: Autonomous Script**
 ```bash
-./scripts/autonomous-run.sh
+./TheWarden
 ```
 
 ## Safety Validation
