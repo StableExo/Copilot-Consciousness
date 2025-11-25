@@ -11,6 +11,7 @@
 
 import { EventEmitter } from 'events';
 import * as fs from 'fs';
+import * as fsPromises from 'fs/promises';
 import * as path from 'path';
 import { logger } from '../utils/logger';
 
@@ -59,6 +60,16 @@ export interface MemorySnapshot {
 }
 
 /**
+ * Uptime information interface
+ */
+export interface UptimeInfo {
+  sessionUptime: number;
+  totalUptime: number;
+  restartCount: number;
+  lastRestartReason?: string;
+}
+
+/**
  * Heartbeat configuration
  */
 export interface HeartbeatConfig {
@@ -68,30 +79,51 @@ export interface HeartbeatConfig {
 }
 
 /**
- * Long-running manager configuration
+ * Long-running manager configuration (internal - all required)
+ */
+interface InternalConfig {
+  // Persistence
+  statsFilePath?: string;
+  persistInterval: number;
+  
+  // Memory monitoring
+  memoryCheckInterval: number;
+  memoryWarningThreshold: number;
+  memoryCriticalThreshold: number;
+  memoryHistorySize: number;
+  
+  // Heartbeat (always required internally)
+  heartbeat: HeartbeatConfig;
+  
+  // Logging
+  logStatsInterval: number;
+}
+
+/**
+ * Long-running manager configuration (partial for user input)
  */
 export interface LongRunningManagerConfig {
   // Persistence
   statsFilePath?: string;
-  persistInterval: number;    // How often to persist stats (default: 60s)
+  persistInterval?: number;
   
   // Memory monitoring
-  memoryCheckInterval: number;  // Memory check interval (default: 60s)
-  memoryWarningThreshold: number; // Percentage of heap limit (default: 80%)
-  memoryCriticalThreshold: number; // Percentage (default: 95%)
-  memoryHistorySize: number;    // Number of snapshots to keep (default: 60)
+  memoryCheckInterval?: number;
+  memoryWarningThreshold?: number;
+  memoryCriticalThreshold?: number;
+  memoryHistorySize?: number;
   
-  // Heartbeat
-  heartbeat: HeartbeatConfig;
+  // Heartbeat (optional, uses defaults if not provided)
+  heartbeat?: Partial<HeartbeatConfig>;
   
   // Logging
-  logStatsInterval: number;   // Interval for logging stats (default: 300s = 5min)
+  logStatsInterval?: number;
 }
 
 /**
  * Default configuration
  */
-const DEFAULT_CONFIG: LongRunningManagerConfig = {
+const DEFAULT_CONFIG: InternalConfig = {
   statsFilePath: undefined, // Will use PROJECT_ROOT/logs/warden-stats.json
   persistInterval: 60000, // 1 minute
   memoryCheckInterval: 60000, // 1 minute
@@ -116,7 +148,7 @@ const DEFAULT_CONFIG: LongRunningManagerConfig = {
  * - Graceful resource management
  */
 export class LongRunningManager extends EventEmitter {
-  private config: LongRunningManagerConfig;
+  private config: InternalConfig;
   private stats: WardenRuntimeStats;
   private memoryHistory: MemorySnapshot[] = [];
   private intervals: NodeJS.Timeout[] = [];
@@ -125,13 +157,24 @@ export class LongRunningManager extends EventEmitter {
   private missedHeartbeats: number = 0;
   private statsFilePath: string;
 
-  constructor(config?: Partial<LongRunningManagerConfig>) {
+  constructor(config?: LongRunningManagerConfig) {
     super();
     
-    this.config = { ...DEFAULT_CONFIG, ...config };
-    if (config?.heartbeat) {
-      this.config.heartbeat = { ...DEFAULT_CONFIG.heartbeat, ...config.heartbeat };
-    }
+    // Build internal config with all required fields
+    this.config = {
+      statsFilePath: config?.statsFilePath ?? DEFAULT_CONFIG.statsFilePath,
+      persistInterval: config?.persistInterval ?? DEFAULT_CONFIG.persistInterval,
+      memoryCheckInterval: config?.memoryCheckInterval ?? DEFAULT_CONFIG.memoryCheckInterval,
+      memoryWarningThreshold: config?.memoryWarningThreshold ?? DEFAULT_CONFIG.memoryWarningThreshold,
+      memoryCriticalThreshold: config?.memoryCriticalThreshold ?? DEFAULT_CONFIG.memoryCriticalThreshold,
+      memoryHistorySize: config?.memoryHistorySize ?? DEFAULT_CONFIG.memoryHistorySize,
+      heartbeat: {
+        interval: config?.heartbeat?.interval ?? DEFAULT_CONFIG.heartbeat.interval,
+        timeout: config?.heartbeat?.timeout ?? DEFAULT_CONFIG.heartbeat.timeout,
+        maxMissedBeats: config?.heartbeat?.maxMissedBeats ?? DEFAULT_CONFIG.heartbeat.maxMissedBeats,
+      },
+      logStatsInterval: config?.logStatsInterval ?? DEFAULT_CONFIG.logStatsInterval,
+    };
     
     // Determine stats file path
     this.statsFilePath = this.config.statsFilePath || 
@@ -407,12 +450,15 @@ export class LongRunningManager extends EventEmitter {
     try {
       // Ensure directory exists
       const dir = path.dirname(this.statsFilePath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
+      try {
+        await fsPromises.access(dir);
+      } catch {
+        await fsPromises.mkdir(dir, { recursive: true });
       }
       
-      if (fs.existsSync(this.statsFilePath)) {
-        const data = fs.readFileSync(this.statsFilePath, 'utf-8');
+      try {
+        await fsPromises.access(this.statsFilePath);
+        const data = await fsPromises.readFile(this.statsFilePath, 'utf-8');
         const loaded = JSON.parse(data) as WardenRuntimeStats;
         
         // Merge with current stats (preserve cumulative values)
@@ -427,7 +473,7 @@ export class LongRunningManager extends EventEmitter {
         
         logger.info('[LongRunningManager] Loaded persisted stats from disk');
         logger.info(`[LongRunningManager] Previous session: ${loaded.sessionId}`);
-      } else {
+      } catch {
         logger.info('[LongRunningManager] No persisted stats found, starting fresh');
       }
     } catch (error) {
@@ -443,8 +489,10 @@ export class LongRunningManager extends EventEmitter {
     try {
       // Ensure directory exists
       const dir = path.dirname(this.statsFilePath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
+      try {
+        await fsPromises.access(dir);
+      } catch {
+        await fsPromises.mkdir(dir, { recursive: true });
       }
       
       // Update session uptime before persisting
@@ -452,7 +500,7 @@ export class LongRunningManager extends EventEmitter {
       this.stats.lastUpdateTime = Date.now();
       
       const data = JSON.stringify(this.stats, null, 2);
-      fs.writeFileSync(this.statsFilePath, data, 'utf-8');
+      await fsPromises.writeFile(this.statsFilePath, data, 'utf-8');
       
       this.emit('stats-persisted', { path: this.statsFilePath });
     } catch (error) {
@@ -576,12 +624,7 @@ export class LongRunningManager extends EventEmitter {
   /**
    * Get uptime information
    */
-  getUptime(): {
-    sessionUptime: number;
-    totalUptime: number;
-    restartCount: number;
-    lastRestartReason?: string;
-  } {
+  getUptime(): UptimeInfo {
     const sessionUptime = Date.now() - this.stats.startTime;
     return {
       sessionUptime,

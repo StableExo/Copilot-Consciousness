@@ -798,6 +798,33 @@ class TheWarden extends EventEmitter {
   }
   
   /**
+   * Set up event handlers for long-running manager
+   */
+  private setupLongRunningEventHandlers(): void {
+    if (!this.longRunningManager) return;
+    
+    this.longRunningManager.on('memory-warning', (data) => {
+      logger.warn(`[LongRunning] Memory warning: ${data.percentage.toFixed(1)}% heap used`);
+    });
+    
+    this.longRunningManager.on('memory-critical', (data) => {
+      logger.error(`[LongRunning] CRITICAL: Memory at ${data.percentage.toFixed(1)}% - consider restart`);
+    });
+    
+    this.longRunningManager.on('memory-leak-warning', (data) => {
+      logger.warn(`[LongRunning] Potential memory leak: ${data.increasePercent.toFixed(1)}% increase detected`);
+    });
+    
+    this.longRunningManager.on('heartbeat-timeout', (data) => {
+      logger.warn(`[LongRunning] Heartbeat timeout: ${data.timeSinceLastBeat}ms since last beat`);
+    });
+    
+    this.longRunningManager.on('heartbeat-critical', () => {
+      logger.error('[LongRunning] CRITICAL: Process may be unresponsive - too many missed heartbeats');
+    });
+  }
+  
+  /**
    * Main scanning loop - continuously search for arbitrage opportunities
    */
   private async scanCycle(): Promise<void> {
@@ -960,25 +987,7 @@ class TheWarden extends EventEmitter {
     });
     
     // Set up long-running manager event handlers
-    this.longRunningManager.on('memory-warning', (data) => {
-      logger.warn(`[LongRunning] Memory warning: ${data.percentage.toFixed(1)}% heap used`);
-    });
-    
-    this.longRunningManager.on('memory-critical', (data) => {
-      logger.error(`[LongRunning] CRITICAL: Memory at ${data.percentage.toFixed(1)}% - consider restart`);
-    });
-    
-    this.longRunningManager.on('memory-leak-warning', (data) => {
-      logger.warn(`[LongRunning] Potential memory leak: ${data.increasePercent.toFixed(1)}% increase detected`);
-    });
-    
-    this.longRunningManager.on('heartbeat-timeout', (data) => {
-      logger.warn(`[LongRunning] Heartbeat timeout: ${data.timeSinceLastBeat}ms since last beat`);
-    });
-    
-    this.longRunningManager.on('heartbeat-critical', () => {
-      logger.error('[LongRunning] CRITICAL: Process may be unresponsive - too many missed heartbeats');
-    });
+    this.setupLongRunningEventHandlers();
     
     await this.longRunningManager.start();
     
