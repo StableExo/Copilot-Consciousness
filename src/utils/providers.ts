@@ -3,6 +3,9 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+/** Default fallback RPC URL for local development when no environment variable is configured */
+const DEFAULT_LOCAL_RPC_URL = 'http://localhost:8545';
+
 let _provider: JsonRpcProvider | null = null;
 
 /**
@@ -36,9 +39,12 @@ function initializeProvider(): JsonRpcProvider {
   const rpcUrl = process.env.ETHEREUM_RPC_URL || process.env.BASE_RPC_URL;
   if (!rpcUrl) {
     // Return a provider with a placeholder URL that will fail on actual use
-    // This allows the module to load even when env vars aren't set
-    console.warn('Warning: RPC URL not configured. Provider will fail on actual blockchain calls.');
-    return new JsonRpcProvider('http://localhost:8545');
+    // This allows the module to load even when env vars aren't set (e.g., during testing)
+    console.warn(
+      'Warning: RPC URL not configured. Please set ETHEREUM_RPC_URL or BASE_RPC_URL in your .env file. ' +
+      `Provider will use fallback URL (${DEFAULT_LOCAL_RPC_URL}) which will fail on actual blockchain calls.`
+    );
+    return new JsonRpcProvider(DEFAULT_LOCAL_RPC_URL);
   }
   return new JsonRpcProvider(rpcUrl);
 }
