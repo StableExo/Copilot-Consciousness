@@ -11,7 +11,7 @@ import {
   MempoolCongestion,
   SearcherDensity,
 } from '../index';
-import { ethers } from 'ethers';
+import { Provider, JsonRpcProvider } from 'ethers';
 
 describe('MEV Awareness Intelligence Layer', () => {
   describe('Module Exports', () => {

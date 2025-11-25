@@ -2,7 +2,7 @@
  * Tests for MulticallBatcher
  */
 
-import { ethers } from 'ethers';
+import { Provider, JsonRpcProvider, Interface } from 'ethers';
 import { MulticallBatcher, batchCheckPoolsExist, batchFetchPoolData, MULTICALL3_ADDRESS } from '../MulticallBatcher';
 
 describe('MulticallBatcher', () => {

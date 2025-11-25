@@ -4,29 +4,28 @@
  * Tests for production-tested transaction management from AxionCitadel
  */
 
-import { ethers, BigNumber } from 'ethers';
+import { Provider } from 'ethers';
 import { TransactionManager, TransactionState, TransactionOptions } from '../TransactionManager';
 import { NonceManager } from '../NonceManager';
 
 describe('TransactionManager', () => {
   let manager: TransactionManager;
-  let mockProvider: jest.Mocked<ethers.Provider>;
+  let mockProvider: jest.Mocked<Provider>;
   let mockNonceManager: jest.Mocked<NonceManager>;
-  let mockSigner: jest.Mocked<ethers.Wallet>;
+  let mockSigner: any;
 
   beforeEach(() => {
-    // Create mock provider
+    // Create mock provider - ethers v6 uses bigint
     mockProvider = {
-      getGasPrice: jest.fn().mockResolvedValue(BigNumber.from('50000000000')),
+      getFeeData: jest.fn().mockResolvedValue({
+        gasPrice: BigInt('50000000000'),
+        maxFeePerGas: BigInt('50000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      }),
       getTransactionCount: jest.fn(),
       waitForTransaction: jest.fn(),
       getTransaction: jest.fn(),
       getTransactionReceipt: jest.fn(),
-      getFeeData: jest.fn().mockResolvedValue({
-        gasPrice: BigNumber.from('50000000000'),
-        maxFeePerGas: BigNumber.from('50000000000'),
-        maxPriorityFeePerGas: BigNumber.from('2000000000'),
-      }),
       send: jest.fn(),
     } as any;
 
@@ -91,12 +90,12 @@ describe('TransactionManager', () => {
   describe('executeTransaction', () => {
     it('should execute transaction successfully', async () => {
       // Mock successful execution
-      mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000')); // 50 Gwei
+      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') }); // 50 Gwei
       
       const mockTxResponse = {
         hash: '0xabcdef',
         nonce: 1,
-        gasPrice: BigNumber.from('50000000000'),
+        gasPrice: BigInt('50000000000'),
         wait: jest.fn(),
       } as any;
       
@@ -104,7 +103,7 @@ describe('TransactionManager', () => {
 
       const mockReceipt = {
         status: 1,
-        gasUsed: BigNumber.from('100000'),
+        gasUsed: BigInt('100000'),
         blockNumber: 100,
         blockHash: '0xblock',
         confirmations: 1,
@@ -119,7 +118,7 @@ describe('TransactionManager', () => {
       const result = await manager.executeTransaction(
         '0xTargetContract',
         '0x1234',
-        { gasLimit: BigNumber.from('150000') }
+        { gasLimit: BigInt('150000') }
       );
 
       expect(result.success).toBe(true);
@@ -129,13 +128,13 @@ describe('TransactionManager', () => {
     }, 15000);
 
     it('should retry on transient failures', async () => {
-      mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000'));
+      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
 
       // First attempt fails, second succeeds
       const mockTxResponse = {
         hash: '0xabcdef',
         nonce: 1,
-        gasPrice: BigNumber.from('50000000000'),
+        gasPrice: BigInt('50000000000'),
       } as any;
 
       mockNonceManager.sendTransaction
@@ -144,7 +143,7 @@ describe('TransactionManager', () => {
 
       const mockReceipt = {
         status: 1,
-        gasUsed: BigNumber.from('100000'),
+        gasUsed: BigInt('100000'),
         blockNumber: 100,
         blockHash: '0xblock',
         confirmations: 1,
@@ -165,7 +164,7 @@ describe('TransactionManager', () => {
     }, 15000);
 
     it('should not retry on fatal errors', async () => {
-      mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000'));
+      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
 
       // Simulate insufficient funds error
       mockNonceManager.sendTransaction.mockRejectedValue(
@@ -183,7 +182,7 @@ describe('TransactionManager', () => {
     }, 15000);
 
     it('should fail after max retries exhausted', async () => {
-      mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000'));
+      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
 
       // All attempts fail
       mockNonceManager.sendTransaction.mockRejectedValue(
@@ -202,12 +201,11 @@ describe('TransactionManager', () => {
     }, 15000);
 
     it('should increase gas price on retry', async () => {
-      mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000'));
+      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
 
-      const initialGasPrice = BigNumber.from('50000000000');
-      const expectedIncreasedGasPrice = initialGasPrice
-        .mul(110)
-        .div(100); // 10% increase
+      const initialGasPrice = BigInt('50000000000');
+      // ethers v6 uses native bigint - multiply and divide using BigInt math
+      const expectedIncreasedGasPrice = initialGasPrice * BigInt(110) / BigInt(100); // 10% increase
 
       mockNonceManager.sendTransaction
         .mockRejectedValueOnce(new Error('Network error'))
@@ -219,7 +217,7 @@ describe('TransactionManager', () => {
 
       mockProvider.waitForTransaction.mockResolvedValue({
         status: 1,
-        gasUsed: BigNumber.from('100000'),
+        gasUsed: BigInt('100000'),
         blockNumber: 100,
         blockHash: '0xblock',
         confirmations: 1,
@@ -242,7 +240,7 @@ describe('TransactionManager', () => {
   describe('gas spike protection', () => {
     it('should reject transaction if gas price exceeds maximum', async () => {
       // Mock extremely high gas price (600 Gwei)
-      mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('600000000000'));
+      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('600000000000'), maxFeePerGas: BigInt('600000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
 
       const result = await manager.executeTransaction(
         '0xTargetContract',
@@ -255,17 +253,17 @@ describe('TransactionManager', () => {
     }, 15000);
 
     it('should allow transaction if gas price is acceptable', async () => {
-      mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000')); // 50 Gwei
+      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') }); // 50 Gwei
 
       mockNonceManager.sendTransaction.mockResolvedValue({
         hash: '0xabcdef',
         nonce: 1,
-        gasPrice: BigNumber.from('50000000000'),
+        gasPrice: BigInt('50000000000'),
       } as any);
 
       mockProvider.waitForTransaction.mockResolvedValue({
         status: 1,
-        gasUsed: BigNumber.from('100000'),
+        gasUsed: BigInt('100000'),
         blockNumber: 100,
         blockHash: '0xblock',
         confirmations: 1,
@@ -283,23 +281,23 @@ describe('TransactionManager', () => {
   describe('replaceTransaction', () => {
     it('should replace stuck transaction with higher gas price', async () => {
       // First, execute a transaction that gets stuck
-      mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000'));
+      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
 
       const mockTxResponse = {
         hash: '0xoriginal',
         nonce: 1,
-        gasPrice: BigNumber.from('50000000000'),
+        gasPrice: BigInt('50000000000'),
         to: '0xTargetContract',
         data: '0x1234',
-        gasLimit: BigNumber.from('150000'),
-        value: BigNumber.from(0),
+        gasLimit: BigInt('150000'),
+        value: BigInt(0),
       } as any;
 
       mockNonceManager.sendTransaction.mockResolvedValue(mockTxResponse);
 
       mockProvider.waitForTransaction.mockResolvedValue({
         status: 1,
-        gasUsed: BigNumber.from('100000'),
+        gasUsed: BigInt('100000'),
         blockNumber: 100,
         blockHash: '0xblock',
         confirmations: 1,
@@ -319,14 +317,14 @@ describe('TransactionManager', () => {
       const replacementTxResponse = {
         hash: '0xreplacement',
         nonce: 1,
-        gasPrice: BigNumber.from('75000000000'),
+        gasPrice: BigInt('75000000000'),
       } as any;
 
       mockNonceManager.sendTransaction.mockResolvedValue(replacementTxResponse);
 
       mockProvider.waitForTransaction.mockResolvedValue({
         status: 1,
-        gasUsed: BigNumber.from('100000'),
+        gasUsed: BigInt('100000'),
         blockNumber: 100,
         blockHash: '0xblock',
         confirmations: 1,
@@ -334,7 +332,7 @@ describe('TransactionManager', () => {
 
       const replaceResult = await manager.replaceTransaction(
         txId,
-        BigNumber.from('75000000000')
+        BigInt('75000000000')
       );
 
       expect(replaceResult.success).toBe(true);
@@ -344,24 +342,24 @@ describe('TransactionManager', () => {
 
     it('should fail if original transaction not found', async () => {
       await expect(
-        manager.replaceTransaction('invalid_tx_id', BigNumber.from('100000000000'))
+        manager.replaceTransaction('invalid_tx_id', BigInt('100000000000'))
       ).rejects.toThrow('Transaction invalid_tx_id not found in registry');
     }, 15000);
   });
 
   describe('getTransactionStatus', () => {
     it('should return transaction metadata', async () => {
-      mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000'));
+      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
 
       mockNonceManager.sendTransaction.mockResolvedValue({
         hash: '0xabcdef',
         nonce: 1,
-        gasPrice: BigNumber.from('50000000000'),
+        gasPrice: BigInt('50000000000'),
       } as any);
 
       mockProvider.waitForTransaction.mockResolvedValue({
         status: 1,
-        gasUsed: BigNumber.from('100000'),
+        gasUsed: BigInt('100000'),
         blockNumber: 100,
         blockHash: '0xblock',
         confirmations: 1,
@@ -386,18 +384,18 @@ describe('TransactionManager', () => {
 
   describe('getStatistics', () => {
     it('should track transaction statistics', async () => {
-      mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000'));
+      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
 
       // Execute successful transaction
       mockNonceManager.sendTransaction.mockResolvedValue({
         hash: '0xabcdef',
         nonce: 1,
-        gasPrice: BigNumber.from('50000000000'),
+        gasPrice: BigInt('50000000000'),
       } as any);
 
       mockProvider.waitForTransaction.mockResolvedValue({
         status: 1,
-        gasUsed: BigNumber.from('100000'),
+        gasUsed: BigInt('100000'),
         blockNumber: 100,
         blockHash: '0xblock',
         confirmations: 1,
@@ -413,18 +411,18 @@ describe('TransactionManager', () => {
     }, 15000);
 
     it('should calculate success rate correctly', async () => {
-      mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000'));
+      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
 
       // One success
       mockNonceManager.sendTransaction.mockResolvedValueOnce({
         hash: '0xabcdef',
         nonce: 1,
-        gasPrice: BigNumber.from('50000000000'),
+        gasPrice: BigInt('50000000000'),
       } as any);
 
       mockProvider.waitForTransaction.mockResolvedValueOnce({
         status: 1,
-        gasUsed: BigNumber.from('100000'),
+        gasUsed: BigInt('100000'),
         blockNumber: 100,
         blockHash: '0xblock',
         confirmations: 1,
@@ -449,7 +447,7 @@ describe('TransactionManager', () => {
 
   describe('nonce error handling', () => {
     it('should handle nonce too low error', async () => {
-      mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000'));
+      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
 
       // Simulate nonce error on first attempt, then success
       mockNonceManager.sendTransaction
@@ -457,12 +455,12 @@ describe('TransactionManager', () => {
         .mockResolvedValueOnce({
           hash: '0xabcdef',
           nonce: 2,
-          gasPrice: BigNumber.from('50000000000'),
+          gasPrice: BigInt('50000000000'),
         } as any);
 
       mockProvider.waitForTransaction.mockResolvedValue({
         status: 1,
-        gasUsed: BigNumber.from('100000'),
+        gasUsed: BigInt('100000'),
         blockNumber: 100,
         blockHash: '0xblock',
         confirmations: 1,
@@ -480,18 +478,18 @@ describe('TransactionManager', () => {
 
   describe('EIP-1559 transactions', () => {
     it('should handle EIP-1559 gas parameters', async () => {
-      mockProvider.getGasPrice.mockResolvedValue(BigNumber.from('50000000000'));
+      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
 
       mockNonceManager.sendTransaction.mockResolvedValue({
         hash: '0xabcdef',
         nonce: 1,
-        maxFeePerGas: BigNumber.from('100000000000'),
-        maxPriorityFeePerGas: BigNumber.from('2000000000'),
+        maxFeePerGas: BigInt('100000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
       } as any);
 
       mockProvider.waitForTransaction.mockResolvedValue({
         status: 1,
-        gasUsed: BigNumber.from('100000'),
+        gasUsed: BigInt('100000'),
         blockNumber: 100,
         blockHash: '0xblock',
         confirmations: 1,
@@ -501,8 +499,8 @@ describe('TransactionManager', () => {
         '0xTargetContract',
         '0x1234',
         {
-          maxFeePerGas: BigNumber.from('100000000000'),
-          maxPriorityFeePerGas: BigNumber.from('2000000000'),
+          maxFeePerGas: BigInt('100000000000'),
+          maxPriorityFeePerGas: BigInt('2000000000'),
         }
       );
 

@@ -4,7 +4,7 @@
  * Tests for flash swap arbitrage execution from AxionCitadel
  */
 
-import { ethers, BigNumber } from 'ethers';
+import { Provider, Signer, parseEther } from 'ethers';
 import {
   FlashSwapExecutor,
   SwapProtocol,
@@ -17,13 +17,13 @@ import { createArbitrageOpportunity, createPathStep } from '../../arbitrage/mode
 
 describe('FlashSwapExecutor', () => {
   let executor: FlashSwapExecutor;
-  let mockProvider: jest.Mocked<ethers.Provider>;
-  let mockSigner: jest.Mocked<ethers.Signer>;
+  let mockProvider: jest.Mocked<Provider>;
+  let mockSigner: jest.Mocked<Signer>;
 
   beforeEach(() => {
     // Create mock provider
     mockProvider = {
-      getGasPrice: jest.fn(),
+      getFeeData: jest.fn(),
       getTransactionCount: jest.fn(),
     } as any;
 
@@ -145,9 +145,8 @@ describe('FlashSwapExecutor', () => {
       const arbParams = executor.buildArbParams(opportunity, customSlippage);
 
       const expectedOutput = parseEther('2000');
-      const expectedMinOutput = expectedOutput
-        .mul(Math.floor((1 - customSlippage) * 10000))
-        .div(10000);
+      // ethers v6 uses native bigint - multiply and divide using BigInt math
+      const expectedMinOutput = expectedOutput * BigInt(Math.floor((1 - customSlippage) * 10000)) / BigInt(10000);
 
       expect(arbParams.swapSteps[0].minAmountOut).toEqual(expectedMinOutput);
     });
@@ -229,7 +228,7 @@ describe('FlashSwapExecutor', () => {
 
     it('should reject invalid flash loan amount', () => {
       const arbParams = createValidArbParams();
-      arbParams.flashLoanAmount = BigNumber.from(0);
+      arbParams.flashLoanAmount = BigInt(0);
 
       const validation = executor.validateArbParams(arbParams);
 
@@ -269,7 +268,7 @@ describe('FlashSwapExecutor', () => {
 
     it('should reject non-positive expected profit', () => {
       const arbParams = createValidArbParams();
-      arbParams.expectedProfit = BigNumber.from(0);
+      arbParams.expectedProfit = BigInt(0);
 
       const validation = executor.validateArbParams(arbParams);
 
@@ -404,7 +403,7 @@ describe('FlashSwapExecutor', () => {
 
     it('should fail validation for invalid parameters', async () => {
       const invalidParams: ArbParams = {
-        flashLoanAmount: BigNumber.from(0),  // Invalid
+        flashLoanAmount: BigInt(0),  // Invalid
         flashLoanToken: '0x1234567890123456789012345678901234567890',
         flashLoanPool: '0x2234567890123456789012345678901234567890',
         swapSteps: [],
@@ -482,7 +481,7 @@ describe('FlashSwapExecutor', () => {
 
     it('should fail simulation for invalid parameters', async () => {
       const invalidParams: ArbParams = {
-        flashLoanAmount: BigNumber.from(0),
+        flashLoanAmount: BigInt(0),
         flashLoanToken: 'invalid',
         flashLoanPool: '0x2234567890123456789012345678901234567890',
         swapSteps: [],
@@ -548,7 +547,7 @@ describe('FlashSwapExecutor', () => {
 
       const invalidParams: ArbParams = {
         ...validParams,
-        flashLoanAmount: BigNumber.from(0),
+        flashLoanAmount: BigInt(0),
       };
 
       // Both dry runs - stats are updated

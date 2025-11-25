@@ -2,7 +2,7 @@
  * Tests for NonceManager
  */
 
-import { ethers, Wallet, providers } from 'ethers';
+import { Wallet, JsonRpcProvider, parseEther } from 'ethers';
 import { NonceManager, NonceError } from '../NonceManager';
 
 describe('NonceManager', () => {
@@ -15,7 +15,7 @@ describe('NonceManager', () => {
     provider = new JsonRpcProvider('http://localhost:8545');
     
     // Create a wallet with the provider
-    wallet = ethers.Wallet.createRandom().connect(provider);
+    wallet = Wallet.createRandom().connect(provider);
   });
 
   afterEach(() => {
@@ -30,7 +30,7 @@ describe('NonceManager', () => {
     });
 
     it('should throw error if signer has no provider', () => {
-      const walletWithoutProvider = ethers.Wallet.createRandom();
+      const walletWithoutProvider = Wallet.createRandom();
       expect(() => new NonceManager(walletWithoutProvider)).toThrow(
         'NonceManager requires a valid Ethers Signer instance with a provider.'
       );

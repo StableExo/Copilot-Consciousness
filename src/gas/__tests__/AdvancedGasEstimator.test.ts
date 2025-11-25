@@ -2,7 +2,7 @@
  * Tests for AdvancedGasEstimator
  */
 
-import { ethers } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
 import { AdvancedGasEstimator, DEXGasConfig } from '../AdvancedGasEstimator';
 import { GasPriceOracle } from '../GasPriceOracle';
 import { ArbitragePath } from '../../arbitrage/types';
@@ -175,7 +175,7 @@ describe('AdvancedGasEstimator', () => {
   describe('estimateGasOnChain', () => {
     it('should use provider estimateGas when available', async () => {
       (mockProvider.estimateGas as jest.Mock).mockResolvedValue(
-        ethers.BigNumber.from(150000)
+        BigInt(150000)
       );
 
       const path: ArbitragePath = {
