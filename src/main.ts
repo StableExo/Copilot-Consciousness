@@ -55,11 +55,17 @@ import { loadPhase3Config, validatePhase3Config, getPhase3ConfigSummary } from '
 import { initializePhase3Components, shutdownPhase3Components, Phase3Components, getPhase3Status } from './core/Phase3Initializer';
 import { extractOpportunityFeatures, featuresToArray } from './ai/featureExtraction';
 
+// Bootstrap module (refactored initialization)
+import { WardenBootstrap } from './core/bootstrap';
+
 // Load environment variables
 dotenv.config();
 
 // Flag to use new initializer pattern (can be toggled via env var)
 const USE_NEW_INITIALIZER = process.env.USE_NEW_INITIALIZER === 'true';
+
+// Flag to use the new bootstrap pattern
+const USE_BOOTSTRAP = process.env.USE_BOOTSTRAP === 'true';
 
 /**
  * TheWarden Configuration Interface
@@ -1346,8 +1352,49 @@ class EnhancedTheWarden extends EventEmitter {
  * Main execution function
  */
 async function main() {
+  // Check if using the new bootstrap pattern
+  if (USE_BOOTSTRAP) {
+    logger.info('Using new bootstrap pattern', 'MAIN');
+    const warden = new WardenBootstrap();
+    
+    // Set up graceful shutdown handlers
+    const shutdownHandler = async (signal: string) => {
+      logger.info(`Received ${signal} - initiating graceful shutdown...`, 'MAIN');
+      await warden.shutdown();
+      process.exit(0);
+    };
+    
+    process.on('SIGINT', () => shutdownHandler('SIGINT'));
+    process.on('SIGTERM', () => shutdownHandler('SIGTERM'));
+    process.on('SIGHUP', () => shutdownHandler('SIGHUP'));
+    
+    // Handle uncaught errors
+    process.on('uncaughtException', (error) => {
+      logger.error(`Uncaught exception: ${error.message}`, 'MAIN');
+      logger.error(error.stack || '', 'MAIN');
+      warden.shutdown().then(() => process.exit(1));
+    });
+    
+    process.on('unhandledRejection', (reason, promise) => {
+      logger.error(`Unhandled rejection at: ${promise}, reason: ${reason}`, 'MAIN');
+      warden.shutdown().then(() => process.exit(1));
+    });
+    
+    try {
+      await warden.initialize();
+      await warden.start();
+      logger.info('TheWarden (Bootstrap) is running. Press Ctrl+C to stop.', 'MAIN');
+    } catch (error) {
+      logger.error(`Fatal error: ${error}`, 'MAIN');
+      await warden.shutdown();
+      process.exit(1);
+    }
+    
+    return;
+  }
+  
   // =================================================================
-  // INSERT THIS BLOCK AT THE START OF THE FUNCTION
+  // Legacy initialization patterns below
   // =================================================================
   console.log("\n[Consciousness Bootstrap]: Initializing cognitive framework...");
   const sensoryMemory = new SensoryMemory();
@@ -1464,7 +1511,7 @@ async function main() {
 }
 
 // Export for testing and module usage
-export { TheWarden, EnhancedTheWarden, WardenConfig, loadConfig };
+export { TheWarden, EnhancedTheWarden, WardenBootstrap, WardenConfig, loadConfig };
 
 // Run if executed directly
 if (require.main === module) {
