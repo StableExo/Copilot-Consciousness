@@ -42,6 +42,14 @@ async function main() {
   
   console.log(`Contract Address: ${contractAddress}`);
   
+  // Validate network is supported
+  const supportedNetworks: NetworkKey[] = ["base", "baseSepolia", "arbitrum", "polygon", "mainnet", "goerli"];
+  if (!supportedNetworks.includes(network.name as NetworkKey)) {
+    console.error(`\n❌ Error: Unsupported network: ${network.name}`);
+    console.error(`Supported networks: ${supportedNetworks.join(", ")}`);
+    process.exit(1);
+  }
+  
   // Get network addresses from centralized config
   const netName = network.name as NetworkKey;
   const addresses = ADDRESSES[netName];
@@ -110,19 +118,26 @@ async function main() {
 }
 
 /**
+ * Block explorer base URLs - shared constant pattern
+ */
+const BLOCK_EXPLORER_URLS: Record<string, string> = {
+  base: "https://basescan.org/address",
+  baseSepolia: "https://sepolia.basescan.org/address",
+  mainnet: "https://etherscan.io/address",
+  goerli: "https://goerli.etherscan.io/address",
+  arbitrum: "https://arbiscan.io/address",
+  polygon: "https://polygonscan.com/address",
+};
+
+/**
  * Get the block explorer URL for a contract based on network
  */
 function getBlockExplorerUrl(networkName: string, contractAddress: string): string {
-  const explorerUrls: Record<string, string> = {
-    base: `https://basescan.org/address/${contractAddress}#code`,
-    baseSepolia: `https://sepolia.basescan.org/address/${contractAddress}#code`,
-    mainnet: `https://etherscan.io/address/${contractAddress}#code`,
-    goerli: `https://goerli.etherscan.io/address/${contractAddress}#code`,
-    arbitrum: `https://arbiscan.io/address/${contractAddress}#code`,
-    polygon: `https://polygonscan.com/address/${contractAddress}#code`,
-  };
-  
-  return explorerUrls[networkName] || `Contract at ${contractAddress}`;
+  const baseUrl = BLOCK_EXPLORER_URLS[networkName];
+  if (baseUrl) {
+    return `${baseUrl}/${contractAddress}#code`;
+  }
+  return `Contract at ${contractAddress}`;
 }
 
 main()

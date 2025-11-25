@@ -20,6 +20,8 @@ dotenv.config();
  */
 
 // Chain ID to API endpoint mapping
+// Note: Using Etherscan v2 unified API (api.etherscan.io/v2/api with chainid parameter)
+// as per Etherscan's recommended approach: https://docs.etherscan.io/
 const CHAIN_CONFIG: Record<string, { apiUrl: string; chainId: string; envKey: string }> = {
   ethereum: {
     apiUrl: "https://api.etherscan.io/v2/api",
@@ -51,6 +53,21 @@ const CHAIN_CONFIG: Record<string, { apiUrl: string; chainId: string; envKey: st
     chainId: "10",
     envKey: "OPTIMISTIC_ETHERSCAN_API_KEY",
   },
+};
+
+/**
+ * Block explorer URLs for verified contracts
+ * Shared mapping to avoid duplication
+ */
+const BLOCK_EXPLORER_URLS: Record<string, string> = {
+  ethereum: "https://etherscan.io/address",
+  base: "https://basescan.org/address",
+  baseSepolia: "https://sepolia.basescan.org/address",
+  arbitrum: "https://arbiscan.io/address",
+  polygon: "https://polygonscan.com/address",
+  optimism: "https://optimistic.etherscan.io/address",
+  mainnet: "https://etherscan.io/address",
+  goerli: "https://goerli.etherscan.io/address",
 };
 
 interface EtherscanResponse {
@@ -160,18 +177,23 @@ async function getContractSource(address: string, chain: string): Promise<object
 
 /**
  * Check if a contract is verified
+ * Returns { verified: boolean, error?: string }
  */
-async function isContractVerified(address: string, chain: string): Promise<boolean> {
+async function isContractVerified(address: string, chain: string): Promise<{ verified: boolean; error?: string }> {
   try {
     const source = await getContractSource(address, chain);
     // If the source code array has entries and the first entry has a non-empty SourceCode
     if (Array.isArray(source) && source.length > 0) {
       const firstEntry = source[0] as Record<string, unknown>;
-      return typeof firstEntry.SourceCode === "string" && firstEntry.SourceCode.length > 0;
+      const verified = typeof firstEntry.SourceCode === "string" && firstEntry.SourceCode.length > 0;
+      return { verified };
     }
-    return false;
-  } catch {
-    return false;
+    return { verified: false };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    // Log the error for debugging but still return verification status
+    console.error(`⚠️  Warning: Error checking verification status: ${errorMessage}`);
+    return { verified: false, error: errorMessage };
   }
 }
 
@@ -218,18 +240,14 @@ async function displayContractInfo(address: string, chain: string): Promise<void
 
 /**
  * Get block explorer URL for a contract
+ * Uses the shared BLOCK_EXPLORER_URLS mapping
  */
 function getBlockExplorerUrl(chain: string, address: string): string {
-  const urls: Record<string, string> = {
-    ethereum: `https://etherscan.io/address/${address}#code`,
-    base: `https://basescan.org/address/${address}#code`,
-    baseSepolia: `https://sepolia.basescan.org/address/${address}#code`,
-    arbitrum: `https://arbiscan.io/address/${address}#code`,
-    polygon: `https://polygonscan.com/address/${address}#code`,
-    optimism: `https://optimistic.etherscan.io/address/${address}#code`,
-  };
-  
-  return urls[chain] || address;
+  const baseUrl = BLOCK_EXPLORER_URLS[chain];
+  if (baseUrl) {
+    return `${baseUrl}/${address}#code`;
+  }
+  return address;
 }
 
 /**
@@ -282,8 +300,11 @@ async function main() {
       }
       
       case "isverified": {
-        const verified = await isContractVerified(address, chain);
-        console.log(`\nContract ${address} on ${chain}: ${verified ? "✅ VERIFIED" : "❌ NOT VERIFIED"}`);
+        const result = await isContractVerified(address, chain);
+        console.log(`\nContract ${address} on ${chain}: ${result.verified ? "✅ VERIFIED" : "❌ NOT VERIFIED"}`);
+        if (result.error) {
+          console.log(`Note: Verification check encountered an error: ${result.error}`);
+        }
         break;
       }
       
