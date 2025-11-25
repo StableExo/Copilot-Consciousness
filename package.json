@@ -47,6 +47,11 @@
     "deploy:mainnet": "hardhat run scripts/deploy-executor-v3.ts --network mainnet",
     "deploy:flashswapv2": "hardhat run scripts/deployFlashSwapV2.ts --network base",
     "deploy:flashswapv2:testnet": "hardhat run scripts/deployFlashSwapV2.ts --network baseSepolia",
+    "deploy:flashswapv2:verified": "VERIFY_CONTRACT=true hardhat run scripts/deployFlashSwapV2.ts --network base",
+    "verify:flashswapv2": "hardhat run scripts/verifyFlashSwapV2.ts --network base",
+    "verify:flashswapv2:testnet": "hardhat run scripts/verifyFlashSwapV2.ts --network baseSepolia",
+    "contract:status": "ts-node scripts/etherscan-api.ts status",
+    "contract:abi": "ts-node scripts/etherscan-api.ts getabi",
     "audit:slither": "slither . --fail-medium",
     "audit:slither:report": "slither . --print human-summary",
     "audit:prod": "npm audit --omit=dev --audit-level=high"

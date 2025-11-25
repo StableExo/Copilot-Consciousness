@@ -8,7 +8,19 @@ import { ADDRESSES, NetworkKey, requireAddress } from "../src/config/addresses";
  * config/addresses.ts configuration file.
  * 
  * Network addresses are automatically selected based on the --network flag.
+ * 
+ * Features:
+ * - Automatic verification on block explorers (BaseScan, Etherscan, etc.)
+ * - Configurable via environment variables
+ * 
+ * Environment Variables:
+ *   VERIFY_CONTRACT=true     Enable automatic verification after deployment
+ *   SKIP_CONFIRMATION=true   Skip waiting for block confirmations (faster, less safe)
  */
+
+// Check if automatic verification is enabled
+const VERIFY_CONTRACT = process.env.VERIFY_CONTRACT === "true";
+const SKIP_CONFIRMATION = process.env.SKIP_CONFIRMATION === "true";
 
 async function main() {
   const ethers = (hre as any).ethers;
@@ -67,17 +79,47 @@ async function main() {
   console.log("Owner address:", deployer.address);
   
   // Wait for a few blocks before verification
-  console.log("\nWaiting for 5 block confirmations...");
-  // ethers v6: deploymentTransaction() returns the tx or null; we check for null before waiting
-  const deployTx = flashSwapV2.deploymentTransaction();
-  if (deployTx) {
-    await deployTx.wait(5);
+  if (!SKIP_CONFIRMATION) {
+    console.log("\nWaiting for 5 block confirmations...");
+    // ethers v6: deploymentTransaction() returns the tx or null; we check for null before waiting
+    const deployTx = flashSwapV2.deploymentTransaction();
+    if (deployTx) {
+      await deployTx.wait(5);
+    } else {
+      console.log("Note: Deployment transaction not available, skipping confirmation wait");
+    }
   } else {
-    console.log("Note: Deployment transaction not available, skipping confirmation wait");
+    console.log("\nSkipping block confirmations (SKIP_CONFIRMATION=true)");
   }
   
-  console.log("\n📝 To verify the contract on Basescan, run:");
-  console.log(`npx hardhat verify --network ${network.name} ${contractAddress} ${uniswapV3Router} ${sushiRouter} ${aavePool} ${aaveAddressesProvider}`);
+  // Automatic contract verification
+  if (VERIFY_CONTRACT) {
+    console.log("\n🔍 Starting automatic contract verification...");
+    try {
+      await hre.run("verify:verify", {
+        address: contractAddress,
+        constructorArguments: [uniswapV3Router, sushiRouter, aavePool, aaveAddressesProvider],
+        contract: "contracts/FlashSwapV2.sol:FlashSwapV2",
+      });
+      console.log("✅ Contract verified successfully!");
+    } catch (verifyError: unknown) {
+      const errorMessage = verifyError instanceof Error ? verifyError.message : String(verifyError);
+      if (errorMessage.includes("Already Verified") || errorMessage.includes("already verified")) {
+        console.log("✅ Contract is already verified!");
+      } else {
+        console.error("⚠️  Verification failed:", errorMessage);
+        console.log("You can manually verify later using:");
+        console.log(`  CONTRACT_ADDRESS=${contractAddress} npx hardhat run scripts/verifyFlashSwapV2.ts --network ${network.name}`);
+      }
+    }
+  } else {
+    console.log("\n📝 To verify the contract on Basescan, run:");
+    console.log(`npx hardhat verify --network ${network.name} ${contractAddress} ${uniswapV3Router} ${sushiRouter} ${aavePool} ${aaveAddressesProvider}`);
+    console.log("\nOr use the verification script:");
+    console.log(`CONTRACT_ADDRESS=${contractAddress} npx hardhat run scripts/verifyFlashSwapV2.ts --network ${network.name}`);
+    console.log("\nOr deploy with automatic verification:");
+    console.log(`VERIFY_CONTRACT=true npx hardhat run scripts/deployFlashSwapV2.ts --network ${network.name}`);
+  }
   
   console.log("\n📄 Save these details to your .env file:");
   console.log(`FLASHSWAP_V2_ADDRESS=${contractAddress}`);
