@@ -16,7 +16,9 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   
   console.log("Deploying FlashSwapV2 with account:", deployer.address);
-  console.log("Account balance:", (await deployer.getBalance()).toString());
+  // In ethers v6, use provider.getBalance(address) - works with both ethers.provider or deployer.provider
+  const balance = await ethers.provider.getBalance(deployer.address);
+  console.log("Account balance:", balance.toString());
   
   // Determine which network we're deploying to
   const networkInfo = await ethers.provider.getNetwork();
@@ -54,21 +56,31 @@ async function main() {
     aaveAddressesProvider
   );
   
-  await flashSwapV2.deployed();
+  // ethers v6: Use waitForDeployment() instead of deployed()
+  await flashSwapV2.waitForDeployment();
+  
+  // ethers v6: Use .target instead of .address
+  const contractAddress = await flashSwapV2.getAddress();
   
   console.log("\n✅ FlashSwapV2 deployed successfully!");
-  console.log("Contract address:", flashSwapV2.address);
+  console.log("Contract address:", contractAddress);
   console.log("Owner address:", deployer.address);
   
   // Wait for a few blocks before verification
   console.log("\nWaiting for 5 block confirmations...");
-  await flashSwapV2.deployTransaction.wait(5);
+  // ethers v6: deploymentTransaction() returns the tx or null; we check for null before waiting
+  const deployTx = flashSwapV2.deploymentTransaction();
+  if (deployTx) {
+    await deployTx.wait(5);
+  } else {
+    console.log("Note: Deployment transaction not available, skipping confirmation wait");
+  }
   
   console.log("\n📝 To verify the contract on Basescan, run:");
-  console.log(`npx hardhat verify --network ${network.name} ${flashSwapV2.address} ${uniswapV3Router} ${sushiRouter} ${aavePool} ${aaveAddressesProvider}`);
+  console.log(`npx hardhat verify --network ${network.name} ${contractAddress} ${uniswapV3Router} ${sushiRouter} ${aavePool} ${aaveAddressesProvider}`);
   
   console.log("\n📄 Save these details to your .env file:");
-  console.log(`FLASHSWAP_V2_ADDRESS=${flashSwapV2.address}`);
+  console.log(`FLASHSWAP_V2_ADDRESS=${contractAddress}`);
   console.log(`FLASHSWAP_V2_OWNER=${deployer.address}`);
   
   console.log("\n✨ Deployment complete!");
