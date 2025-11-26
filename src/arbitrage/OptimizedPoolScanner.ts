@@ -209,30 +209,54 @@ export class OptimizedPoolScanner {
     }
 
     logger.info(`Starting optimized pool scan: ${tokens.length} tokens across ${dexes.length} DEXes`, 'POOLSCAN');
+    logger.info(`DEXes to scan: ${dexes.map(d => d.name).join(', ')}`, 'POOLSCAN');
 
     // Group DEXes by protocol type for optimized processing
     const v3Dexes = dexes.filter(dex => isV3StyleProtocol(dex.protocol));
     const v2Dexes = dexes.filter(dex => !isV3StyleProtocol(dex.protocol));
 
+    logger.info(`V3-style DEXes (${v3Dexes.length}): ${v3Dexes.map(d => d.name).join(', ')}`, 'POOLSCAN');
+    logger.info(`V2-style DEXes (${v2Dexes.length}): ${v2Dexes.map(d => d.name).join(', ')}`, 'POOLSCAN');
+
     let poolsChecked = 0;
     let poolsFound = 0;
+    const dexStats = new Map<string, { checked: number; found: number; filtered: number }>();
+    const tokenPairStats = new Map<string, { dexes: string[]; poolsFound: number }>();
+
+    // Initialize DEX stats
+    for (const dex of dexes) {
+      dexStats.set(dex.name, { checked: 0, found: 0, filtered: 0 });
+    }
 
     // Process V3 DEXes (with optimized multi-tier scanning)
     for (const dex of v3Dexes) {
+      logger.info(`Scanning V3 DEX: ${dex.name}`, 'POOLSCAN');
+      const dexStat = dexStats.get(dex.name)!;
+      
       for (let i = 0; i < tokens.length; i++) {
         for (let j = i + 1; j < tokens.length; j++) {
           const token0 = tokens[i];
           const token1 = tokens[j];
+          const pairKey = `${token0.slice(0, 6)}.../${token1.slice(0, 6)}...`;
 
           // Check cache first
           const cacheKey = `${dex.name}-${token0}-${token1}`;
           const cached = this.poolCache.get(cacheKey);
           if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
             poolsChecked++;
+            dexStat.checked++;
             if (this.meetsLiquidityThreshold(cached.reserve0, dex, true)) {
               poolsFound++;
+              dexStat.found++;
               edges.push(this.createEdge(cached, dex, token0, token1));
               edges.push(this.createEdge(cached, dex, token1, token0));
+              this.updateTokenPairStats(tokenPairStats, pairKey, dex.name);
+            } else {
+              dexStat.filtered++;
+              logger.debug(
+                `${dex.name} ${pairKey}: Filtered (cached, liquidity=${cached.reserve0} < threshold)`,
+                'POOLSCAN'
+              );
             }
             continue;
           }
@@ -240,6 +264,14 @@ export class OptimizedPoolScanner {
           // Discover all fee tier pools for this pair
           const discoveries = await this.discoverV3Pools(dex.factory, token0, token1);
           poolsChecked += UNISWAP_V3_FEE_TIERS.length;
+          dexStat.checked += UNISWAP_V3_FEE_TIERS.length;
+
+          if (discoveries.length > 0) {
+            logger.debug(
+              `${dex.name} ${pairKey}: Found ${discoveries.length} pool(s) across fee tiers`,
+              'POOLSCAN'
+            );
+          }
 
           // Process discovered pools
           for (const discovery of discoveries) {
@@ -259,18 +291,26 @@ export class OptimizedPoolScanner {
               };
               this.poolCache.set(cacheKey, poolCacheData);
 
-              if (this.meetsLiquidityThreshold(poolData.reserve0, dex, true)) {
+              const meetsThreshold = this.meetsLiquidityThreshold(poolData.reserve0, dex, true);
+              const threshold = dex.liquidityThreshold / BigInt(V3_LIQUIDITY_SCALE_FACTOR);
+              
+              if (meetsThreshold) {
                 poolsFound++;
+                dexStat.found++;
                 edges.push(this.createEdge(poolData, dex, token0, token1));
                 edges.push(this.createEdge(poolData, dex, token1, token0));
+                this.updateTokenPairStats(tokenPairStats, pairKey, dex.name);
                 
-                if (logger.isDebugEnabled()) {
-                  logger.debug(
-                    `Found V3 pool: ${dex.name} ${token0.slice(0,6)}.../${token1.slice(0,6)}... ` +
-                    `fee=${discovery.fee/10000}% liquidity=${poolData.reserve0}`,
-                    'POOLSCAN'
-                  );
-                }
+                logger.debug(
+                  `✓ ${dex.name} ${pairKey}: ACCEPTED - fee=${discovery.fee/10000}% liquidity=${poolData.reserve0} (threshold=${threshold})`,
+                  'POOLSCAN'
+                );
+              } else {
+                dexStat.filtered++;
+                logger.debug(
+                  `✗ ${dex.name} ${pairKey}: FILTERED - fee=${discovery.fee/10000}% liquidity=${poolData.reserve0} < threshold=${threshold}`,
+                  'POOLSCAN'
+                );
               }
             }
           }
@@ -280,47 +320,133 @@ export class OptimizedPoolScanner {
 
     // Process V2 DEXes (with V2-specific optimizations)
     for (const dex of v2Dexes) {
-      const v2Edges = await this.scanV2Dex(dex, tokens);
+      logger.info(`Scanning V2 DEX: ${dex.name}`, 'POOLSCAN');
+      const v2Edges = await this.scanV2Dex(dex, tokens, dexStats, tokenPairStats);
       edges.push(...v2Edges);
       poolsChecked += (tokens.length * (tokens.length - 1)) / 2;
       poolsFound += v2Edges.length / 2; // Each pool creates 2 edges
     }
 
     const duration = Date.now() - startTime;
+    
+    // Summary logging
+    logger.info('=== POOL SCAN SUMMARY ===', 'POOLSCAN');
     logger.info(
-      `Pool scan complete: Checked ${poolsChecked} potential pools, found ${poolsFound} valid pools ` +
-      `(${(duration / 1000).toFixed(2)}s, ${((duration / poolsChecked) / 1000).toFixed(3)}s/pool)`,
+      `Total: Checked ${poolsChecked} potential pools, found ${poolsFound} valid pools ` +
+      `in ${(duration / 1000).toFixed(2)}s (${((duration / poolsChecked) / 1000).toFixed(3)}s/pool)`,
       'POOLSCAN'
     );
+    
+    // Per-DEX statistics
+    logger.info('=== PER-DEX STATISTICS ===', 'POOLSCAN');
+    for (const [dexName, stats] of dexStats.entries()) {
+      if (stats.checked > 0) {
+        logger.info(
+          `${dexName}: Checked=${stats.checked}, Found=${stats.found}, Filtered=${stats.filtered} ` +
+          `(${stats.found > 0 ? ((stats.found / stats.checked) * 100).toFixed(1) : '0'}% success rate)`,
+          'POOLSCAN'
+        );
+      }
+    }
+    
+    // Token pair statistics - showing which pairs have multiple pools
+    logger.info('=== TOKEN PAIR STATISTICS ===', 'POOLSCAN');
+    const multiPoolPairs = Array.from(tokenPairStats.entries())
+      .filter(([_, stats]) => stats.poolsFound > 1)
+      .sort((a, b) => b[1].poolsFound - a[1].poolsFound);
+    
+    if (multiPoolPairs.length > 0) {
+      logger.info(`Found ${multiPoolPairs.length} token pairs with 2+ pools (arbitrage opportunities):`, 'POOLSCAN');
+      for (const [pair, stats] of multiPoolPairs) {
+        logger.info(
+          `  ${pair}: ${stats.poolsFound} pools on [${stats.dexes.join(', ')}]`,
+          'POOLSCAN'
+        );
+      }
+    } else {
+      logger.warn('⚠️  NO TOKEN PAIRS WITH MULTIPLE POOLS FOUND - Arbitrage requires 2+ pools per pair', 'POOLSCAN');
+    }
+    
+    const singlePoolPairs = Array.from(tokenPairStats.entries())
+      .filter(([_, stats]) => stats.poolsFound === 1);
+    if (singlePoolPairs.length > 0) {
+      logger.info(`${singlePoolPairs.length} token pairs with only 1 pool (not suitable for arbitrage)`, 'POOLSCAN');
+    }
+    
+    logger.info('=========================', 'POOLSCAN');
 
     return edges;
   }
 
   /**
+   * Update token pair statistics for enhanced logging
+   */
+  private updateTokenPairStats(
+    tokenPairStats: Map<string, { dexes: string[]; poolsFound: number }>,
+    pairKey: string,
+    dexName: string
+  ): void {
+    const existing = tokenPairStats.get(pairKey);
+    if (existing) {
+      existing.poolsFound++;
+      if (!existing.dexes.includes(dexName)) {
+        existing.dexes.push(dexName);
+      }
+    } else {
+      tokenPairStats.set(pairKey, { dexes: [dexName], poolsFound: 1 });
+    }
+  }
+
+  /**
    * Scan V2-style DEX for pools
    */
-  private async scanV2Dex(dex: DEXConfig, tokens: string[]): Promise<PoolEdge[]> {
+  private async scanV2Dex(
+    dex: DEXConfig, 
+    tokens: string[],
+    dexStats?: Map<string, { checked: number; found: number; filtered: number }>,
+    tokenPairStats?: Map<string, { dexes: string[]; poolsFound: number }>
+  ): Promise<PoolEdge[]> {
     const edges: PoolEdge[] = [];
+    const dexStat = dexStats?.get(dex.name);
 
     for (let i = 0; i < tokens.length; i++) {
       for (let j = i + 1; j < tokens.length; j++) {
         const token0 = tokens[i];
         const token1 = tokens[j];
+        const pairKey = `${token0.slice(0, 6)}.../${token1.slice(0, 6)}...`;
 
         // Check cache first
         const cacheKey = `${dex.name}-${token0}-${token1}`;
         const cached = this.poolCache.get(cacheKey);
         if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
-          if (this.meetsLiquidityThreshold(cached.reserve0, dex, false)) {
+          if (dexStat) dexStat.checked++;
+          const meetsThreshold = this.meetsLiquidityThreshold(cached.reserve0, dex, false);
+          
+          if (meetsThreshold) {
+            if (dexStat) dexStat.found++;
             edges.push(this.createEdge(cached, dex, token0, token1));
             edges.push(this.createEdge(cached, dex, token1, token0));
+            if (tokenPairStats) {
+              this.updateTokenPairStats(tokenPairStats, pairKey, dex.name);
+            }
+          } else {
+            if (dexStat) dexStat.filtered++;
+            logger.debug(
+              `${dex.name} ${pairKey}: Filtered (cached, liquidity=${cached.reserve0} < threshold)`,
+              'POOLSCAN'
+            );
           }
           continue;
         }
 
         // Calculate pool address
         const poolAddress = await this.getV2PoolAddress(dex, token0, token1);
-        if (!poolAddress) continue;
+        if (!poolAddress) {
+          if (dexStat) dexStat.checked++;
+          continue;
+        }
+
+        if (dexStat) dexStat.checked++;
 
         // Fetch pool data
         const poolData = await this.fetchPoolDataOptimized(poolAddress, token0, token1, false);
@@ -332,9 +458,26 @@ export class OptimizedPoolScanner {
           };
           this.poolCache.set(cacheKey, poolCacheData);
 
-          if (this.meetsLiquidityThreshold(poolData.reserve0, dex, false)) {
+          const meetsThreshold = this.meetsLiquidityThreshold(poolData.reserve0, dex, false);
+          
+          if (meetsThreshold) {
+            if (dexStat) dexStat.found++;
             edges.push(this.createEdge(poolData, dex, token0, token1));
             edges.push(this.createEdge(poolData, dex, token1, token0));
+            if (tokenPairStats) {
+              this.updateTokenPairStats(tokenPairStats, pairKey, dex.name);
+            }
+            
+            logger.debug(
+              `✓ ${dex.name} ${pairKey}: ACCEPTED - liquidity=${poolData.reserve0} (threshold=${dex.liquidityThreshold})`,
+              'POOLSCAN'
+            );
+          } else {
+            if (dexStat) dexStat.filtered++;
+            logger.debug(
+              `✗ ${dex.name} ${pairKey}: FILTERED - liquidity=${poolData.reserve0} < threshold=${dex.liquidityThreshold}`,
+              'POOLSCAN'
+            );
           }
         }
       }
@@ -455,7 +598,14 @@ export class OptimizedPoolScanner {
       'Aerodrome on Base': 0.003,
       'BaseSwap': 0.003,
       'Uniswap V2 on Base': 0.003,
-      'SushiSwap on Base': 0.003
+      'SushiSwap on Base': 0.003,
+      'PancakeSwap V3 on Base': 0.003,
+      'Velodrome on Base': 0.003,
+      'Balancer on Base': 0.001,
+      'Maverick V2 on Base': 0.003,
+      'AlienBase on Base': 0.003,
+      'SwapBased on Base': 0.003,
+      'RocketSwap on Base': 0.003
     };
 
     return fees[dex.name] || 0.003;
