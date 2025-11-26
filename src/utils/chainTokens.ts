@@ -97,6 +97,10 @@ export function getNetworkName(chainId: number): string {
       return 'Optimism';
     case 420:
       return 'Optimism Goerli';
+    case 137:
+      return 'Polygon';
+    case 80001:
+      return 'Polygon Mumbai';
     default:
       return `Chain ${chainId}`;
   }

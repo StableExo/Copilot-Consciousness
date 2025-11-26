@@ -161,18 +161,31 @@ describe('LongRunningManager', () => {
 
       await manager.start();
 
+      // Wait for the persist event to ensure file is written
+      const persistPromise = new Promise((resolve) => {
+        manager.once('stats-persisted', resolve);
+      });
+
       manager.updateStats({
         cyclesCompleted: 42,
       });
 
-      // Wait for persist interval
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      // Wait for persist interval and the persist event
+      await Promise.race([
+        persistPromise,
+        new Promise((resolve) => setTimeout(resolve, 300)),
+      ]);
+
+      // Small delay to ensure file write is complete
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       // Verify file exists
       expect(fs.existsSync(testStatsPath)).toBe(true);
 
       // Verify content
-      const content = JSON.parse(fs.readFileSync(testStatsPath, 'utf-8'));
+      const fileContent = fs.readFileSync(testStatsPath, 'utf-8');
+      expect(fileContent.length).toBeGreaterThan(0); // Ensure file is not empty
+      const content = JSON.parse(fileContent);
       expect(content.cyclesCompleted).toBe(42);
     });
   });
