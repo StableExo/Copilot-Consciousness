@@ -50,5 +50,83 @@
     },
     "blockTime": 2,
     "gasLimit": 30000000
+  },
+  "optimism": {
+    "chainId": 10,
+    "name": "Optimism",
+    "rpcUrl": "https://mainnet.optimism.io",
+    "explorer": "https://optimistic.etherscan.io",
+    "nativeCurrency": {
+      "name": "Ethereum",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "blockTime": 2,
+    "gasLimit": 30000000
+  },
+  "linea": {
+    "chainId": 59144,
+    "name": "Linea",
+    "rpcUrl": "https://rpc.linea.build",
+    "explorer": "https://lineascan.build",
+    "nativeCurrency": {
+      "name": "Ethereum",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "blockTime": 2,
+    "gasLimit": 30000000
+  },
+  "zkSync": {
+    "chainId": 324,
+    "name": "zkSync Era",
+    "rpcUrl": "https://mainnet.era.zksync.io",
+    "explorer": "https://explorer.zksync.io",
+    "nativeCurrency": {
+      "name": "Ethereum",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "blockTime": 1,
+    "gasLimit": 30000000
+  },
+  "scroll": {
+    "chainId": 534352,
+    "name": "Scroll",
+    "rpcUrl": "https://rpc.scroll.io",
+    "explorer": "https://scrollscan.com",
+    "nativeCurrency": {
+      "name": "Ethereum",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "blockTime": 3,
+    "gasLimit": 30000000
+  },
+  "manta": {
+    "chainId": 169,
+    "name": "Manta Pacific",
+    "rpcUrl": "https://pacific-rpc.manta.network/http",
+    "explorer": "https://pacific-explorer.manta.network",
+    "nativeCurrency": {
+      "name": "Ethereum",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "blockTime": 2,
+    "gasLimit": 30000000
+  },
+  "mode": {
+    "chainId": 34443,
+    "name": "Mode Network",
+    "rpcUrl": "https://mainnet.mode.network",
+    "explorer": "https://explorer.mode.network",
+    "nativeCurrency": {
+      "name": "Ethereum",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "blockTime": 2,
+    "gasLimit": 30000000
   }
 }
