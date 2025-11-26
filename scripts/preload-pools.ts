@@ -49,15 +49,26 @@ function getRpcUrlForChain(chainId: number): string | undefined {
 }
 
 /**
- * Load configuration from environment
+ * Load configuration from environment and command line args
  */
 function loadConfig(): PreloadConfig {
   const primaryChainId = parseInt(process.env.CHAIN_ID || '8453');
   
-  // Parse SCAN_CHAINS or default to primary chain
-  const chainIds = process.env.SCAN_CHAINS
-    ? process.env.SCAN_CHAINS.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id) && id > 0)
-    : [primaryChainId];
+  // Check for --chain command line argument
+  const chainArgIndex = process.argv.indexOf('--chain');
+  let chainIds: number[];
+  
+  if (chainArgIndex !== -1 && chainArgIndex + 1 < process.argv.length) {
+    // Use chain IDs from command line (can be comma-separated)
+    const chainArg = process.argv[chainArgIndex + 1];
+    chainIds = chainArg.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id) && id > 0);
+    logger.info(`Using chains from --chain argument: ${chainIds.join(', ')}`, 'PRELOAD');
+  } else {
+    // Parse SCAN_CHAINS or default to primary chain
+    chainIds = process.env.SCAN_CHAINS
+      ? process.env.SCAN_CHAINS.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id) && id > 0)
+      : [primaryChainId];
+  }
 
   // Build RPC URL map
   const rpcUrls = new Map<number, string>();
