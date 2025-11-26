@@ -24,7 +24,7 @@ export const defaultAdvancedArbitrageConfig: AdvancedOrchestratorConfig = {
     aggressiveness: 'low', // Changed from 'medium' to discover more pools
     minPoolLiquidity: BigInt(10000), // Reduced from 100000 to 10000 for Base L2
     maxPriceImpactPerHop: 3.0, // Increased from 2% to 3% for more opportunities
-    maxCumulativeSlippage: 7.0, // Increased from 5% to 7% max total
+    maxCumulativeSlippage: 5.0, // Reduced from 7% to 5% max total for safer profitability
     minPoolQualityScore: 0.2 // Reduced from 0.3 to include more pools
   },
   
