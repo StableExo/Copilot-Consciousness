@@ -16,7 +16,7 @@ export type DexType = "uniswapV2" | "uniswapV3" | "sushi" | "other";
 /**
  * Supported network names matching Hardhat network configuration
  */
-export type NetworkKey = "base" | "baseSepolia" | "arbitrum" | "polygon" | "mainnet" | "goerli";
+export type NetworkKey = "base" | "baseSepolia" | "arbitrum" | "polygon" | "mainnet" | "goerli" | "optimism" | "linea" | "zkSync" | "scroll" | "manta" | "mode";
 
 /**
  * Example pool configuration for demo/test purposes
@@ -135,6 +135,54 @@ export const ADDRESSES: Record<NetworkKey, KnownAddresses> = {
    */
   goerli: {
     // TODO: Add Goerli addresses if needed (testnet is deprecated)
+  },
+
+  /**
+   * Optimism Mainnet (Chain ID: 10)
+   * Home of Velodrome V2
+   */
+  optimism: {
+    // TODO: Add Optimism addresses when needed
+  },
+
+  /**
+   * Linea Mainnet (Chain ID: 59144)
+   * High-volume chain with Lynex
+   */
+  linea: {
+    // TODO: Add Linea addresses when needed
+  },
+
+  /**
+   * zkSync Era (Chain ID: 324)
+   * zkRollup with PancakeSwap V3 and SyncSwap
+   */
+  zkSync: {
+    // TODO: Add zkSync Era addresses when needed
+  },
+
+  /**
+   * Scroll Mainnet (Chain ID: 534352)
+   * zkEVM with Skydrome and Ambient Finance
+   */
+  scroll: {
+    // TODO: Add Scroll addresses when needed
+  },
+
+  /**
+   * Manta Pacific (Chain ID: 169)
+   * Privacy-focused chain with Aperture and QuickSwap V3
+   */
+  manta: {
+    // TODO: Add Manta Pacific addresses when needed
+  },
+
+  /**
+   * Mode Network (Chain ID: 34443)
+   * New L2 with Kim V4 pools
+   */
+  mode: {
+    // TODO: Add Mode Network addresses when needed
   },
 };
 

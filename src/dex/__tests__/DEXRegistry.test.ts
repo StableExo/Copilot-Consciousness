@@ -40,7 +40,7 @@ describe('DEXRegistry', () => {
 
   it('should initialize with the correct number of DEXes', () => {
     const allDEXes = registry.getAllDEXes();
-    expect(allDEXes.length).toBe(14); // Updated: Added PancakeSwap V3 and Velodrome on Base
+    expect(allDEXes.length).toBe(31); // Updated: Added Tier 1 and Tier 2 DEXes across multiple chains
   });
 
   it('should include Raydium in the list of DEXes', () => {
@@ -63,13 +63,13 @@ describe('DEXRegistry', () => {
   it('should validate all DEXes successfully', async () => {
     const isValid = await registry.validateDEXes();
     expect(isValid).toBe(true);
-    expect(getCodeMock).toHaveBeenCalledTimes(13); // Updated: Now 13 EVM DEXes (added 2 more on Base)
+    expect(getCodeMock).toHaveBeenCalledTimes(30); // Updated: Now 30 EVM DEXes (added Tier 1 and Tier 2 DEXes)
     expect(getAccountInfoMock).toHaveBeenCalledTimes(1);
   });
 
   it('should return the correct DEXes for Base network (8453)', () => {
     const baseDEXes = registry.getDEXesByNetwork('8453');
-    expect(baseDEXes.length).toBe(7); // Updated: Added PancakeSwap V3 and Velodrome
+    expect(baseDEXes.length).toBe(14); // Updated: Added SushiSwap V3, Dopex V2, and other Base DEXes
     
     const dexNames = baseDEXes.map(d => d.name);
     expect(dexNames).toContain('Uniswap V3 on Base');
@@ -77,6 +77,8 @@ describe('DEXRegistry', () => {
     expect(dexNames).toContain('BaseSwap');
     expect(dexNames).toContain('PancakeSwap V3 on Base');
     expect(dexNames).toContain('Velodrome on Base');
+    expect(dexNames).toContain('SushiSwap V3 on Base');
+    expect(dexNames).toContain('Dopex V2 on Base');
     
     // Verify high-priority DEXes come first
     expect(baseDEXes[0].name).toBe('Uniswap V3 on Base');
