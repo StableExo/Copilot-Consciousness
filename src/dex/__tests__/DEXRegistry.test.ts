@@ -40,7 +40,7 @@ describe('DEXRegistry', () => {
 
   it('should initialize with the correct number of DEXes', () => {
     const allDEXes = registry.getAllDEXes();
-    expect(allDEXes.length).toBe(56); // Updated: Added Top 10 Optimism DEXes
+    expect(allDEXes.length).toBe(95); // Updated: Total DEXes across all chains (10 Solana + 85 EVM)
   });
 
   it('should include Raydium in the list of DEXes', () => {
@@ -51,8 +51,9 @@ describe('DEXRegistry', () => {
 
   it('should return the correct DEXes for the Solana network', () => {
     const solanaDEXes = registry.getDEXesByNetwork('mainnet-beta');
-    expect(solanaDEXes.length).toBe(1);
-    expect(solanaDEXes[0].name).toBe('Raydium');
+    expect(solanaDEXes.length).toBe(10); // Updated: 10 Solana DEXes
+    // First DEX is now Jupiter Exchange (top aggregator by volume)
+    expect(solanaDEXes[0].name).toBe('Jupiter Exchange');
   });
 
   it('should return the correct DEXes for the EVM network', () => {
@@ -63,8 +64,8 @@ describe('DEXRegistry', () => {
   it('should validate all DEXes successfully', async () => {
     const isValid = await registry.validateDEXes();
     expect(isValid).toBe(true);
-    expect(getCodeMock).toHaveBeenCalledTimes(55); // Updated: Now 55 EVM DEXes (added 9 Optimism DEXes: Uniswap V3, Synthetix, Curve V2, Balancer V2, PancakeSwap V3, SushiSwap V3, 1inch V5, KyberSwap V3, DODO V3)
-    expect(getAccountInfoMock).toHaveBeenCalledTimes(1);
+    expect(getCodeMock).toHaveBeenCalledTimes(85); // Updated: 85 EVM DEXes across all chains
+    expect(getAccountInfoMock).toHaveBeenCalledTimes(10); // Updated: 10 Solana DEXes
   });
 
   it('should return the correct DEXes for Base network (8453)', () => {
