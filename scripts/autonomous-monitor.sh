@@ -133,16 +133,28 @@ analyze_logs() {
     local analysis_window=$(tail -500 "$log_file")
     
     # Count various log types
-    local error_count=$(echo "$analysis_window" | grep -ic "error" || echo "0")
-    local warning_count=$(echo "$analysis_window" | grep -ic "warning\|warn" || echo "0")
-    local opportunity_count=$(echo "$analysis_window" | grep -ic "opportunity\|arbitrage.*found" || echo "0")
-    local execution_count=$(echo "$analysis_window" | grep -ic "executing.*arbitrage\|transaction.*sent" || echo "0")
-    local profit_count=$(echo "$analysis_window" | grep -ic "profit" || echo "0")
-    local gas_count=$(echo "$analysis_window" | grep -ic "gas.*too.*high\|gas.*exceeded" || echo "0")
-    local slippage_count=$(echo "$analysis_window" | grep -ic "slippage" || echo "0")
-    local rpc_error_count=$(echo "$analysis_window" | grep -ic "rpc.*error\|connection.*failed\|timeout" || echo "0")
-    local consciousness_count=$(echo "$analysis_window" | grep -ic "consciousness\|cognitive\|emergence" || echo "0")
-    local pool_count=$(echo "$analysis_window" | grep -ic "pool.*detected\|pool.*loaded" || echo "0")
+    local error_count=$(echo "$analysis_window" | grep -ic "error" 2>/dev/null || echo "0")
+    local warning_count=$(echo "$analysis_window" | grep -ic "warning\|warn" 2>/dev/null || echo "0")
+    local opportunity_count=$(echo "$analysis_window" | grep -ic "opportunity\|arbitrage.*found" 2>/dev/null || echo "0")
+    local execution_count=$(echo "$analysis_window" | grep -ic "executing.*arbitrage\|transaction.*sent" 2>/dev/null || echo "0")
+    local profit_count=$(echo "$analysis_window" | grep -ic "profit" 2>/dev/null || echo "0")
+    local gas_count=$(echo "$analysis_window" | grep -ic "gas.*too.*high\|gas.*exceeded" 2>/dev/null || echo "0")
+    local slippage_count=$(echo "$analysis_window" | grep -ic "slippage" 2>/dev/null || echo "0")
+    local rpc_error_count=$(echo "$analysis_window" | grep -ic "rpc.*error\|connection.*failed\|timeout" 2>/dev/null || echo "0")
+    local consciousness_count=$(echo "$analysis_window" | grep -ic "consciousness\|cognitive\|emergence" 2>/dev/null || echo "0")
+    local pool_count=$(echo "$analysis_window" | grep -ic "pool.*detected\|pool.*loaded" 2>/dev/null || echo "0")
+    
+    # Ensure all counts are integers (remove any whitespace/newlines)
+    error_count=$(echo "$error_count" | tr -d '\n\r ')
+    warning_count=$(echo "$warning_count" | tr -d '\n\r ')
+    opportunity_count=$(echo "$opportunity_count" | tr -d '\n\r ')
+    execution_count=$(echo "$execution_count" | tr -d '\n\r ')
+    profit_count=$(echo "$profit_count" | tr -d '\n\r ')
+    gas_count=$(echo "$gas_count" | tr -d '\n\r ')
+    slippage_count=$(echo "$slippage_count" | tr -d '\n\r ')
+    rpc_error_count=$(echo "$rpc_error_count" | tr -d '\n\r ')
+    consciousness_count=$(echo "$consciousness_count" | tr -d '\n\r ')
+    pool_count=$(echo "$pool_count" | tr -d '\n\r ')
     
     # Display analysis
     log_diagnostic "Counts:"
