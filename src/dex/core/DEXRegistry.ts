@@ -124,7 +124,7 @@ export class DEXRegistry {
             factory: '0x33128a8fC17869897dcE68Ed026d694621f6FDfD',
             initCodeHash: '0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54',
             priority: 1,
-            liquidityThreshold: V3_MIN_LIQUIDITY_THRESHOLD, // 10^12 - will become 10^6 after /1M scaling for V3
+            liquidityThreshold: V3_MIN_LIQUIDITY_THRESHOLD, // 10^12 - scaled to 10^6 during V3 comparison via V3_LIQUIDITY_SCALE_FACTOR
             gasEstimate: 150000
         });
 
