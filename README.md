@@ -1,14 +1,18 @@
 # AEV - TheWarden
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Production Status](https://img.shields.io/badge/Production-Phase%202%20Complete-success)]()
+[![Node.js Version](https://img.shields.io/badge/node-%5E20.11.1-brightgreen.svg)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3.3-blue.svg)](https://www.typescriptlang.org/)
+[![Production Status](https://img.shields.io/badge/Production-Phase%203%20Complete-success)]()
 [![Pool Detection](https://img.shields.io/badge/Pool%20Detection-Working%20%E2%9C%85-brightgreen)]()
 [![Performance](https://img.shields.io/badge/Scan%20Time-60s%20%E2%86%92%2010s-blue)]()
 [![Tests](https://img.shields.io/badge/Tests-1103%2F1109%20Passing-brightgreen)]()
+[![Code Style](https://img.shields.io/badge/code%20style-prettier-ff69b4.svg)](https://prettier.io/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 **AEV (Autonomous Extracted Value)** - An intelligent autonomous agent system competing with traditional MEV through learning-based value extraction, powered by **TheWarden**.
 
-📚 **[Documentation Index](DOCUMENTATION_INDEX.md)** | 🎯 **[Project Status](PROJECT_STATUS.md)** | 🚀 **[Quick Start](MAINNET_QUICKSTART.md)** | 📊 **[DEX Status](DEX_INTEGRATION_STATUS.md)** | 🎯 **[Aerodrome Integration](docs/AERODROME_INTEGRATION.md)**
+📚 **[Documentation Index](DOCUMENTATION_INDEX.md)** | 🎯 **[Project Status](PROJECT_STATUS.md)** | 🚀 **[Quick Start](MAINNET_QUICKSTART.md)** | 📊 **[DEX Status](DEX_INTEGRATION_STATUS.md)** | 🎯 **[Aerodrome Integration](docs/AERODROME_INTEGRATION.md)** | 🤝 **[Contributing](CONTRIBUTING.md)** | 🔒 **[Security](SECURITY.md)**
 
 ## 🎉 Latest: DEX Management Tools & Aerodrome Ready! 🚀
 
