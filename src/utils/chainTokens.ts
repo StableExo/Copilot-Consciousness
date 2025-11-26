@@ -14,7 +14,6 @@ export interface TokenInfo {
 
 export interface ChainTokens {
   WETH?: TokenInfo;
-  WMATIC?: TokenInfo;
   USDC?: TokenInfo;
   USDT?: TokenInfo;
   USDbC?: TokenInfo;
@@ -46,16 +45,12 @@ export function getTokensByChainId(chainId: number): ChainTokens {
     case 421613: // Arbitrum testnet
       return tokenAddresses.arbitrum as ChainTokens;
     
-    case 137: // Polygon mainnet
-    case 80001: // Mumbai testnet
-      return tokenAddresses.polygon as ChainTokens;
-    
     case 10: // Optimism mainnet
     case 420: // Optimism testnet (Goerli)
       return tokenAddresses.optimism as ChainTokens;
     
     default:
-      // Default to Ethereum
+      // Default to Ethereum for unknown chains
       return tokenAddresses.ethereum as ChainTokens;
   }
 }
@@ -91,8 +86,6 @@ export function getNetworkName(chainId: number): string {
     case 84532: return 'Base Sepolia';
     case 42161: return 'Arbitrum One';
     case 421613: return 'Arbitrum Goerli';
-    case 137: return 'Polygon';
-    case 80001: return 'Mumbai Testnet';
     case 10: return 'Optimism';
     case 420: return 'Optimism Goerli';
     default: return `Chain ${chainId}`;
