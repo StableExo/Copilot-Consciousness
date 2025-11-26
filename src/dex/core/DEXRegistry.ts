@@ -628,12 +628,13 @@ export class DEXRegistry {
 
         // #3 - Synthetix (perps) on Optimism (~$4M-$6M daily volume, ~$180M TVL as of Nov 2025)
         // Perpetual swaps leader on OP; low slippage for synths and forex; SNX staking yields
+        // Note: Synthetix uses a unified router architecture where the PerpsV2 Market Router handles both routing and market creation
         this.addDEX({
             name: 'Synthetix on Optimism',
             protocol: 'Synthetix',
             chainType: 'EVM',
             network: '10',
-            router: '0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4', // PerpsV2 Market Router
+            router: '0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4', // PerpsV2 Market Router (unified router/factory)
             factory: '0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4',
             initCodeHash: undefined, // Perpetuals protocol, not standard AMM
             priority: 3,
@@ -703,6 +704,7 @@ export class DEXRegistry {
 
         // #8 - 1inch V5 on Optimism (~$800K-$1.2M daily volume, ~$40M TVL as of Nov 2025)
         // Top aggregator; optimizes routes across OP DEXs for best prices; limit orders shine
+        // Note: 1inch uses the same Aggregation Router address across all supported chains
         this.addDEX({
             name: '1inch V5 on Optimism',
             protocol: '1inchV5',
@@ -733,6 +735,7 @@ export class DEXRegistry {
 
         // #10 - DODO V3 on Optimism (~$400K-$700K daily volume, ~$35M TVL as of Nov 2025)
         // PMM (proactive market maker) for efficient trades; growing for volatile assets like OP memes
+        // Note: DODO V3 uses consistent deployment addresses across multiple networks
         this.addDEX({
             name: 'DODO V3 on Optimism',
             protocol: 'DODOV3',
