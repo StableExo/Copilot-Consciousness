@@ -49,6 +49,10 @@ export function getTokensByChainId(chainId: number): ChainTokens {
     case 420: // Optimism testnet (Goerli)
       return tokenAddresses.optimism as ChainTokens;
 
+    case 56: // BNB Smart Chain mainnet
+    case 97: // BNB Smart Chain testnet
+      return tokenAddresses.bsc as ChainTokens;
+
     default:
       // Default to Ethereum for unknown chains
       return tokenAddresses.ethereum as ChainTokens;
@@ -101,6 +105,10 @@ export function getNetworkName(chainId: number): string {
       return 'Polygon';
     case 80001:
       return 'Polygon Mumbai';
+    case 56:
+      return 'BNB Smart Chain';
+    case 97:
+      return 'BNB Smart Chain Testnet';
     default:
       return `Chain ${chainId}`;
   }

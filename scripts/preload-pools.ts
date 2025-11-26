@@ -43,6 +43,9 @@ function getRpcUrlForChain(chainId: number): string | undefined {
     case 10: // Optimism mainnet
     case 420: // Optimism testnet
       return process.env.OPTIMISM_RPC_URL;
+    case 56: // BNB Smart Chain mainnet
+    case 97: // BNB Smart Chain testnet
+      return process.env.BSC_RPC_URL;
     default:
       return process.env.RPC_URL;
   }
