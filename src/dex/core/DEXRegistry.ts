@@ -292,6 +292,46 @@ export class DEXRegistry {
             gasEstimate: 150000
         });
 
+        // Top 10 Base DEXs Integration - Additional DEXs
+        this.addDEX({
+            name: 'Curve on Base',
+            protocol: 'Curve',
+            chainType: 'EVM',
+            network: '8453',
+            router: '0x4f37A9d177470499A2dD084621020b023fcffc1F', // Curve Router NG on Base
+            factory: '0x56545B4640E5f0937E56843ad8f0A3Cd44fc0785', // Twocrypto-NG Factory on Base
+            initCodeHash: '0x0f345e9d36a98a0d18fb9d8724c163499968dd2f130657141ba7a3557fd7854c',
+            priority: 5,
+            liquidityThreshold: V2_MIN_LIQUIDITY_THRESHOLD, // 10^15 for stable pools
+            gasEstimate: 180000
+        });
+
+        this.addDEX({
+            name: 'KyberSwap on Base',
+            protocol: 'KyberSwap',
+            chainType: 'EVM',
+            network: '8453',
+            router: '0x3BC6eB7aF3B9E47BB2e6e205c0c2A99A3bB0c893', // KyberSwap Elastic Router on Base
+            factory: '0x36B6CA2c7b2b9Cc7B4588574A9F2F2924D2B60F3', // KyberSwap Elastic Factory on Base
+            initCodeHash: undefined, // Elastic uses dynamic pools, query factory
+            priority: 13,
+            liquidityThreshold: V3_LOW_LIQUIDITY_THRESHOLD, // 10^11 for concentrated liquidity
+            gasEstimate: 150000
+        });
+
+        this.addDEX({
+            name: '1inch on Base',
+            protocol: '1inch',
+            chainType: 'EVM',
+            network: '8453',
+            router: '0x1111111254fb6c44bAC0beD2854e76F90643097d', // 1inch Aggregation Router (standard across chains)
+            factory: '0x1111111254fb6c44bAC0beD2854e76F90643097d', // 1inch uses router for aggregation
+            initCodeHash: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
+            priority: 14,
+            liquidityThreshold: V2_MIN_LIQUIDITY_THRESHOLD, // 10^15 for aggregator
+            gasEstimate: 160000
+        });
+
         this.addDEX({
             name: 'Raydium',
             protocol: 'Raydium',
