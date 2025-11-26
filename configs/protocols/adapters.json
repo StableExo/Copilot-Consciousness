@@ -23,6 +23,62 @@
     "supported_chains": ["base", "arbitrum", "ethereum"],
     "fee_tiers": [100, 500, 3000, 10000]
   },
+  "curve": {
+    "name": "Curve",
+    "type": "stableswap",
+    "version": "2",
+    "swapGasEstimate": 180000,
+    "supported_chains": ["ethereum", "arbitrum", "polygon", "base", "optimism"],
+    "fee": 400
+  },
+  "balancerV2": {
+    "name": "Balancer V2",
+    "type": "weighted_pool",
+    "version": "2",
+    "swapGasEstimate": 200000,
+    "supported_chains": ["ethereum", "arbitrum", "polygon", "base"],
+    "fee_tiers": [100, 300, 1000]
+  },
+  "1inch": {
+    "name": "1inch V5",
+    "type": "aggregator",
+    "version": "5",
+    "swapGasEstimate": 160000,
+    "supported_chains": ["ethereum", "arbitrum", "polygon", "base", "optimism"],
+    "fee": 0
+  },
+  "dydxV4": {
+    "name": "dYdX V4",
+    "type": "perpetuals",
+    "version": "4",
+    "swapGasEstimate": 200000,
+    "supported_chains": ["ethereum"],
+    "fee": 50
+  },
+  "gmxV2": {
+    "name": "GMX V2",
+    "type": "perpetuals",
+    "version": "2",
+    "swapGasEstimate": 220000,
+    "supported_chains": ["ethereum", "arbitrum"],
+    "fee": 60
+  },
+  "kyberswapV3": {
+    "name": "KyberSwap V3",
+    "type": "concentrated_liquidity",
+    "version": "3",
+    "swapGasEstimate": 160000,
+    "supported_chains": ["ethereum", "base", "arbitrum", "polygon"],
+    "fee_tiers": [8, 10, 40, 300, 1000]
+  },
+  "hashflow": {
+    "name": "Hashflow",
+    "type": "rfq",
+    "version": "1",
+    "swapGasEstimate": 180000,
+    "supported_chains": ["ethereum", "arbitrum", "polygon", "base"],
+    "fee": 0
+  },
   "aerodrome": {
     "name": "Aerodrome",
     "type": "concentrated_liquidity",

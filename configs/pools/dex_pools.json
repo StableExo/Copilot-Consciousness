@@ -1,4 +1,51 @@
 {
+  "ethereum": {
+    "uniswapV3": {
+      "factory": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+      "router": "0xE592427A0AEce92De3Edee1F18E0157C05861564",
+      "quoter": "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6"
+    },
+    "curve": {
+      "router": "0x99a58482BD75cbab83b27EC03CA68fF489b5788f",
+      "factory": "0xB9fC157394Af804a3578134A6585C0dc9cc990d4"
+    },
+    "sushiswap": {
+      "factory": "0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac",
+      "router": "0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F"
+    },
+    "sushiswapV3": {
+      "factory": "0xbACEB8eC6b935a1d9E2a2aCacB1bF4fD2E2B5a8c",
+      "router": "0x8A21F6768C1f8075791D08546Dadf6daA0bE820c"
+    },
+    "balancerV2": {
+      "vault": "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+      "factory": "0x8E9aa87E45e92bad84D5F8DD1bff34Fb92637dE9"
+    },
+    "1inch": {
+      "router": "0x1111111254fb6c44bAC0beD2854e76F90643097d",
+      "factory": "0x1111111254fb6c44bAC0beD2854e76F90643097d"
+    },
+    "pancakeswapV3": {
+      "factory": "0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865",
+      "router": "0x1b81D678ffb9C0263b24A97847620C99d213eB14"
+    },
+    "dydxV4": {
+      "router": "0x6C8f2A135f6ed072DE4503Bd7C4999a1a17F824B",
+      "factory": "0x6C8f2A135f6ed072DE4503Bd7C4999a1a17F824B"
+    },
+    "gmxV2": {
+      "router": "0x7C68C7866A64FA2160F78EEaE12217FFbf871fa8",
+      "factory": "0x7C68C7866A64FA2160F78EEaE12217FFbf871fa8"
+    },
+    "kyberswapV3": {
+      "router": "0x6131B5fae19EA4f9D964eAc0408E4408b66337b5",
+      "factory": "0x5F1dddbf348aC2fbe22a163e30F99F9ECE3DD50a"
+    },
+    "hashflow": {
+      "router": "0xF23d8342881eDECcED51ea694AC21C2B68440929",
+      "factory": "0xF23d8342881eDECcED51ea694AC21C2B68440929"
+    }
+  },
   "arbitrum": {
     "uniswapV3": {
       "factory": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
