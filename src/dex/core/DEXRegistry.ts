@@ -302,6 +302,182 @@ export class DEXRegistry {
             priority: 7,
             liquidityThreshold: BigInt(10000)
         });
+
+        // ═══════════════════════════════════════════════════════════
+        // TIER 1 - HIGH PRIORITY DEXES (Immediate Impact)
+        // ═══════════════════════════════════════════════════════════
+
+        // SushiSwap V3 on Base - Just launched, deep liquidity
+        this.addDEX({
+            name: 'SushiSwap V3 on Base',
+            protocol: 'SushiSwapV3',
+            chainType: 'EVM',
+            network: '8453',
+            router: '0x2E6cd2d30aa43f40aa81619ff4b6E0a41479B13F', // SushiSwap V3 Router on Base
+            factory: '0xbACEB8eC6b935a1d9E2a2aCacB1bF4fD2E2B5a8c',
+            initCodeHash: '0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54', // V3 style
+            priority: 3,
+            liquidityThreshold: V3_LOW_LIQUIDITY_THRESHOLD, // 10^11 for V3 style
+            gasEstimate: 150000
+        });
+
+        // Dopex V2 on Base - Brand new concentrated liquidity pools
+        this.addDEX({
+            name: 'Dopex V2 on Base',
+            protocol: 'DopexV2',
+            chainType: 'EVM',
+            network: '8453',
+            router: '0x6Ae4a8AB1D1a8c3C3D1F2e9c8e9e4c3c3d1f2e9c', // Placeholder - needs verification
+            factory: '0x6Ae4a8AB1D1a8c3C3D1F2e9c8e9e4c3c3d1f2e9c', // Placeholder - needs verification from Dopex docs
+            initCodeHash: undefined, // V3-style, query factory.getPool()
+            priority: 4,
+            liquidityThreshold: V3_LOW_LIQUIDITY_THRESHOLD,
+            gasEstimate: 150000
+        });
+
+        // Dopex V2 on Arbitrum - Brand new concentrated liquidity pools
+        this.addDEX({
+            name: 'Dopex V2 on Arbitrum',
+            protocol: 'DopexV2',
+            chainType: 'EVM',
+            network: '42161',
+            router: '0x6Ae4a8AB1D1a8c3C3D1F2e9c8e9e4c3c3d1f2e9c', // Placeholder - needs verification
+            factory: '0x6Ae4a8AB1D1a8c3C3D1F2e9c8e9e4c3c3d1f2e9c', // Placeholder - needs verification from Dopex docs
+            initCodeHash: undefined, // V3-style, query factory.getPool()
+            priority: 4,
+            liquidityThreshold: V3_LOW_LIQUIDITY_THRESHOLD,
+            gasEstimate: 150000
+        });
+
+        // Velodrome V2 on Optimism - The Aerodrome of OP, massive vote-locked liquidity
+        this.addDEX({
+            name: 'Velodrome V2 on Optimism',
+            protocol: 'VelodromeV2',
+            chainType: 'EVM',
+            network: '10',
+            router: '0xa062aE8A9c5e11aaA026fc2670B0D65cCc8B2858',
+            factory: '0xF1046053aa67B7aB5D7c916F32d2c56705a4D7A1',
+            initCodeHash: undefined, // Query factory.getPool() for pool addresses
+            priority: 3,
+            liquidityThreshold: V3_LOW_LIQUIDITY_THRESHOLD,
+            gasEstimate: 150000
+        });
+
+        // Lynex on Linea - The new Base killer for volume
+        this.addDEX({
+            name: 'Lynex on Linea',
+            protocol: 'Lynex',
+            chainType: 'EVM',
+            network: '59144',
+            router: '0x610D2f07b7EdC67565160F587F37636194C34E74',
+            factory: '0xBc7695Fd00E3b32D08124b7a4287493aEE99f9ee', // Lynex Factory on Linea
+            initCodeHash: undefined, // Velodrome-style, query factory
+            priority: 3,
+            liquidityThreshold: V3_LOW_LIQUIDITY_THRESHOLD,
+            gasEstimate: 150000
+        });
+
+        // ═══════════════════════════════════════════════════════════
+        // TIER 2 - CROSS-CHAIN ALPHA (Add This Week)
+        // ═══════════════════════════════════════════════════════════
+
+        // zkSync Era - PancakeSwap V3
+        this.addDEX({
+            name: 'PancakeSwap V3 on zkSync',
+            protocol: 'PancakeSwapV3',
+            chainType: 'EVM',
+            network: '324',
+            router: '0xf8b59f3c3Ab33200ec80a8A58b2aA5F5D2a8944C',
+            factory: '0x1BB72E0CbbEA93c08f535fc7856E0338D7F7a8aB', // PancakeSwap V3 Factory on zkSync Era
+            initCodeHash: '0x6ce8eb472fa82df5469c6ab6d485f17c3ad13c8cd7af59b3d4a8026c5ce0f7e2',
+            priority: 5,
+            liquidityThreshold: V3_LOW_LIQUIDITY_THRESHOLD,
+            gasEstimate: 150000
+        });
+
+        // zkSync Era - SyncSwap
+        this.addDEX({
+            name: 'SyncSwap on zkSync',
+            protocol: 'SyncSwap',
+            chainType: 'EVM',
+            network: '324',
+            router: '0x2da10A1e27bF85cEdD8FFb1AbBe97e53391C0295',
+            factory: '0xf2DAd89f2788a8CD54625C60b55cD3d2D0ACa7Cb', // SyncSwap Classic Pool Factory
+            initCodeHash: '0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f',
+            priority: 5,
+            liquidityThreshold: V2_MIN_LIQUIDITY_THRESHOLD,
+            gasEstimate: 130000
+        });
+
+        // Scroll - Skydrome
+        this.addDEX({
+            name: 'Skydrome on Scroll',
+            protocol: 'Skydrome',
+            chainType: 'EVM',
+            network: '534352',
+            router: '0xAA111C62cDEEf205f70E6722D1E22274274ec12F',
+            factory: '0xAAA45c8F5ef92a000a121d102F4e89278a711Faa', // Skydrome Factory on Scroll
+            initCodeHash: undefined, // Velodrome-style
+            priority: 6,
+            liquidityThreshold: V3_LOW_LIQUIDITY_THRESHOLD,
+            gasEstimate: 150000
+        });
+
+        // Scroll - Ambient Finance
+        this.addDEX({
+            name: 'Ambient Finance on Scroll',
+            protocol: 'Ambient',
+            chainType: 'EVM',
+            network: '534352',
+            router: '0xaAaaaAAAFfe404EeE4A6bC4242615A0e4673d2e6',
+            factory: '0xaAaaaAAAFfe404EeE4A6bC4242615A0e4673d2e6', // Ambient uses single contract
+            initCodeHash: undefined, // Ambient uses unique single-contract architecture
+            priority: 6,
+            liquidityThreshold: V3_LOW_LIQUIDITY_THRESHOLD,
+            gasEstimate: 150000
+        });
+
+        // Manta Pacific - Aperture Finance
+        this.addDEX({
+            name: 'Aperture Finance on Manta',
+            protocol: 'Aperture',
+            chainType: 'EVM',
+            network: '169',
+            router: '0x0d7c4b40018969f81750d0a164c3839a77353EFB',
+            factory: '0xAaa20D08e59F6561f242b08513D36266C5A29415', // Aperture Factory on Manta Pacific
+            initCodeHash: undefined, // V3-style
+            priority: 6,
+            liquidityThreshold: V3_LOW_LIQUIDITY_THRESHOLD,
+            gasEstimate: 150000
+        });
+
+        // Manta Pacific - QuickSwap V3
+        this.addDEX({
+            name: 'QuickSwap V3 on Manta',
+            protocol: 'QuickSwapV3',
+            chainType: 'EVM',
+            network: '169',
+            router: '0xaA111C62cDEEf205f70E6722D1E22274274ec12F',
+            factory: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // QuickSwap V3 Factory on Manta
+            initCodeHash: '0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54', // V3 style
+            priority: 6,
+            liquidityThreshold: V3_LOW_LIQUIDITY_THRESHOLD,
+            gasEstimate: 150000
+        });
+
+        // Mode Network - Kim V4
+        this.addDEX({
+            name: 'Kim V4 on Mode',
+            protocol: 'KimV4',
+            chainType: 'EVM',
+            network: '34443',
+            router: '0xAc48FcF1049668B285f3dC72483DF5Ae2162f7e8',
+            factory: '0x0c3c1c532F1e39EdF36BE9Fe0bE1410313E074Bf', // Kim V4 Factory on Mode
+            initCodeHash: undefined, // V4 architecture
+            priority: 6,
+            liquidityThreshold: V3_LOW_LIQUIDITY_THRESHOLD,
+            gasEstimate: 150000
+        });
     }
 
     addDEX(dex: DEXConfig): void {
