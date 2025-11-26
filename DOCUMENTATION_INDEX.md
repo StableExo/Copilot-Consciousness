@@ -32,6 +32,7 @@ Quick reference guide to all project documentation.
 ### Integration Guides
 - **[AI_INTEGRATION.md](docs/AI_INTEGRATION.md)** - AI provider integration guide
 - **[ARBITRAGE_ENGINES.md](docs/ARBITRAGE_ENGINES.md)** - Arbitrage engine documentation
+- **[BASE_TOP_10_DEXS.md](docs/BASE_TOP_10_DEXS.md)** - ⭐ Top 10 DEXs on Base Network (November 2025)
 - **[MEV_INTELLIGENCE_SUITE.md](docs/MEV_INTELLIGENCE_SUITE.md)** - MEV awareness and risk modeling
 - **[FLASHBOTS_INTELLIGENCE.md](docs/FLASHBOTS_INTELLIGENCE.md)** - Flashbots integration
 - **[BUILDERNET_INTEGRATION.md](docs/BUILDERNET_INTEGRATION.md)** - BuilderNet TEE integration
@@ -140,7 +141,7 @@ Current and recent analysis reports:
 → [NEXT_PHASE_PLANNING.md](NEXT_PHASE_PLANNING.md) → [PHASE2_VALIDATION_REPORT.md](PHASE2_VALIDATION_REPORT.md)
 
 **Improve profitability and execution**
-→ [PROFITABLE_EXECUTION_PLAN.md](docs/PROFITABLE_EXECUTION_PLAN.md) → [MEV_INTELLIGENCE_SUITE.md](docs/MEV_INTELLIGENCE_SUITE.md)
+→ [PROFITABLE_EXECUTION_PLAN.md](docs/PROFITABLE_EXECUTION_PLAN.md) → [BASE_TOP_10_DEXS.md](docs/BASE_TOP_10_DEXS.md) → [MEV_INTELLIGENCE_SUITE.md](docs/MEV_INTELLIGENCE_SUITE.md)
 
 **Configure for production**
 → [ENV_PRODUCTION_READINESS_REVIEW.md](docs/ENV_PRODUCTION_READINESS_REVIEW.md) → [MAIN_RUNNER.md](docs/MAIN_RUNNER.md)
@@ -158,8 +159,8 @@ Current and recent analysis reports:
 
 ## 📅 Last Updated
 
-**Date**: November 24, 2025  
-**Version**: 3.1.0 (Post Phase 2 Validation + AGI Safety Analysis)
+**Date**: November 26, 2025  
+**Version**: 3.1.0 (Post Phase 2 Validation + Top 10 Base DEXs Integration)
 
 ---
 
