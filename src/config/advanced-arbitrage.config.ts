@@ -9,35 +9,36 @@ import { AdvancedOrchestratorConfig } from '../arbitrage/AdvancedOrchestrator';
 
 /**
  * Default configuration for advanced arbitrage
+ * Optimized for Base L2 with lower liquidity thresholds and reduced memory usage
  */
 export const defaultAdvancedArbitrageConfig: AdvancedOrchestratorConfig = {
   pathfinding: {
     strategy: 'auto', // Auto-selects based on graph size
-    maxHops: 5,
+    maxHops: 4, // Reduced from 5 for faster execution
     minProfitThreshold: BigInt(50), // Minimum 50 wei profit
     maxSlippage: 0.05, // 5% max slippage
     gasPrice: BigInt(50000000000) // 50 gwei
   },
   
   pruning: {
-    aggressiveness: 'medium',
-    minPoolLiquidity: BigInt(100000), // Minimum $100k liquidity (in wei)
-    maxPriceImpactPerHop: 2.0, // 2% max per hop
-    maxCumulativeSlippage: 5.0, // 5% max total
-    minPoolQualityScore: 0.3 // 0-1 scale
+    aggressiveness: 'low', // Changed from 'medium' to discover more pools
+    minPoolLiquidity: BigInt(10000), // Reduced from 100000 to 10000 for Base L2
+    maxPriceImpactPerHop: 3.0, // Increased from 2% to 3% for more opportunities
+    maxCumulativeSlippage: 5.0, // Reduced from 7% to 5% max total for safer profitability
+    minPoolQualityScore: 0.2 // Reduced from 0.3 to include more pools
   },
   
   cache: {
     enabled: true,
-    maxEntries: 1000,
-    ttl: 300, // 5 minutes
-    minProfitabilityScore: 0.3
+    maxEntries: 500, // Reduced from 1000 to save memory
+    ttl: 120, // Reduced from 300 to 120 seconds for fresher data
+    minProfitabilityScore: 0.2 // Reduced from 0.3
   },
   
   slippage: {
     defaultCurveType: 'constant-product',
-    warningThreshold: 1.0, // 1% price impact warning
-    maxSafeImpact: 3.0 // 3% max safe impact
+    warningThreshold: 1.5, // Increased from 1% to 1.5%
+    maxSafeImpact: 4.0 // Increased from 3% to 4%
   },
   
   enableAdvancedFeatures: true,
@@ -46,24 +47,25 @@ export const defaultAdvancedArbitrageConfig: AdvancedOrchestratorConfig = {
 
 /**
  * High performance configuration - for large graphs
+ * Memory-optimized for production use
  */
 export const highPerformanceConfig: AdvancedOrchestratorConfig = {
   ...defaultAdvancedArbitrageConfig,
   pathfinding: {
     ...defaultAdvancedArbitrageConfig.pathfinding,
     strategy: 'bellman-ford', // Best for large graphs
-    maxHops: 4 // Reduce hops for faster execution
+    maxHops: 3 // Reduced from 4 for faster execution
   },
   pruning: {
     ...defaultAdvancedArbitrageConfig.pruning,
-    aggressiveness: 'high', // Aggressive pruning for speed
-    minPoolLiquidity: BigInt(500000), // Higher liquidity requirement
-    maxPriceImpactPerHop: 1.5 // Stricter price impact
+    aggressiveness: 'medium', // Changed from 'high' to discover more pools
+    minPoolLiquidity: BigInt(50000), // Reduced from 500000 for Base L2
+    maxPriceImpactPerHop: 3.0 // More lenient
   },
   cache: {
     ...defaultAdvancedArbitrageConfig.cache,
-    maxEntries: 2000, // Larger cache for better hit rate
-    ttl: 180 // 3 minutes for more frequent updates
+    maxEntries: 500, // Reduced from 2000 for memory optimization
+    ttl: 90 // Reduced to 90 seconds
   }
 };
 
@@ -91,6 +93,7 @@ export const thoroughConfig: AdvancedOrchestratorConfig = {
 
 /**
  * Real-time configuration - for event-driven arbitrage
+ * Optimized for low memory and fast discovery on L2
  */
 export const realtimeConfig: AdvancedOrchestratorConfig = {
   ...defaultAdvancedArbitrageConfig,
@@ -102,14 +105,14 @@ export const realtimeConfig: AdvancedOrchestratorConfig = {
   },
   pruning: {
     ...defaultAdvancedArbitrageConfig.pruning,
-    aggressiveness: 'high',
-    minPoolLiquidity: BigInt(200000),
-    maxPriceImpactPerHop: 1.0 // Very strict for real-time
+    aggressiveness: 'low', // Changed from 'high' to discover more pools
+    minPoolLiquidity: BigInt(20000), // Reduced from 200000 for Base L2
+    maxPriceImpactPerHop: 3.0 // More lenient for real-time
   },
   cache: {
     ...defaultAdvancedArbitrageConfig.cache,
     enabled: true,
-    maxEntries: 500,
+    maxEntries: 300, // Reduced from 500 for memory
     ttl: 60 // 1 minute for real-time freshness
   }
 };
