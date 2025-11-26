@@ -39,6 +39,7 @@
     "validate-env": "ts-node scripts/validate-env.ts",
     "validate-mainnet": "node scripts/validate-mainnet-config.js",
     "verify-key": "node scripts/verify-private-key.js",
+    "compare-env": "ts-node scripts/compare-env-files.ts",
     "mainnet": "npm run validate-mainnet && npm run build && npm start",
     "check": "npm run lint && npm run format:check && npm run build && npm test",
     "compile": "hardhat compile",
