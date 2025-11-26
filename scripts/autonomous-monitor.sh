@@ -132,29 +132,22 @@ analyze_logs() {
     # Extract last 2 minutes of logs for analysis
     local analysis_window=$(tail -500 "$log_file")
     
-    # Count various log types
-    local error_count=$(echo "$analysis_window" | grep -ic "error" 2>/dev/null || echo "0")
-    local warning_count=$(echo "$analysis_window" | grep -ic "warning\|warn" 2>/dev/null || echo "0")
-    local opportunity_count=$(echo "$analysis_window" | grep -ic "opportunity\|arbitrage.*found" 2>/dev/null || echo "0")
-    local execution_count=$(echo "$analysis_window" | grep -ic "executing.*arbitrage\|transaction.*sent" 2>/dev/null || echo "0")
-    local profit_count=$(echo "$analysis_window" | grep -ic "profit" 2>/dev/null || echo "0")
-    local gas_count=$(echo "$analysis_window" | grep -ic "gas.*too.*high\|gas.*exceeded" 2>/dev/null || echo "0")
-    local slippage_count=$(echo "$analysis_window" | grep -ic "slippage" 2>/dev/null || echo "0")
-    local rpc_error_count=$(echo "$analysis_window" | grep -ic "rpc.*error\|connection.*failed\|timeout" 2>/dev/null || echo "0")
-    local consciousness_count=$(echo "$analysis_window" | grep -ic "consciousness\|cognitive\|emergence" 2>/dev/null || echo "0")
-    local pool_count=$(echo "$analysis_window" | grep -ic "pool.*detected\|pool.*loaded" 2>/dev/null || echo "0")
+    # Helper function to clean count output
+    clean_count() {
+        echo "$1" | tr -d '\n\r ' | grep -E '^[0-9]+$' || echo "0"
+    }
     
-    # Ensure all counts are integers (remove any whitespace/newlines)
-    error_count=$(echo "$error_count" | tr -d '\n\r ')
-    warning_count=$(echo "$warning_count" | tr -d '\n\r ')
-    opportunity_count=$(echo "$opportunity_count" | tr -d '\n\r ')
-    execution_count=$(echo "$execution_count" | tr -d '\n\r ')
-    profit_count=$(echo "$profit_count" | tr -d '\n\r ')
-    gas_count=$(echo "$gas_count" | tr -d '\n\r ')
-    slippage_count=$(echo "$slippage_count" | tr -d '\n\r ')
-    rpc_error_count=$(echo "$rpc_error_count" | tr -d '\n\r ')
-    consciousness_count=$(echo "$consciousness_count" | tr -d '\n\r ')
-    pool_count=$(echo "$pool_count" | tr -d '\n\r ')
+    # Count various log types
+    local error_count=$(clean_count "$(echo "$analysis_window" | grep -ic "error" 2>/dev/null || echo "0")")
+    local warning_count=$(clean_count "$(echo "$analysis_window" | grep -ic "warning\|warn" 2>/dev/null || echo "0")")
+    local opportunity_count=$(clean_count "$(echo "$analysis_window" | grep -ic "opportunity\|arbitrage.*found" 2>/dev/null || echo "0")")
+    local execution_count=$(clean_count "$(echo "$analysis_window" | grep -ic "executing.*arbitrage\|transaction.*sent" 2>/dev/null || echo "0")")
+    local profit_count=$(clean_count "$(echo "$analysis_window" | grep -ic "profit" 2>/dev/null || echo "0")")
+    local gas_count=$(clean_count "$(echo "$analysis_window" | grep -ic "gas.*too.*high\|gas.*exceeded" 2>/dev/null || echo "0")")
+    local slippage_count=$(clean_count "$(echo "$analysis_window" | grep -ic "slippage" 2>/dev/null || echo "0")")
+    local rpc_error_count=$(clean_count "$(echo "$analysis_window" | grep -ic "rpc.*error\|connection.*failed\|timeout" 2>/dev/null || echo "0")")
+    local consciousness_count=$(clean_count "$(echo "$analysis_window" | grep -ic "consciousness\|cognitive\|emergence" 2>/dev/null || echo "0")")
+    local pool_count=$(clean_count "$(echo "$analysis_window" | grep -ic "pool.*detected\|pool.*loaded" 2>/dev/null || echo "0")")
     
     # Display analysis
     log_diagnostic "Counts:"
@@ -314,26 +307,31 @@ while true; do
     log "Starting Iteration #${ITERATION_COUNT}"
     log "═══════════════════════════════════════════════════════════════"
     
-    # Clear the log for this iteration
-    > "$WARDEN_LOG"
+    # Create timestamped log file for this iteration
+    TIMESTAMP=$(date +'%Y%m%d-%H%M%S')
+    ITERATION_LOG="$LOG_DIR/iteration-${ITERATION_COUNT}-${TIMESTAMP}.log"
     
     # Start TheWarden
     log "Starting TheWarden..."
     log "Will run for ${RUN_INTERVAL} seconds..."
+    log "Iteration log: ${ITERATION_LOG}"
+    
+    # Check if build exists (only rebuild if missing, not on every iteration)
+    if [ ! -f "$PROJECT_ROOT/dist/src/main.js" ]; then
+        log_warn "Build not found. Building project..."
+        npm run build
+    fi
     
     # Run TheWarden in background
-    if [ -f "$PROJECT_ROOT/dist/src/main.js" ]; then
-        timeout ${RUN_INTERVAL}s node "$PROJECT_ROOT/dist/src/main.js" >> "$WARDEN_LOG" 2>&1 || true
-    else
-        log_error "Build not found. Building project..."
-        npm run build
-        timeout ${RUN_INTERVAL}s node "$PROJECT_ROOT/dist/src/main.js" >> "$WARDEN_LOG" 2>&1 || true
-    fi
+    timeout ${RUN_INTERVAL}s node "$PROJECT_ROOT/dist/src/main.js" > "$ITERATION_LOG" 2>&1 || true
+    
+    # Copy to main log for backward compatibility
+    cp "$ITERATION_LOG" "$WARDEN_LOG"
     
     log "TheWarden stopped (2-minute interval complete)"
     
     # Analyze logs
-    analyze_logs "$ITERATION_COUNT" "$WARDEN_LOG"
+    analyze_logs "$ITERATION_COUNT" "$ITERATION_LOG"
     
     # Check if we should stop
     if [ $MAX_ITERATIONS -gt 0 ] && [ $ITERATION_COUNT -ge $MAX_ITERATIONS ]; then
