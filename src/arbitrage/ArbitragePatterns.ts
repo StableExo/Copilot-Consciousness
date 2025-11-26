@@ -1,6 +1,6 @@
 /**
  * ArbitragePatterns - Pattern detection and classification for arbitrage
- * 
+ *
  * Supports various arbitrage patterns and provides pattern-specific optimizations
  */
 
@@ -9,13 +9,13 @@ import { ArbitragePath, ArbitrageHop } from './types';
 /**
  * Arbitrage pattern types
  */
-export type ArbitragePatternType = 
-  | 'circular'           // A → B → C → ... → A
-  | 'triangular'         // A → B → C → A (exactly 3 hops)
-  | 'multi-dex'          // Same path across different DEXs
-  | 'flash-loan'         // Path that could benefit from flash loan
-  | 'cross-chain'        // Arbitrage across different chains
-  | 'stable-swap'        // Between stablecoins
+export type ArbitragePatternType =
+  | 'circular' // A → B → C → ... → A
+  | 'triangular' // A → B → C → A (exactly 3 hops)
+  | 'multi-dex' // Same path across different DEXs
+  | 'flash-loan' // Path that could benefit from flash loan
+  | 'cross-chain' // Arbitrage across different chains
+  | 'stable-swap' // Between stablecoins
   | 'unknown';
 
 /**
@@ -44,7 +44,8 @@ export class ArbitragePatterns {
   private patternMetrics: Map<ArbitragePatternType, PatternMetrics>;
   private flashLoanThreshold: bigint; // Configurable flash loan threshold
 
-  constructor(flashLoanThreshold: bigint = BigInt('10000000000000000000')) { // Default 10 ETH
+  constructor(flashLoanThreshold: bigint = BigInt('10000000000000000000')) {
+    // Default 10 ETH
     this.patternMetrics = new Map();
     this.flashLoanThreshold = flashLoanThreshold;
     this.initializeMetrics();
@@ -62,77 +63,101 @@ export class ArbitragePatterns {
    */
   detectPattern(path: ArbitragePath): PatternAnalysis {
     const hopCount = path.hops.length;
-    
+
     // Check for triangular arbitrage (exactly 3 hops)
     if (this.isTriangular(path)) {
-      return this.createAnalysis('triangular', 1.0, [
-        'Exactly 3 token swaps',
-        'Returns to starting token',
-        'Classic triangular arbitrage pattern'
-      ], [
-        'Low gas cost due to few hops',
-        'Quick execution time',
-        'Lower slippage risk'
-      ], 'low');
+      return this.createAnalysis(
+        'triangular',
+        1.0,
+        [
+          'Exactly 3 token swaps',
+          'Returns to starting token',
+          'Classic triangular arbitrage pattern',
+        ],
+        ['Low gas cost due to few hops', 'Quick execution time', 'Lower slippage risk'],
+        'low'
+      );
     }
 
     // Check for flash loan pattern
     if (this.isFlashLoanCandidate(path)) {
-      return this.createAnalysis('flash-loan', 0.8, [
-        'High capital requirement',
-        'Profitable without upfront capital',
-        'Single transaction execution'
-      ], [
-        'Consider using flash loan to maximize profit',
-        'Factor in flash loan fees',
-        'Ensure atomic execution'
-      ], 'medium');
+      return this.createAnalysis(
+        'flash-loan',
+        0.8,
+        [
+          'High capital requirement',
+          'Profitable without upfront capital',
+          'Single transaction execution',
+        ],
+        [
+          'Consider using flash loan to maximize profit',
+          'Factor in flash loan fees',
+          'Ensure atomic execution',
+        ],
+        'medium'
+      );
     }
 
     // Check for multi-DEX pattern
     if (this.isMultiDex(path)) {
-      return this.createAnalysis('multi-dex', 0.9, [
-        'Uses multiple DEXs',
-        'Price discrepancy across exchanges',
-        'Requires cross-DEX execution'
-      ], [
-        'Monitor DEX-specific slippage',
-        'Consider gas costs of multiple DEX interactions',
-        'Check for MEV risks'
-      ], 'medium');
+      return this.createAnalysis(
+        'multi-dex',
+        0.9,
+        [
+          'Uses multiple DEXs',
+          'Price discrepancy across exchanges',
+          'Requires cross-DEX execution',
+        ],
+        [
+          'Monitor DEX-specific slippage',
+          'Consider gas costs of multiple DEX interactions',
+          'Check for MEV risks',
+        ],
+        'medium'
+      );
     }
 
     // Check for stable swap pattern
     if (this.isStableSwap(path)) {
-      return this.createAnalysis('stable-swap', 0.85, [
-        'Arbitrage between similar-value assets',
-        'Low slippage expected',
-        'High volume potential'
-      ], [
-        'Use stable swap optimized AMMs (Curve)',
-        'Lower slippage tolerance acceptable',
-        'Watch for de-pegging events'
-      ], 'low');
+      return this.createAnalysis(
+        'stable-swap',
+        0.85,
+        [
+          'Arbitrage between similar-value assets',
+          'Low slippage expected',
+          'High volume potential',
+        ],
+        [
+          'Use stable swap optimized AMMs (Curve)',
+          'Lower slippage tolerance acceptable',
+          'Watch for de-pegging events',
+        ],
+        'low'
+      );
     }
 
     // Default to circular pattern
     if (this.isCircular(path)) {
-      return this.createAnalysis('circular', 0.95, [
-        `${hopCount} token swaps`,
-        'Returns to starting token',
-        'Multi-hop arbitrage'
-      ], [
-        'Monitor cumulative slippage',
-        'Consider breaking into smaller trades',
-        'Optimize gas for multi-hop execution'
-      ], hopCount > 4 ? 'high' : 'medium');
+      return this.createAnalysis(
+        'circular',
+        0.95,
+        [`${hopCount} token swaps`, 'Returns to starting token', 'Multi-hop arbitrage'],
+        [
+          'Monitor cumulative slippage',
+          'Consider breaking into smaller trades',
+          'Optimize gas for multi-hop execution',
+        ],
+        hopCount > 4 ? 'high' : 'medium'
+      );
     }
 
-    return this.createAnalysis('unknown', 0.5, [
-      'Pattern not recognized'
-    ], [
-      'Manual review recommended'
-    ], 'high');
+    return this.createAnalysis(
+      'unknown',
+      0.5,
+      ['Pattern not recognized'],
+      ['Manual review recommended'],
+      'high'
+    );
   }
 
   /**
@@ -140,41 +165,41 @@ export class ArbitragePatterns {
    */
   getOptimizationStrategy(pattern: ArbitragePatternType): string[] {
     const strategies: Record<ArbitragePatternType, string[]> = {
-      'triangular': [
+      triangular: [
         'Use single transaction execution',
         'Minimize gas by batching swaps',
-        'Monitor slippage on all three legs'
+        'Monitor slippage on all three legs',
       ],
-      'circular': [
+      circular: [
         'Break long paths into segments if possible',
         'Use path caching for recurring patterns',
-        'Consider intermediate profit-taking'
+        'Consider intermediate profit-taking',
       ],
       'multi-dex': [
         'Check for sandwich attack vulnerability',
         'Use private transaction pools',
-        'Optimize routing across DEXs'
+        'Optimize routing across DEXs',
       ],
       'flash-loan': [
         'Calculate flash loan fees in profitability',
         'Ensure atomic execution',
-        'Have fallback strategy if flash loan fails'
+        'Have fallback strategy if flash loan fails',
       ],
       'cross-chain': [
         'Account for bridge fees and delays',
         'Monitor cross-chain oracle reliability',
-        'Consider timing risks'
+        'Consider timing risks',
       ],
       'stable-swap': [
         'Use Curve or similar stable swap AMMs',
         'Take advantage of low slippage',
-        'Monitor for de-pegging events'
+        'Monitor for de-pegging events',
       ],
-      'unknown': [
+      unknown: [
         'Perform detailed manual analysis',
         'Start with small test trades',
-        'Monitor closely for unexpected behavior'
-      ]
+        'Monitor closely for unexpected behavior',
+      ],
     };
 
     return strategies[pattern] || strategies['unknown'];
@@ -190,14 +215,14 @@ export class ArbitragePatterns {
     successful: boolean
   ): void {
     let metrics = this.patternMetrics.get(pattern);
-    
+
     if (!metrics) {
       metrics = {
         pattern,
         count: 0,
         avgProfit: BigInt(0),
         successRate: 0,
-        avgGasCost: BigInt(0)
+        avgGasCost: BigInt(0),
       };
       this.patternMetrics.set(pattern, metrics);
     }
@@ -208,10 +233,11 @@ export class ArbitragePatterns {
     // Update rolling averages
     if (successful) {
       metrics.avgProfit = (metrics.avgProfit * BigInt(prevCount) + profit) / BigInt(metrics.count);
-      metrics.avgGasCost = (metrics.avgGasCost * BigInt(prevCount) + gasCost) / BigInt(metrics.count);
+      metrics.avgGasCost =
+        (metrics.avgGasCost * BigInt(prevCount) + gasCost) / BigInt(metrics.count);
     }
 
-    metrics.successRate = ((metrics.successRate * prevCount) + (successful ? 1 : 0)) / metrics.count;
+    metrics.successRate = (metrics.successRate * prevCount + (successful ? 1 : 0)) / metrics.count;
   }
 
   /**
@@ -256,8 +282,7 @@ export class ArbitragePatterns {
   // Private pattern detection methods
 
   private isTriangular(path: ArbitragePath): boolean {
-    return path.hops.length === 3 && 
-           path.startToken === path.endToken;
+    return path.hops.length === 3 && path.startToken === path.endToken;
   }
 
   private isCircular(path: ArbitragePath): boolean {
@@ -265,7 +290,7 @@ export class ArbitragePatterns {
   }
 
   private isMultiDex(path: ArbitragePath): boolean {
-    const dexes = new Set(path.hops.map(hop => hop.dexName));
+    const dexes = new Set(path.hops.map((hop) => hop.dexName));
     return dexes.size > 1;
   }
 
@@ -274,14 +299,14 @@ export class ArbitragePatterns {
     // 1. Required capital is significant (> threshold)
     // 2. Profit margin is good enough to cover flash loan fees
     const startAmount = path.hops[0].amountIn;
-    
+
     if (startAmount < this.flashLoanThreshold) {
       return false;
     }
 
     // Flash loan fee is typically 0.09% (9 basis points)
     const flashLoanFee = (startAmount * BigInt(9)) / BigInt(10000);
-    
+
     return path.netProfit > flashLoanFee * BigInt(2); // 2x to make it worthwhile
   }
 
@@ -290,7 +315,7 @@ export class ArbitragePatterns {
     // This is a simplified check - in production, would check against
     // a list of known stablecoins
     const stablePatterns = ['USDT', 'USDC', 'DAI', 'BUSD', 'TUSD', 'FRAX'];
-    
+
     // Check if token symbols contain stable patterns (would need token metadata)
     // For now, check if fees are very low (typical for stable swaps)
     const avgFee = path.totalFees / path.hops.length;
@@ -309,7 +334,7 @@ export class ArbitragePatterns {
       confidence,
       characteristics,
       optimizationHints: hints,
-      riskLevel: risk
+      riskLevel: risk,
     };
   }
 
@@ -321,7 +346,7 @@ export class ArbitragePatterns {
       'flash-loan',
       'cross-chain',
       'stable-swap',
-      'unknown'
+      'unknown',
     ];
 
     for (const pattern of patternTypes) {
@@ -330,7 +355,7 @@ export class ArbitragePatterns {
         count: 0,
         avgProfit: BigInt(0),
         successRate: 0,
-        avgGasCost: BigInt(0)
+        avgGasCost: BigInt(0),
       });
     }
   }

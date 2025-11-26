@@ -1,6 +1,6 @@
 /**
  * EnhancedSlippageCalculator - Accurate slippage modeling for multi-hop arbitrage
- * 
+ *
  * Uses reserve-based price impact calculations and constant product formula
  * for accurate output predictions across different AMM types
  */
@@ -51,7 +51,7 @@ export class EnhancedSlippageCalculator {
     this.config = {
       defaultCurveType: config.defaultCurveType || 'constant-product',
       warningThreshold: config.warningThreshold || 1.0, // 1% warning
-      maxSafeImpact: config.maxSafeImpact || 3.0 // 3% max safe
+      maxSafeImpact: config.maxSafeImpact || 3.0, // 3% max safe
     };
     this.curveTypes = new Map();
     this.stableSwapAmplification = 100; // Default A parameter for stablecoins
@@ -74,7 +74,7 @@ export class EnhancedSlippageCalculator {
     fee: number,
     poolAddress?: string
   ): PriceImpact {
-    const curveType = poolAddress 
+    const curveType = poolAddress
       ? this.curveTypes.get(poolAddress) || this.config.defaultCurveType
       : this.config.defaultCurveType;
 
@@ -109,7 +109,7 @@ export class EnhancedSlippageCalculator {
       );
 
       hopImpacts.push(impact);
-      
+
       // Check for warning threshold
       if (impact.percentage > this.config.warningThreshold) {
         priceImpactWarning = true;
@@ -117,10 +117,10 @@ export class EnhancedSlippageCalculator {
 
       // Accumulate slippage
       totalSlippageCost += impact.slippageCost;
-      
+
       // Compound slippage across hops
-      cumulativeSlippage = cumulativeSlippage + impact.percentage + 
-        (cumulativeSlippage * impact.percentage / 100);
+      cumulativeSlippage =
+        cumulativeSlippage + impact.percentage + (cumulativeSlippage * impact.percentage) / 100;
 
       // Update amount for next hop
       currentAmount = impact.amountOut;
@@ -131,7 +131,7 @@ export class EnhancedSlippageCalculator {
       cumulativeSlippage,
       totalSlippageCost,
       finalAmount: currentAmount,
-      priceImpactWarning
+      priceImpactWarning,
     };
   }
 
@@ -183,12 +183,16 @@ export class EnhancedSlippageCalculator {
     }
 
     if (result.cumulativeSlippage > this.config.maxSafeImpact) {
-      warnings.push(`Cumulative slippage (${result.cumulativeSlippage.toFixed(2)}%) exceeds safe threshold`);
+      warnings.push(
+        `Cumulative slippage (${result.cumulativeSlippage.toFixed(2)}%) exceeds safe threshold`
+      );
     }
 
     result.hopImpacts.forEach((impact, index) => {
       if (impact.percentage > this.config.maxSafeImpact) {
-        warnings.push(`Hop ${index + 1}: Excessive price impact (${impact.percentage.toFixed(2)}%)`);
+        warnings.push(
+          `Hop ${index + 1}: Excessive price impact (${impact.percentage.toFixed(2)}%)`
+        );
       }
     });
 
@@ -211,7 +215,7 @@ export class EnhancedSlippageCalculator {
         percentage: 100,
         amountOut: BigInt(0),
         effectivePrice: 0,
-        slippageCost: amountIn
+        slippageCost: amountIn,
       };
     }
 
@@ -230,20 +234,18 @@ export class EnhancedSlippageCalculator {
     // Calculate expected output without slippage (at current rate)
     const spotRate = Number(reserveOut) / Number(reserveIn);
     const expectedOut = BigInt(Math.floor(Number(amountInWithFee) * spotRate));
-    
+
     // Slippage cost is the difference
     const slippageCost = expectedOut > amountOut ? expectedOut - amountOut : BigInt(0);
 
     // Effective price
-    const effectivePrice = amountOut > BigInt(0) 
-      ? Number(amountOut) / Number(amountInWithFee)
-      : 0;
+    const effectivePrice = amountOut > BigInt(0) ? Number(amountOut) / Number(amountInWithFee) : 0;
 
     return {
       percentage,
       amountOut,
       effectivePrice,
-      slippageCost
+      slippageCost,
     };
   }
 
@@ -260,13 +262,8 @@ export class EnhancedSlippageCalculator {
     // For concentrated liquidity, impact depends on position ranges
     // This is a simplified approximation using constant product
     // Real implementation would require tick math and liquidity distribution
-    
-    const baseImpact = this.calculateConstantProductImpact(
-      amountIn,
-      reserveIn,
-      reserveOut,
-      fee
-    );
+
+    const baseImpact = this.calculateConstantProductImpact(amountIn, reserveIn, reserveOut, fee);
 
     // Concentrated liquidity typically has less slippage in range
     // but more slippage out of range - using base calculation for now
@@ -287,7 +284,7 @@ export class EnhancedSlippageCalculator {
         percentage: 100,
         amountOut: BigInt(0),
         effectivePrice: 0,
-        slippageCost: amountIn
+        slippageCost: amountIn,
       };
     }
 
@@ -309,15 +306,13 @@ export class EnhancedSlippageCalculator {
     const expectedOut = BigInt(Math.floor(Number(amountInWithFee) * spotRate));
     const slippageCost = expectedOut > amountOut ? expectedOut - amountOut : BigInt(0);
 
-    const effectivePrice = amountOut > BigInt(0)
-      ? Number(amountOut) / Number(amountInWithFee)
-      : 0;
+    const effectivePrice = amountOut > BigInt(0) ? Number(amountOut) / Number(amountInWithFee) : 0;
 
     return {
       percentage: reducedImpact,
       amountOut,
       effectivePrice,
-      slippageCost
+      slippageCost,
     };
   }
 }

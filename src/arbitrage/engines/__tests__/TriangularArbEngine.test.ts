@@ -118,7 +118,7 @@ describe('TriangularArbEngine', () => {
       const opportunities = engine.findOpportunities(pools, '0xWETH', 1);
 
       expect(opportunities.length).toBeGreaterThanOrEqual(0);
-      
+
       if (opportunities.length > 0) {
         const opp = opportunities[0];
         expect(opp.arbType).toBe(ArbitrageType.TRIANGULAR);
@@ -143,7 +143,7 @@ describe('TriangularArbEngine', () => {
 
       // Don't build pair map manually
       const opportunities = engine.findOpportunities(pools, '0xWETH', 1);
-      
+
       // Should have built pair map automatically
       const stats = engine.getStatistics();
       expect(stats.pairsInMap).toBeGreaterThan(0);
@@ -182,9 +182,9 @@ describe('TriangularArbEngine', () => {
       ];
 
       const opportunities = engine.findOpportunities(pools, '0xWETH', 1);
-      
+
       // With fees, might not be profitable
-      opportunities.forEach(opp => {
+      opportunities.forEach((opp) => {
         expect(opp.profitBps).toBeGreaterThanOrEqual(50);
       });
     });
@@ -217,7 +217,7 @@ describe('TriangularArbEngine', () => {
 
       restrictedEngine.buildPairMap(pools);
       const stats = restrictedEngine.getStatistics();
-      
+
       // Should only include uniswap_v3 pool
       expect(stats.pairsInMap).toBe(2); // Bidirectional for one pool
     });
@@ -256,7 +256,7 @@ describe('TriangularArbEngine', () => {
       ];
 
       const opportunities = engine.findAllTriangularOpportunities(pools, 1);
-      
+
       // Should deduplicate opportunities found from different start tokens
       expect(opportunities.length).toBeGreaterThanOrEqual(0);
     });
@@ -293,10 +293,10 @@ describe('TriangularArbEngine', () => {
       ];
 
       const opportunities = engine.findAllTriangularOpportunities(pools, 1);
-      
+
       // Check that pool addresses are not duplicated in results
       const signatures = new Set<string>();
-      opportunities.forEach(opp => {
+      opportunities.forEach((opp) => {
         const signature = opp.poolAddresses.slice().sort().join('_');
         expect(signatures.has(signature)).toBe(false);
         signatures.add(signature);
@@ -405,9 +405,9 @@ describe('TriangularArbEngine', () => {
       ];
 
       const opportunities = limitedEngine.findOpportunities(pools, '0xWETH', 1);
-      
+
       // With maxHops=2, might not find 3-hop cycles
-      opportunities.forEach(opp => {
+      opportunities.forEach((opp) => {
         expect(opp.path.length).toBeLessThanOrEqual(2);
       });
     });

@@ -12,7 +12,7 @@ const mockProvider = {
   estimateGas: jest.fn(),
   getBlock: jest.fn(),
   getFeeData: jest.fn(),
-  call: jest.fn()
+  call: jest.fn(),
 } as unknown as JsonRpcProvider;
 
 // Mock oracle
@@ -27,7 +27,7 @@ class MockGasPriceOracle extends GasPriceOracle {
       maxFeePerGas: BigInt(50) * BigInt(10 ** 9),
       maxPriorityFeePerGas: BigInt(2) * BigInt(10 ** 9),
       baseFee: BigInt(48) * BigInt(10 ** 9),
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 }
@@ -56,7 +56,7 @@ describe('AdvancedGasEstimator', () => {
       const customEstimator = new AdvancedGasEstimator(mockProvider, oracle, {
         bufferMultiplier: 1.2,
         maxGasPrice: BigInt(1000) * BigInt(10 ** 9),
-        minProfitAfterGas: BigInt(50) * BigInt(10 ** 18)
+        minProfitAfterGas: BigInt(50) * BigInt(10 ** 18),
       });
 
       const config = customEstimator.getConfig();
@@ -78,8 +78,8 @@ describe('AdvancedGasEstimator', () => {
             amountIn: BigInt(1000) * BigInt(10 ** 18),
             amountOut: BigInt(1100) * BigInt(10 ** 18),
             fee: 0.003,
-            gasEstimate: 150000
-          }
+            gasEstimate: 150000,
+          },
         ],
         startToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
         endToken: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -87,7 +87,7 @@ describe('AdvancedGasEstimator', () => {
         totalGasCost: BigInt(150000),
         netProfit: BigInt(95) * BigInt(10 ** 18),
         totalFees: 0.003,
-        slippageImpact: 0.01
+        slippageImpact: 0.01,
       };
 
       const result = await estimator.estimateGasHeuristic(path);
@@ -111,7 +111,7 @@ describe('AdvancedGasEstimator', () => {
             amountIn: BigInt(1000) * BigInt(10 ** 18),
             amountOut: BigInt(1050) * BigInt(10 ** 18),
             fee: 0.003,
-            gasEstimate: 150000
+            gasEstimate: 150000,
           },
           {
             dexName: 'SushiSwap',
@@ -121,8 +121,8 @@ describe('AdvancedGasEstimator', () => {
             amountIn: BigInt(1050) * BigInt(10 ** 18),
             amountOut: BigInt(1100) * BigInt(10 ** 18),
             fee: 0.003,
-            gasEstimate: 130000
-          }
+            gasEstimate: 130000,
+          },
         ],
         startToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
         endToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
@@ -130,7 +130,7 @@ describe('AdvancedGasEstimator', () => {
         totalGasCost: BigInt(280000),
         netProfit: BigInt(90) * BigInt(10 ** 18),
         totalFees: 0.006,
-        slippageImpact: 0.02
+        slippageImpact: 0.02,
       };
 
       const result = await estimator.estimateGasHeuristic(path);
@@ -153,8 +153,8 @@ describe('AdvancedGasEstimator', () => {
             amountIn: BigInt(1000) * BigInt(10 ** 18),
             amountOut: BigInt(1001) * BigInt(10 ** 18),
             fee: 0.003,
-            gasEstimate: 180000
-          }
+            gasEstimate: 180000,
+          },
         ],
         startToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
         endToken: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -162,7 +162,7 @@ describe('AdvancedGasEstimator', () => {
         totalGasCost: BigInt(180000),
         netProfit: BigInt(0),
         totalFees: 0.003,
-        slippageImpact: 0.01
+        slippageImpact: 0.01,
       };
 
       const result = await estimator.estimateGasHeuristic(path);
@@ -174,9 +174,7 @@ describe('AdvancedGasEstimator', () => {
 
   describe('estimateGasOnChain', () => {
     it('should use provider estimateGas when available', async () => {
-      (mockProvider.estimateGas as jest.Mock).mockResolvedValue(
-        BigInt(150000)
-      );
+      (mockProvider.estimateGas as jest.Mock).mockResolvedValue(BigInt(150000));
 
       const path: ArbitragePath = {
         hops: [
@@ -188,8 +186,8 @@ describe('AdvancedGasEstimator', () => {
             amountIn: BigInt(1000) * BigInt(10 ** 18),
             amountOut: BigInt(1100) * BigInt(10 ** 18),
             fee: 0.003,
-            gasEstimate: 150000
-          }
+            gasEstimate: 150000,
+          },
         ],
         startToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
         endToken: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -197,7 +195,7 @@ describe('AdvancedGasEstimator', () => {
         totalGasCost: BigInt(150000),
         netProfit: BigInt(95) * BigInt(10 ** 18),
         totalFees: 0.003,
-        slippageImpact: 0.01
+        slippageImpact: 0.01,
       };
 
       const result = await estimator.estimateGasOnChain(
@@ -213,9 +211,7 @@ describe('AdvancedGasEstimator', () => {
     });
 
     it('should fallback to heuristic on provider failure', async () => {
-      (mockProvider.estimateGas as jest.Mock).mockRejectedValue(
-        new Error('Execution reverted')
-      );
+      (mockProvider.estimateGas as jest.Mock).mockRejectedValue(new Error('Execution reverted'));
 
       const path: ArbitragePath = {
         hops: [
@@ -227,8 +223,8 @@ describe('AdvancedGasEstimator', () => {
             amountIn: BigInt(1000) * BigInt(10 ** 18),
             amountOut: BigInt(1100) * BigInt(10 ** 18),
             fee: 0.003,
-            gasEstimate: 150000
-          }
+            gasEstimate: 150000,
+          },
         ],
         startToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
         endToken: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -236,7 +232,7 @@ describe('AdvancedGasEstimator', () => {
         totalGasCost: BigInt(150000),
         netProfit: BigInt(95) * BigInt(10 ** 18),
         totalFees: 0.003,
-        slippageImpact: 0.01
+        slippageImpact: 0.01,
       };
 
       const result = await estimator.estimateGasOnChain(
@@ -263,8 +259,8 @@ describe('AdvancedGasEstimator', () => {
             amountIn: BigInt(1000) * BigInt(10 ** 18),
             amountOut: BigInt(1100) * BigInt(10 ** 18),
             fee: 0.003,
-            gasEstimate: 150000
-          }
+            gasEstimate: 150000,
+          },
         ],
         startToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
         endToken: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -272,7 +268,7 @@ describe('AdvancedGasEstimator', () => {
         totalGasCost: BigInt(150000),
         netProfit: BigInt(95) * BigInt(10 ** 18),
         totalFees: 0.003,
-        slippageImpact: 0.01
+        slippageImpact: 0.01,
       };
 
       const result = await estimator.validateExecution(path);
@@ -294,8 +290,8 @@ describe('AdvancedGasEstimator', () => {
             amountIn: BigInt(1000) * BigInt(10 ** 18),
             amountOut: BigInt(1001) * BigInt(10 ** 18),
             fee: 0.003,
-            gasEstimate: 180000
-          }
+            gasEstimate: 180000,
+          },
         ],
         startToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
         endToken: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -303,7 +299,7 @@ describe('AdvancedGasEstimator', () => {
         totalGasCost: BigInt(180000),
         netProfit: BigInt(0),
         totalFees: 0.003,
-        slippageImpact: 0.01
+        slippageImpact: 0.01,
       };
 
       const result = await estimator.validateExecution(path);
@@ -328,8 +324,8 @@ describe('AdvancedGasEstimator', () => {
             amountIn: BigInt(1000) * BigInt(10 ** 18),
             amountOut: BigInt(1020) * BigInt(10 ** 18),
             fee: 0.003,
-            gasEstimate: 200000
-          }
+            gasEstimate: 200000,
+          },
         ],
         startToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
         endToken: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -338,7 +334,7 @@ describe('AdvancedGasEstimator', () => {
         totalGasCost: BigInt(200000),
         netProfit: BigInt(7) * BigInt(10 ** 15),
         totalFees: 0.003,
-        slippageImpact: 0.01
+        slippageImpact: 0.01,
       };
 
       const result = await estimator.validateExecution(path);
@@ -357,12 +353,12 @@ describe('AdvancedGasEstimator', () => {
         baseGas: 100000,
         gasPerHop: 25000,
         overhead: 15000,
-        complexity: 1.0
+        complexity: 1.0,
       };
 
       estimator.registerDEXConfig(customConfig);
       const config = estimator.getConfig();
-      
+
       expect(config.dexConfigs.has('CustomDEX')).toBe(true);
       expect(config.dexConfigs.get('CustomDEX')).toEqual(customConfig);
     });
@@ -378,8 +374,8 @@ describe('AdvancedGasEstimator', () => {
             amountIn: BigInt(1000) * BigInt(10 ** 18),
             amountOut: BigInt(1100) * BigInt(10 ** 18),
             fee: 0.003,
-            gasEstimate: 150000
-          }
+            gasEstimate: 150000,
+          },
         ],
         startToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
         endToken: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -387,11 +383,11 @@ describe('AdvancedGasEstimator', () => {
         totalGasCost: BigInt(150000),
         netProfit: BigInt(95) * BigInt(10 ** 18),
         totalFees: 0.003,
-        slippageImpact: 0.01
+        slippageImpact: 0.01,
       };
 
       const result = await estimator.estimateGasHeuristic(path);
-      
+
       expect(result.success).toBe(true);
       // Should use default config, which has higher gas estimates
       expect(Number(result.estimatedGas)).toBeGreaterThan(150000);
@@ -410,8 +406,8 @@ describe('AdvancedGasEstimator', () => {
             amountIn: BigInt(1000) * BigInt(10 ** 18),
             amountOut: BigInt(1100) * BigInt(10 ** 18),
             fee: 0.003,
-            gasEstimate: 150000
-          }
+            gasEstimate: 150000,
+          },
         ],
         startToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
         endToken: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -419,7 +415,7 @@ describe('AdvancedGasEstimator', () => {
         totalGasCost: BigInt(150000),
         netProfit: BigInt(95) * BigInt(10 ** 18),
         totalFees: 0.003,
-        slippageImpact: 0.01
+        slippageImpact: 0.01,
       };
 
       const statsBefore = estimator.getStats();
@@ -443,8 +439,8 @@ describe('AdvancedGasEstimator', () => {
             amountIn: BigInt(1000) * BigInt(10 ** 18),
             amountOut: BigInt(1100) * BigInt(10 ** 18),
             fee: 0.003,
-            gasEstimate: 150000
-          }
+            gasEstimate: 150000,
+          },
         ],
         startToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
         endToken: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -452,7 +448,7 @@ describe('AdvancedGasEstimator', () => {
         totalGasCost: BigInt(150000),
         netProfit: BigInt(95) * BigInt(10 ** 18),
         totalFees: 0.003,
-        slippageImpact: 0.01
+        slippageImpact: 0.01,
       };
 
       await estimator.estimateGasHeuristic(path);
@@ -468,7 +464,7 @@ describe('AdvancedGasEstimator', () => {
     it('should update configuration', () => {
       estimator.updateConfig({
         bufferMultiplier: 1.15,
-        maxGasPrice: BigInt(800) * BigInt(10 ** 9)
+        maxGasPrice: BigInt(800) * BigInt(10 ** 9),
       });
 
       const config = estimator.getConfig();
@@ -478,9 +474,9 @@ describe('AdvancedGasEstimator', () => {
 
     it('should maintain other config values when updating', () => {
       const originalConfig = estimator.getConfig();
-      
+
       estimator.updateConfig({
-        bufferMultiplier: 1.15
+        bufferMultiplier: 1.15,
       });
 
       const newConfig = estimator.getConfig();

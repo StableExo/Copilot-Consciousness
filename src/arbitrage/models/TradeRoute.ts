@@ -1,6 +1,6 @@
 /**
  * TradeRoute Model
- * 
+ *
  * Aggregates multiple path steps into a complete trade route.
  * Extracted from AxionCitadel - Operation First Light validated
  */
@@ -75,9 +75,8 @@ export function createTradeRoute(params: {
   const grossProfit = startToken === endToken ? expectedOutput - params.inputAmount : 0;
 
   // Calculate profit in basis points
-  const profitBps = params.inputAmount > 0 
-    ? Math.floor((grossProfit / params.inputAmount) * 10000)
-    : 0;
+  const profitBps =
+    params.inputAmount > 0 ? Math.floor((grossProfit / params.inputAmount) * 10000) : 0;
 
   // Calculate total gas estimate
   const estimatedGas = params.path.reduce((sum, step) => {
@@ -107,7 +106,7 @@ export function createTradeRoute(params: {
  */
 export function getRouteTokens(route: TradeRoute): string[] {
   const tokens = new Set<string>();
-  
+
   for (const step of route.path) {
     tokens.add(step.tokenIn);
     tokens.add(step.tokenOut);
@@ -120,7 +119,7 @@ export function getRouteTokens(route: TradeRoute): string[] {
  * Get all pool addresses in route
  */
 export function getRoutePools(route: TradeRoute): string[] {
-  return route.path.map(step => step.poolAddress);
+  return route.path.map((step) => step.poolAddress);
 }
 
 /**
@@ -128,7 +127,7 @@ export function getRoutePools(route: TradeRoute): string[] {
  */
 export function getRouteProtocols(route: TradeRoute): string[] {
   const protocols = new Set<string>();
-  
+
   for (const step of route.path) {
     protocols.add(step.protocol);
   }

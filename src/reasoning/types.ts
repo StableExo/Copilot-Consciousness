@@ -1,6 +1,6 @@
 /**
  * Transactional Reasoning Types
- * 
+ *
  * Type definitions for the cognitive flash loan pattern - safe exploration
  * of speculative reasoning with automatic rollback on ethical violations.
  */

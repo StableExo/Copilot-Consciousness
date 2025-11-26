@@ -1,6 +1,6 @@
 /**
  * GasAnalytics - Performance tracking and reporting for gas optimization
- * 
+ *
  * Tracks gas costs, calculates efficiency metrics, and generates reports
  */
 
@@ -45,7 +45,8 @@ export class GasAnalytics {
   private baselineGasCost: bigint; // For comparison (V1 contract baseline)
   private reportInterval: number;
 
-  constructor(reportInterval: number = 86400000) { // Daily by default
+  constructor(reportInterval: number = 86400000) {
+    // Daily by default
     this.executions = [];
     this.baselineGasCost = BigInt(0);
     this.reportInterval = reportInterval;
@@ -74,22 +75,15 @@ export class GasAnalytics {
    * Get current gas metrics
    */
   getMetrics(): GasMetrics {
-    const totalGasUsed = this.executions.reduce(
-      (sum, exec) => sum + exec.gasUsed,
-      BigInt(0)
-    );
+    const totalGasUsed = this.executions.reduce((sum, exec) => sum + exec.gasUsed, BigInt(0));
 
-    const totalGasCost = this.executions.reduce(
-      (sum, exec) => sum + exec.gasCost,
-      BigInt(0)
-    );
+    const totalGasCost = this.executions.reduce((sum, exec) => sum + exec.gasCost, BigInt(0));
 
-    const successfulExecutions = this.executions.filter(e => e.success);
-    const failedExecutions = this.executions.filter(e => !e.success);
+    const successfulExecutions = this.executions.filter((e) => e.success);
+    const failedExecutions = this.executions.filter((e) => !e.success);
 
-    const averageGasPerArbitrage = this.executions.length > 0
-      ? totalGasUsed / BigInt(this.executions.length)
-      : BigInt(0);
+    const averageGasPerArbitrage =
+      this.executions.length > 0 ? totalGasUsed / BigInt(this.executions.length) : BigInt(0);
 
     const gasSavingsFromOptimizations = this.calculateGasSavings();
 
@@ -102,9 +96,8 @@ export class GasAnalytics {
 
     const gasCostByChain = this.calculateCostByChain();
 
-    const executionSuccessRate = this.executions.length > 0
-      ? (successfulExecutions.length / this.executions.length) * 100
-      : 0;
+    const executionSuccessRate =
+      this.executions.length > 0 ? (successfulExecutions.length / this.executions.length) * 100 : 0;
 
     return {
       totalGasUsed,
@@ -117,7 +110,7 @@ export class GasAnalytics {
       executionSuccessRate,
       totalArbitrages: this.executions.length,
       successfulArbitrages: successfulExecutions.length,
-      failedArbitrages: failedExecutions.length
+      failedArbitrages: failedExecutions.length,
     };
   }
 
@@ -130,7 +123,7 @@ export class GasAnalytics {
 
     // Filter executions within period
     const periodExecutions = this.executions.filter(
-      e => e.timestamp >= start && e.timestamp <= end
+      (e) => e.timestamp >= start && e.timestamp <= end
     );
 
     // Calculate metrics for period
@@ -154,7 +147,7 @@ export class GasAnalytics {
       topExecutionWindows,
       costByDEX,
       costByHopCount,
-      recommendations
+      recommendations,
     };
   }
 
@@ -167,10 +160,10 @@ export class GasAnalytics {
     for (const exec of this.executions) {
       const hopCount = exec.path.hops.length;
       const existing = costByHopCount.get(hopCount) || { total: BigInt(0), count: 0 };
-      
+
       costByHopCount.set(hopCount, {
         total: existing.total + exec.gasCost,
-        count: existing.count + 1
+        count: existing.count + 1,
       });
     }
 
@@ -197,9 +190,9 @@ export class GasAnalytics {
     // Simplified implementation
     return new Map([
       ['instant', 0.15], // 15% ROI
-      ['fast', 0.25],    // 25% ROI
-      ['normal', 0.35],  // 35% ROI
-      ['slow', 0.45]     // 45% ROI
+      ['fast', 0.25], // 25% ROI
+      ['normal', 0.35], // 35% ROI
+      ['slow', 0.45], // 45% ROI
     ]);
   }
 
@@ -228,16 +221,12 @@ export class GasAnalytics {
       return BigInt(0);
     }
 
-    const actualAverage = this.executions.reduce(
-      (sum, exec) => sum + exec.gasCost,
-      BigInt(0)
-    ) / BigInt(this.executions.length);
+    const actualAverage =
+      this.executions.reduce((sum, exec) => sum + exec.gasCost, BigInt(0)) /
+      BigInt(this.executions.length);
 
     const potentialCost = this.baselineGasCost * BigInt(this.executions.length);
-    const actualCost = this.executions.reduce(
-      (sum, exec) => sum + exec.gasCost,
-      BigInt(0)
-    );
+    const actualCost = this.executions.reduce((sum, exec) => sum + exec.gasCost, BigInt(0));
 
     return potentialCost > actualCost ? potentialCost - actualCost : BigInt(0);
   }
@@ -251,10 +240,10 @@ export class GasAnalytics {
     for (const exec of this.executions) {
       const hour = new Date(exec.timestamp).getHours();
       const existing = hourData.get(hour) || { totalCost: BigInt(0), count: 0 };
-      
+
       hourData.set(hour, {
         totalCost: existing.totalCost + exec.gasCost,
-        count: existing.count + 1
+        count: existing.count + 1,
       });
     }
 
@@ -263,7 +252,7 @@ export class GasAnalytics {
 
     for (const [hour, data] of hourData) {
       if (data.count === 0) continue;
-      
+
       const avgCost = data.totalCost / BigInt(data.count);
       if (avgCost < lowestAvgCost) {
         lowestAvgCost = avgCost;
@@ -294,12 +283,11 @@ export class GasAnalytics {
   private getMetricsForExecutions(executions: ArbitrageExecution[]): GasMetrics {
     const totalGasUsed = executions.reduce((sum, exec) => sum + exec.gasUsed, BigInt(0));
     const totalGasCost = executions.reduce((sum, exec) => sum + exec.gasCost, BigInt(0));
-    const successfulExecutions = executions.filter(e => e.success);
-    const failedExecutions = executions.filter(e => !e.success);
+    const successfulExecutions = executions.filter((e) => e.success);
+    const failedExecutions = executions.filter((e) => !e.success);
 
-    const averageGasPerArbitrage = executions.length > 0
-      ? totalGasUsed / BigInt(executions.length)
-      : BigInt(0);
+    const averageGasPerArbitrage =
+      executions.length > 0 ? totalGasUsed / BigInt(executions.length) : BigInt(0);
 
     const failedTransactionGasWasted = failedExecutions.reduce(
       (sum, exec) => sum + exec.gasCost,
@@ -312,9 +300,8 @@ export class GasAnalytics {
       gasCostByChain.set(exec.chain, existing + exec.gasCost);
     }
 
-    const executionSuccessRate = executions.length > 0
-      ? (successfulExecutions.length / executions.length) * 100
-      : 0;
+    const executionSuccessRate =
+      executions.length > 0 ? (successfulExecutions.length / executions.length) * 100 : 0;
 
     return {
       totalGasUsed,
@@ -327,7 +314,7 @@ export class GasAnalytics {
       executionSuccessRate,
       totalArbitrages: executions.length,
       successfulArbitrages: successfulExecutions.length,
-      failedArbitrages: failedExecutions.length
+      failedArbitrages: failedExecutions.length,
     };
   }
 
@@ -342,10 +329,10 @@ export class GasAnalytics {
     for (const exec of executions) {
       const hour = new Date(exec.timestamp).getHours();
       const existing = hourData.get(hour) || { totalCost: BigInt(0), count: 0 };
-      
+
       hourData.set(hour, {
         totalCost: existing.totalCost + exec.gasCost,
-        count: existing.count + 1
+        count: existing.count + 1,
       });
     }
 
@@ -353,7 +340,7 @@ export class GasAnalytics {
       .map(([hour, data]) => ({
         hour,
         avgGasCost: data.count > 0 ? data.totalCost / BigInt(data.count) : BigInt(0),
-        executionCount: data.count
+        executionCount: data.count,
       }))
       .sort((a, b) => {
         if (a.avgGasCost < b.avgGasCost) return -1;
@@ -409,7 +396,7 @@ export class GasAnalytics {
     if (metrics.executionSuccessRate < 95) {
       recommendations.push(
         `Execution success rate is ${metrics.executionSuccessRate.toFixed(1)}%. ` +
-        `Consider improving transaction simulation to reduce failed transactions.`
+          `Consider improving transaction simulation to reduce failed transactions.`
       );
     }
 
@@ -418,24 +405,23 @@ export class GasAnalytics {
       const bestHour = topWindows[0].hour;
       recommendations.push(
         `Gas costs are typically lowest around ${bestHour}:00 UTC. ` +
-        `Consider scheduling more arbitrages during this window.`
+          `Consider scheduling more arbitrages during this window.`
       );
     }
 
     // Chain recommendation
-    const chainCosts = Array.from(metrics.gasCostByChain.entries())
-      .sort((a, b) => {
-        if (a[1] < b[1]) return -1;
-        if (a[1] > b[1]) return 1;
-        return 0;
-      });
+    const chainCosts = Array.from(metrics.gasCostByChain.entries()).sort((a, b) => {
+      if (a[1] < b[1]) return -1;
+      if (a[1] > b[1]) return 1;
+      return 0;
+    });
 
     if (chainCosts.length > 1) {
       const cheapestChain = chainCosts[0][0];
       if (cheapestChain !== 'mainnet') {
         recommendations.push(
           `${cheapestChain} has the lowest total gas costs. ` +
-          `Consider executing more arbitrages on Layer-2 chains.`
+            `Consider executing more arbitrages on Layer-2 chains.`
         );
       }
     }
@@ -444,7 +430,7 @@ export class GasAnalytics {
     if (metrics.gasSavingsFromOptimizations > BigInt(0)) {
       recommendations.push(
         `Gas optimizations have saved approximately ${metrics.gasSavingsFromOptimizations} wei. ` +
-        `Continue using optimized contracts and transaction strategies.`
+          `Continue using optimized contracts and transaction strategies.`
       );
     }
 

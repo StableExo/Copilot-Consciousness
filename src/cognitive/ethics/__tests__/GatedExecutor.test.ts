@@ -40,11 +40,7 @@ describe('GatedExecutor', () => {
 2. Deploy to production
 `;
 
-      const result = executor.runGatedPlan(
-        plan,
-        'Quick fix',
-        'Hotfix for bug'
-      );
+      const result = executor.runGatedPlan(plan, 'Quick fix', 'Hotfix for bug');
 
       expect(result.approved).toBe(false);
       expect(result.rationale).toContain('Truth-Maximization');
@@ -57,11 +53,7 @@ describe('GatedExecutor', () => {
 3. Push to main branch
 `;
 
-      const result = executor.runGatedPlan(
-        plan,
-        'Add feature',
-        'Feature implementation'
-      );
+      const result = executor.runGatedPlan(plan, 'Add feature', 'Feature implementation');
 
       expect(result.approved).toBe(false);
       expect(result.rationale).toMatch(/Harm-Minimization|Accountability/);
@@ -74,16 +66,12 @@ describe('GatedExecutor', () => {
           '1. Review current implementation and verify security',
           '2. Implement improvements with tests',
           '3. Run comprehensive test suite',
-          '4. Submit for security review'
+          '4. Submit for security review',
         ],
-        acknowledgedContext: true
+        acknowledgedContext: true,
       };
 
-      const result = executor.runGatedPlan(
-        plan,
-        'Refactor authentication',
-        'Security improvement'
-      );
+      const result = executor.runGatedPlan(plan, 'Refactor authentication', 'Security improvement');
 
       expect(result.approved).toBe(true);
     });
@@ -95,11 +83,7 @@ describe('GatedExecutor', () => {
 3. Complete and submit the changes
 `;
 
-      const result = executor.runGatedPlan(
-        plan,
-        'Data validation',
-        'Add validation'
-      );
+      const result = executor.runGatedPlan(plan, 'Data validation', 'Add validation');
 
       expect(result.context).toBeDefined();
       expect(result.context.currentBranch).toBeDefined();
@@ -113,7 +97,8 @@ describe('GatedExecutor', () => {
   describe('quickCheck', () => {
     it('should approve ethical decisions', () => {
       // Decision must include verification, testing, and completion keywords
-      const decision = '1. Implement feature\n2. Verify and test thoroughly\n3. Complete and submit';
+      const decision =
+        '1. Implement feature\n2. Verify and test thoroughly\n3. Complete and submit';
       const approved = executor.quickCheck(decision);
 
       expect(approved).toBe(true);
@@ -140,8 +125,8 @@ describe('GatedExecutor', () => {
       const customGate = new EthicalReviewGate({
         checkThresholds: {
           minPlanLength: 4,
-          minStepDetail: 25
-        }
+          minStepDetail: 25,
+        },
       });
 
       const customExecutor = new GatedExecutor(customGate);
@@ -153,11 +138,7 @@ describe('GatedExecutor', () => {
 4. Complete code review and final submission
 `;
 
-      const result = customExecutor.runGatedPlan(
-        plan,
-        'Complex feature',
-        'Feature request'
-      );
+      const result = customExecutor.runGatedPlan(plan, 'Complex feature', 'Feature request');
 
       expect(result.approved).toBe(true);
     });

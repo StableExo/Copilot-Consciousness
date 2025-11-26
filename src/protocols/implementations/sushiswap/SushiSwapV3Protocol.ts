@@ -1,6 +1,6 @@
 /**
  * SushiSwap V3 Protocol Implementation
- * 
+ *
  * Implements the IProtocol interface for SushiSwap V3
  */
 
@@ -15,11 +15,7 @@ import {
 } from '../../base/IProtocol';
 
 export class SushiSwapV3Protocol extends BaseProtocol {
-  constructor(
-    provider: Provider,
-    chainId: number,
-    signer?: ethers.Signer
-  ) {
+  constructor(provider: Provider, chainId: number, signer?: ethers.Signer) {
     const metadata: ProtocolMetadata = {
       name: 'SushiSwap V3',
       type: 'sushiswap-v3',

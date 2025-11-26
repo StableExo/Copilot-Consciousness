@@ -206,9 +206,7 @@ describe('Protocol Abstraction Layer', () => {
           recipient: ZeroAddress,
         };
 
-        await expect(protocol.executeSwap(params)).rejects.toThrow(
-          'Aave does not support swaps'
-        );
+        await expect(protocol.executeSwap(params)).rejects.toThrow('Aave does not support swaps');
       });
     });
 
@@ -278,10 +276,7 @@ describe('Protocol Abstraction Layer', () => {
         });
 
         it('should implement getPool', async () => {
-          const pool = await protocol.getPool(
-            ZeroAddress,
-            ZeroAddress
-          );
+          const pool = await protocol.getPool(ZeroAddress, ZeroAddress);
           expect(pool).toBeDefined();
           expect(pool.token0).toBeDefined();
           expect(pool.token1).toBeDefined();
@@ -296,9 +291,7 @@ describe('Protocol Abstraction Layer', () => {
       expect(arbitrumProtocols.length).toBeGreaterThan(0);
 
       // Find protocols with flash-swap support
-      const flashSwapProtocols = arbitrumProtocols.filter((p) =>
-        p.features.includes('flash-swap')
-      );
+      const flashSwapProtocols = arbitrumProtocols.filter((p) => p.features.includes('flash-swap'));
       expect(flashSwapProtocols.length).toBeGreaterThan(0);
     });
 

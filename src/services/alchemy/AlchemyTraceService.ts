@@ -1,6 +1,6 @@
 /**
  * Alchemy Trace API Service
- * 
+ *
  * Provides transaction tracing and debugging capabilities for analyzing
  * failed transactions, understanding execution flow, and optimizing gas usage.
  */
@@ -37,7 +37,7 @@ export class AlchemyTraceService {
     try {
       // Get transaction receipt
       const receipt = await this.client.core.getTransactionReceipt(txHash);
-      
+
       if (!receipt) {
         throw new Error(`Transaction ${txHash} not found`);
       }
@@ -56,12 +56,15 @@ export class AlchemyTraceService {
           if (tx) {
             // Attempt to replay the transaction to get revert reason
             try {
-              await this.client.core.call({
-                to: tx.to || undefined,
-                from: tx.from,
-                data: tx.data,
-                value: tx.value,
-              }, receipt.blockNumber);
+              await this.client.core.call(
+                {
+                  to: tx.to || undefined,
+                  from: tx.from,
+                  data: tx.data,
+                  value: tx.value,
+                },
+                receipt.blockNumber
+              );
             } catch (callError: any) {
               failureReason = callError.message || 'Unknown error';
             }
@@ -94,7 +97,7 @@ export class AlchemyTraceService {
   }> {
     try {
       const receipt = await this.client.core.getTransactionReceipt(txHash);
-      
+
       if (!receipt) {
         throw new Error(`Transaction ${txHash} not found`);
       }
@@ -145,7 +148,7 @@ export class AlchemyTraceService {
   async getRevertReason(txHash: string): Promise<string | null> {
     try {
       const receipt = await this.client.core.getTransactionReceipt(txHash);
-      
+
       if (!receipt || receipt.status === 1) {
         return null; // Transaction succeeded
       }
@@ -157,13 +160,16 @@ export class AlchemyTraceService {
 
       // Try to replay the transaction
       try {
-        await this.client.core.call({
-          to: tx.to || undefined,
-          from: tx.from,
-          data: tx.data,
-          value: tx.value,
-        }, receipt.blockNumber);
-        
+        await this.client.core.call(
+          {
+            to: tx.to || undefined,
+            from: tx.from,
+            data: tx.data,
+            value: tx.value,
+          },
+          receipt.blockNumber
+        );
+
         return null;
       } catch (error: any) {
         return error.message || error.toString();

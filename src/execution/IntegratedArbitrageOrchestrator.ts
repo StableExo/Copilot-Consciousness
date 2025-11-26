@@ -1,6 +1,6 @@
 /**
  * IntegratedArbitrageOrchestrator.ts - Enhanced orchestrator with execution engine
- * 
+ *
  * Extends ArbitrageOrchestrator with integrated execution capabilities from Mission #5:
  * - ExecutionPipeline for multi-stage execution flow
  * - TransactionExecutor for unified transaction handling
@@ -33,7 +33,7 @@ import {
   ExecutionEvent,
   HealthStatus,
   SystemHealthReport,
-  TransactionExecutionRequest
+  TransactionExecutionRequest,
 } from '../types/ExecutionTypes';
 
 /**
@@ -42,30 +42,30 @@ import {
 export class IntegratedArbitrageOrchestrator extends EventEmitter {
   // Core orchestrator
   private baseOrchestrator: ArbitrageOrchestrator;
-  
+
   // Execution engine components
   private pipeline: ExecutionPipeline;
   private executor: TransactionExecutor;
   private healthMonitor: SystemHealthMonitor;
   private errorRecovery: ErrorRecovery;
-  
+
   // Supporting components
   private provider: JsonRpcProvider;
   private nonceManager?: NonceManager;
   private gasOracle: GasPriceOracle;
   private gasEstimator: AdvancedGasEstimator;
-  
+
   // Configuration
   private config: OrchestratorConfig;
   private arbitrageConfig: ArbitrageConfig;
   private executorAddress: string;
   private titheRecipient: string;
-  
+
   // State management
   private isRunning: boolean = false;
   private activeExecutions: Map<string, ExecutionContext> = new Map();
   private lastCriticalHealthLog: number = 0; // Track last critical health log to avoid spam
-  
+
   // Statistics
   private stats = {
     totalOpportunities: 0,
@@ -74,7 +74,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
     completedExecutions: 0,
     failedExecutions: 0,
     totalProfit: BigInt(0),
-    totalGasCost: BigInt(0)
+    totalGasCost: BigInt(0),
   };
 
   constructor(
@@ -89,7 +89,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
     errorRecoveryConfig?: Partial<ErrorRecoveryConfig>
   ) {
     super();
-    
+
     this.baseOrchestrator = baseOrchestrator;
     this.provider = provider;
     this.gasOracle = gasOracle;
@@ -97,22 +97,22 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
     this.executorAddress = executorAddress;
     this.titheRecipient = titheRecipient;
     this.arbitrageConfig = arbitrageConfig;
-    
+
     // Initialize configuration
     this.config = this.initializeConfig(config);
-    
+
     // Initialize execution engine components
     this.pipeline = new ExecutionPipeline();
     this.executor = this.createTransactionExecutor();
     this.healthMonitor = new SystemHealthMonitor();
     this.errorRecovery = new ErrorRecovery(errorRecoveryConfig);
-    
+
     // Setup pipeline stages
     this.setupPipelineStages();
-    
+
     // Setup event listeners
     this.setupEventListeners();
-    
+
     // Register components for health monitoring
     this.registerHealthComponents();
   }
@@ -138,7 +138,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
       enableAnomalyDetection: config?.enableAnomalyDetection !== false,
       enableAutoRecovery: config?.enableAutoRecovery !== false,
       maxRecoveryAttempts: config?.maxRecoveryAttempts || 3,
-      escalationThreshold: config?.escalationThreshold || 5
+      escalationThreshold: config?.escalationThreshold || 5,
     };
   }
 
@@ -153,9 +153,9 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
       arbitrageConfig: this.arbitrageConfig,
       confirmations: 1,
       confirmationTimeout: 120000,
-      titheRecipient: this.titheRecipient
+      titheRecipient: this.titheRecipient,
     };
-    
+
     return new TransactionExecutor(executorConfig);
   }
 
@@ -164,34 +164,19 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
    */
   private setupPipelineStages(): void {
     // Detection stage - find and validate opportunities
-    this.pipeline.registerStage(
-      ExecutionState.DETECTING,
-      this.detectStage.bind(this)
-    );
-    
+    this.pipeline.registerStage(ExecutionState.DETECTING, this.detectStage.bind(this));
+
     // Validation stage - comprehensive validation
-    this.pipeline.registerStage(
-      ExecutionState.VALIDATING,
-      this.validateStage.bind(this)
-    );
-    
+    this.pipeline.registerStage(ExecutionState.VALIDATING, this.validateStage.bind(this));
+
     // Preparation stage - prepare transaction parameters
-    this.pipeline.registerStage(
-      ExecutionState.PREPARING,
-      this.prepareStage.bind(this)
-    );
-    
+    this.pipeline.registerStage(ExecutionState.PREPARING, this.prepareStage.bind(this));
+
     // Execution stage - submit and monitor transaction
-    this.pipeline.registerStage(
-      ExecutionState.EXECUTING,
-      this.executeStage.bind(this)
-    );
-    
+    this.pipeline.registerStage(ExecutionState.EXECUTING, this.executeStage.bind(this));
+
     // Monitoring stage - track completion and profit
-    this.pipeline.registerStage(
-      ExecutionState.MONITORING,
-      this.monitorStage.bind(this)
-    );
+    this.pipeline.registerStage(ExecutionState.MONITORING, this.monitorStage.bind(this));
   }
 
   /**
@@ -202,31 +187,36 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
     this.pipeline.on('execution-event', (event: ExecutionEvent) => {
       this.emit('execution-event', event);
     });
-    
+
     // Health monitor events
     this.healthMonitor.on('health-check', (report: SystemHealthReport) => {
       this.emit('health-check', report);
     });
-    
+
     this.healthMonitor.on('anomaly-detected', (anomaly: any) => {
       logger.warn(`[IntegratedOrchestrator] Anomaly detected: ${JSON.stringify(anomaly)}`);
       this.emit('anomaly-detected', anomaly);
     });
-    
+
     this.healthMonitor.on('critical-health', (report: SystemHealthReport) => {
       // Only log critical health status once every 5 minutes to avoid log spam
       const now = Date.now();
       const fiveMinutes = 5 * 60 * 1000;
-      
+
       if (now - this.lastCriticalHealthLog > fiveMinutes) {
         logger.error('[IntegratedOrchestrator] Critical health status');
-        logger.error(`  Components: ${report.components.filter(c => c.status === HealthStatus.CRITICAL).map(c => c.componentName).join(', ')}`);
+        logger.error(
+          `  Components: ${report.components
+            .filter((c) => c.status === HealthStatus.CRITICAL)
+            .map((c) => c.componentName)
+            .join(', ')}`
+        );
         logger.error(`  Active alerts: ${report.alerts.length}`);
         this.lastCriticalHealthLog = now;
       }
-      
+
       this.emit('critical-health', report);
-      
+
       // Consider emergency shutdown
       if (this.config.enableAutoRecovery) {
         this.handleCriticalHealth(report);
@@ -248,23 +238,23 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
         } catch (error) {
           return HealthStatus.UNHEALTHY;
         }
-      }
+      },
     });
-    
+
     // Register gas estimator
     this.healthMonitor.registerComponent({
       name: 'GasEstimator',
       checkHealth: async () => {
         try {
           const stats = this.gasEstimator.getStats();
-          
+
           // If no estimations have been performed yet, consider it healthy (not critical)
           if (stats.totalEstimations === 0) {
             return HealthStatus.HEALTHY;
           }
-          
+
           const errorRate = stats.failedEstimations / stats.totalEstimations;
-          
+
           if (errorRate > 0.5) return HealthStatus.CRITICAL;
           if (errorRate > 0.2) return HealthStatus.DEGRADED;
           return HealthStatus.HEALTHY;
@@ -281,23 +271,23 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
           failedEstimations: stats.failedEstimations,
           blockedOpportunities: stats.blockedOpportunities,
         };
-      }
+      },
     });
-    
+
     // Register transaction executor
     this.healthMonitor.registerComponent({
       name: 'TransactionExecutor',
       checkHealth: async () => {
         try {
           const stats = this.executor.getStats();
-          
+
           // If no transactions have been executed yet, consider it healthy (not critical)
           if (stats.totalTransactions === 0) {
             return HealthStatus.HEALTHY;
           }
-          
+
           const successRate = stats.successfulTransactions / stats.totalTransactions;
-          
+
           if (successRate < 0.5) return HealthStatus.CRITICAL;
           if (successRate < 0.7) return HealthStatus.DEGRADED;
           return HealthStatus.HEALTHY;
@@ -310,9 +300,9 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
         return {
           totalTransactions: stats.totalTransactions,
           successfulTransactions: stats.successfulTransactions,
-          failedTransactions: stats.failedTransactions
+          failedTransactions: stats.failedTransactions,
         };
-      }
+      },
     });
   }
 
@@ -326,15 +316,15 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
     }
 
     logger.info('[IntegratedOrchestrator] Starting integrated arbitrage execution engine');
-    
+
     // Initialize nonce manager
     this.nonceManager = await NonceManager.create(signer);
-    
+
     // Start health monitoring
     this.healthMonitor.start();
-    
+
     this.isRunning = true;
-    
+
     this.emit('started');
     logger.info('[IntegratedOrchestrator] Started successfully');
   }
@@ -348,17 +338,17 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
     }
 
     logger.info('[IntegratedOrchestrator] Stopping integrated arbitrage execution engine');
-    
+
     // Stop health monitoring
     this.healthMonitor.stop();
-    
+
     // Cancel active executions
     for (const [id, context] of this.activeExecutions) {
       this.pipeline.cancelExecution(id);
     }
-    
+
     this.isRunning = false;
-    
+
     this.emit('stopped');
     logger.info('[IntegratedOrchestrator] Stopped successfully');
   }
@@ -379,70 +369,70 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
     }
 
     this.stats.totalOpportunities++;
-    
+
     // Check if we can accept more executions
     if (this.activeExecutions.size >= this.config.maxConcurrentExecutions) {
       logger.warn('[IntegratedOrchestrator] Max concurrent executions reached');
       this.stats.rejectedOpportunities++;
-      
+
       return {
         success: false,
         stage: ExecutionState.PENDING,
         timestamp: Date.now(),
         context: {} as ExecutionContext,
-        errors: [{
-          timestamp: Date.now(),
-          stage: ExecutionState.PENDING,
-          errorType: 'MAX_CONCURRENT',
-          message: 'Maximum concurrent executions reached',
-          recoverable: false
-        }]
+        errors: [
+          {
+            timestamp: Date.now(),
+            stage: ExecutionState.PENDING,
+            errorType: 'MAX_CONCURRENT',
+            message: 'Maximum concurrent executions reached',
+            recoverable: false,
+          },
+        ],
       };
     }
 
     // Make acceptance decision
     const decision = await this.makeOpportunityDecision(opportunity, path);
-    
+
     if (!decision.accepted) {
       this.stats.rejectedOpportunities++;
       logger.info(`[IntegratedOrchestrator] Opportunity rejected: ${decision.reason}`);
-      
+
       return {
         success: false,
         stage: ExecutionState.PENDING,
         timestamp: Date.now(),
         context: {} as ExecutionContext,
-        errors: [{
-          timestamp: Date.now(),
-          stage: ExecutionState.PENDING,
-          errorType: 'REJECTED',
-          message: decision.reason || 'Opportunity rejected',
-          recoverable: false
-        }]
+        errors: [
+          {
+            timestamp: Date.now(),
+            stage: ExecutionState.PENDING,
+            errorType: 'REJECTED',
+            message: decision.reason || 'Opportunity rejected',
+            recoverable: false,
+          },
+        ],
       };
     }
 
     this.stats.acceptedOpportunities++;
     logger.info('[IntegratedOrchestrator] Opportunity accepted, starting execution pipeline');
-    
+
     // Execute through pipeline
-    const result = await this.pipeline.execute(
-      opportunity,
-      path,
-      this.config.maxRetries
-    );
-    
+    const result = await this.pipeline.execute(opportunity, path, this.config.maxRetries);
+
     // Update statistics
     if (result.success) {
       this.stats.completedExecutions++;
-      
+
       if (result.context.estimatedProfit) {
         this.stats.totalProfit += result.context.estimatedProfit;
       }
       if (result.context.totalGasCost) {
         this.stats.totalGasCost += result.context.totalGasCost;
       }
-      
+
       // Update health monitor
       this.healthMonitor.updateExecutionStats(
         true,
@@ -451,11 +441,11 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
       );
     } else {
       this.stats.failedExecutions++;
-      
+
       // Update health monitor
       this.healthMonitor.updateExecutionStats(false, BigInt(0), BigInt(0));
     }
-    
+
     return result;
   }
 
@@ -470,19 +460,19 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
       gasValidation: false,
       profitValidation: false,
       liquidityValidation: true, // Assumed from pathfinding
-      riskValidation: true // Assumed for now
+      riskValidation: true, // Assumed for now
     };
 
     // Gas validation
     if (this.config.requireGasEstimation) {
       const gasValidation = await this.gasEstimator.validateExecution(path);
       validations.gasValidation = gasValidation.executable;
-      
+
       if (!gasValidation.executable) {
         return {
           accepted: false,
           reason: `Gas validation failed: ${gasValidation.reason}`,
-          validations
+          validations,
         };
       }
     } else {
@@ -496,7 +486,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
         return {
           accepted: false,
           reason: `Net profit ${path.netProfit} below minimum threshold ${this.config.minProfitAfterGas}`,
-          validations
+          validations,
         };
       }
       validations.profitValidation = true;
@@ -508,7 +498,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
     return {
       accepted: true,
       priority: this.calculatePriority(path),
-      validations
+      validations,
     };
   }
 
@@ -517,10 +507,10 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
    */
   private calculatePriority(path: ArbitragePath): any {
     const profit = Number(path.netProfit);
-    
+
     if (profit > 1000) return 4; // CRITICAL
-    if (profit > 500) return 3;  // HIGH
-    if (profit > 100) return 2;  // MEDIUM
+    if (profit > 500) return 3; // HIGH
+    if (profit > 100) return 2; // MEDIUM
     return 1; // LOW
   }
 
@@ -529,7 +519,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
    */
   private async detectStage(context: ExecutionContext): Promise<CheckpointResult> {
     logger.info(`[IntegratedOrchestrator] Detection stage for ${context.id}`);
-    
+
     // Opportunity is already detected, just validate it exists
     if (!context.opportunity || !context.path) {
       return {
@@ -537,13 +527,15 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
         stage: ExecutionState.DETECTING,
         timestamp: Date.now(),
         context,
-        errors: [{
-          timestamp: Date.now(),
-          stage: ExecutionState.DETECTING,
-          errorType: 'INVALID_OPPORTUNITY',
-          message: 'Missing opportunity or path data',
-          recoverable: false
-        }]
+        errors: [
+          {
+            timestamp: Date.now(),
+            stage: ExecutionState.DETECTING,
+            errorType: 'INVALID_OPPORTUNITY',
+            message: 'Missing opportunity or path data',
+            recoverable: false,
+          },
+        ],
       };
     }
 
@@ -551,7 +543,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
       success: true,
       stage: ExecutionState.DETECTING,
       timestamp: Date.now(),
-      context
+      context,
     };
   }
 
@@ -560,20 +552,22 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
    */
   private async validateStage(context: ExecutionContext): Promise<CheckpointResult> {
     logger.info(`[IntegratedOrchestrator] Validation stage for ${context.id}`);
-    
+
     if (!this.nonceManager) {
       return {
         success: false,
         stage: ExecutionState.VALIDATING,
         timestamp: Date.now(),
         context,
-        errors: [{
-          timestamp: Date.now(),
-          stage: ExecutionState.VALIDATING,
-          errorType: 'NO_NONCE_MANAGER',
-          message: 'NonceManager not initialized',
-          recoverable: false
-        }]
+        errors: [
+          {
+            timestamp: Date.now(),
+            stage: ExecutionState.VALIDATING,
+            errorType: 'NO_NONCE_MANAGER',
+            message: 'NonceManager not initialized',
+            recoverable: false,
+          },
+        ],
       };
     }
 
@@ -590,20 +584,23 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
         stage: ExecutionState.VALIDATING,
         timestamp: Date.now(),
         context,
-        errors: [{
-          timestamp: Date.now(),
-          stage: ExecutionState.VALIDATING,
-          errorType: 'VALIDATION_FAILED',
-          message: validation.reason || 'Validation failed',
-          recoverable: false
-        }]
+        errors: [
+          {
+            timestamp: Date.now(),
+            stage: ExecutionState.VALIDATING,
+            errorType: 'VALIDATION_FAILED',
+            message: validation.reason || 'Validation failed',
+            recoverable: false,
+          },
+        ],
       };
     }
 
     // Update context with validation results
     context.estimatedGas = validation.estimatedGas;
     context.gasPrice = validation.gasPrice;
-    context.totalGasCost = (validation.estimatedGas || BigInt(0)) * (validation.gasPrice || BigInt(0));
+    context.totalGasCost =
+      (validation.estimatedGas || BigInt(0)) * (validation.gasPrice || BigInt(0));
     context.estimatedProfit = context.path.estimatedProfit;
     context.netProfit = validation.netProfit;
 
@@ -611,7 +608,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
       success: true,
       stage: ExecutionState.VALIDATING,
       timestamp: Date.now(),
-      context
+      context,
     };
   }
 
@@ -620,7 +617,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
    */
   private async prepareStage(context: ExecutionContext): Promise<CheckpointResult> {
     logger.info(`[IntegratedOrchestrator] Preparation stage for ${context.id}`);
-    
+
     // Transaction parameters are built by the executor
     // Just validate we have necessary information
     if (!context.gasPrice || !context.estimatedGas) {
@@ -629,13 +626,15 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
         stage: ExecutionState.PREPARING,
         timestamp: Date.now(),
         context,
-        errors: [{
-          timestamp: Date.now(),
-          stage: ExecutionState.PREPARING,
-          errorType: 'MISSING_GAS_DATA',
-          message: 'Missing gas price or gas estimate',
-          recoverable: true
-        }]
+        errors: [
+          {
+            timestamp: Date.now(),
+            stage: ExecutionState.PREPARING,
+            errorType: 'MISSING_GAS_DATA',
+            message: 'Missing gas price or gas estimate',
+            recoverable: true,
+          },
+        ],
       };
     }
 
@@ -643,7 +642,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
       success: true,
       stage: ExecutionState.PREPARING,
       timestamp: Date.now(),
-      context
+      context,
     };
   }
 
@@ -652,20 +651,22 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
    */
   private async executeStage(context: ExecutionContext): Promise<CheckpointResult> {
     logger.info(`[IntegratedOrchestrator] Execution stage for ${context.id}`);
-    
+
     if (!this.nonceManager) {
       return {
         success: false,
         stage: ExecutionState.EXECUTING,
         timestamp: Date.now(),
         context,
-        errors: [{
-          timestamp: Date.now(),
-          stage: ExecutionState.EXECUTING,
-          errorType: 'NO_NONCE_MANAGER',
-          message: 'NonceManager not initialized',
-          recoverable: false
-        }]
+        errors: [
+          {
+            timestamp: Date.now(),
+            stage: ExecutionState.EXECUTING,
+            errorType: 'NO_NONCE_MANAGER',
+            message: 'NonceManager not initialized',
+            recoverable: false,
+          },
+        ],
       };
     }
 
@@ -678,7 +679,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
         context,
         from: await this.nonceManager.getAddress(),
         executorAddress: this.executorAddress,
-        maxGasPrice: this.config.maxGasPrice
+        maxGasPrice: this.config.maxGasPrice,
       };
 
       // Execute transaction
@@ -692,7 +693,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
         // Handle execution failure with recovery
         if (this.config.enableAutoRecovery && result.error) {
           logger.info(`[IntegratedOrchestrator] Attempting error recovery for ${context.id}`);
-          
+
           const recoveryResult = await this.errorRecovery.recover(
             context,
             result.error,
@@ -711,7 +712,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
           stage: ExecutionState.EXECUTING,
           timestamp: Date.now(),
           context,
-          errors: result.error ? [result.error] : []
+          errors: result.error ? [result.error] : [],
         };
       }
 
@@ -719,24 +720,29 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
         success: true,
         stage: ExecutionState.EXECUTING,
         timestamp: Date.now(),
-        context
+        context,
       };
-
     } catch (error) {
-      logger.error(`[IntegratedOrchestrator] Execution error for ${context.id}: ${error instanceof Error ? error.message : String(error)}`);
-      
+      logger.error(
+        `[IntegratedOrchestrator] Execution error for ${context.id}: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+
       return {
         success: false,
         stage: ExecutionState.EXECUTING,
         timestamp: Date.now(),
         context,
-        errors: [{
-          timestamp: Date.now(),
-          stage: ExecutionState.EXECUTING,
-          errorType: 'EXECUTION_ERROR',
-          message: error instanceof Error ? error.message : 'Unknown error',
-          recoverable: true
-        }]
+        errors: [
+          {
+            timestamp: Date.now(),
+            stage: ExecutionState.EXECUTING,
+            errorType: 'EXECUTION_ERROR',
+            message: error instanceof Error ? error.message : 'Unknown error',
+            recoverable: true,
+          },
+        ],
       };
     } finally {
       this.activeExecutions.delete(context.id);
@@ -748,7 +754,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
    */
   private async monitorStage(context: ExecutionContext): Promise<CheckpointResult> {
     logger.info(`[IntegratedOrchestrator] Monitoring stage for ${context.id}`);
-    
+
     // Transaction is already monitored by executor
     // Just confirm completion
     if (!context.transactionHash) {
@@ -757,23 +763,27 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
         stage: ExecutionState.MONITORING,
         timestamp: Date.now(),
         context,
-        errors: [{
-          timestamp: Date.now(),
-          stage: ExecutionState.MONITORING,
-          errorType: 'NO_TRANSACTION',
-          message: 'No transaction hash available',
-          recoverable: false
-        }]
+        errors: [
+          {
+            timestamp: Date.now(),
+            stage: ExecutionState.MONITORING,
+            errorType: 'NO_TRANSACTION',
+            message: 'No transaction hash available',
+            recoverable: false,
+          },
+        ],
       };
     }
 
-    logger.info(`[IntegratedOrchestrator] Execution completed for ${context.id}, tx: ${context.transactionHash}`);
+    logger.info(
+      `[IntegratedOrchestrator] Execution completed for ${context.id}, tx: ${context.transactionHash}`
+    );
 
     return {
       success: true,
       stage: ExecutionState.MONITORING,
       timestamp: Date.now(),
-      context
+      context,
     };
   }
 
@@ -782,10 +792,10 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
    */
   private handleCriticalHealth(report: SystemHealthReport): void {
     logger.error('[IntegratedOrchestrator] Handling critical health status');
-    
+
     // Stop accepting new opportunities
     // In production, might trigger emergency shutdown or alerts
-    
+
     this.emit('emergency-shutdown-requested', report);
   }
 
@@ -806,7 +816,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
       baseOrchestratorStats: this.baseOrchestrator.getStats(),
       executorStats: this.executor.getStats(),
       recoveryStats: this.errorRecovery.getStats(),
-      health: this.healthMonitor.getHealthStatus()
+      health: this.healthMonitor.getHealthStatus(),
     };
   }
 

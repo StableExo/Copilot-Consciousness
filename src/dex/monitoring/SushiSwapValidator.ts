@@ -16,7 +16,7 @@ export class SushiSwapValidator extends BaseValidator {
     const errors: string[] = [];
 
     const sushiswap = this.getDEXConfig();
-    
+
     if (!sushiswap) {
       return {
         isHealthy: false,
@@ -29,12 +29,12 @@ export class SushiSwapValidator extends BaseValidator {
 
     // Check Core Components
     const coreStatus = await this.checkCoreComponents(sushiswap, components, errors);
-    
+
     // Check Key Pairs
     const pairStatus = await this.checkKeyPairs(sushiswap, components, errors);
 
     const isHealthy = coreStatus && pairStatus;
-    
+
     return {
       isHealthy,
       timestamp,
@@ -66,7 +66,7 @@ export class SushiSwapValidator extends BaseValidator {
       const pairCount = await factory.allPairsLength();
       const feeTo = await factory.feeTo();
       const feeToSetter = await factory.feeToSetter();
-      
+
       components.push({
         name: 'Factory Contract',
         status: 'active',
@@ -89,7 +89,7 @@ export class SushiSwapValidator extends BaseValidator {
 
       const routerFactory = await router.factory();
       const wethAddress = await router.WETH();
-      
+
       components.push({
         name: 'Router Contract',
         status: 'active',
@@ -101,7 +101,7 @@ export class SushiSwapValidator extends BaseValidator {
 
       // Verify factory addresses match
       const factoryMatch = routerFactory.toLowerCase() === sushiswap.factory.toLowerCase();
-      
+
       components.push({
         name: 'Factory Verification',
         status: factoryMatch ? 'active' : 'error',
@@ -111,12 +111,12 @@ export class SushiSwapValidator extends BaseValidator {
     } catch (error) {
       const errorMsg = this.handleError(error, 'Error checking SushiSwap core');
       errors.push(errorMsg);
-      
+
       components.push({
         name: 'Core Components',
         status: 'error',
       });
-      
+
       return false;
     }
   }
@@ -158,9 +158,9 @@ export class SushiSwapValidator extends BaseValidator {
 
         try {
           const [reserve0, reserve1, lastUpdate] = await pairContract.getReserves();
-          
+
           const isHealthy = reserve0 > 0n && reserve1 > 0n;
-          
+
           components.push({
             name: `Pair: ${pair.name}`,
             status: isHealthy ? 'active' : 'inactive',

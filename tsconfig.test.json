@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "isolatedModules": true
+  },
+  "include": [
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts",
+    "src/**/__tests__",
+    "consciousness/**/*.test.ts",
+    "consciousness/**/*.spec.ts",
+    "consciousness/**/__tests__",
+    "tests/**/*"
+  ]
+}

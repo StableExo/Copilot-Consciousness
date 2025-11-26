@@ -1,13 +1,13 @@
 /**
  * ExecutionIntegration.test.ts - Comprehensive integration tests for Mission #5
- * 
+ *
  * Tests the integrated arbitrage execution engine with all mission components:
  * - Mission #1: Gas Estimator
  * - Mission #2: Nonce Manager
  * - Mission #3: Parameter Builders
  * - Mission #4: Profit Calculator
  * - Mission #5: Integrated Execution Engine
- * 
+ *
  * 50+ tests covering unit, integration, and end-to-end scenarios
  */
 
@@ -25,7 +25,7 @@ import {
   HealthStatus,
   RecoveryStrategy,
   TransactionStatus,
-  ExecutionPriority
+  ExecutionPriority,
 } from '../../../types/ExecutionTypes';
 import { ArbitrageOpportunity, ArbitrageConfig } from '../../../types/definitions';
 import { ArbitragePath } from '../../../arbitrage/types';
@@ -36,15 +36,14 @@ jest.mock('../../../utils/logger', () => ({
     info: jest.fn(),
     debug: jest.fn(),
     warn: jest.fn(),
-    error: jest.fn()
-  }
+    error: jest.fn(),
+  },
 }));
 
 describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
-  
   describe('ExecutionPipeline', () => {
     let pipeline: ExecutionPipeline;
-    
+
     beforeEach(() => {
       pipeline = new ExecutionPipeline();
     });
@@ -59,7 +58,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           success: true,
           stage: ExecutionState.DETECTING,
           timestamp: Date.now(),
-          context: {} as ExecutionContext
+          context: {} as ExecutionContext,
         });
 
         pipeline.registerStage(ExecutionState.DETECTING, mockHandler);
@@ -75,7 +74,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
     describe('Stage Execution', () => {
       it('should execute all stages in sequence', async () => {
         const stageOrder: ExecutionState[] = [];
-        
+
         // Register handlers that track execution order
         const createHandler = (stage: ExecutionState) => {
           return jest.fn().mockImplementation(async (ctx: ExecutionContext) => {
@@ -84,7 +83,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
               success: true,
               stage,
               timestamp: Date.now(),
-              context: ctx
+              context: ctx,
             };
           });
         };
@@ -100,7 +99,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           path: [],
           tokenA: { address: '0x123', decimals: 18, symbol: 'TKN' },
           tokenB: { address: '0x456', decimals: 18, symbol: 'TKN2' },
-          tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' }
+          tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' },
         };
 
         const mockPath: ArbitragePath = {
@@ -111,7 +110,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           totalGasCost: BigInt(10),
           netProfit: BigInt(90),
           totalFees: 0.003,
-          slippageImpact: 0.01
+          slippageImpact: 0.01,
         };
 
         const result = await pipeline.execute(mockOpportunity, mockPath, 3);
@@ -122,7 +121,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           ExecutionState.VALIDATING,
           ExecutionState.PREPARING,
           ExecutionState.EXECUTING,
-          ExecutionState.MONITORING
+          ExecutionState.MONITORING,
         ]);
       });
 
@@ -135,7 +134,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
             success: true,
             stage: ExecutionState.DETECTING,
             timestamp: Date.now(),
-            context: ctx
+            context: ctx,
           };
         });
 
@@ -146,13 +145,15 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
             stage: ExecutionState.VALIDATING,
             timestamp: Date.now(),
             context: ctx,
-            errors: [{
-              timestamp: Date.now(),
-              stage: ExecutionState.VALIDATING,
-              errorType: 'TEST_ERROR',
-              message: 'Intentional failure',
-              recoverable: false
-            }]
+            errors: [
+              {
+                timestamp: Date.now(),
+                stage: ExecutionState.VALIDATING,
+                errorType: 'TEST_ERROR',
+                message: 'Intentional failure',
+                recoverable: false,
+              },
+            ],
           };
         });
 
@@ -162,7 +163,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
             success: true,
             stage: ExecutionState.PREPARING,
             timestamp: Date.now(),
-            context: ctx
+            context: ctx,
           };
         });
 
@@ -171,7 +172,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           path: [],
           tokenA: { address: '0x123', decimals: 18, symbol: 'TKN' },
           tokenB: { address: '0x456', decimals: 18, symbol: 'TKN2' },
-          tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' }
+          tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' },
         };
 
         const mockPath: ArbitragePath = {
@@ -182,7 +183,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           totalGasCost: BigInt(10),
           netProfit: BigInt(90),
           totalFees: 0.003,
-          slippageImpact: 0.01
+          slippageImpact: 0.01,
         };
 
         const result = await pipeline.execute(mockOpportunity, mockPath, 3);
@@ -198,7 +199,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           success: true,
           stage: ExecutionState.DETECTING,
           timestamp: Date.now(),
-          context: ctx
+          context: ctx,
         }));
 
         pipeline.registerStage(ExecutionState.VALIDATING, async (ctx) => {
@@ -209,20 +210,22 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
               stage: ExecutionState.VALIDATING,
               timestamp: Date.now(),
               context: ctx,
-              errors: [{
-                timestamp: Date.now(),
-                stage: ExecutionState.VALIDATING,
-                errorType: 'RETRYABLE_ERROR',
-                message: 'Temporary failure',
-                recoverable: true
-              }]
+              errors: [
+                {
+                  timestamp: Date.now(),
+                  stage: ExecutionState.VALIDATING,
+                  errorType: 'RETRYABLE_ERROR',
+                  message: 'Temporary failure',
+                  recoverable: true,
+                },
+              ],
             };
           }
           return {
             success: true,
             stage: ExecutionState.VALIDATING,
             timestamp: Date.now(),
-            context: ctx
+            context: ctx,
           };
         });
 
@@ -231,7 +234,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           path: [],
           tokenA: { address: '0x123', decimals: 18, symbol: 'TKN' },
           tokenB: { address: '0x456', decimals: 18, symbol: 'TKN2' },
-          tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' }
+          tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' },
         };
 
         const mockPath: ArbitragePath = {
@@ -242,7 +245,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           totalGasCost: BigInt(10),
           netProfit: BigInt(90),
           totalFees: 0.003,
-          slippageImpact: 0.01
+          slippageImpact: 0.01,
         };
 
         const result = await pipeline.execute(mockOpportunity, mockPath, 3);
@@ -257,12 +260,12 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           const contexts = pipeline.getActiveContexts();
           expect(contexts.length).toBeGreaterThan(0);
           expect(contexts[0].id).toBe(ctx.id);
-          
+
           return {
             success: true,
             stage: ExecutionState.DETECTING,
             timestamp: Date.now(),
-            context: ctx
+            context: ctx,
           };
         });
 
@@ -271,7 +274,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           path: [],
           tokenA: { address: '0x123', decimals: 18, symbol: 'TKN' },
           tokenB: { address: '0x456', decimals: 18, symbol: 'TKN2' },
-          tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' }
+          tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' },
         };
 
         const mockPath: ArbitragePath = {
@@ -282,7 +285,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           totalGasCost: BigInt(10),
           netProfit: BigInt(90),
           totalFees: 0.003,
-          slippageImpact: 0.01
+          slippageImpact: 0.01,
         };
 
         await pipeline.execute(mockOpportunity, mockPath, 3);
@@ -293,7 +296,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           success: true,
           stage: ExecutionState.DETECTING,
           timestamp: Date.now(),
-          context: ctx
+          context: ctx,
         }));
 
         const mockOpportunity: ArbitrageOpportunity = {
@@ -301,7 +304,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           path: [],
           tokenA: { address: '0x123', decimals: 18, symbol: 'TKN' },
           tokenB: { address: '0x456', decimals: 18, symbol: 'TKN2' },
-          tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' }
+          tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' },
         };
 
         const mockPath: ArbitragePath = {
@@ -312,7 +315,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           totalGasCost: BigInt(10),
           netProfit: BigInt(90),
           totalFees: 0.003,
-          slippageImpact: 0.01
+          slippageImpact: 0.01,
         };
 
         await pipeline.execute(mockOpportunity, mockPath, 3);
@@ -325,11 +328,11 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
 
   describe('SystemHealthMonitor', () => {
     let monitor: SystemHealthMonitor;
-    
+
     beforeEach(() => {
       monitor = new SystemHealthMonitor({
         interval: 1000,
-        timeout: 500
+        timeout: 500,
       });
     });
 
@@ -341,27 +344,27 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
       it('should register components for monitoring', () => {
         const component: MonitoredComponent = {
           name: 'TestComponent',
-          checkHealth: async () => HealthStatus.HEALTHY
+          checkHealth: async () => HealthStatus.HEALTHY,
         };
 
         monitor.registerComponent(component);
-        
+
         const report = monitor.getHealthStatus();
-        const registered = report.components.find(c => c.componentName === 'TestComponent');
+        const registered = report.components.find((c) => c.componentName === 'TestComponent');
         expect(registered).toBeDefined();
       });
 
       it('should unregister components', () => {
         const component: MonitoredComponent = {
           name: 'TestComponent',
-          checkHealth: async () => HealthStatus.HEALTHY
+          checkHealth: async () => HealthStatus.HEALTHY,
         };
 
         monitor.registerComponent(component);
         monitor.unregisterComponent('TestComponent');
-        
+
         const report = monitor.getHealthStatus();
-        const registered = report.components.find(c => c.componentName === 'TestComponent');
+        const registered = report.components.find((c) => c.componentName === 'TestComponent');
         expect(registered).toBeUndefined();
       });
     });
@@ -370,13 +373,13 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
       it('should report healthy status for healthy components', (done) => {
         const component: MonitoredComponent = {
           name: 'HealthyComponent',
-          checkHealth: async () => HealthStatus.HEALTHY
+          checkHealth: async () => HealthStatus.HEALTHY,
         };
 
         monitor.registerComponent(component);
-        
+
         monitor.on('health-check', (report) => {
-          const comp = report.components.find(c => c.componentName === 'HealthyComponent');
+          const comp = report.components.find((c) => c.componentName === 'HealthyComponent');
           expect(comp?.status).toBe(HealthStatus.HEALTHY);
           done();
         });
@@ -388,15 +391,15 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
         const component: MonitoredComponent = {
           name: 'SlowComponent',
           checkHealth: async () => {
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise((resolve) => setTimeout(resolve, 100));
             return HealthStatus.DEGRADED;
-          }
+          },
         };
 
         monitor.registerComponent(component);
-        
+
         monitor.on('health-check', (report) => {
-          const comp = report.components.find(c => c.componentName === 'SlowComponent');
+          const comp = report.components.find((c) => c.componentName === 'SlowComponent');
           if (comp) {
             expect(comp.status).toBe(HealthStatus.DEGRADED);
             done();
@@ -411,13 +414,13 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           name: 'FailingComponent',
           checkHealth: async () => {
             throw new Error('Component failure');
-          }
+          },
         };
 
         monitor.registerComponent(component);
-        
+
         monitor.on('health-check', (report) => {
-          const comp = report.components.find(c => c.componentName === 'FailingComponent');
+          const comp = report.components.find((c) => c.componentName === 'FailingComponent');
           if (comp && comp.status === HealthStatus.UNHEALTHY) {
             done();
           }
@@ -433,11 +436,11 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           name: 'ErrorProneComponent',
           checkHealth: async () => {
             throw new Error('Consistent failure');
-          }
+          },
         };
 
         monitor.registerComponent(component);
-        
+
         monitor.on('anomaly-detected', (anomaly) => {
           if (anomaly.anomalyType === 'HIGH_ERROR_RATE') {
             expect(anomaly.affectedComponent).toBe('ErrorProneComponent');
@@ -474,12 +477,12 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
 
   describe('ErrorRecovery', () => {
     let recovery: ErrorRecovery;
-    
+
     beforeEach(() => {
       recovery = new ErrorRecovery({
         maxRetryAttempts: 3,
         baseBackoffMs: 100,
-        maxBackoffMs: 1000
+        maxBackoffMs: 1000,
       });
     });
 
@@ -496,7 +499,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           metadata: {},
           errors: [],
           retryCount: 0,
-          maxRetries: 3
+          maxRetries: 3,
         };
 
         const error = {
@@ -504,16 +507,16 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           stage: ExecutionState.EXECUTING,
           errorType: 'NONCE_ERROR',
           message: 'nonce too low',
-          recoverable: true
+          recoverable: true,
         };
 
         // Mock NonceManager
         const mockNonceManager = {
-          resyncNonce: jest.fn().mockResolvedValue(undefined)
+          resyncNonce: jest.fn().mockResolvedValue(undefined),
         } as any;
 
         const result = await recovery.recover(context, error, mockNonceManager);
-        
+
         expect(mockNonceManager.resyncNonce).toHaveBeenCalled();
       });
 
@@ -530,7 +533,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           errors: [],
           retryCount: 0,
           maxRetries: 3,
-          gasPrice: BigInt(50 * 10 ** 9)
+          gasPrice: BigInt(50 * 10 ** 9),
         };
 
         const error = {
@@ -538,11 +541,11 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           stage: ExecutionState.EXECUTING,
           errorType: 'GAS_ERROR',
           message: 'transaction underpriced',
-          recoverable: true
+          recoverable: true,
         };
 
         const result = await recovery.recover(context, error);
-        
+
         expect(result.success).toBe(true);
         expect(result.newContext?.gasPrice).toBeGreaterThan(context.gasPrice!);
       });
@@ -559,7 +562,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           metadata: {},
           errors: [],
           retryCount: 0,
-          maxRetries: 3
+          maxRetries: 3,
         };
 
         const error = {
@@ -567,11 +570,11 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           stage: ExecutionState.EXECUTING,
           errorType: 'TEMPORARY_ERROR',
           message: 'Temporary failure',
-          recoverable: true
+          recoverable: true,
         };
 
         const result = await recovery.recover(context, error);
-        
+
         expect(result.success).toBe(true);
         expect(result.executionResumed).toBe(true);
       });
@@ -588,7 +591,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           metadata: {},
           errors: [],
           retryCount: 3,
-          maxRetries: 3
+          maxRetries: 3,
         };
 
         const error = {
@@ -596,11 +599,11 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           stage: ExecutionState.EXECUTING,
           errorType: 'PERSISTENT_ERROR',
           message: 'Error persists',
-          recoverable: true
+          recoverable: true,
         };
 
         const result = await recovery.recover(context, error);
-        
+
         expect(result.success).toBe(false);
         expect(result.error?.errorType).toBe('ESCALATED');
       });
@@ -619,7 +622,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           metadata: {},
           errors: [],
           retryCount: 0,
-          maxRetries: 3
+          maxRetries: 3,
         };
 
         const error = {
@@ -627,7 +630,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           stage: ExecutionState.EXECUTING,
           errorType: 'TEST_ERROR',
           message: 'Test error',
-          recoverable: true
+          recoverable: true,
         };
 
         await recovery.recover(context, error);
@@ -649,7 +652,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           metadata: {},
           errors: [],
           retryCount: 0,
-          maxRetries: 3
+          maxRetries: 3,
         };
 
         const error = {
@@ -657,7 +660,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           stage: ExecutionState.EXECUTING,
           errorType: 'TEST_ERROR',
           message: 'Test error',
-          recoverable: true
+          recoverable: true,
         };
 
         await recovery.recover(context, error);
@@ -681,13 +684,15 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           stage: ExecutionState.DETECTING,
           timestamp: Date.now(),
           context: {} as ExecutionContext,
-          errors: [{
-            timestamp: Date.now(),
-            stage: ExecutionState.DETECTING,
-            errorType: 'DETECTION_ERROR',
-            message: 'Detection failed',
-            recoverable: true
-          }]
+          errors: [
+            {
+              timestamp: Date.now(),
+              stage: ExecutionState.DETECTING,
+              errorType: 'DETECTION_ERROR',
+              message: 'Detection failed',
+              recoverable: true,
+            },
+          ],
         }));
 
         const mockOpportunity: ArbitrageOpportunity = {
@@ -695,7 +700,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           path: [],
           tokenA: { address: '0x123', decimals: 18, symbol: 'TKN' },
           tokenB: { address: '0x456', decimals: 18, symbol: 'TKN2' },
-          tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' }
+          tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' },
         };
 
         const mockPath: ArbitragePath = {
@@ -706,7 +711,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           totalGasCost: BigInt(10),
           netProfit: BigInt(90),
           totalFees: 0.003,
-          slippageImpact: 0.01
+          slippageImpact: 0.01,
         };
 
         const result = await pipeline.execute(mockOpportunity, mockPath, 3);
@@ -729,15 +734,15 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
         ExecutionState.VALIDATING,
         ExecutionState.PREPARING,
         ExecutionState.EXECUTING,
-        ExecutionState.MONITORING
-      ].forEach(stage => {
+        ExecutionState.MONITORING,
+      ].forEach((stage) => {
         pipeline.registerStage(stage, async (ctx) => {
           executionStages.push(stage);
           return {
             success: true,
             stage,
             timestamp: Date.now(),
-            context: ctx
+            context: ctx,
           };
         });
       });
@@ -747,27 +752,29 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
         path: [],
         tokenA: { address: '0x123', decimals: 18, symbol: 'TKN' },
         tokenB: { address: '0x456', decimals: 18, symbol: 'TKN2' },
-        tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' }
+        tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' },
       };
 
       const mockPath: ArbitragePath = {
-        hops: [{
-          dexName: 'Uniswap V3',
-          poolAddress: '0xpool1',
-          tokenIn: '0x123',
-          tokenOut: '0x456',
-          amountIn: BigInt(1000),
-          amountOut: BigInt(1100),
-          fee: 3000,
-          gasEstimate: 150000
-        }],
+        hops: [
+          {
+            dexName: 'Uniswap V3',
+            poolAddress: '0xpool1',
+            tokenIn: '0x123',
+            tokenOut: '0x456',
+            amountIn: BigInt(1000),
+            amountOut: BigInt(1100),
+            fee: 3000,
+            gasEstimate: 150000,
+          },
+        ],
         startToken: '0x123',
         endToken: '0x123',
         estimatedProfit: BigInt(100),
         totalGasCost: BigInt(10),
         netProfit: BigInt(90),
         totalFees: 0.003,
-        slippageImpact: 0.01
+        slippageImpact: 0.01,
       };
 
       const result = await pipeline.execute(mockOpportunity, mockPath, 3);
@@ -780,14 +787,14 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
     it('should handle execution with retry and recovery', async () => {
       const pipeline = new ExecutionPipeline();
       const recovery = new ErrorRecovery();
-      
+
       let attemptCount = 0;
 
       pipeline.registerStage(ExecutionState.DETECTING, async (ctx) => ({
         success: true,
         stage: ExecutionState.DETECTING,
         timestamp: Date.now(),
-        context: ctx
+        context: ctx,
       }));
 
       pipeline.registerStage(ExecutionState.VALIDATING, async (ctx) => {
@@ -799,13 +806,15 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
             stage: ExecutionState.VALIDATING,
             timestamp: Date.now(),
             context: ctx,
-            errors: [{
-              timestamp: Date.now(),
-              stage: ExecutionState.VALIDATING,
-              errorType: 'TEMPORARY_ERROR',
-              message: 'Temporary validation error',
-              recoverable: true
-            }]
+            errors: [
+              {
+                timestamp: Date.now(),
+                stage: ExecutionState.VALIDATING,
+                errorType: 'TEMPORARY_ERROR',
+                message: 'Temporary validation error',
+                recoverable: true,
+              },
+            ],
           };
         }
         // Succeed on retry
@@ -813,7 +822,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           success: true,
           stage: ExecutionState.VALIDATING,
           timestamp: Date.now(),
-          context: ctx
+          context: ctx,
         };
       });
 
@@ -822,7 +831,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
         path: [],
         tokenA: { address: '0x123', decimals: 18, symbol: 'TKN' },
         tokenB: { address: '0x456', decimals: 18, symbol: 'TKN2' },
-        tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' }
+        tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' },
       };
 
       const mockPath: ArbitragePath = {
@@ -833,7 +842,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
         totalGasCost: BigInt(10),
         netProfit: BigInt(90),
         totalFees: 0.003,
-        slippageImpact: 0.01
+        slippageImpact: 0.01,
       };
 
       const result = await pipeline.execute(mockOpportunity, mockPath, 3);
@@ -852,22 +861,37 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           success: true,
           stage,
           timestamp: Date.now(),
-          context: ctx
+          context: ctx,
         });
       };
 
-      pipeline.registerStage(ExecutionState.DETECTING, createSuccessHandler(ExecutionState.DETECTING));
-      pipeline.registerStage(ExecutionState.VALIDATING, createSuccessHandler(ExecutionState.VALIDATING));
-      pipeline.registerStage(ExecutionState.PREPARING, createSuccessHandler(ExecutionState.PREPARING));
-      pipeline.registerStage(ExecutionState.EXECUTING, createSuccessHandler(ExecutionState.EXECUTING));
-      pipeline.registerStage(ExecutionState.MONITORING, createSuccessHandler(ExecutionState.MONITORING));
+      pipeline.registerStage(
+        ExecutionState.DETECTING,
+        createSuccessHandler(ExecutionState.DETECTING)
+      );
+      pipeline.registerStage(
+        ExecutionState.VALIDATING,
+        createSuccessHandler(ExecutionState.VALIDATING)
+      );
+      pipeline.registerStage(
+        ExecutionState.PREPARING,
+        createSuccessHandler(ExecutionState.PREPARING)
+      );
+      pipeline.registerStage(
+        ExecutionState.EXECUTING,
+        createSuccessHandler(ExecutionState.EXECUTING)
+      );
+      pipeline.registerStage(
+        ExecutionState.MONITORING,
+        createSuccessHandler(ExecutionState.MONITORING)
+      );
 
       const mockOpportunity: ArbitrageOpportunity = {
         type: 'spatial',
         path: [],
         tokenA: { address: '0x123', decimals: 18, symbol: 'TKN' },
         tokenB: { address: '0x456', decimals: 18, symbol: 'TKN2' },
-        tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' }
+        tokenC: { address: '0x789', decimals: 18, symbol: 'TKN3' },
       };
 
       const mockPath: ArbitragePath = {
@@ -878,7 +902,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
         totalGasCost: BigInt(10),
         netProfit: BigInt(90),
         totalFees: 0.003,
-        slippageImpact: 0.01
+        slippageImpact: 0.01,
       };
 
       const executions = [];
@@ -888,7 +912,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
 
       const results = await Promise.all(executions);
       expect(results).toHaveLength(10);
-      results.forEach(result => expect(result.success).toBe(true));
+      results.forEach((result) => expect(result.success).toBe(true));
     });
   });
 });

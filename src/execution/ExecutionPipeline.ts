@@ -1,9 +1,9 @@
 /**
  * ExecutionPipeline.ts - Multi-stage execution flow with validation checkpoints
- * 
+ *
  * Implements a robust pipeline for arbitrage execution:
  * Detect → Validate → Prepare → Execute → Monitor
- * 
+ *
  * Features:
  * - Checkpoints at each stage for validation
  * - Atomic operation guarantees
@@ -22,7 +22,7 @@ import {
   ExecutionEventType,
   ExecutionEvent,
   StatePersistence,
-  AtomicOperationResult
+  AtomicOperationResult,
 } from '../types/ExecutionTypes';
 import { ArbitrageOpportunity } from '../types/definitions';
 import { ArbitragePath } from '../arbitrage/types';
@@ -60,8 +60,8 @@ export class ExecutionPipeline extends EventEmitter {
           timeout: 5000,
           retryable: true,
           required: true,
-          validateCheckpoint: true
-        }
+          validateCheckpoint: true,
+        },
       ],
       [
         ExecutionState.VALIDATING,
@@ -70,8 +70,8 @@ export class ExecutionPipeline extends EventEmitter {
           timeout: 10000,
           retryable: true,
           required: true,
-          validateCheckpoint: true
-        }
+          validateCheckpoint: true,
+        },
       ],
       [
         ExecutionState.PREPARING,
@@ -80,8 +80,8 @@ export class ExecutionPipeline extends EventEmitter {
           timeout: 15000,
           retryable: true,
           required: true,
-          validateCheckpoint: true
-        }
+          validateCheckpoint: true,
+        },
       ],
       [
         ExecutionState.EXECUTING,
@@ -90,8 +90,8 @@ export class ExecutionPipeline extends EventEmitter {
           timeout: 30000,
           retryable: false,
           required: true,
-          validateCheckpoint: true
-        }
+          validateCheckpoint: true,
+        },
       ],
       [
         ExecutionState.MONITORING,
@@ -100,9 +100,9 @@ export class ExecutionPipeline extends EventEmitter {
           timeout: 60000,
           retryable: false,
           required: true,
-          validateCheckpoint: true
-        }
-      ]
+          validateCheckpoint: true,
+        },
+      ],
     ];
 
     stageConfigs.forEach(([state, config]) => {
@@ -127,24 +127,28 @@ export class ExecutionPipeline extends EventEmitter {
     maxRetries: number = 3
   ): Promise<CheckpointResult> {
     const context = this.createContext(opportunity, path, maxRetries);
-    
+
     try {
       // Persist initial state
       await this.saveState(context);
-      
+
       // Add to active contexts
       this.activeContexts.set(context.id, context);
-      
+
       // Execute pipeline stages in sequence
       const result = await this.executePipeline(context);
-      
+
       // Clean up
       this.activeContexts.delete(context.id);
-      
+
       return result;
     } catch (error) {
-      logger.error(`Pipeline execution failed for ${context.id}: ${error instanceof Error ? error.message : String(error)}`);
-      
+      logger.error(
+        `Pipeline execution failed for ${context.id}: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+
       const failedResult: CheckpointResult = {
         success: false,
         stage: context.state,
@@ -157,13 +161,13 @@ export class ExecutionPipeline extends EventEmitter {
             'PIPELINE_FAILURE',
             error instanceof Error ? error.message : 'Unknown error',
             false
-          )
-        ]
+          ),
+        ],
       };
-      
+
       // Clean up
       this.activeContexts.delete(context.id);
-      
+
       return failedResult;
     }
   }
@@ -177,34 +181,34 @@ export class ExecutionPipeline extends EventEmitter {
       ExecutionState.VALIDATING,
       ExecutionState.PREPARING,
       ExecutionState.EXECUTING,
-      ExecutionState.MONITORING
+      ExecutionState.MONITORING,
     ];
 
     let currentResult: CheckpointResult | null = null;
 
     for (const stage of stageOrder) {
       logger.info(`Executing pipeline stage: ${stage} for context ${context.id}`);
-      
+
       // Update context state
       context.state = stage;
       context.updatedAt = Date.now();
       await this.saveState(context);
-      
+
       // Emit event
       this.emitEvent(ExecutionEventType.VALIDATION_STARTED, context);
-      
+
       // Execute stage with timeout and error handling
       const result = await this.executeStage(context, stage);
-      
+
       if (!result.success) {
         logger.error(`Pipeline stage ${stage} failed for context ${context.id}`);
-        
+
         // Check if stage is retryable
         const config = this.stageConfigs.get(stage);
         if (config?.retryable && context.retryCount < context.maxRetries) {
           logger.info(`Retrying stage ${stage} for context ${context.id}`);
           context.retryCount++;
-          
+
           // Retry the same stage
           const retryResult = await this.executeStage(context, stage);
           if (!retryResult.success) {
@@ -217,18 +221,18 @@ export class ExecutionPipeline extends EventEmitter {
             continue; // Continue to next stage
           }
         }
-        
+
         // Stage failed and cannot retry or not required
         if (config?.required) {
           return result; // Return failure for required stages
         }
-        
+
         // Continue for non-required stages
         logger.warn(`Non-required stage ${stage} failed, continuing pipeline`);
       }
-      
+
       currentResult = result;
-      
+
       // Validate checkpoint if required
       if (this.stageConfigs.get(stage)?.validateCheckpoint) {
         const validationResult = await this.validateCheckpoint(result);
@@ -243,15 +247,17 @@ export class ExecutionPipeline extends EventEmitter {
     context.state = ExecutionState.COMPLETED;
     context.updatedAt = Date.now();
     await this.saveState(context);
-    
+
     this.emitEvent(ExecutionEventType.EXECUTION_COMPLETED, context);
-    
-    return currentResult || {
-      success: true,
-      stage: ExecutionState.COMPLETED,
-      timestamp: Date.now(),
-      context
-    };
+
+    return (
+      currentResult || {
+        success: true,
+        stage: ExecutionState.COMPLETED,
+        timestamp: Date.now(),
+        context,
+      }
+    );
   }
 
   /**
@@ -269,13 +275,8 @@ export class ExecutionPipeline extends EventEmitter {
         timestamp: Date.now(),
         context,
         errors: [
-          this.createError(
-            stage,
-            'NO_HANDLER',
-            `No handler registered for stage ${stage}`,
-            false
-          )
-        ]
+          this.createError(stage, 'NO_HANDLER', `No handler registered for stage ${stage}`, false),
+        ],
       };
     }
 
@@ -297,8 +298,10 @@ export class ExecutionPipeline extends EventEmitter {
 
       return result;
     } catch (error) {
-      logger.error(`Error executing stage ${stage}: ${error instanceof Error ? error.message : String(error)}`);
-      
+      logger.error(
+        `Error executing stage ${stage}: ${error instanceof Error ? error.message : String(error)}`
+      );
+
       return {
         success: false,
         stage,
@@ -310,8 +313,8 @@ export class ExecutionPipeline extends EventEmitter {
             'STAGE_ERROR',
             error instanceof Error ? error.message : 'Unknown error',
             config?.retryable || false
-          )
-        ]
+          ),
+        ],
       };
     }
   }
@@ -333,8 +336,8 @@ export class ExecutionPipeline extends EventEmitter {
             'INVALID_CHECKPOINT',
             'Checkpoint result missing context',
             false
-          )
-        ]
+          ),
+        ],
       };
     }
 
@@ -351,8 +354,8 @@ export class ExecutionPipeline extends EventEmitter {
             'INVALID_CONTEXT',
             'Context missing required fields',
             false
-          )
-        ]
+          ),
+        ],
       };
     }
 
@@ -379,7 +382,7 @@ export class ExecutionPipeline extends EventEmitter {
       metadata: {},
       errors: [],
       retryCount: 0,
-      maxRetries
+      maxRetries,
     };
   }
 
@@ -389,10 +392,10 @@ export class ExecutionPipeline extends EventEmitter {
   private calculatePriority(path: ArbitragePath): number {
     // Simple priority calculation based on net profit
     const profit = Number(path.netProfit);
-    
+
     if (profit > 1000) return 4; // CRITICAL
-    if (profit > 500) return 3;  // HIGH
-    if (profit > 100) return 2;  // MEDIUM
+    if (profit > 500) return 3; // HIGH
+    if (profit > 100) return 2; // MEDIUM
     return 1; // LOW
   }
 
@@ -411,7 +414,7 @@ export class ExecutionPipeline extends EventEmitter {
       errorType,
       message,
       recoverable,
-      details: {}
+      details: {},
     };
   }
 
@@ -423,7 +426,11 @@ export class ExecutionPipeline extends EventEmitter {
       try {
         await this.persistence.save(context);
       } catch (error) {
-        logger.error(`Failed to persist state for ${context.id}: ${error instanceof Error ? error.message : String(error)}`);
+        logger.error(
+          `Failed to persist state for ${context.id}: ${
+            error instanceof Error ? error.message : String(error)
+          }`
+        );
       }
     }
   }
@@ -431,15 +438,19 @@ export class ExecutionPipeline extends EventEmitter {
   /**
    * Emit an execution event
    */
-  private emitEvent(type: ExecutionEventType, context: ExecutionContext, data?: Record<string, unknown>): void {
+  private emitEvent(
+    type: ExecutionEventType,
+    context: ExecutionContext,
+    data?: Record<string, unknown>
+  ): void {
     const event: ExecutionEvent = {
       id: `evt_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
       type,
       timestamp: Date.now(),
       context,
-      data
+      data,
     };
-    
+
     this.emit('execution-event', event);
     this.emit(type, event);
   }
@@ -454,9 +465,7 @@ export class ExecutionPipeline extends EventEmitter {
   ): Promise<T> {
     return Promise.race<T>([
       promise,
-      new Promise<T>((_, reject) =>
-        setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs)
-      )
+      new Promise<T>((_, reject) => setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs)),
     ]);
   }
 
@@ -485,12 +494,12 @@ export class ExecutionPipeline extends EventEmitter {
 
     context.state = ExecutionState.CANCELLED;
     context.updatedAt = Date.now();
-    
+
     await this.saveState(context);
     this.activeContexts.delete(id);
-    
+
     this.emitEvent(ExecutionEventType.EXECUTION_FAILED, context);
-    
+
     return true;
   }
 
@@ -502,27 +511,27 @@ export class ExecutionPipeline extends EventEmitter {
     if (!context) {
       return {
         success: false,
-        error: new Error(`Context ${id} not found`)
+        error: new Error(`Context ${id} not found`),
       };
     }
 
     try {
       logger.info(`Rolling back execution ${id} to state ${targetState}`);
-      
+
       context.state = targetState;
       context.updatedAt = Date.now();
       context.retryCount = 0;
-      
+
       await this.saveState(context);
-      
+
       return {
         success: true,
-        data: context
+        data: context,
       };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error : new Error('Rollback failed')
+        error: error instanceof Error ? error : new Error('Rollback failed'),
       };
     }
   }

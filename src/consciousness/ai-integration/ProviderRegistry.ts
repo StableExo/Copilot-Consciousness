@@ -1,16 +1,11 @@
 /**
  * AIProviderRegistry - Universal AI Provider Management
- * 
+ *
  * Manages multiple AI providers with automatic fallback chain.
  * Enables TheWarden to use multiple AI providers seamlessly.
  */
 
-import {
-  AIProvider,
-  GenerateOptions,
-  AIResponse,
-  ConsciousnessContext,
-} from './AIProvider';
+import { AIProvider, GenerateOptions, AIResponse, ConsciousnessContext } from './AIProvider';
 
 export interface RegistryConfig {
   fallbackChain?: string[];
@@ -55,7 +50,7 @@ export class AIProviderRegistry {
       averageResponseTime: 0,
       lastUsed: 0,
     });
-    
+
     console.log(`[AIProviderRegistry] Registered provider: ${provider.name}`);
   }
 
@@ -83,12 +78,9 @@ export class AIProviderRegistry {
   /**
    * Execute with automatic fallback chain
    */
-  async executeWithFallback(
-    prompt: string,
-    options?: GenerateOptions
-  ): Promise<AIResponse> {
+  async executeWithFallback(prompt: string, options?: GenerateOptions): Promise<AIResponse> {
     const chain = this.buildFallbackChain();
-    
+
     if (chain.length === 0) {
       throw new Error('No AI providers available');
     }
@@ -97,7 +89,7 @@ export class AIProviderRegistry {
 
     for (const providerName of chain) {
       const provider = this.providers.get(providerName);
-      
+
       if (!provider) {
         console.warn(`[AIProviderRegistry] Provider ${providerName} not found in registry`);
         continue;
@@ -112,7 +104,7 @@ export class AIProviderRegistry {
       try {
         console.log(`[AIProviderRegistry] Attempting provider: ${providerName}`);
         const response = await this.executeWithRetry(provider, prompt, options);
-        
+
         // Check if response indicates error
         if (response.finishReason === 'ERROR') {
           throw new Error(response.text);
@@ -125,7 +117,7 @@ export class AIProviderRegistry {
         console.warn(`[AIProviderRegistry] Provider ${providerName} failed:`, error.message);
         this.recordFailure(providerName);
         lastError = error;
-        
+
         // Continue to next provider in fallback chain
         continue;
       }
@@ -146,7 +138,7 @@ export class AIProviderRegistry {
     options?: GenerateOptions
   ): Promise<AIResponse> {
     const chain = this.buildFallbackChain();
-    
+
     if (chain.length === 0) {
       throw new Error('No AI providers available');
     }
@@ -155,7 +147,7 @@ export class AIProviderRegistry {
 
     for (const providerName of chain) {
       const provider = this.providers.get(providerName);
-      
+
       if (!provider) {
         continue;
       }
@@ -167,7 +159,7 @@ export class AIProviderRegistry {
       try {
         console.log(`[AIProviderRegistry] Attempting provider with context: ${providerName}`);
         const response = await this.executeWithContextAndRetry(provider, prompt, context, options);
-        
+
         if (response.finishReason === 'ERROR') {
           throw new Error(response.text);
         }
@@ -212,11 +204,11 @@ export class AIProviderRegistry {
 
     // Otherwise, build automatic chain
     const chain: string[] = [];
-    
+
     // Priority order: configured providers first
     const configured = this.getConfiguredProviders();
     chain.push(...configured.map((p) => p.name));
-    
+
     // Always add local as last resort
     if (this.providers.has('local') && !chain.includes('local')) {
       chain.push('local');
@@ -247,7 +239,7 @@ export class AIProviderRegistry {
         return response;
       } catch (error: any) {
         lastError = error;
-        
+
         // Wait before retry (except on last attempt)
         if (attempt < this.config.retryAttempts - 1) {
           await this.delay(this.config.retryDelay);
@@ -280,7 +272,7 @@ export class AIProviderRegistry {
         return response;
       } catch (error: any) {
         lastError = error;
-        
+
         if (attempt < this.config.retryAttempts - 1) {
           await this.delay(this.config.retryDelay);
         }

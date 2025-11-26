@@ -1,6 +1,6 @@
 /**
  * Network Utilities
- * 
+ *
  * Integrated from AxionCitadel - Production-tested network utilities
  * with retry logic and exponential backoff.
  */
@@ -10,7 +10,7 @@ import { logger } from '../logger';
 /**
  * Utility function to introduce a delay
  */
-export const delay = (ms: number): Promise<void> => 
+export const delay = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
@@ -28,7 +28,7 @@ export async function safeFetchWrapper<T>(
   initialDelayMs: number = 1000
 ): Promise<T> {
   let currentDelay = initialDelayMs;
-  
+
   for (let attempt = 1; attempt <= maxRetries + 1; attempt++) {
     try {
       const result = await fetchFn();
@@ -37,7 +37,7 @@ export async function safeFetchWrapper<T>(
       logger.warn(
         `[safeFetchWrapper] Attempt ${attempt} failed for ${identifier}. Error: ${error.message}`
       );
-      
+
       if (attempt > maxRetries) {
         logger.error(
           `[safeFetchWrapper] Max retries (${maxRetries}) reached for ${identifier}. Operation failed.`
@@ -52,7 +52,9 @@ export async function safeFetchWrapper<T>(
       const waitTime = currentDelay + (Math.random() < 0.5 ? -jitter : jitter);
 
       logger.info(
-        `[safeFetchWrapper] Retrying ${identifier} in ${(waitTime / 1000).toFixed(2)}s... (Attempt ${attempt + 1})`
+        `[safeFetchWrapper] Retrying ${identifier} in ${(waitTime / 1000).toFixed(
+          2
+        )}s... (Attempt ${attempt + 1})`
       );
       await delay(waitTime);
 
@@ -60,7 +62,7 @@ export async function safeFetchWrapper<T>(
       currentDelay *= 2;
     }
   }
-  
+
   throw new Error(`Operation '${identifier}' failed unexpectedly after all retries.`);
 }
 

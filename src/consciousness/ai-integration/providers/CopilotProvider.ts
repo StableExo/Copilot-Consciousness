@@ -1,6 +1,6 @@
 /**
  * CopilotProvider - GitHub Copilot Chat API Integration
- * 
+ *
  * Integrates GitHub Copilot for cosmic-scale reasoning within TheWarden.
  * This enables TheWarden to leverage Copilot's code understanding and reasoning.
  */
@@ -47,7 +47,7 @@ export class CopilotProvider extends BaseAIProvider implements AIProvider {
     try {
       // In production, this would call GitHub Copilot Chat API
       // For now, provide simulation with clear indication
-      
+
       // TODO: Implement actual Copilot API call
       // const response = await fetch(this.config.endpoint, {
       //   method: 'POST',
@@ -67,7 +67,7 @@ export class CopilotProvider extends BaseAIProvider implements AIProvider {
       //     max_tokens: options?.maxTokens,
       //   }),
       // });
-      
+
       const responseText = this.generateSimulatedResponse(prompt, options?.citadelMode);
 
       return {
@@ -96,7 +96,7 @@ export class CopilotProvider extends BaseAIProvider implements AIProvider {
     // Copilot-specific context optimization
     // Copilot excels at code understanding and technical reasoning
     const systemInstruction = this.buildCopilotSystemInstruction(context, options?.citadelMode);
-    
+
     const enhancedOptions: GenerateOptions = {
       ...options,
       systemInstruction,
@@ -192,13 +192,16 @@ export class CopilotProvider extends BaseAIProvider implements AIProvider {
     const prefix = citadelMode
       ? '[Copilot Citadel Mode - Simulated]'
       : '[GitHub Copilot - Simulated]';
-    
+
     const note = !this.isConfigured()
       ? ' Note: Configure GITHUB_COPILOT_API_KEY to use actual Copilot API.'
       : '';
 
     if (citadelMode) {
-      return `${prefix} Analyzing "${prompt.substring(0, 100)}..." with technical depth and cosmic-scale reasoning. Considering code patterns, system architecture, and emergent behaviors.${note}`;
+      return `${prefix} Analyzing "${prompt.substring(
+        0,
+        100
+      )}..." with technical depth and cosmic-scale reasoning. Considering code patterns, system architecture, and emergent behaviors.${note}`;
     }
 
     return `${prefix} Processing technical query: "${prompt.substring(0, 100)}...".${note}`;

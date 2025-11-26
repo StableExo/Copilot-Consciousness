@@ -1,6 +1,6 @@
 /**
  * Consciousness Module
- * 
+ *
  * Provides consciousness framework components including:
  * - Memory system with emotional context
  * - Core consciousness framework

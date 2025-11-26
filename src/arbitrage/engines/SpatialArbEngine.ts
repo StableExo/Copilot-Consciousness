@@ -1,9 +1,9 @@
 /**
  * Spatial Arbitrage Engine - Cross-DEX Price Differential Detection
- * 
+ *
  * Extracted from AxionCitadel - Operation First Light validated
  * Source: https://github.com/metalxalloy/AxionCitadel
- * 
+ *
  * Cross-DEX arbitrage detection for same token pairs with price differential
  * calculations, minimum profit filtering, and multi-DEX pool grouping.
  */
@@ -23,22 +23,22 @@ import {
 export interface PoolState {
   /** Pool contract address */
   poolAddress: string;
-  
+
   /** First token address */
   token0: string;
-  
+
   /** Second token address */
   token1: string;
-  
+
   /** Reserve of token0 */
   reserve0: number;
-  
+
   /** Reserve of token1 */
   reserve1: number;
-  
+
   /** DEX protocol name */
   protocol: string;
-  
+
   /** Pool fee in basis points (default 0.3%) */
   feeBps?: number;
 }
@@ -49,10 +49,10 @@ export interface PoolState {
 export interface SpatialArbEngineConfig {
   /** Minimum profit margin in basis points (default 50 = 0.5%) */
   minProfitBps?: number;
-  
+
   /** Minimum pool liquidity in USD (default 100 for Base network) */
   minLiquidityUsd?: number;
-  
+
   /** Supported DEX protocols */
   supportedProtocols?: string[];
 }
@@ -69,7 +69,7 @@ export interface SpatialArbStats {
 
 /**
  * Spatial Arbitrage Engine
- * 
+ *
  * Features:
  * - Price differential calculations across DEXs
  * - 2-step path construction (buy low DEX A, sell high DEX B)
@@ -80,7 +80,7 @@ export class SpatialArbEngine {
   private minProfitBps: number;
   private minLiquidityUsd: number;
   private supportedProtocols: string[];
-  
+
   private stats: {
     poolsAnalyzed: number;
     opportunitiesFound: number;
@@ -88,7 +88,7 @@ export class SpatialArbEngine {
   };
 
   constructor(config: SpatialArbEngineConfig = {}) {
-    this.minProfitBps = config.minProfitBps ?? 50;  // 0.5% minimum profit
+    this.minProfitBps = config.minProfitBps ?? 50; // 0.5% minimum profit
     this.minLiquidityUsd = config.minLiquidityUsd ?? 100; // Lower for Base network
     this.supportedProtocols = config.supportedProtocols ?? [
       'uniswap_v2',
@@ -105,17 +105,14 @@ export class SpatialArbEngine {
 
     console.log(
       `SpatialArbEngine initialized: minProfit=${this.minProfitBps}bps, ` +
-      `minLiquidity=$${this.minLiquidityUsd}`
+        `minLiquidity=$${this.minLiquidityUsd}`
     );
   }
 
   /**
    * Find spatial arbitrage opportunities across pools
    */
-  findOpportunities(
-    pools: PoolState[],
-    inputAmount: number = 1.0
-  ): ArbitrageOpportunity[] {
+  findOpportunities(pools: PoolState[], inputAmount: number = 1.0): ArbitrageOpportunity[] {
     const opportunities: ArbitrageOpportunity[] = [];
 
     // Group pools by token pair
@@ -124,7 +121,7 @@ export class SpatialArbEngine {
     // Analyze each group for price differentials
     for (const [pairKey, pairPools] of Object.entries(poolGroups)) {
       if (pairPools.length < 2) {
-        continue;  // Need at least 2 pools for spatial arb
+        continue; // Need at least 2 pools for spatial arb
       }
 
       // Find best buy and sell prices
@@ -169,10 +166,7 @@ export class SpatialArbEngine {
   /**
    * Find arbitrage opportunities within a token pair group
    */
-  private findPairArbitrage(
-    pools: PoolState[],
-    inputAmount: number
-  ): ArbitrageOpportunity[] {
+  private findPairArbitrage(pools: PoolState[], inputAmount: number): ArbitrageOpportunity[] {
     const opportunities: ArbitrageOpportunity[] = [];
 
     // Compare all pool pairs
@@ -183,12 +177,7 @@ export class SpatialArbEngine {
 
         // Try both directions (token0->token1 and token1->token0)
         for (const direction of [0, 1]) {
-          const opp = this.calculateSpatialArb(
-            poolBuy,
-            poolSell,
-            inputAmount,
-            direction
-          );
+          const opp = this.calculateSpatialArb(poolBuy, poolSell, inputAmount, direction);
 
           if (opp && opp.profitBps >= this.minProfitBps) {
             opportunities.push(opp);
@@ -207,7 +196,7 @@ export class SpatialArbEngine {
     poolBuy: PoolState,
     poolSell: PoolState,
     inputAmount: number,
-    direction: number  // 0: token0->token1, 1: token1->token0
+    direction: number // 0: token0->token1, 1: token1->token0
   ): ArbitrageOpportunity | null {
     const feeBpsBuy = poolBuy.feeBps ?? 30;
     const feeBpsSell = poolSell.feeBps ?? 30;
@@ -237,22 +226,20 @@ export class SpatialArbEngine {
     }
 
     // Calculate buy output using constant product formula (x * y = k)
-    const amountInWithFee = inputAmount * (10000 - feeBpsBuy) / 10000;
+    const amountInWithFee = (inputAmount * (10000 - feeBpsBuy)) / 10000;
     const numerator = amountInWithFee * reserveOutBuy;
     const denominator = reserveInBuy + amountInWithFee;
     const amountOutBuy = numerator / denominator;
 
     // Calculate sell output
-    const sellInWithFee = amountOutBuy * (10000 - feeBpsSell) / 10000;
+    const sellInWithFee = (amountOutBuy * (10000 - feeBpsSell)) / 10000;
     const sellNumerator = sellInWithFee * reserveOutSell;
     const sellDenominator = reserveInSell + sellInWithFee;
     const finalAmount = sellNumerator / sellDenominator;
 
     // Calculate profit
     const grossProfit = finalAmount - inputAmount;
-    const profitBps = inputAmount > 0
-      ? Math.floor((grossProfit / inputAmount) * 10000)
-      : 0;
+    const profitBps = inputAmount > 0 ? Math.floor((grossProfit / inputAmount) * 10000) : 0;
 
     // Only return if profitable
     if (profitBps < this.minProfitBps) {
@@ -291,8 +278,8 @@ export class SpatialArbEngine {
       arbType: ArbitrageType.SPATIAL,
       path,
       inputAmount,
-      requiresFlashLoan: false,  // Spatial arb can use own capital
-      estimatedGas: 250000,  // Estimated for 2-step swap
+      requiresFlashLoan: false, // Spatial arb can use own capital
+      estimatedGas: 250000, // Estimated for 2-step swap
       metadata: {
         buyPool: poolBuy.poolAddress,
         sellPool: poolSell.poolAddress,
@@ -311,11 +298,7 @@ export class SpatialArbEngine {
   /**
    * Calculate price impact of a trade
    */
-  calculatePriceImpact(
-    pool: PoolState,
-    amountIn: number,
-    direction: number
-  ): number {
+  calculatePriceImpact(pool: PoolState, amountIn: number, direction: number): number {
     const feeBps = pool.feeBps ?? 30;
     const reserveIn = direction === 0 ? pool.reserve0 : pool.reserve1;
     const reserveOut = direction === 0 ? pool.reserve1 : pool.reserve0;
@@ -324,7 +307,7 @@ export class SpatialArbEngine {
     const currentPrice = reserveIn > 0 ? reserveOut / reserveIn : 0;
 
     // Execute trade calculation
-    const amountInWithFee = amountIn * (10000 - feeBps) / 10000;
+    const amountInWithFee = (amountIn * (10000 - feeBps)) / 10000;
     const numerator = amountInWithFee * reserveOut;
     const denominator = reserveIn + amountInWithFee;
     const amountOut = numerator / denominator;
@@ -356,7 +339,7 @@ export class SpatialArbEngine {
       for (const step of opp.path) {
         // Calculate pool liquidity in USD (simplified)
         const price = tokenPrices[step.tokenIn] ?? 0;
-        const liquidityUsd = step.amountIn * price * 2;  // Rough estimate
+        const liquidityUsd = step.amountIn * price * 2; // Rough estimate
 
         if (liquidityUsd < this.minLiquidityUsd) {
           meetsRequirement = false;

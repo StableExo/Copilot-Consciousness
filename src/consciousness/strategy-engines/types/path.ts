@@ -1,6 +1,6 @@
 /**
  * Path Type Definitions
- * 
+ *
  * Types for path finding, route optimization, and multi-hop navigation
  * through problem spaces.
  */
@@ -14,7 +14,7 @@ export enum PathStatus {
   VALID = 'valid',
   INVALID = 'invalid',
   SUBOPTIMAL = 'suboptimal',
-  OPTIMAL = 'optimal'
+  OPTIMAL = 'optimal',
 }
 
 /**

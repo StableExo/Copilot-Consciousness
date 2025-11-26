@@ -1,6 +1,6 @@
 /**
  * Scribe - Memory Recording Tool
- * 
+ *
  * Port of tools/scribe.py from StableExo/AGI
  * Creates structured memory entries for completed tasks
  */
@@ -49,7 +49,10 @@ export class Scribe {
   private normalizeToArray(input: string | string[]): string[] {
     if (typeof input === 'string') {
       // Split by newlines or commas
-      return input.split(/[\n,]+/).map(s => s.trim()).filter(s => s.length > 0);
+      return input
+        .split(/[\n,]+/)
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
     }
     return input;
   }
@@ -59,11 +62,12 @@ export class Scribe {
    */
   private generateFilename(): string {
     const now = new Date();
-    const timestamp = now.toISOString()
+    const timestamp = now
+      .toISOString()
       .replace(/[-:]/g, '')
       .replace(/\.\d{3}Z/, '')
       .replace('T', '');
-    
+
     // Add counter to prevent collisions when multiple records happen in same second
     this.counter++;
     return `${timestamp}_${this.counter.toString().padStart(4, '0')}.md`;
@@ -76,7 +80,7 @@ export class Scribe {
     let content = '# Memory Entry\n\n';
     content += `**Timestamp:** ${entry.timestamp}\n\n`;
     content += `## Objective\n\n${entry.objective}\n\n`;
-    
+
     content += '## Plan\n\n';
     entry.plan.forEach((step, i) => {
       content += `${i + 1}. ${step}\n`;
@@ -84,19 +88,19 @@ export class Scribe {
     content += '\n';
 
     content += '## Actions Taken\n\n';
-    entry.actions.forEach(action => {
+    entry.actions.forEach((action) => {
       content += `- ${action}\n`;
     });
     content += '\n';
 
     content += '## Key Learnings\n\n';
-    entry.keyLearnings.forEach(learning => {
+    entry.keyLearnings.forEach((learning) => {
       content += `- ${learning}\n`;
     });
     content += '\n';
 
     content += '## Artifacts Changed\n\n';
-    entry.artifactsChanged.forEach(artifact => {
+    entry.artifactsChanged.forEach((artifact) => {
       content += `- ${artifact}\n`;
     });
     content += '\n';
@@ -116,7 +120,7 @@ export class Scribe {
 
   /**
    * Record a memory entry
-   * 
+   *
    * @param options - Options for creating the memory entry
    * @returns The path to the created memory file
    */
@@ -128,7 +132,7 @@ export class Scribe {
       actions: this.normalizeToArray(options.actions),
       keyLearnings: this.normalizeToArray(options.keyLearnings),
       artifactsChanged: this.normalizeToArray(options.artifactsChanged),
-      outcome: options.outcome
+      outcome: options.outcome,
     };
 
     const filename = this.generateFilename();
@@ -136,7 +140,7 @@ export class Scribe {
     const content = this.formatAsMarkdown(entry);
 
     fs.writeFileSync(filepath, content, 'utf-8');
-    
+
     console.log(`[SCRIBE] Memory recorded: ${filepath}`);
     return filepath;
   }
@@ -149,8 +153,9 @@ export class Scribe {
       return [];
     }
 
-    return fs.readdirSync(this.memoryDir)
-      .filter(file => file.endsWith('.md'))
+    return fs
+      .readdirSync(this.memoryDir)
+      .filter((file) => file.endsWith('.md'))
       .sort()
       .reverse(); // Most recent first
   }

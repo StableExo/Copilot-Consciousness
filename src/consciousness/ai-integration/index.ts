@@ -1,6 +1,6 @@
 /**
  * AI Integration Module
- * 
+ *
  * Universal AI provider system for Copilot-Consciousness framework.
  * Supports multiple AI providers with automatic fallback.
  */

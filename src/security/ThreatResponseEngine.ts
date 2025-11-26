@@ -1,17 +1,17 @@
 /**
  * ThreatResponseEngine - Automated Threat Response
- * 
+ *
  * Phase 3: Enhanced Security
- * 
+ *
  * This component automatically responds to detected security threats
  * with appropriate actions based on threat severity and type.
- * 
+ *
  * Core capabilities:
  * - Automated threat classification and prioritization
  * - Context-aware response action selection
  * - Multi-tier response escalation
  * - Response coordination across system components
- * 
+ *
  * Integration with TheWarden/AEV:
  * - Responds to threats from IntrusionDetectionService
  * - Coordinates with SecurityManager for action execution
@@ -20,12 +20,7 @@
  */
 
 import { EventEmitter } from 'events';
-import {
-  ThreatEvent,
-  ResponseAction,
-  ResponseActionType,
-  ThreatType,
-} from './types';
+import { ThreatEvent, ResponseAction, ResponseActionType, ThreatType } from './types';
 
 interface ThreatResponseConfig {
   autoRespond: boolean;
@@ -53,10 +48,10 @@ export class ThreatResponseEngine extends EventEmitter {
   private threatHistory: ThreatEvent[] = [];
   private responseCount: number = 0;
   private pendingApprovals: ResponseAction[] = [];
-  
+
   constructor(config?: Partial<ThreatResponseConfig>) {
     super();
-    
+
     this.config = {
       autoRespond: config?.autoRespond ?? true,
       responseDelay: config?.responseDelay ?? 1000, // 1 second delay for validation
@@ -64,12 +59,12 @@ export class ThreatResponseEngine extends EventEmitter {
       maxActionsPerThreat: config?.maxActionsPerThreat ?? 5,
       requireOperatorApproval: config?.requireOperatorApproval ?? false,
     };
-    
+
     this.initializeResponseRules();
-    
+
     console.log('[ThreatResponseEngine] Initialized with auto-respond:', this.config.autoRespond);
   }
-  
+
   /**
    * Initialize default response rules
    */
@@ -111,7 +106,7 @@ export class ThreatResponseEngine extends EventEmitter {
         priority: 9,
         requiresApproval: false,
       },
-      
+
       // Access control threats
       {
         threatType: 'unauthorized_access',
@@ -127,7 +122,7 @@ export class ThreatResponseEngine extends EventEmitter {
         priority: 7,
         requiresApproval: false,
       },
-      
+
       // Data security threats
       {
         threatType: 'data_exfiltration',
@@ -143,7 +138,7 @@ export class ThreatResponseEngine extends EventEmitter {
         priority: 7,
         requiresApproval: false,
       },
-      
+
       // MEV threats
       {
         threatType: 'mev_attack',
@@ -152,7 +147,7 @@ export class ThreatResponseEngine extends EventEmitter {
         priority: 6,
         requiresApproval: false,
       },
-      
+
       // Rate limiting
       {
         threatType: 'rate_limit_abuse',
@@ -161,7 +156,7 @@ export class ThreatResponseEngine extends EventEmitter {
         priority: 5,
         requiresApproval: false,
       },
-      
+
       // Suspicious behavior
       {
         threatType: 'anomalous_behavior',
@@ -177,7 +172,7 @@ export class ThreatResponseEngine extends EventEmitter {
         priority: 6,
         requiresApproval: false,
       },
-      
+
       // Malicious contracts
       {
         threatType: 'malicious_contract',
@@ -186,7 +181,7 @@ export class ThreatResponseEngine extends EventEmitter {
         priority: 9,
         requiresApproval: false,
       },
-      
+
       // Phishing
       {
         threatType: 'phishing_attempt',
@@ -197,27 +192,27 @@ export class ThreatResponseEngine extends EventEmitter {
       },
     ];
   }
-  
+
   /**
    * Handle a detected threat
-   * 
+   *
    * Primary integration point - called by IntrusionDetectionService
-   * 
+   *
    * @param threat Detected threat event
    * @returns Array of response actions taken
    */
   async handleThreat(threat: ThreatEvent): Promise<ResponseAction[]> {
     console.log(`[ThreatResponseEngine] Handling threat: ${threat.type} (${threat.severity})`);
-    
+
     // Add to history
     this.threatHistory.push(threat);
     if (this.threatHistory.length > 1000) {
       this.threatHistory.shift();
     }
-    
+
     // Find matching rules
     const matchingRules = this.findMatchingRules(threat);
-    
+
     if (matchingRules.length === 0) {
       console.log(`[ThreatResponseEngine] No matching rules for threat type: ${threat.type}`);
       // Default action: log and alert
@@ -229,27 +224,32 @@ export class ThreatResponseEngine extends EventEmitter {
         requiresApproval: true,
       });
     }
-    
+
     // Generate response actions
     const actions: ResponseAction[] = [];
-    
+
     for (const rule of matchingRules) {
       for (const actionType of rule.actions) {
-        const action = this.createResponseAction(threat, actionType, rule.priority, rule.requiresApproval);
+        const action = this.createResponseAction(
+          threat,
+          actionType,
+          rule.priority,
+          rule.requiresApproval
+        );
         actions.push(action);
       }
     }
-    
+
     // Limit actions per threat
     const limitedActions = actions.slice(0, this.config.maxActionsPerThreat);
-    
+
     // Execute or queue actions
     if (this.config.autoRespond) {
       // Delay for validation
       if (this.config.responseDelay > 0) {
         await this.delay(this.config.responseDelay);
       }
-      
+
       for (const action of limitedActions) {
         if (action.parameters.requiresApproval || this.config.requireOperatorApproval) {
           this.queueForApproval(action);
@@ -263,33 +263,35 @@ export class ThreatResponseEngine extends EventEmitter {
         this.queueForApproval(action);
       }
     }
-    
+
     this.emit('threatHandled', {
       threat,
       actionsCount: limitedActions.length,
       autoExecuted: this.config.autoRespond,
     });
-    
+
     return limitedActions;
   }
-  
+
   /**
    * Find matching response rules for threat
    */
   private findMatchingRules(threat: ThreatEvent): ResponseRule[] {
     const severityOrder = ['low', 'medium', 'high', 'critical'];
     const threatSeverityIndex = severityOrder.indexOf(threat.severity);
-    
-    return this.responseRules.filter(rule => {
-      if (rule.threatType !== threat.type) {
-        return false;
-      }
-      
-      const ruleSeverityIndex = severityOrder.indexOf(rule.minSeverity);
-      return threatSeverityIndex >= ruleSeverityIndex;
-    }).sort((a, b) => b.priority - a.priority);
+
+    return this.responseRules
+      .filter((rule) => {
+        if (rule.threatType !== threat.type) {
+          return false;
+        }
+
+        const ruleSeverityIndex = severityOrder.indexOf(rule.minSeverity);
+        return threatSeverityIndex >= ruleSeverityIndex;
+      })
+      .sort((a, b) => b.priority - a.priority);
   }
-  
+
   /**
    * Create response action from threat and action type
    */
@@ -300,10 +302,10 @@ export class ThreatResponseEngine extends EventEmitter {
     requiresApproval: boolean
   ): ResponseAction {
     const actionId = `action_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     // Determine target
     const target = this.determineTarget(threat, actionType);
-    
+
     // Build parameters
     const parameters: Record<string, any> = {
       threatId: threat.eventId,
@@ -311,7 +313,7 @@ export class ThreatResponseEngine extends EventEmitter {
       threatSeverity: threat.severity,
       requiresApproval,
     };
-    
+
     // Action-specific parameters
     switch (actionType) {
       case 'block_ip':
@@ -340,10 +342,10 @@ export class ThreatResponseEngine extends EventEmitter {
         parameters.duration = '6h';
         break;
     }
-    
+
     // Generate reason
     const reason = this.generateReason(threat, actionType);
-    
+
     return {
       actionId,
       timestamp: Date.now(),
@@ -355,11 +357,14 @@ export class ThreatResponseEngine extends EventEmitter {
       reason,
     };
   }
-  
+
   /**
    * Determine action target from threat
    */
-  private determineTarget(threat: ThreatEvent, actionType: ResponseActionType): {
+  private determineTarget(
+    threat: ThreatEvent,
+    actionType: ResponseActionType
+  ): {
     type: 'user' | 'ip' | 'chain' | 'contract' | 'system';
     identifier: string;
   } {
@@ -393,25 +398,29 @@ export class ThreatResponseEngine extends EventEmitter {
         };
     }
   }
-  
+
   /**
    * Generate human-readable reason
    */
   private generateReason(threat: ThreatEvent, actionType: ResponseActionType): string {
     const action = actionType.replace(/_/g, ' ');
-    return `${action} in response to ${threat.type.replace(/_/g, ' ')} (${threat.severity} severity) - ${threat.description}`;
+    return `${action} in response to ${threat.type.replace(/_/g, ' ')} (${
+      threat.severity
+    } severity) - ${threat.description}`;
   }
-  
+
   /**
    * Execute response action
    */
   private async executeAction(action: ResponseAction): Promise<void> {
-    console.log(`[ThreatResponseEngine] Executing action: ${action.type} on ${action.target.type} ${action.target.identifier}`);
-    
+    console.log(
+      `[ThreatResponseEngine] Executing action: ${action.type} on ${action.target.type} ${action.target.identifier}`
+    );
+
     try {
       // Mark as executing
       this.activeResponses.set(action.actionId, action);
-      
+
       // Execute based on action type
       // In production, these would call actual system components
       switch (action.type) {
@@ -452,150 +461,150 @@ export class ThreatResponseEngine extends EventEmitter {
           await this.activateSafeguards();
           break;
       }
-      
+
       // Mark as executed
       action.executed = true;
       action.executedAt = Date.now();
       action.result = 'success';
-      
+
       this.responseCount++;
-      
+
       this.emit('actionExecuted', action);
-      
+
       console.log(`[ThreatResponseEngine] Action executed successfully: ${action.type}`);
     } catch (error) {
       console.error(`[ThreatResponseEngine] Error executing action:`, error);
-      
+
       action.executed = true;
       action.executedAt = Date.now();
       action.result = 'failure';
       action.error = error instanceof Error ? error.message : 'Unknown error';
-      
+
       this.emit('actionFailed', { action, error });
     } finally {
       this.activeResponses.delete(action.actionId);
     }
   }
-  
+
   /**
    * Queue action for operator approval
    */
   private queueForApproval(action: ResponseAction): void {
     this.pendingApprovals.push(action);
-    
+
     this.emit('approvalRequired', action);
-    
+
     console.log(`[ThreatResponseEngine] Action queued for approval: ${action.type}`);
   }
-  
+
   /**
    * Approve and execute pending action
    */
   async approveAction(actionId: string): Promise<void> {
-    const index = this.pendingApprovals.findIndex(a => a.actionId === actionId);
-    
+    const index = this.pendingApprovals.findIndex((a) => a.actionId === actionId);
+
     if (index === -1) {
       throw new Error(`Action ${actionId} not found in pending approvals`);
     }
-    
+
     const action = this.pendingApprovals.splice(index, 1)[0];
     await this.executeAction(action);
   }
-  
+
   /**
    * Reject pending action
    */
   rejectAction(actionId: string): void {
-    const index = this.pendingApprovals.findIndex(a => a.actionId === actionId);
-    
+    const index = this.pendingApprovals.findIndex((a) => a.actionId === actionId);
+
     if (index === -1) {
       throw new Error(`Action ${actionId} not found in pending approvals`);
     }
-    
+
     const action = this.pendingApprovals.splice(index, 1)[0];
-    
+
     this.emit('actionRejected', action);
-    
+
     console.log(`[ThreatResponseEngine] Action rejected: ${action.type}`);
   }
-  
+
   // Action implementation methods (placeholders for integration)
-  
+
   private async haltTrading(params: any): Promise<void> {
     // In production: call AdvancedOrchestrator.halt() or ArbitrageConsciousness.emergencyStop()
     console.log('[ThreatResponseEngine] HALT TRADING -', params);
   }
-  
+
   private async blockIP(ip: string, params: any): Promise<void> {
     // In production: call IPWhitelistService.block()
     console.log('[ThreatResponseEngine] BLOCK IP -', ip, params);
   }
-  
+
   private async banUser(userId: string, params: any): Promise<void> {
     // In production: call authentication service
     console.log('[ThreatResponseEngine] BAN USER -', userId, params);
   }
-  
+
   private async isolateChain(chainId: number): Promise<void> {
     // In production: call ChainProviderManager.disableChain()
     console.log('[ThreatResponseEngine] ISOLATE CHAIN -', chainId);
   }
-  
+
   private async rotateKeys(keyTypes: string[]): Promise<void> {
     // In production: call SecretsManager.rotateKeys()
     console.log('[ThreatResponseEngine] ROTATE KEYS -', keyTypes);
   }
-  
+
   private async rejectTransaction(params: any): Promise<void> {
     // In production: add to rejection list
     console.log('[ThreatResponseEngine] REJECT TRANSACTION -', params);
   }
-  
+
   private async pauseStrategy(params: any): Promise<void> {
     // In production: call strategy manager
     console.log('[ThreatResponseEngine] PAUSE STRATEGY -', params);
   }
-  
+
   private async alertOperator(action: ResponseAction): Promise<void> {
     // In production: send notification via configured channels
     console.log('[ThreatResponseEngine] ALERT OPERATOR -', action.reason);
     this.emit('operatorAlert', action);
   }
-  
+
   private async logExtended(action: ResponseAction): Promise<void> {
     // In production: call AuditLogger with extended detail
     console.log('[ThreatResponseEngine] LOG EXTENDED -', action);
   }
-  
+
   private async increaseScrutiny(target: string, params: any): Promise<void> {
     // In production: increase monitoring level
     console.log('[ThreatResponseEngine] INCREASE SCRUTINY -', target, params);
   }
-  
+
   private async throttleRequests(target: string, params: any): Promise<void> {
     // In production: call RateLimitService.throttle()
     console.log('[ThreatResponseEngine] THROTTLE REQUESTS -', target, params);
   }
-  
+
   private async activateSafeguards(): Promise<void> {
     // In production: enable additional safety checks
     console.log('[ThreatResponseEngine] ACTIVATE SAFEGUARDS');
   }
-  
+
   /**
    * Delay helper
    */
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
-  
+
   /**
    * Get pending approvals
    */
   getPendingApprovals(): ResponseAction[] {
     return [...this.pendingApprovals];
   }
-  
+
   /**
    * Get statistics
    */
@@ -608,7 +617,7 @@ export class ThreatResponseEngine extends EventEmitter {
       rulesConfigured: this.responseRules.length,
     };
   }
-  
+
   /**
    * Add custom response rule
    */

@@ -1,9 +1,9 @@
 /**
  * MemoryFormation - Strategic Memory Creation
- * 
+ *
  * Integrated from AxionCitadel's "Conscious Knowledge Loop" architecture.
  * Transforms operational logs into structured memories for long-term storage.
- * 
+ *
  * This module creates semantic memories from strategic operations,
  * enabling the consciousness system to learn from past experiences.
  */
@@ -36,15 +36,10 @@ export class MemoryFormation {
   private memoryFilePath: string;
   private memories: StrategicMemory[] = [];
 
-  constructor(
-    logger: BlackBoxLogger,
-    memoryDirectory: string = '.memory/strategic-logger'
-  ) {
+  constructor(logger: BlackBoxLogger, memoryDirectory: string = '.memory/strategic-logger') {
     this.logger = logger;
     this.memoryFilePath = path.join(memoryDirectory, 'strategic-memories.json');
-    this.loadMemories().catch((err) =>
-      console.error('Error loading memories:', err)
-    );
+    this.loadMemories().catch((err) => console.error('Error loading memories:', err));
   }
 
   /**
@@ -71,11 +66,7 @@ export class MemoryFormation {
     try {
       const dir = path.dirname(this.memoryFilePath);
       await fs.mkdir(dir, { recursive: true });
-      await fs.writeFile(
-        this.memoryFilePath,
-        JSON.stringify(this.memories, null, 2),
-        'utf8'
-      );
+      await fs.writeFile(this.memoryFilePath, JSON.stringify(this.memories, null, 2), 'utf8');
     } catch (error) {
       console.error('Error saving memories:', error);
       throw error;
@@ -85,10 +76,7 @@ export class MemoryFormation {
   /**
    * Analyze logs and form new memories
    */
-  async formMemories(
-    query: LogQuery = {},
-    minSampleSize: number = 5
-  ): Promise<StrategicMemory[]> {
+  async formMemories(query: LogQuery = {}, minSampleSize: number = 5): Promise<StrategicMemory[]> {
     const logs = await this.logger.query(query);
 
     if (logs.length < minSampleSize) {
@@ -153,9 +141,7 @@ export class MemoryFormation {
     ];
 
     if (Object.keys(commonContext).length > 0) {
-      lessons.push(
-        `Common factors: ${Object.keys(commonContext).join(', ')}`
-      );
+      lessons.push(`Common factors: ${Object.keys(commonContext).join(', ')}`);
     }
 
     return {
@@ -198,9 +184,7 @@ export class MemoryFormation {
     ];
 
     if (Object.keys(commonContext).length > 0) {
-      lessons.push(
-        `Common failure factors: ${Object.keys(commonContext).join(', ')}`
-      );
+      lessons.push(`Common failure factors: ${Object.keys(commonContext).join(', ')}`);
     }
 
     return {

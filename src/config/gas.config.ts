@@ -1,6 +1,6 @@
 /**
  * Gas Configuration
- * 
+ *
  * Comprehensive gas optimization configuration
  */
 
@@ -60,41 +60,41 @@ export const gasConfig: GasConfig = {
     sources: ['node', 'etherscan'],
     refreshInterval: 12000, // 12 seconds (Ethereum block time)
     fallbackGasPrice: BigInt(50) * BigInt(10 ** 9), // 50 gwei default
-    etherscanApiKey: process.env.ETHERSCAN_API_KEY
+    etherscanApiKey: process.env.ETHERSCAN_API_KEY,
   },
   strategies: {
     aggressive: {
       tier: 'instant',
-      maxWaitBlocks: 1
+      maxWaitBlocks: 1,
     },
     normal: {
       tier: 'fast',
-      maxWaitBlocks: 3
+      maxWaitBlocks: 3,
     },
     economical: {
       tier: 'normal',
-      maxWaitBlocks: 10
-    }
+      maxWaitBlocks: 10,
+    },
   },
   filters: {
     maxGasCostPercentage: 50, // Gas can't exceed 50% of profit
     minProfitThreshold: BigInt(100) * BigInt(10 ** 18), // 100 tokens minimum
-    queueThreshold: 30 // Queue if gas is 30-50% of profit
+    queueThreshold: 30, // Queue if gas is 30-50% of profit
   },
   layer2: {
     enabled: true,
     preferredChains: ['arbitrum', 'optimism'],
-    bridgeCostThreshold: BigInt(50) * BigInt(10 ** 18) // Don't bridge if cost > threshold
+    bridgeCostThreshold: BigInt(50) * BigInt(10 ** 18), // Don't bridge if cost > threshold
   },
   contract: {
     useV2Executor: true, // Use gas-optimized contract
     batchingEnabled: true,
-    mevProtection: true
+    mevProtection: true,
   },
   analytics: {
     trackingEnabled: true,
-    reportInterval: 86400000 // Daily reports (24 hours in ms)
-  }
+    reportInterval: 86400000, // Daily reports (24 hours in ms)
+  },
 };
 
 /**
@@ -106,12 +106,12 @@ export function createGasConfig(overrides: Partial<GasConfig> = {}): GasConfig {
     strategies: {
       aggressive: { ...gasConfig.strategies.aggressive, ...overrides.strategies?.aggressive },
       normal: { ...gasConfig.strategies.normal, ...overrides.strategies?.normal },
-      economical: { ...gasConfig.strategies.economical, ...overrides.strategies?.economical }
+      economical: { ...gasConfig.strategies.economical, ...overrides.strategies?.economical },
     },
     filters: { ...gasConfig.filters, ...overrides.filters },
     layer2: { ...gasConfig.layer2, ...overrides.layer2 },
     contract: { ...gasConfig.contract, ...overrides.contract },
-    analytics: { ...gasConfig.analytics, ...overrides.analytics }
+    analytics: { ...gasConfig.analytics, ...overrides.analytics },
   };
 }
 

@@ -1,6 +1,6 @@
 /**
  * AdvancedPathFinder - Enhanced pathfinding with multiple algorithms
- * 
+ *
  * Implements Bellman-Ford for negative cycle detection (arbitrage opportunities)
  * along with DFS and BFS strategies for different scenarios
  */
@@ -62,14 +62,14 @@ export class AdvancedPathFinder {
       ...config,
       strategy: config.strategy || 'auto',
       pruningEnabled: config.pruningEnabled !== false,
-      cacheEnabled: config.cacheEnabled !== false
+      cacheEnabled: config.cacheEnabled !== false,
     };
     this.fallbackPathFinder = new PathFinder(config);
     this.metrics = {
       pathsExplored: 0,
       pathsPruned: 0,
       timeElapsedMs: 0,
-      strategy: this.config.strategy || 'auto'
+      strategy: this.config.strategy || 'auto',
     };
   }
 
@@ -98,7 +98,7 @@ export class AdvancedPathFinder {
       pathsExplored: 0,
       pathsPruned: 0,
       timeElapsedMs: 0,
-      strategy: this.config.strategy || 'auto'
+      strategy: this.config.strategy || 'auto',
     };
 
     let paths: ArbitragePath[] = [];
@@ -135,10 +135,10 @@ export class AdvancedPathFinder {
    */
   private findPathsBellmanFord(startToken: string, startAmount: bigint): ArbitragePath[] {
     const paths: ArbitragePath[] = [];
-    
+
     // Build logarithmic edges
     const logEdges = this.buildLogEdges();
-    
+
     if (logEdges.length === 0) {
       return paths;
     }
@@ -146,7 +146,7 @@ export class AdvancedPathFinder {
     // Initialize distances
     const distances = new Map<string, number>();
     const predecessors = new Map<string, LogEdge | null>();
-    
+
     for (const token of this.tokens) {
       distances.set(token, Infinity);
       predecessors.set(token, null);
@@ -160,7 +160,7 @@ export class AdvancedPathFinder {
       for (const edge of logEdges) {
         const distFrom = distances.get(edge.from) || Infinity;
         const distTo = distances.get(edge.to) || Infinity;
-        
+
         if (distFrom + edge.weight < distTo) {
           distances.set(edge.to, distFrom + edge.weight);
           predecessors.set(edge.to, edge);
@@ -172,7 +172,7 @@ export class AdvancedPathFinder {
     for (const edge of logEdges) {
       const distFrom = distances.get(edge.from) || Infinity;
       const distTo = distances.get(edge.to) || Infinity;
-      
+
       if (distFrom + edge.weight < distTo) {
         // Negative cycle found
         const path = this.extractArbitragePath(edge, predecessors, startToken, startAmount);
@@ -208,12 +208,12 @@ export class AdvancedPathFinder {
       amount: startAmount,
       depth: 0,
       path: [],
-      visited: new Set()
+      visited: new Set(),
     });
 
     while (queue.length > 0) {
       const current = queue.shift()!;
-      
+
       if (current.depth >= this.config.maxHops) {
         continue;
       }
@@ -241,7 +241,7 @@ export class AdvancedPathFinder {
           fee: edge.fee,
           gasEstimate: edge.gasEstimate,
           reserve0: edge.reserve0,
-          reserve1: edge.reserve1
+          reserve1: edge.reserve1,
         };
 
         const newPath = [...current.path, hop];
@@ -261,7 +261,7 @@ export class AdvancedPathFinder {
             amount: amountOut,
             depth: current.depth + 1,
             path: newPath,
-            visited: newVisited
+            visited: newVisited,
           });
         }
       }
@@ -284,7 +284,7 @@ export class AdvancedPathFinder {
       for (const edge of edges) {
         // Calculate exchange rate considering reserves
         const rate = this.calculateExchangeRate(edge);
-        
+
         if (rate <= 0) {
           continue;
         }
@@ -297,7 +297,7 @@ export class AdvancedPathFinder {
           from: tokenIn,
           to: edge.tokenOut,
           weight,
-          poolEdge: edge
+          poolEdge: edge,
         });
       }
     }
@@ -312,7 +312,7 @@ export class AdvancedPathFinder {
     if (edge.reserve0 === BigInt(0)) {
       return 0;
     }
-    
+
     // rate = reserve1 / reserve0
     return Number(edge.reserve1) / Number(edge.reserve0);
   }
@@ -328,16 +328,16 @@ export class AdvancedPathFinder {
   ): ArbitragePath | null {
     const hops: ArbitrageHop[] = [];
     const visited = new Set<string>();
-    
+
     let currentEdge: LogEdge | null = cycleEdge;
     let currentAmount = startAmount;
 
     // Trace back through predecessors to find the cycle
     while (currentEdge && !visited.has(currentEdge.from)) {
       visited.add(currentEdge.from);
-      
+
       const amountOut = this.calculateSwapOutput(currentAmount, currentEdge.poolEdge);
-      
+
       hops.unshift({
         dexName: currentEdge.poolEdge.dexName,
         poolAddress: currentEdge.poolEdge.poolAddress,
@@ -348,12 +348,12 @@ export class AdvancedPathFinder {
         fee: currentEdge.poolEdge.fee,
         gasEstimate: currentEdge.poolEdge.gasEstimate,
         reserve0: currentEdge.poolEdge.reserve0,
-        reserve1: currentEdge.poolEdge.reserve1
+        reserve1: currentEdge.poolEdge.reserve1,
       });
 
       currentAmount = amountOut;
       currentEdge = predecessors.get(currentEdge.from) || null;
-      
+
       // Prevent infinite loops
       if (hops.length > this.config.maxHops) {
         break;
@@ -374,17 +374,17 @@ export class AdvancedPathFinder {
   private calculateSwapOutput(amountIn: bigint, edge: PoolEdge): bigint {
     const feeMultiplier = BigInt(Math.floor((1 - edge.fee) * 10000));
     const amountInWithFee = (amountIn * feeMultiplier) / BigInt(10000);
-    
+
     const reserve0 = edge.reserve0;
     const reserve1 = edge.reserve1;
-    
+
     const numerator = amountInWithFee * reserve1;
     const denominator = reserve0 + amountInWithFee;
-    
+
     if (denominator === BigInt(0)) {
       return BigInt(0);
     }
-    
+
     return numerator / denominator;
   }
 
@@ -395,15 +395,15 @@ export class AdvancedPathFinder {
     const totalFees = hops.reduce((sum, hop) => sum + hop.fee, 0);
     const totalGas = hops.reduce((sum, hop) => BigInt(hop.gasEstimate), BigInt(0));
     const totalGasCost = totalGas * this.config.gasPrice;
-    
+
     const startAmount = hops[0].amountIn;
     const endAmount = hops[hops.length - 1].amountOut;
-    
+
     const estimatedProfit = endAmount > startAmount ? endAmount - startAmount : BigInt(0);
     const netProfit = estimatedProfit > totalGasCost ? estimatedProfit - totalGasCost : BigInt(0);
-    
+
     const slippageImpact = hops.length * 0.001;
-    
+
     return {
       hops: [...hops],
       startToken,
@@ -412,7 +412,7 @@ export class AdvancedPathFinder {
       totalGasCost,
       netProfit,
       totalFees,
-      slippageImpact
+      slippageImpact,
     };
   }
 
@@ -466,7 +466,7 @@ export class AdvancedPathFinder {
       pathsExplored: 0,
       pathsPruned: 0,
       timeElapsedMs: 0,
-      strategy: this.config.strategy || 'auto'
+      strategy: this.config.strategy || 'auto',
     };
   }
 

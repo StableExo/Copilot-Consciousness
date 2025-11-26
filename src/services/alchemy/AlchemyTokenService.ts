@@ -1,6 +1,6 @@
 /**
  * Alchemy Token API Service
- * 
+ *
  * Provides enhanced token data access including balances, metadata,
  * and allowances using Alchemy's Enhanced APIs.
  */
@@ -42,17 +42,11 @@ export class AlchemyTokenService {
   /**
    * Get token balances for an address
    */
-  async getTokenBalances(
-    address: string,
-    contractAddresses?: string[]
-  ): Promise<TokenBalance[]> {
+  async getTokenBalances(address: string, contractAddresses?: string[]): Promise<TokenBalance[]> {
     try {
-      const balances = await this.client.core.getTokenBalances(
-        address,
-        contractAddresses
-      );
+      const balances = await this.client.core.getTokenBalances(address, contractAddresses);
 
-      return balances.tokenBalances.map(balance => ({
+      return balances.tokenBalances.map((balance) => ({
         contractAddress: balance.contractAddress,
         tokenBalance: balance.tokenBalance || '0',
         error: balance.error || undefined,
@@ -69,7 +63,7 @@ export class AlchemyTokenService {
   async getTokenMetadata(contractAddress: string): Promise<TokenMetadata> {
     try {
       const metadata = await this.client.core.getTokenMetadata(contractAddress);
-      
+
       return {
         name: metadata.name || undefined,
         symbol: metadata.symbol || undefined,
@@ -85,9 +79,7 @@ export class AlchemyTokenService {
   /**
    * Get historical asset transfers
    */
-  async getAssetTransfers(
-    filter: TransferFilter
-  ): Promise<any> {
+  async getAssetTransfers(filter: TransferFilter): Promise<any> {
     try {
       const params: any = {
         fromBlock: filter.fromBlock || '0x0',
@@ -144,10 +136,7 @@ export class AlchemyTokenService {
   /**
    * Get latest transfer events for a contract
    */
-  async getLatestTransfers(
-    contractAddress: string,
-    count: number = 10
-  ): Promise<any[]> {
+  async getLatestTransfers(contractAddress: string, count: number = 10): Promise<any[]> {
     try {
       const transfers = await this.getAssetTransfers({
         contractAddresses: [contractAddress],

@@ -1,6 +1,6 @@
 /**
  * Production Logging System
- * 
+ *
  * Features:
  * - Multiple log levels (debug, info, warn, error)
  * - Colorized console output
@@ -39,7 +39,7 @@ class Logger {
     reset: '\x1b[0m',
     bright: '\x1b[1m',
     dim: '\x1b[2m',
-    
+
     red: '\x1b[31m',
     green: '\x1b[32m',
     yellow: '\x1b[33m',
@@ -47,7 +47,7 @@ class Logger {
     magenta: '\x1b[35m',
     cyan: '\x1b[36m',
     white: '\x1b[37m',
-    
+
     bgRed: '\x1b[41m',
     bgGreen: '\x1b[42m',
     bgYellow: '\x1b[43m',
@@ -56,9 +56,11 @@ class Logger {
 
   constructor(config?: Partial<LoggerConfig>) {
     const defaultConfig: LoggerConfig = {
-      level: process.env.LOG_LEVEL 
-        ? this.parseLogLevel(process.env.LOG_LEVEL) 
-        : (process.env.NODE_ENV === 'production' ? LogLevel.INFO : LogLevel.DEBUG),
+      level: process.env.LOG_LEVEL
+        ? this.parseLogLevel(process.env.LOG_LEVEL)
+        : process.env.NODE_ENV === 'production'
+        ? LogLevel.INFO
+        : LogLevel.DEBUG,
       enableColors: process.env.LOG_COLORS !== 'false',
       enableFileLogging: process.env.LOG_FILE === 'true',
       logDir: process.env.LOG_DIR || './logs',
@@ -76,11 +78,16 @@ class Logger {
   private parseLogLevel(level: string): LogLevel {
     const normalized = level.toUpperCase();
     switch (normalized) {
-      case 'DEBUG': return LogLevel.DEBUG;
-      case 'INFO': return LogLevel.INFO;
-      case 'WARN': return LogLevel.WARN;
-      case 'ERROR': return LogLevel.ERROR;
-      default: return LogLevel.INFO;
+      case 'DEBUG':
+        return LogLevel.DEBUG;
+      case 'INFO':
+        return LogLevel.INFO;
+      case 'WARN':
+        return LogLevel.WARN;
+      case 'ERROR':
+        return LogLevel.ERROR;
+      default:
+        return LogLevel.INFO;
     }
   }
 
@@ -116,18 +123,19 @@ class Logger {
 
   private cleanupOldLogs(): void {
     try {
-      const files = fs.readdirSync(this.config.logDir)
-        .filter(f => f.startsWith('arbitrage-bot-') && f.endsWith('.log'))
-        .map(f => ({
+      const files = fs
+        .readdirSync(this.config.logDir)
+        .filter((f) => f.startsWith('arbitrage-bot-') && f.endsWith('.log'))
+        .map((f) => ({
           name: f,
           path: path.join(this.config.logDir, f),
-          time: fs.statSync(path.join(this.config.logDir, f)).mtime.getTime()
+          time: fs.statSync(path.join(this.config.logDir, f)).mtime.getTime(),
         }))
         .sort((a, b) => b.time - a.time);
 
       // Keep only maxFiles
       if (files.length > this.config.maxFiles) {
-        files.slice(this.config.maxFiles).forEach(file => {
+        files.slice(this.config.maxFiles).forEach((file) => {
           try {
             fs.unlinkSync(file.path);
           } catch (error) {
@@ -149,7 +157,7 @@ class Logger {
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
     const ms = String(now.getMilliseconds()).padStart(3, '0');
-    
+
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${ms}`;
   }
 
@@ -181,7 +189,13 @@ class Logger {
     }
   }
 
-  private log(level: LogLevel, levelName: string, color: string, message: string, tag?: string): void {
+  private log(
+    level: LogLevel,
+    levelName: string,
+    color: string,
+    message: string,
+    tag?: string
+  ): void {
     if (level < this.config.level) return;
 
     const formattedMessage = this.formatMessage(levelName, message, tag);
@@ -237,10 +251,18 @@ class Logger {
    */
   tagged(tag: string, level: 'debug' | 'info' | 'warn' | 'error', message: string): void {
     switch (level) {
-      case 'debug': this.debug(message, tag); break;
-      case 'info': this.info(message, tag); break;
-      case 'warn': this.warn(message, tag); break;
-      case 'error': this.error(message, tag); break;
+      case 'debug':
+        this.debug(message, tag);
+        break;
+      case 'info':
+        this.info(message, tag);
+        break;
+      case 'warn':
+        this.warn(message, tag);
+        break;
+      case 'error':
+        this.error(message, tag);
+        break;
     }
   }
 
@@ -250,7 +272,7 @@ class Logger {
   setLevel(level: LogLevel): void {
     this.config.level = level;
   }
-  
+
   /**
    * Check if debug logging is enabled
    */

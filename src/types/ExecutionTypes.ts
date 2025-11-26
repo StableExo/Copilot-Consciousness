@@ -1,6 +1,6 @@
 /**
  * ExecutionTypes.ts - Comprehensive type definitions for Mission #5
- * 
+ *
  * This module defines all TypeScript interfaces and types required for the
  * integrated arbitrage execution engine, including orchestration, pipeline,
  * execution, monitoring, and error recovery components.
@@ -21,7 +21,7 @@ export enum ExecutionState {
   MONITORING = 'MONITORING',
   COMPLETED = 'COMPLETED',
   FAILED = 'FAILED',
-  CANCELLED = 'CANCELLED'
+  CANCELLED = 'CANCELLED',
 }
 
 /**
@@ -31,7 +31,7 @@ export enum ExecutionPriority {
   LOW = 1,
   MEDIUM = 2,
   HIGH = 3,
-  CRITICAL = 4
+  CRITICAL = 4,
 }
 
 /**
@@ -42,7 +42,7 @@ export enum HealthStatus {
   DEGRADED = 'DEGRADED',
   UNHEALTHY = 'UNHEALTHY',
   CRITICAL = 'CRITICAL',
-  UNKNOWN = 'UNKNOWN'
+  UNKNOWN = 'UNKNOWN',
 }
 
 /**
@@ -54,7 +54,7 @@ export enum RecoveryStrategy {
   ADJUST_GAS = 'ADJUST_GAS',
   CANCEL = 'CANCEL',
   WAIT_AND_RETRY = 'WAIT_AND_RETRY',
-  ESCALATE = 'ESCALATE'
+  ESCALATE = 'ESCALATE',
 }
 
 /**
@@ -67,7 +67,7 @@ export enum TransactionStatus {
   FAILED = 'FAILED',
   REVERTED = 'REVERTED',
   REPLACED = 'REPLACED',
-  CANCELLED = 'CANCELLED'
+  CANCELLED = 'CANCELLED',
 }
 
 /**
@@ -82,21 +82,21 @@ export interface ExecutionContext {
   createdAt: number;
   updatedAt: number;
   metadata: Record<string, unknown>;
-  
+
   // Gas information
   estimatedGas?: bigint;
   gasPrice?: bigint;
   totalGasCost?: bigint;
-  
+
   // Profit calculations
   estimatedProfit?: bigint;
   netProfit?: bigint;
-  
+
   // Transaction info
   transactionHash?: string;
   nonce?: number;
   blockNumber?: number;
-  
+
   // Error tracking
   errors: ExecutionError[];
   retryCount: number;
@@ -235,27 +235,27 @@ export interface OrchestratorConfig {
   // Execution settings
   maxConcurrentExecutions: number;
   executionTimeout: number;
-  
+
   // Gas settings
   maxGasPrice: bigint;
   minProfitAfterGas: bigint;
   gasBufferMultiplier: number;
-  
+
   // Retry settings
   maxRetries: number;
   retryBackoffMs: number;
   retryBackoffMultiplier: number;
-  
+
   // Validation settings
   validateBeforeExecution: boolean;
   requireGasEstimation: boolean;
   requireProfitValidation: boolean;
-  
+
   // Monitoring settings
   healthCheckInterval: number;
   metricsCollectionInterval: number;
   enableAnomalyDetection: boolean;
-  
+
   // Recovery settings
   enableAutoRecovery: boolean;
   maxRecoveryAttempts: number;
@@ -280,7 +280,11 @@ export interface MultiDEXTransactionParams {
   dexType: 'UniswapV2' | 'UniswapV3' | 'SushiSwap' | 'Curve' | 'Aave' | 'Balancer';
   contractAddress: string;
   functionName: string;
-  params: Record<string, unknown> | UniswapV3TwoHopParams | TriangularFlashSwapParams | AaveFlashLoanParams;
+  params:
+    | Record<string, unknown>
+    | UniswapV3TwoHopParams
+    | TriangularFlashSwapParams
+    | AaveFlashLoanParams;
   borrowTokenAddress: string;
   borrowAmount: bigint;
   minAmountOut: bigint;
@@ -382,7 +386,7 @@ export enum ExecutionEventType {
   RECOVERY_INITIATED = 'RECOVERY_INITIATED',
   RECOVERY_COMPLETED = 'RECOVERY_COMPLETED',
   HEALTH_CHECK_FAILED = 'HEALTH_CHECK_FAILED',
-  ANOMALY_DETECTED = 'ANOMALY_DETECTED'
+  ANOMALY_DETECTED = 'ANOMALY_DETECTED',
 }
 
 /**

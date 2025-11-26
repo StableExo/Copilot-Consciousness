@@ -1,6 +1,6 @@
 /**
  * src/execution/NonceManager.ts
- * 
+ *
  * A TypeScript port of the battle-tested NonceManager from PROJECT-HAVOC.
  * This module provides a custom Ethers.js Signer that wraps an existing signer
  * to provide reliable, mutex-protected nonce tracking. It prevents race
@@ -41,7 +41,7 @@ export class NonceManager extends AbstractSigner {
   constructor(public readonly signer: AbstractSigner) {
     // Validate signer before calling super() to ensure we have a valid provider
     if (!signer || !signer.provider || typeof signer.getAddress !== 'function') {
-      throw new Error("NonceManager requires a valid Ethers Signer instance with a provider.");
+      throw new Error('NonceManager requires a valid Ethers Signer instance with a provider.');
     }
     // Pass provider to parent AbstractSigner constructor (ethers v6 uses defineProperties to make it readonly)
     super(signer.provider);
@@ -64,7 +64,9 @@ export class NonceManager extends AbstractSigner {
 
   get address(): string {
     if (!this._address) {
-      throw new Error('Address not initialized. Use NonceManager.create() or call getAddress() first.');
+      throw new Error(
+        'Address not initialized. Use NonceManager.create() or call getAddress() first.'
+      );
     }
     return this._address;
   }
@@ -136,7 +138,7 @@ export class NonceManager extends AbstractSigner {
     return tx;
   }
 
-  // Required for ethers v6 Signer compatibility  
+  // Required for ethers v6 Signer compatibility
   async authorize(tx: any): Promise<any> {
     // Delegate to underlying signer if available, otherwise no-op
     if (typeof (this.signer as any).authorize === 'function') {
@@ -150,7 +152,7 @@ export class NonceManager extends AbstractSigner {
     logger.debug(`${functionSig} sendTransaction called...`);
 
     if (typeof this.signer.sendTransaction !== 'function') {
-      throw new Error("Underlying signer does not support sendTransaction");
+      throw new Error('Underlying signer does not support sendTransaction');
     }
 
     const nonce = await this.getNextNonce();
@@ -164,22 +166,28 @@ export class NonceManager extends AbstractSigner {
         logger.warn(`${functionSig} Could not determine chainId for transaction.`);
       }
     }
-    logger.debug(`${functionSig} Populated transaction with nonce ${nonce} and chainId ${populatedTx.chainId}`);
+    logger.debug(
+      `${functionSig} Populated transaction with nonce ${nonce} and chainId ${populatedTx.chainId}`
+    );
 
     try {
       logger.debug(`${functionSig} Delegating sendTransaction to underlying signer...`);
       const txResponse = await this.signer.sendTransaction(populatedTx);
-      logger.info(`${functionSig} Underlying signer submitted transaction. Hash: ${txResponse.hash}`);
+      logger.info(
+        `${functionSig} Underlying signer submitted transaction. Hash: ${txResponse.hash}`
+      );
       return txResponse;
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
       logger.error(`${functionSig} Error sending transaction via underlying signer: ${message}`);
-      
+
       // Check if this is a nonce-related error
       if (this.isNonceError(error)) {
         logger.warn(`${functionSig} Nonce error detected during send, triggering resync...`);
         // Do not await resync; let the error propagate up immediately
-        this.resyncNonce().catch(resyncErr => logger.error(`${functionSig} Background resync failed: ${resyncErr.message}`));
+        this.resyncNonce().catch((resyncErr) =>
+          logger.error(`${functionSig} Background resync failed: ${resyncErr.message}`)
+        );
       }
       throw error;
     }
@@ -195,16 +203,16 @@ export class NonceManager extends AbstractSigner {
     const err = error as Record<string, unknown>;
     const message = (err.message as string)?.toLowerCase() || '';
     const code = err.code;
-    
+
     // Check error code
     if (code === NONCE_ERROR_PATTERNS.CODE) {
       return true;
     }
-    
+
     // Check error message patterns
-    return NONCE_ERROR_PATTERNS.MESSAGES.some(pattern => message.includes(pattern));
+    return NONCE_ERROR_PATTERNS.MESSAGES.some((pattern) => message.includes(pattern));
   }
-  
+
   /**
    * Initializes the internal nonce count by fetching the 'latest' transaction count.
    */
@@ -212,7 +220,7 @@ export class NonceManager extends AbstractSigner {
     const functionSig = `[NonceManager Address: ${this.address}]`;
     logger.info(`${functionSig} Initializing nonce...`);
     try {
-      if (!this.provider) throw new Error("Provider not available for nonce initialization.");
+      if (!this.provider) throw new Error('Provider not available for nonce initialization.');
       this.currentNonce = await this.provider.getTransactionCount(this.address, 'latest');
       logger.info(`${functionSig} Initial nonce set to: ${this.currentNonce}`);
     } catch (error: unknown) {
@@ -231,13 +239,15 @@ export class NonceManager extends AbstractSigner {
     logger.debug(`${functionSig} Mutex acquired for getNextNonce.`);
     try {
       if (this.currentNonce < 0) {
-        logger.warn(`${functionSig} Nonce not initialized. Attempting initialization within lock...`);
+        logger.warn(
+          `${functionSig} Nonce not initialized. Attempting initialization within lock...`
+        );
         await this.initialize();
       }
 
       let pendingNonce: number;
       try {
-        if (!this.provider) throw new Error("Provider not available for fetching pending nonce.");
+        if (!this.provider) throw new Error('Provider not available for fetching pending nonce.');
         pendingNonce = await this.provider.getTransactionCount(this.address, 'pending');
       } catch (fetchError: unknown) {
         const message = fetchError instanceof Error ? fetchError.message : String(fetchError);
@@ -246,13 +256,17 @@ export class NonceManager extends AbstractSigner {
       }
 
       if (pendingNonce > this.currentNonce) {
-        logger.info(`${functionSig} Pending nonce (${pendingNonce}) is higher than current internal nonce (${this.currentNonce}). Updating internal nonce.`);
+        logger.info(
+          `${functionSig} Pending nonce (${pendingNonce}) is higher than current internal nonce (${this.currentNonce}). Updating internal nonce.`
+        );
         this.currentNonce = pendingNonce;
       }
 
       const nonceToUse = this.currentNonce;
       this.currentNonce++;
-      logger.info(`${functionSig} Providing nonce: ${nonceToUse}, next internal nonce will be: ${this.currentNonce}`);
+      logger.info(
+        `${functionSig} Providing nonce: ${nonceToUse}, next internal nonce will be: ${this.currentNonce}`
+      );
       return nonceToUse;
     } finally {
       release();
@@ -268,10 +282,14 @@ export class NonceManager extends AbstractSigner {
     const release = await this.mutex.acquire();
     logger.warn(`${functionSig} Mutex acquired for resyncNonce...`);
     try {
-      logger.warn(`${functionSig} Resyncing nonce... Resetting internal count and fetching latest.`);
+      logger.warn(
+        `${functionSig} Resyncing nonce... Resetting internal count and fetching latest.`
+      );
       this.currentNonce = -1; // Reset internal state
       await this.initialize(); // Re-fetch 'latest' nonce
-      logger.info(`${functionSig} Nonce resync completed. New internal nonce: ${this.currentNonce}`);
+      logger.info(
+        `${functionSig} Nonce resync completed. New internal nonce: ${this.currentNonce}`
+      );
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
       logger.error(`${functionSig} Failed to resync nonce: ${message}`);

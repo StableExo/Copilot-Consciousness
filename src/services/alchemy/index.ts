@@ -1,6 +1,6 @@
 /**
  * Alchemy Services Index
- * 
+ *
  * Central export point for all Alchemy SDK integrations.
  * These services provide enhanced blockchain data access, real-time monitoring,
  * and transaction analysis capabilities.
@@ -12,36 +12,36 @@ import { AlchemyPricesService as PricesService } from './AlchemyPricesService';
 import { AlchemyTraceService as TraceService } from './AlchemyTraceService';
 import { AlchemyWebhookService as WebhookService } from './AlchemyWebhookService';
 
-export { 
-  AlchemyClient, 
-  getAlchemyClient, 
+export {
+  AlchemyClient,
+  getAlchemyClient,
   resetAlchemyClient,
-  type AlchemyConfig 
+  type AlchemyConfig,
 } from './AlchemyClient';
 
-export { 
+export {
   AlchemyTokenService,
-  type TokenBalance, 
-  type TokenMetadata, 
-  type TransferFilter 
+  type TokenBalance,
+  type TokenMetadata,
+  type TransferFilter,
 } from './AlchemyTokenService';
 
-export { 
+export {
   AlchemyPricesService,
-  type TokenPrice, 
-  type PriceComparison 
+  type TokenPrice,
+  type PriceComparison,
 } from './AlchemyPricesService';
 
-export { 
+export {
   AlchemyTraceService,
-  type TraceResult, 
-  type TransactionAnalysis 
+  type TraceResult,
+  type TransactionAnalysis,
 } from './AlchemyTraceService';
 
-export { 
+export {
   AlchemyWebhookService,
-  type WebhookEvent, 
-  type AddressActivityConfig 
+  type WebhookEvent,
+  type AddressActivityConfig,
 } from './AlchemyWebhookService';
 
 /**

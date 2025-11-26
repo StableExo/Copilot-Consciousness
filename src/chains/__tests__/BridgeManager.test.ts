@@ -19,7 +19,7 @@ describe('BridgeManager', () => {
         maxAmount: BigInt(1000000) * BigInt(10 ** 18),
         estimatedTime: 900,
         supportedChains: [1, 56, 137],
-        priority: 1
+        priority: 1,
       },
       {
         name: 'LayerZero',
@@ -29,7 +29,7 @@ describe('BridgeManager', () => {
         maxAmount: BigInt(500000) * BigInt(10 ** 18),
         estimatedTime: 600,
         supportedChains: [1, 56],
-        priority: 2
+        priority: 2,
       },
       {
         name: 'Disabled Bridge',
@@ -39,8 +39,8 @@ describe('BridgeManager', () => {
         maxAmount: BigInt(100000) * BigInt(10 ** 18),
         estimatedTime: 1200,
         supportedChains: [1, 56],
-        priority: 5
-      }
+        priority: 5,
+      },
     ];
 
     manager = new BridgeManager(testBridgeConfigs, 'balanced');
@@ -59,13 +59,8 @@ describe('BridgeManager', () => {
 
   describe('estimateBridgeFees', () => {
     it('should return estimates for all bridges', async () => {
-      const estimates = await manager.estimateBridgeFees(
-        1,
-        56,
-        '0xToken',
-        BigInt(10 ** 19)
-      );
-      
+      const estimates = await manager.estimateBridgeFees(1, 56, '0xToken', BigInt(10 ** 19));
+
       expect(Array.isArray(estimates)).toBe(true);
       expect(estimates.length).toBeGreaterThan(0);
     });
@@ -77,71 +72,46 @@ describe('BridgeManager', () => {
         '0xToken',
         BigInt(10 ** 19)
       );
-      
-      const supportedEstimates = estimates.filter(e => e.supported);
+
+      const supportedEstimates = estimates.filter((e) => e.supported);
       expect(supportedEstimates.length).toBe(0);
     });
 
     it('should mark amounts outside limits as unsupported', async () => {
       const tooSmall = BigInt(10 ** 15); // Too small
-      const estimates = await manager.estimateBridgeFees(
-        1,
-        56,
-        '0xToken',
-        tooSmall
-      );
-      
-      const supportedEstimates = estimates.filter(e => e.supported);
+      const estimates = await manager.estimateBridgeFees(1, 56, '0xToken', tooSmall);
+
+      const supportedEstimates = estimates.filter((e) => e.supported);
       expect(supportedEstimates.length).toBeLessThanOrEqual(estimates.length);
     });
   });
 
   describe('selectBridge', () => {
     it('should select a bridge for valid route', async () => {
-      const route = await manager.selectBridge(
-        1,
-        56,
-        '0xToken',
-        BigInt(10 ** 19)
-      );
-      
+      const route = await manager.selectBridge(1, 56, '0xToken', BigInt(10 ** 19));
+
       expect(route).toBeDefined();
       expect(route?.fromChain).toBe(1);
       expect(route?.toChain).toBe(56);
     });
 
     it('should return null for unsupported route', async () => {
-      const route = await manager.selectBridge(
-        1,
-        999,
-        '0xToken',
-        BigInt(10 ** 19)
-      );
-      
+      const route = await manager.selectBridge(1, 999, '0xToken', BigInt(10 ** 19));
+
       expect(route).toBeNull();
     });
 
     it('should respect cheapest strategy', async () => {
       const cheapestManager = new BridgeManager(testBridgeConfigs, 'cheapest');
-      const route = await cheapestManager.selectBridge(
-        1,
-        56,
-        '0xToken',
-        BigInt(10 ** 19)
-      );
-      
+      const route = await cheapestManager.selectBridge(1, 56, '0xToken', BigInt(10 ** 19));
+
       expect(route).toBeDefined();
     });
 
     it('should respect fastest strategy', async () => {
       const fastestManager = new BridgeManager(testBridgeConfigs, 'fastest');
-      const route = await fastestManager.selectBridge(
-        1,
-        56,
-        '0xToken',
-        BigInt(10 ** 19)
-      );
-      
+      const route = await fastestManager.selectBridge(1, 56, '0xToken', BigInt(10 ** 19));
+
       expect(route).toBeDefined();
       if (route) {
         // LayerZero is faster (600s vs 900s)
@@ -152,15 +122,10 @@ describe('BridgeManager', () => {
 
   describe('executeBridge', () => {
     it('should execute bridge transaction', async () => {
-      const route = await manager.selectBridge(
-        1,
-        56,
-        '0xToken',
-        BigInt(10 ** 19)
-      );
-      
+      const route = await manager.selectBridge(1, 56, '0xToken', BigInt(10 ** 19));
+
       expect(route).toBeDefined();
-      
+
       if (route) {
         const transaction = await manager.executeBridge(route);
         expect(transaction).toBeDefined();
@@ -177,9 +142,9 @@ describe('BridgeManager', () => {
         token: '0xToken',
         amount: BigInt(10 ** 19),
         estimatedFee: BigInt(10 ** 17),
-        estimatedTime: 600
+        estimatedTime: 600,
       };
-      
+
       await expect(manager.executeBridge(invalidRoute)).rejects.toThrow();
     });
   });
@@ -190,7 +155,7 @@ describe('BridgeManager', () => {
       if (route) {
         const transaction = await manager.executeBridge(route);
         const tracked = await manager.trackTransaction(transaction.txHash);
-        
+
         expect(tracked).toBeDefined();
         expect(tracked?.txHash).toBe(transaction.txHash);
       }

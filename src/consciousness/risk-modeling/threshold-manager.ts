@@ -1,6 +1,6 @@
 /**
  * Threshold Manager
- * 
+ *
  * Manages dynamic risk thresholds and alert triggers
  */
 
@@ -71,7 +71,7 @@ export class ThresholdManager {
       enabled: true,
       triggerCount: 0,
       cooldownPeriod,
-      metadata: {}
+      metadata: {},
     };
 
     this.thresholds.set(threshold.id, threshold);
@@ -93,18 +93,12 @@ export class ThresholdManager {
       adaptToHistory: true,
       historyWindow: 7 * 24 * 60 * 60 * 1000, // 7 days
       deviationMultiplier: 2.0, // 2 standard deviations
-      ...config
+      ...config,
     };
 
     this.dynamicConfigs.set(metric, dynamicConfig);
 
-    return this.defineThreshold(
-      name,
-      metric,
-      baseValue,
-      'GREATER_THAN',
-      'WARNING'
-    );
+    return this.defineThreshold(name, metric, baseValue, 'GREATER_THAN', 'WARNING');
   }
 
   /**
@@ -120,7 +114,7 @@ export class ThresholdManager {
     const violations: ThresholdViolation[] = [];
 
     // Check all thresholds for this metric
-    this.thresholds.forEach(threshold => {
+    this.thresholds.forEach((threshold) => {
       if (threshold.metric !== metric || !threshold.enabled) return;
 
       // Check cooldown
@@ -161,15 +155,15 @@ export class ThresholdManager {
     let violations = Array.from(this.violations.values());
 
     if (options.acknowledged !== undefined) {
-      violations = violations.filter(v => v.acknowledged === options.acknowledged);
+      violations = violations.filter((v) => v.acknowledged === options.acknowledged);
     }
 
     if (options.severity) {
-      violations = violations.filter(v => v.severity === options.severity);
+      violations = violations.filter((v) => v.severity === options.severity);
     }
 
     if (options.since !== undefined) {
-      violations = violations.filter(v => v.timestamp >= (options.since as number));
+      violations = violations.filter((v) => v.timestamp >= (options.since as number));
     }
 
     violations.sort((a, b) => b.timestamp - a.timestamp);
@@ -225,8 +219,7 @@ export class ThresholdManager {
    * Get threshold by metric
    */
   getThresholdsByMetric(metric: string): Threshold[] {
-    return Array.from(this.thresholds.values())
-      .filter(t => t.metric === metric);
+    return Array.from(this.thresholds.values()).filter((t) => t.metric === metric);
   }
 
   /**
@@ -242,13 +235,13 @@ export class ThresholdManager {
     const violations = Array.from(this.violations.values());
 
     const bySeverity = {
-      INFO: violations.filter(v => v.severity === 'INFO').length,
-      WARNING: violations.filter(v => v.severity === 'WARNING').length,
-      CRITICAL: violations.filter(v => v.severity === 'CRITICAL').length
+      INFO: violations.filter((v) => v.severity === 'INFO').length,
+      WARNING: violations.filter((v) => v.severity === 'WARNING').length,
+      CRITICAL: violations.filter((v) => v.severity === 'CRITICAL').length,
     };
 
     const byMetric: Record<string, number> = {};
-    violations.forEach(v => {
+    violations.forEach((v) => {
       const threshold = this.thresholds.get(v.thresholdId);
       if (threshold) {
         byMetric[threshold.metric] = (byMetric[threshold.metric] || 0) + 1;
@@ -257,8 +250,8 @@ export class ThresholdManager {
 
     // Calculate trend
     const now = Date.now();
-    const lastWeek = violations.filter(v => now - v.timestamp < 7 * 24 * 60 * 60 * 1000).length;
-    const previousWeek = violations.filter(v => {
+    const lastWeek = violations.filter((v) => now - v.timestamp < 7 * 24 * 60 * 60 * 1000).length;
+    const previousWeek = violations.filter((v) => {
       const age = now - v.timestamp;
       return age >= 7 * 24 * 60 * 60 * 1000 && age < 14 * 24 * 60 * 60 * 1000;
     }).length;
@@ -274,10 +267,10 @@ export class ThresholdManager {
 
     return {
       total: violations.length,
-      unacknowledged: violations.filter(v => !v.acknowledged).length,
+      unacknowledged: violations.filter((v) => !v.acknowledged).length,
       bySeverity,
       byMetric,
-      recentTrend
+      recentTrend,
     };
   }
 
@@ -294,8 +287,8 @@ export class ThresholdManager {
       violations: Array.from(this.violations.values()),
       dynamicConfigs: Array.from(this.dynamicConfigs.entries()).map(([metric, config]) => ({
         metric,
-        config
-      }))
+        config,
+      })),
     };
   }
 
@@ -311,8 +304,8 @@ export class ThresholdManager {
     this.violations.clear();
     this.dynamicConfigs.clear();
 
-    data.thresholds.forEach(t => this.thresholds.set(t.id, t));
-    data.violations.forEach(v => this.violations.set(v.id, v));
+    data.thresholds.forEach((t) => this.thresholds.set(t.id, t));
+    data.violations.forEach((v) => this.violations.set(v.id, v));
     data.dynamicConfigs.forEach(({ metric, config }) => {
       this.dynamicConfigs.set(metric, config);
     });
@@ -341,23 +334,21 @@ export class ThresholdManager {
 
     // Filter to history window
     const now = Date.now();
-    const windowHistory = history.filter(
-      h => now - h.timestamp <= config.historyWindow
-    );
+    const windowHistory = history.filter((h) => now - h.timestamp <= config.historyWindow);
 
     if (windowHistory.length < 10) return;
 
     // Calculate statistics
-    const values = windowHistory.map(h => h.value);
+    const values = windowHistory.map((h) => h.value);
     const mean = values.reduce((a, b) => a + b, 0) / values.length;
     const variance = values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / values.length;
     const stdDev = Math.sqrt(variance);
 
     // Update threshold to mean + N standard deviations
-    const newThreshold = mean + (stdDev * config.deviationMultiplier);
+    const newThreshold = mean + stdDev * config.deviationMultiplier;
 
     // Update all thresholds for this metric
-    this.thresholds.forEach(threshold => {
+    this.thresholds.forEach((threshold) => {
       if (threshold.metric === metric) {
         threshold.value = newThreshold;
       }
@@ -368,17 +359,17 @@ export class ThresholdManager {
     switch (threshold.operator) {
       case 'GREATER_THAN':
         return value > threshold.value;
-      
+
       case 'LESS_THAN':
         return value < threshold.value;
-      
+
       case 'EQUALS':
         return Math.abs(value - threshold.value) < 0.001;
-      
+
       case 'BETWEEN':
         if (threshold.upperBound === undefined) return false;
         return value >= threshold.value && value <= threshold.upperBound;
-      
+
       default:
         return false;
     }
@@ -391,8 +382,10 @@ export class ThresholdManager {
       timestamp: Date.now(),
       metricValue: value,
       severity: threshold.severity,
-      message: `${threshold.name}: ${threshold.metric} is ${value.toFixed(3)} (threshold: ${threshold.value.toFixed(3)})`,
-      acknowledged: false
+      message: `${threshold.name}: ${threshold.metric} is ${value.toFixed(
+        3
+      )} (threshold: ${threshold.value.toFixed(3)})`,
+      acknowledged: false,
     };
 
     this.violations.set(violation.id, violation);

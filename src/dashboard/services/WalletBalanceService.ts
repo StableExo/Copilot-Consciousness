@@ -1,6 +1,6 @@
 /**
  * WalletBalanceService - Fetches and caches wallet balances
- * 
+ *
  * Provides real-time wallet balance information for native and ERC20 tokens
  */
 
@@ -11,7 +11,7 @@ import { WalletBalance } from '../types';
 const ERC20_ABI = [
   'function balanceOf(address owner) view returns (uint256)',
   'function decimals() view returns (uint8)',
-  'function symbol() view returns (string)'
+  'function symbol() view returns (string)',
 ];
 
 export interface TokenConfig {
@@ -43,9 +43,9 @@ export class WalletBalanceService {
    */
   async getBalances(forceRefresh: boolean = false): Promise<WalletBalance> {
     const now = Date.now();
-    
+
     // Return cached data if still valid
-    if (!forceRefresh && this.cache && (now - this.lastFetch) < this.cacheDuration) {
+    if (!forceRefresh && this.cache && now - this.lastFetch < this.cacheDuration) {
       return this.cache;
     }
 
@@ -53,7 +53,7 @@ export class WalletBalanceService {
     const balance = await this.fetchBalances();
     this.cache = balance;
     this.lastFetch = now;
-    
+
     return balance;
   }
 
@@ -69,18 +69,14 @@ export class WalletBalanceService {
       const tokenBalances = await Promise.all(
         this.config.tokens.map(async (token) => {
           try {
-            const contract = new ethers.Contract(
-              token.address,
-              ERC20_ABI,
-              this.config.provider
-            );
+            const contract = new ethers.Contract(token.address, ERC20_ABI, this.config.provider);
             const balance = await contract.balanceOf(this.config.walletAddress);
-            
+
             return {
               address: token.address,
               symbol: token.symbol,
               balance: balance.toString(),
-              decimals: token.decimals
+              decimals: token.decimals,
             };
           } catch (error) {
             console.error(`Error fetching balance for ${token.symbol}:`, error);
@@ -88,7 +84,7 @@ export class WalletBalanceService {
               address: token.address,
               symbol: token.symbol,
               balance: '0',
-              decimals: token.decimals
+              decimals: token.decimals,
             };
           }
         })
@@ -99,23 +95,23 @@ export class WalletBalanceService {
         chainId: this.config.chainId,
         chainName: this.config.chainName,
         nativeBalance: nativeBalance.toString(),
-        tokens: tokenBalances
+        tokens: tokenBalances,
       };
     } catch (error) {
       console.error('Error fetching wallet balances:', error);
-      
+
       // Return empty balances on error
       return {
         address: this.config.walletAddress,
         chainId: this.config.chainId,
         chainName: this.config.chainName,
         nativeBalance: '0',
-        tokens: this.config.tokens.map(token => ({
+        tokens: this.config.tokens.map((token) => ({
           address: token.address,
           symbol: token.symbol,
           balance: '0',
-          decimals: token.decimals
-        }))
+          decimals: token.decimals,
+        })),
       };
     }
   }

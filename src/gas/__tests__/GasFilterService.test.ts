@@ -15,11 +15,11 @@ describe('GasFilterService', () => {
   beforeEach(() => {
     // Create mock oracle
     mockOracle = new GasPriceOracle('http://localhost:8545');
-    
+
     config = {
       maxGasCostPercentage: 50,
       minProfitThreshold: BigInt(100) * BigInt(10 ** 18),
-      queueThreshold: 30
+      queueThreshold: 30,
     };
 
     filterService = new GasFilterService(mockOracle, config);
@@ -35,8 +35,8 @@ describe('GasFilterService', () => {
           amountIn: BigInt(1000) * BigInt(10 ** 18),
           amountOut: BigInt(1100) * BigInt(10 ** 18),
           fee: 0.003,
-          gasEstimate: 100000
-        }
+          gasEstimate: 100000,
+        },
       ],
       startToken: '0xTokenA',
       endToken: '0xTokenA',
@@ -44,7 +44,7 @@ describe('GasFilterService', () => {
       totalGasCost: BigInt(150000),
       netProfit: BigInt(450) * BigInt(10 ** 18),
       totalFees: 0.003,
-      slippageImpact: 0.01
+      slippageImpact: 0.01,
     };
   });
 
@@ -74,7 +74,7 @@ describe('GasFilterService', () => {
       const lowProfitPath = {
         ...mockPath,
         estimatedProfit: BigInt(50) * BigInt(10 ** 18), // Below 100 threshold
-        netProfit: BigInt(40) * BigInt(10 ** 18)
+        netProfit: BigInt(40) * BigInt(10 ** 18),
       };
       const gasPrice = BigInt(10) * BigInt(10 ** 9);
       const executable = await filterService.isExecutable(lowProfitPath, gasPrice);

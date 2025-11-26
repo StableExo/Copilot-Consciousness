@@ -1,6 +1,6 @@
 /**
  * Memory Core Types
- * 
+ *
  * Types for the Memory Core system inspired by StableExo/AGI
  */
 

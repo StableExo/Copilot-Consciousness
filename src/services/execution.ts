@@ -18,7 +18,7 @@ async function start() {
   const connection = await amqp.connect(process.env.RABBITMQ_URL || 'amqp://localhost:5672');
   const channel = await connection.createChannel();
   await channel.assertQueue('paths', { durable: true });
-  
+
   channel.consume('paths', async (msg: amqp.ConsumeMessage | null) => {
     if (msg) {
       const path = JSON.parse(msg.content.toString());

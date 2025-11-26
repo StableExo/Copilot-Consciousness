@@ -1,15 +1,15 @@
 /**
  * Learning Engine
- * 
+ *
  * Implements self-improving learning mechanisms
  * Combines knowledge, patterns, and historical analysis for continuous improvement
  */
 
 export enum LearningMode {
-  SUPERVISED = 'SUPERVISED',       // Learning from labeled examples
-  UNSUPERVISED = 'UNSUPERVISED',   // Learning from patterns
-  REINFORCEMENT = 'REINFORCEMENT',  // Learning from rewards
-  TRANSFER = 'TRANSFER'             // Applying learned knowledge to new domains
+  SUPERVISED = 'SUPERVISED', // Learning from labeled examples
+  UNSUPERVISED = 'UNSUPERVISED', // Learning from patterns
+  REINFORCEMENT = 'REINFORCEMENT', // Learning from rewards
+  TRANSFER = 'TRANSFER', // Applying learned knowledge to new domains
 }
 
 export interface LearningSession {
@@ -67,10 +67,7 @@ export class LearningEngine {
   /**
    * Start a new learning session
    */
-  startSession(
-    topic: string,
-    mode: LearningMode = LearningMode.UNSUPERVISED
-  ): LearningSession {
+  startSession(topic: string, mode: LearningMode = LearningMode.UNSUPERVISED): LearningSession {
     const session: LearningSession = {
       id: this.generateId('session'),
       mode,
@@ -83,10 +80,10 @@ export class LearningEngine {
         recall: 0,
         learningRate: 0.1,
         improvementRate: 0,
-        totalExamples: 0
+        totalExamples: 0,
       },
       insights: [],
-      metadata: {}
+      metadata: {},
     };
 
     this.sessions.set(session.id, session);
@@ -115,7 +112,7 @@ export class LearningEngine {
       expectedOutput,
       actualOutput,
       feedback,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     session.examples.push(example);
@@ -140,7 +137,7 @@ export class LearningEngine {
     const session = this.sessions.get(this.activeSession);
     if (!session) return false;
 
-    const example = session.examples.find(ex => ex.id === exampleId);
+    const example = session.examples.find((ex) => ex.id === exampleId);
     if (!example) return false;
 
     example.feedback = feedback;
@@ -174,13 +171,9 @@ export class LearningEngine {
   /**
    * Register or update a skill
    */
-  registerSkill(
-    name: string,
-    domain: string,
-    initialProficiency: number = 0
-  ): Skill {
+  registerSkill(name: string, domain: string, initialProficiency: number = 0): Skill {
     const existing = Array.from(this.skills.values()).find(
-      s => s.name === name && s.domain === domain
+      (s) => s.name === name && s.domain === domain
     );
 
     if (existing) {
@@ -194,11 +187,13 @@ export class LearningEngine {
       proficiency: Math.max(0, Math.min(1, initialProficiency)),
       practiceCount: 0,
       successRate: 0,
-      learningCurve: [{
-        timestamp: Date.now(),
-        proficiency: initialProficiency
-      }],
-      metadata: {}
+      learningCurve: [
+        {
+          timestamp: Date.now(),
+          proficiency: initialProficiency,
+        },
+      ],
+      metadata: {},
     };
 
     this.skills.set(skill.id, skill);
@@ -208,10 +203,7 @@ export class LearningEngine {
   /**
    * Practice a skill
    */
-  practiceSkill(
-    skillId: string,
-    success: boolean
-  ): boolean {
+  practiceSkill(skillId: string, success: boolean): boolean {
     const skill = this.skills.get(skillId);
     if (!skill) return false;
 
@@ -230,7 +222,7 @@ export class LearningEngine {
     // Record in learning curve
     skill.learningCurve.push({
       timestamp: Date.now(),
-      proficiency: skill.proficiency
+      proficiency: skill.proficiency,
     });
 
     // Keep learning curve manageable
@@ -254,7 +246,7 @@ export class LearningEngine {
    */
   getSkillsByDomain(domain: string): Skill[] {
     return Array.from(this.skills.values())
-      .filter(s => s.domain === domain)
+      .filter((s) => s.domain === domain)
       .sort((a, b) => b.proficiency - a.proficiency);
   }
 
@@ -272,17 +264,15 @@ export class LearningEngine {
     const sessions = Array.from(this.sessions.values());
     const skills = Array.from(this.skills.values());
 
-    const totalExamples = sessions.reduce(
-      (sum, s) => sum + s.performance.totalExamples,
-      0
-    );
+    const totalExamples = sessions.reduce((sum, s) => sum + s.performance.totalExamples, 0);
 
-    const averageAccuracy = sessions.length > 0
-      ? sessions.reduce((sum, s) => sum + s.performance.accuracy, 0) / sessions.length
-      : 0;
+    const averageAccuracy =
+      sessions.length > 0
+        ? sessions.reduce((sum, s) => sum + s.performance.accuracy, 0) / sessions.length
+        : 0;
 
-    const masterSkills = skills.filter(s => s.proficiency >= 0.8).length;
-    const improvingSkills = skills.filter(s => {
+    const masterSkills = skills.filter((s) => s.proficiency >= 0.8).length;
+    const improvingSkills = skills.filter((s) => {
       if (s.learningCurve.length < 2) return false;
       const recent = s.learningCurve.slice(-10);
       return recent[recent.length - 1].proficiency > recent[0].proficiency;
@@ -294,7 +284,7 @@ export class LearningEngine {
       averageAccuracy,
       totalSkills: skills.length,
       masterSkills,
-      improvingSkills
+      improvingSkills,
     };
   }
 
@@ -307,25 +297,31 @@ export class LearningEngine {
 
     // Find skills that need practice
     const needsPractice = skills.filter(
-      s => !s.lastPracticed || Date.now() - s.lastPracticed > 7 * 24 * 60 * 60 * 1000
+      (s) => !s.lastPracticed || Date.now() - s.lastPracticed > 7 * 24 * 60 * 60 * 1000
     );
 
     if (needsPractice.length > 0) {
       recommendations.push(
-        `Practice these skills: ${needsPractice.slice(0, 3).map(s => s.name).join(', ')}`
+        `Practice these skills: ${needsPractice
+          .slice(0, 3)
+          .map((s) => s.name)
+          .join(', ')}`
       );
     }
 
     // Find skills with low proficiency
-    const lowProficiency = skills.filter(s => s.proficiency < 0.5);
+    const lowProficiency = skills.filter((s) => s.proficiency < 0.5);
     if (lowProficiency.length > 0) {
       recommendations.push(
-        `Focus on improving: ${lowProficiency.slice(0, 3).map(s => s.name).join(', ')}`
+        `Focus on improving: ${lowProficiency
+          .slice(0, 3)
+          .map((s) => s.name)
+          .join(', ')}`
       );
     }
 
     // Suggest new learning areas
-    const domains = new Set(skills.map(s => s.domain));
+    const domains = new Set(skills.map((s) => s.domain));
     if (domains.size < 5) {
       recommendations.push('Explore new learning domains to broaden capabilities');
     }
@@ -342,61 +338,58 @@ export class LearningEngine {
   } {
     return {
       sessions: Array.from(this.sessions.values()),
-      skills: Array.from(this.skills.values())
+      skills: Array.from(this.skills.values()),
     };
   }
 
   /**
    * Import learning data
    */
-  import(data: {
-    sessions: LearningSession[];
-    skills: Skill[];
-  }): void {
+  import(data: { sessions: LearningSession[]; skills: Skill[] }): void {
     this.sessions.clear();
     this.skills.clear();
 
-    data.sessions.forEach(session => {
+    data.sessions.forEach((session) => {
       this.sessions.set(session.id, session);
     });
 
-    data.skills.forEach(skill => {
+    data.skills.forEach((skill) => {
       this.skills.set(skill.id, skill);
     });
   }
 
   private updatePerformance(session: LearningSession): void {
     const examples = session.examples;
-    
+
     if (examples.length === 0) return;
 
     // Calculate accuracy (for supervised learning)
     const withExpected = examples.filter(
-      ex => ex.expectedOutput !== undefined && ex.actualOutput !== undefined
+      (ex) => ex.expectedOutput !== undefined && ex.actualOutput !== undefined
     );
 
     if (withExpected.length > 0) {
       const correct = withExpected.filter(
-        ex => JSON.stringify(ex.expectedOutput) === JSON.stringify(ex.actualOutput)
+        (ex) => JSON.stringify(ex.expectedOutput) === JSON.stringify(ex.actualOutput)
       ).length;
 
       session.performance.accuracy = correct / withExpected.length;
     }
 
     // Calculate based on feedback (for reinforcement learning)
-    const withFeedback = examples.filter(ex => ex.feedback !== undefined);
-    
+    const withFeedback = examples.filter((ex) => ex.feedback !== undefined);
+
     if (withFeedback.length > 0) {
-      const positive = withFeedback.filter(ex => ex.feedback === 'POSITIVE').length;
+      const positive = withFeedback.filter((ex) => ex.feedback === 'POSITIVE').length;
       session.performance.precision = positive / withFeedback.length;
     }
 
     // Calculate improvement rate
     if (examples.length > 10) {
       const recent = examples.slice(-10);
-      const recentPositive = recent.filter(ex => ex.feedback === 'POSITIVE').length;
+      const recentPositive = recent.filter((ex) => ex.feedback === 'POSITIVE').length;
       const earlier = examples.slice(-20, -10);
-      const earlierPositive = earlier.filter(ex => ex.feedback === 'POSITIVE').length;
+      const earlierPositive = earlier.filter((ex) => ex.feedback === 'POSITIVE').length;
 
       const recentRate = recent.length > 0 ? recentPositive / recent.length : 0;
       const earlierRate = earlier.length > 0 ? earlierPositive / earlier.length : 0;
@@ -410,11 +403,10 @@ export class LearningEngine {
     const skill = this.registerSkill(session.topic, 'general', 0);
 
     // Update proficiency based on session performance
-    const performanceScore = (
+    const performanceScore =
       session.performance.accuracy * 0.5 +
       session.performance.precision * 0.3 +
-      (session.performance.improvementRate + 1) * 0.2
-    );
+      (session.performance.improvementRate + 1) * 0.2;
 
     skill.proficiency = Math.max(0, Math.min(1, performanceScore));
     skill.practiceCount += session.examples.length;
@@ -422,7 +414,7 @@ export class LearningEngine {
 
     skill.learningCurve.push({
       timestamp: Date.now(),
-      proficiency: skill.proficiency
+      proficiency: skill.proficiency,
     });
   }
 

@@ -1,6 +1,6 @@
 /**
  * Transactional Reasoning Tests
- * 
+ *
  * Comprehensive tests for the cognitive flash loan pattern
  */
 
@@ -40,16 +40,12 @@ describe('TransactionalReasoning', () => {
 
     // Initialize transactional reasoning
     // Disable ethics validation for most tests to avoid false positives
-    transactionalReasoning = new TransactionalReasoning(
-      cognitiveSystem,
-      memorySystem,
-      {
-        defaultTimeout: 5000,
-        maxDepth: 5,
-        enableEthicsValidation: false, // Disabled for basic tests
-        enableLogging: false, // Disable logging in tests
-      }
-    );
+    transactionalReasoning = new TransactionalReasoning(cognitiveSystem, memorySystem, {
+      defaultTimeout: 5000,
+      maxDepth: 5,
+      enableEthicsValidation: false, // Disabled for basic tests
+      enableLogging: false, // Disable logging in tests
+    });
   });
 
   afterEach(() => {
@@ -63,13 +59,10 @@ describe('TransactionalReasoning', () => {
         riskLevel: 'low',
       };
 
-      const result = await transactionalReasoning.exploreThought(
-        async () => {
-          await new Promise(resolve => setTimeout(resolve, 1));
-          return { success: true, value: 42 };
-        },
-        context
-      );
+      const result = await transactionalReasoning.exploreThought(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1));
+        return { success: true, value: 42 };
+      }, context);
 
       expect(result.success).toBe(true);
       expect(result.result).toEqual({ success: true, value: 42 });
@@ -84,12 +77,9 @@ describe('TransactionalReasoning', () => {
         riskLevel: 'medium',
       };
 
-      const result = await transactionalReasoning.exploreThought(
-        async () => {
-          throw new Error('Intentional error');
-        },
-        context
-      );
+      const result = await transactionalReasoning.exploreThought(async () => {
+        throw new Error('Intentional error');
+      }, context);
 
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
@@ -104,14 +94,11 @@ describe('TransactionalReasoning', () => {
         timeout: 100, // 100ms timeout
       };
 
-      const result = await transactionalReasoning.exploreThought(
-        async () => {
-          // Simulate long-running process
-          await new Promise(resolve => setTimeout(resolve, 500));
-          return { done: true };
-        },
-        context
-      );
+      const result = await transactionalReasoning.exploreThought(async () => {
+        // Simulate long-running process
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        return { done: true };
+      }, context);
 
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
@@ -133,10 +120,7 @@ describe('TransactionalReasoning', () => {
 
     it('should restore cognitive state after rollback', async () => {
       // Add some initial memory
-      memorySystem.addWorkingMemory(
-        { data: 'initial' },
-        Priority.HIGH
-      );
+      memorySystem.addWorkingMemory({ data: 'initial' }, Priority.HIGH);
 
       // Create checkpoint
       const checkpoint = await transactionalReasoning.createCheckpoint('Before modification');
@@ -186,18 +170,12 @@ describe('TransactionalReasoning', () => {
         riskLevel: 'medium',
       };
 
-      await transactionalReasoning.exploreThought(
-        async () => ({ value: 1 }),
-        context1
-      );
+      await transactionalReasoning.exploreThought(async () => ({ value: 1 }), context1);
 
       // Small delay to ensure different timestamps
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
-      await transactionalReasoning.exploreThought(
-        async () => ({ value: 2 }),
-        context2
-      );
+      await transactionalReasoning.exploreThought(async () => ({ value: 2 }), context2);
 
       const tracker = transactionalReasoning.getExplorationTracker();
       const explorations = tracker.getAllExplorations();
@@ -213,12 +191,9 @@ describe('TransactionalReasoning', () => {
         riskLevel: 'high',
       };
 
-      await transactionalReasoning.exploreThought(
-        async () => {
-          throw new Error('Test failure');
-        },
-        context
-      );
+      await transactionalReasoning.exploreThought(async () => {
+        throw new Error('Test failure');
+      }, context);
 
       const tracker = transactionalReasoning.getExplorationTracker();
       const explorations = tracker.getAllExplorations();
@@ -237,12 +212,9 @@ describe('TransactionalReasoning', () => {
 
       // Fail multiple times with same context
       for (let i = 0; i < 3; i++) {
-        await transactionalReasoning.exploreThought(
-          async () => {
-            throw new Error('Consistent failure');
-          },
-          context
-        );
+        await transactionalReasoning.exploreThought(async () => {
+          throw new Error('Consistent failure');
+        }, context);
       }
 
       const tracker = transactionalReasoning.getExplorationTracker();
@@ -256,14 +228,10 @@ describe('TransactionalReasoning', () => {
   describe('Ethics Integration', () => {
     it('should rollback on ethical violations', async () => {
       // Create instance with ethics validation enabled
-      const ethicsTR = new TransactionalReasoning(
-        cognitiveSystem,
-        memorySystem,
-        {
-          enableEthicsValidation: true,
-          enableLogging: false,
-        }
-      );
+      const ethicsTR = new TransactionalReasoning(cognitiveSystem, memorySystem, {
+        enableEthicsValidation: true,
+        enableLogging: false,
+      });
 
       // Create a context that will fail ethics check
       // The ethics engine evaluates the JSON, which will be too short/simple
@@ -272,12 +240,9 @@ describe('TransactionalReasoning', () => {
         riskLevel: 'critical',
       };
 
-      const result = await ethicsTR.exploreThought(
-        async () => {
-          return { plan: '' }; // Empty plan
-        },
-        context
-      );
+      const result = await ethicsTR.exploreThought(async () => {
+        return { plan: '' }; // Empty plan
+      }, context);
 
       // Should be rolled back due to ethics violation
       expect(result.success).toBe(false);
@@ -286,26 +251,19 @@ describe('TransactionalReasoning', () => {
     });
 
     it('should allow valid explorations with ethics enabled', async () => {
-      const ethicsTR = new TransactionalReasoning(
-        cognitiveSystem,
-        memorySystem,
-        {
-          enableEthicsValidation: false, // Keep disabled for this test
-          enableLogging: false,
-        }
-      );
+      const ethicsTR = new TransactionalReasoning(cognitiveSystem, memorySystem, {
+        enableEthicsValidation: false, // Keep disabled for this test
+        enableLogging: false,
+      });
 
       const context: ExplorationContext = {
         description: 'Valid exploration with proper context',
         riskLevel: 'low',
       };
 
-      const result = await ethicsTR.exploreThought(
-        async () => {
-          return { success: true, data: 'valid result' };
-        },
-        context
-      );
+      const result = await ethicsTR.exploreThought(async () => {
+        return { success: true, data: 'valid result' };
+      }, context);
 
       expect(result.success).toBe(true);
       expect(result.ethicsViolation?.violated).toBe(false);
@@ -317,7 +275,7 @@ describe('TransactionalReasoning', () => {
       // Perform several explorations with small delays to ensure timing
       await transactionalReasoning.exploreThought(
         async () => {
-          await new Promise(resolve => setTimeout(resolve, 5));
+          await new Promise((resolve) => setTimeout(resolve, 5));
           return { success: true };
         },
         { description: 'Success 1', riskLevel: 'low' }
@@ -325,7 +283,7 @@ describe('TransactionalReasoning', () => {
 
       await transactionalReasoning.exploreThought(
         async () => {
-          await new Promise(resolve => setTimeout(resolve, 5));
+          await new Promise((resolve) => setTimeout(resolve, 5));
           return { success: true };
         },
         { description: 'Success 2', riskLevel: 'low' }
@@ -333,7 +291,7 @@ describe('TransactionalReasoning', () => {
 
       await transactionalReasoning.exploreThought(
         async () => {
-          await new Promise(resolve => setTimeout(resolve, 5));
+          await new Promise((resolve) => setTimeout(resolve, 5));
           throw new Error('Failure');
         },
         { description: 'Failure 1', riskLevel: 'medium' }
@@ -373,7 +331,7 @@ describe('TransactionalReasoning', () => {
           { description: `Depth ${depth}`, riskLevel: 'low' }
         );
 
-        return result.success ? (result.result || depth) : depth;
+        return result.success ? result.result || depth : depth;
       };
 
       await nestedExploration(1);
@@ -385,33 +343,24 @@ describe('TransactionalReasoning', () => {
 
   describe('Memory Integration', () => {
     it('should preserve memory during successful exploration', async () => {
-      memorySystem.addWorkingMemory(
-        { data: 'initial' },
-        Priority.HIGH
-      );
+      memorySystem.addWorkingMemory({ data: 'initial' }, Priority.HIGH);
 
       const context: ExplorationContext = {
         description: 'Memory test',
         riskLevel: 'low',
       };
 
-      await transactionalReasoning.exploreThought(
-        async () => {
-          memorySystem.addWorkingMemory({ data: 'exploration' }, Priority.HIGH);
-          return { success: true };
-        },
-        context
-      );
+      await transactionalReasoning.exploreThought(async () => {
+        memorySystem.addWorkingMemory({ data: 'exploration' }, Priority.HIGH);
+        return { success: true };
+      }, context);
 
       const workingMemories = memorySystem.searchMemories({ type: MemoryType.WORKING });
       expect(workingMemories.length).toBeGreaterThan(1);
     });
 
     it('should restore memory on failed exploration', async () => {
-      memorySystem.addWorkingMemory(
-        { data: 'initial' },
-        Priority.HIGH
-      );
+      memorySystem.addWorkingMemory({ data: 'initial' }, Priority.HIGH);
 
       const initialCount = memorySystem.searchMemories({ type: MemoryType.WORKING }).length;
 
@@ -420,13 +369,10 @@ describe('TransactionalReasoning', () => {
         riskLevel: 'medium',
       };
 
-      await transactionalReasoning.exploreThought(
-        async () => {
-          memorySystem.addWorkingMemory({ data: 'will-be-rolled-back' }, Priority.HIGH);
-          throw new Error('Intentional failure');
-        },
-        context
-      );
+      await transactionalReasoning.exploreThought(async () => {
+        memorySystem.addWorkingMemory({ data: 'will-be-rolled-back' }, Priority.HIGH);
+        throw new Error('Intentional failure');
+      }, context);
 
       // Memory should be restored to initial state
       const finalCount = memorySystem.searchMemories({ type: MemoryType.WORKING }).length;
@@ -440,14 +386,16 @@ describe('TransactionalReasoning', () => {
       await transactionalReasoning.createCheckpoint('Test 1');
       await transactionalReasoning.createCheckpoint('Test 2');
 
-      await transactionalReasoning.exploreThought(
-        async () => ({ value: 1 }),
-        { description: 'Test', riskLevel: 'low' }
-      );
+      await transactionalReasoning.exploreThought(async () => ({ value: 1 }), {
+        description: 'Test',
+        riskLevel: 'low',
+      });
 
       // Verify data exists
       expect(transactionalReasoning.getCheckpointManager().getCheckpointCount()).toBeGreaterThan(0);
-      expect(transactionalReasoning.getExplorationTracker().getAllExplorations().length).toBeGreaterThan(0);
+      expect(
+        transactionalReasoning.getExplorationTracker().getAllExplorations().length
+      ).toBeGreaterThan(0);
 
       // Clear
       transactionalReasoning.clear();

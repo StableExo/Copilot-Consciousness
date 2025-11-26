@@ -1,6 +1,6 @@
 /**
  * PathPruner - Intelligent path pruning for arbitrage optimization
- * 
+ *
  * Implements heuristics to filter out unprofitable paths early
  * and prioritize high-quality opportunities
  */
@@ -53,7 +53,7 @@ export class PathPruner {
       minPoolLiquidity: config.minPoolLiquidity || BigInt(100000),
       maxPriceImpactPerHop: config.maxPriceImpactPerHop || 2.0,
       maxCumulativeSlippage: config.maxCumulativeSlippage || 5.0,
-      minPoolQualityScore: config.minPoolQualityScore || 0.3
+      minPoolQualityScore: config.minPoolQualityScore || 0.3,
     };
     this.poolQualityCache = new Map();
     this.historicalFailures = new Map();
@@ -93,11 +93,7 @@ export class PathPruner {
   /**
    * Check if a partial path should be abandoned early
    */
-  shouldPrunePath(
-    hops: PoolEdge[],
-    currentAmount: bigint,
-    startAmount: bigint
-  ): boolean {
+  shouldPrunePath(hops: PoolEdge[], currentAmount: bigint, startAmount: bigint): boolean {
     if (hops.length === 0) {
       return false;
     }
@@ -105,7 +101,7 @@ export class PathPruner {
     // Early termination: accumulated fees exceed reasonable expectations
     const accumulatedFees = hops.reduce((sum, hop) => sum + hop.fee, 0);
     const feeThreshold = this.getFeeThreshold();
-    
+
     if (accumulatedFees > feeThreshold) {
       this.stats.prunedByFees++;
       this.stats.totalPruned++;
@@ -114,7 +110,8 @@ export class PathPruner {
 
     // Check if amount has dropped below profitability threshold
     const lossRatio = Number(startAmount - currentAmount) / Number(startAmount);
-    if (lossRatio > 0.1) { // More than 10% loss so far
+    if (lossRatio > 0.1) {
+      // More than 10% loss so far
       this.stats.prunedByFees++;
       this.stats.totalPruned++;
       return true;
@@ -137,7 +134,7 @@ export class PathPruner {
     // Check historical performance
     const pathHash = this.hashPath(path);
     const failures = this.historicalFailures.get(pathHash) || 0;
-    
+
     // If path has failed 3+ times, filter it out
     if (failures >= 3) {
       return true;
@@ -170,17 +167,14 @@ export class PathPruner {
     const stabilityScore = ratio > 0.5 && ratio < 2.0 ? 1.0 : 0.5;
 
     // Overall score (weighted average)
-    const overallScore = 
-      liquidityScore * 0.5 + 
-      volumeScore * 0.3 + 
-      stabilityScore * 0.2;
+    const overallScore = liquidityScore * 0.5 + volumeScore * 0.3 + stabilityScore * 0.2;
 
     const quality: PoolQuality = {
       poolAddress: edge.poolAddress,
       liquidityScore,
       volumeScore,
       stabilityScore,
-      overallScore
+      overallScore,
     };
 
     // Cache the result
@@ -226,7 +220,7 @@ export class PathPruner {
       prunedByPriceImpact: 0,
       prunedByFees: 0,
       prunedByQuality: 0,
-      totalPruned: 0
+      totalPruned: 0,
     };
     return this.stats;
   }
@@ -291,8 +285,8 @@ export class PathPruner {
     for (const hop of hops) {
       if (hop.reserve0 > BigInt(0)) {
         const impact = Number(currentAmount) / Number(hop.reserve0);
-        cumulativeSlippage = cumulativeSlippage + impact + (cumulativeSlippage * impact);
-        
+        cumulativeSlippage = cumulativeSlippage + impact + cumulativeSlippage * impact;
+
         // Update amount for next hop (simplified)
         currentAmount = (currentAmount * BigInt(Math.floor((1 - hop.fee) * 10000))) / BigInt(10000);
       }
@@ -303,8 +297,6 @@ export class PathPruner {
 
   private hashPath(path: ArbitragePath): string {
     // Create a simple hash from the sequence of pools
-    return path.hops
-      .map(hop => hop.poolAddress)
-      .join('-');
+    return path.hops.map((hop) => hop.poolAddress).join('-');
   }
 }

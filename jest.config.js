@@ -12,9 +12,9 @@ module.exports = {
   ],
   coverageDirectory: 'coverage',
   verbose: true,
-  globals: {
-    'ts-jest': {
-      isolatedModules: true,
-    }
+  transform: {
+    '^.+\\.ts$': ['ts-jest', {
+      tsconfig: 'tsconfig.test.json',
+    }]
   }
 };

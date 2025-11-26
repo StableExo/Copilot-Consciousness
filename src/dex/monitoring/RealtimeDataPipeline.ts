@@ -1,6 +1,6 @@
 /**
  * RealtimeDataPipeline
- * 
+ *
  * Aggregates and filters events from multiple WebSocket streams.
  * Implements backpressure handling and maintains sliding window for trend analysis.
  */
@@ -44,7 +44,7 @@ export interface PipelineMetrics {
 
 /**
  * Real-Time Data Pipeline
- * 
+ *
  * Processes and filters pool events with backpressure handling and trend analysis.
  */
 export class RealtimeDataPipeline extends EventEmitter {
@@ -131,11 +131,15 @@ export class RealtimeDataPipeline extends EventEmitter {
    */
   private async filterEvent(event: PoolEvent): Promise<FilteredPoolEvent | null> {
     // Check liquidity threshold for Sync events
-    if (event.eventType === 'Sync' && event.reserve0 !== undefined && event.reserve1 !== undefined) {
+    if (
+      event.eventType === 'Sync' &&
+      event.reserve0 !== undefined &&
+      event.reserve1 !== undefined
+    ) {
       // Use sum of both reserves as total liquidity
       // For more precise calculations, geometric mean (sqrt(reserve0 * reserve1)) could be used
       const totalLiquidity = event.reserve0 + event.reserve1;
-      
+
       if (totalLiquidity < this.filterConfig.minLiquidity) {
         return null; // Below minimum liquidity
       }
@@ -143,7 +147,7 @@ export class RealtimeDataPipeline extends EventEmitter {
 
     // Calculate price delta
     const priceDelta = this.calculatePriceDelta(event);
-    
+
     // Filter by price delta
     if (priceDelta !== null && Math.abs(priceDelta) < this.filterConfig.minPriceDelta) {
       return null; // Price change too small
@@ -191,7 +195,10 @@ export class RealtimeDataPipeline extends EventEmitter {
   /**
    * Determine event priority
    */
-  private determinePriority(event: PoolEvent, priceDelta: number | null): 'high' | 'medium' | 'low' {
+  private determinePriority(
+    event: PoolEvent,
+    priceDelta: number | null
+  ): 'high' | 'medium' | 'low' {
     // High priority for large price movements
     if (priceDelta !== null && Math.abs(priceDelta) > 0.02) {
       return 'high';
@@ -202,7 +209,7 @@ export class RealtimeDataPipeline extends EventEmitter {
       const amount0 = event.amount0Out || BigInt(0);
       const amount1 = event.amount1Out || BigInt(0);
       const maxAmount = amount0 > amount1 ? amount0 : amount1;
-      
+
       if (maxAmount > this.filterConfig.minLiquidity / BigInt(10)) {
         return 'high';
       }
@@ -241,7 +248,7 @@ export class RealtimeDataPipeline extends EventEmitter {
 
     // Remove old data points outside sliding window
     const cutoffTime = Date.now() - this.slidingWindowMs;
-    const validDataPoints = history.filter(dp => dp.timestamp >= cutoffTime);
+    const validDataPoints = history.filter((dp) => dp.timestamp >= cutoffTime);
     this.priceHistory.set(event.poolAddress, validDataPoints);
   }
 
@@ -254,9 +261,7 @@ export class RealtimeDataPipeline extends EventEmitter {
     switch (this.dropStrategy) {
       case 'oldest': {
         // Remove oldest low-priority event
-        const oldestLowPriorityIndex = this.eventQueue.findIndex(
-          e => e.priority === 'low'
-        );
+        const oldestLowPriorityIndex = this.eventQueue.findIndex((e) => e.priority === 'low');
         if (oldestLowPriorityIndex !== -1) {
           this.eventQueue.splice(oldestLowPriorityIndex, 1);
           this.eventQueue.push(newEvent);
@@ -293,9 +298,9 @@ export class RealtimeDataPipeline extends EventEmitter {
 
     while (this.eventQueue.length > 0) {
       // Process high-priority events first
-      const highPriorityIndex = this.eventQueue.findIndex(e => e.priority === 'high');
+      const highPriorityIndex = this.eventQueue.findIndex((e) => e.priority === 'high');
       const eventIndex = highPriorityIndex !== -1 ? highPriorityIndex : 0;
-      
+
       const event = this.eventQueue.splice(eventIndex, 1)[0];
       this.metrics.queueSize = this.eventQueue.length;
 
@@ -304,7 +309,7 @@ export class RealtimeDataPipeline extends EventEmitter {
       this.metrics.eventsEmitted++;
 
       // Small delay to prevent overwhelming consumers
-      await new Promise(resolve => setTimeout(resolve, 1));
+      await new Promise((resolve) => setTimeout(resolve, 1));
     }
 
     this.isProcessing = false;
@@ -321,7 +326,7 @@ export class RealtimeDataPipeline extends EventEmitter {
 
     if (windowMs) {
       const cutoffTime = Date.now() - windowMs;
-      return history.filter(dp => dp.timestamp >= cutoffTime);
+      return history.filter((dp) => dp.timestamp >= cutoffTime);
     }
 
     return [...history];
@@ -360,8 +365,9 @@ export class RealtimeDataPipeline extends EventEmitter {
       // Calculate throughput
       const now = Date.now();
       const cutoff = now - this.throughputWindowMs;
-      this.throughputWindow = this.throughputWindow.filter(ts => ts >= cutoff);
-      this.metrics.throughputPerSecond = this.throughputWindow.length / (this.throughputWindowMs / 1000);
+      this.throughputWindow = this.throughputWindow.filter((ts) => ts >= cutoff);
+      this.metrics.throughputPerSecond =
+        this.throughputWindow.length / (this.throughputWindowMs / 1000);
 
       // Emit metrics
       this.emit('metrics', this.metrics);

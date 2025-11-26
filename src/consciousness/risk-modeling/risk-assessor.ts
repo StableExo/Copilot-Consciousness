@@ -1,6 +1,6 @@
 /**
  * Risk Assessor
- * 
+ *
  * Adapted from AxionCitadel's MEVRiskModel.ts
  * General-purpose multi-factor risk assessment system
  */
@@ -11,7 +11,7 @@ export enum RiskCategory {
   FINANCIAL = 'FINANCIAL',
   TECHNICAL = 'TECHNICAL',
   REPUTATIONAL = 'REPUTATIONAL',
-  COMPLIANCE = 'COMPLIANCE'
+  COMPLIANCE = 'COMPLIANCE',
 }
 
 export enum RiskLevel {
@@ -19,7 +19,7 @@ export enum RiskLevel {
   HIGH = 'HIGH',
   MEDIUM = 'MEDIUM',
   LOW = 'LOW',
-  MINIMAL = 'MINIMAL'
+  MINIMAL = 'MINIMAL',
 }
 
 export interface RiskFactor {
@@ -81,11 +81,11 @@ export class RiskAssessor {
         [RiskCategory.FINANCIAL]: 1.1,
         [RiskCategory.TECHNICAL]: 0.8,
         [RiskCategory.REPUTATIONAL]: 0.95,
-        [RiskCategory.COMPLIANCE]: 1.2
+        [RiskCategory.COMPLIANCE]: 1.2,
       },
       aggregationMethod: 'WEIGHTED_AVERAGE',
       dynamicAdjustment: true,
-      ...config
+      ...config,
     };
   }
 
@@ -106,7 +106,7 @@ export class RiskAssessor {
       currentValue: 0,
       threshold,
       trend: 'STABLE',
-      metadata: {}
+      metadata: {},
     };
 
     this.factors.set(factor.id, factor);
@@ -145,9 +145,9 @@ export class RiskAssessor {
   ): RiskAssessment {
     const timestamp = Date.now();
     const factorAssessments: RiskFactorAssessment[] = [];
-    
+
     // Assess each registered factor
-    this.factors.forEach(factor => {
+    this.factors.forEach((factor) => {
       let score = factor.currentValue;
 
       // Apply context if provided
@@ -169,7 +169,7 @@ export class RiskAssessor {
         score: adjustedScore,
         contribution,
         exceedsThreshold: adjustedScore > factor.threshold,
-        details: this.generateFactorDetails(factor, adjustedScore)
+        details: this.generateFactorDetails(factor, adjustedScore),
       });
     });
 
@@ -193,7 +193,7 @@ export class RiskAssessor {
       factors: factorAssessments,
       recommendations,
       confidence,
-      metadata: {}
+      metadata: {},
     };
 
     this.assessments.set(assessment.id, assessment);
@@ -204,19 +204,15 @@ export class RiskAssessor {
    * Get risk factors by category
    */
   getFactorsByCategory(category: RiskCategory): RiskFactor[] {
-    return Array.from(this.factors.values())
-      .filter(f => f.category === category);
+    return Array.from(this.factors.values()).filter((f) => f.category === category);
   }
 
   /**
    * Get historical assessments for a target
    */
-  getAssessmentHistory(
-    targetId: string,
-    limit: number = 10
-  ): RiskAssessment[] {
+  getAssessmentHistory(targetId: string, limit: number = 10): RiskAssessment[] {
     return Array.from(this.assessments.values())
-      .filter(a => a.targetId === targetId)
+      .filter((a) => a.targetId === targetId)
       .sort((a, b) => b.timestamp - a.timestamp)
       .slice(0, limit);
   }
@@ -230,31 +226,34 @@ export class RiskAssessor {
     changeRate: number;
   } {
     const history = this.getAssessmentHistory(targetId, 100);
-    
+
     if (history.length < 2) {
       return {
         dataPoints: [],
         trend: 'STABLE',
-        changeRate: 0
+        changeRate: 0,
       };
     }
 
-    const dataPoints = history.map(a => ({
-      timestamp: a.timestamp,
-      riskScore: a.overallRiskScore
-    })).reverse(); // Chronological order
+    const dataPoints = history
+      .map((a) => ({
+        timestamp: a.timestamp,
+        riskScore: a.overallRiskScore,
+      }))
+      .reverse(); // Chronological order
 
     // Calculate trend
     const recent = dataPoints.slice(-5);
     const earlier = dataPoints.slice(-10, -5);
 
     const recentAvg = recent.reduce((sum, p) => sum + p.riskScore, 0) / recent.length;
-    const earlierAvg = earlier.length > 0
-      ? earlier.reduce((sum, p) => sum + p.riskScore, 0) / earlier.length
-      : recentAvg;
+    const earlierAvg =
+      earlier.length > 0
+        ? earlier.reduce((sum, p) => sum + p.riskScore, 0) / earlier.length
+        : recentAvg;
 
     const changeRate = recentAvg - earlierAvg;
-    
+
     let trend: 'INCREASING' | 'DECREASING' | 'STABLE';
     if (Math.abs(changeRate) < 0.05) {
       trend = 'STABLE';
@@ -279,34 +278,35 @@ export class RiskAssessor {
     highRiskTargets: string[];
   } {
     const factors = Array.from(this.factors.values());
-    
+
     const factorsByCategory: Record<RiskCategory, number> = {
       [RiskCategory.OPERATIONAL]: 0,
       [RiskCategory.STRATEGIC]: 0,
       [RiskCategory.FINANCIAL]: 0,
       [RiskCategory.TECHNICAL]: 0,
       [RiskCategory.REPUTATIONAL]: 0,
-      [RiskCategory.COMPLIANCE]: 0
+      [RiskCategory.COMPLIANCE]: 0,
     };
 
-    factors.forEach(f => {
+    factors.forEach((f) => {
       factorsByCategory[f.category]++;
     });
 
-    const factorsExceedingThreshold = factors.filter(
-      f => f.currentValue > f.threshold
-    ).length;
+    const factorsExceedingThreshold = factors.filter((f) => f.currentValue > f.threshold).length;
 
     const assessments = Array.from(this.assessments.values());
-    const averageRiskScore = assessments.length > 0
-      ? assessments.reduce((sum, a) => sum + a.overallRiskScore, 0) / assessments.length
-      : 0;
+    const averageRiskScore =
+      assessments.length > 0
+        ? assessments.reduce((sum, a) => sum + a.overallRiskScore, 0) / assessments.length
+        : 0;
 
-    const highRiskTargets = Array.from(new Set(
-      assessments
-        .filter(a => a.riskLevel === RiskLevel.HIGH || a.riskLevel === RiskLevel.CRITICAL)
-        .map(a => a.targetId)
-    ));
+    const highRiskTargets = Array.from(
+      new Set(
+        assessments
+          .filter((a) => a.riskLevel === RiskLevel.HIGH || a.riskLevel === RiskLevel.CRITICAL)
+          .map((a) => a.targetId)
+      )
+    );
 
     return {
       totalFactors: factors.length,
@@ -314,7 +314,7 @@ export class RiskAssessor {
       factorsExceedingThreshold,
       totalAssessments: assessments.length,
       averageRiskScore,
-      highRiskTargets
+      highRiskTargets,
     };
   }
 
@@ -329,7 +329,7 @@ export class RiskAssessor {
     return {
       factors: Array.from(this.factors.values()),
       assessments: Array.from(this.assessments.values()),
-      config: { ...this.config }
+      config: { ...this.config },
     };
   }
 
@@ -344,8 +344,8 @@ export class RiskAssessor {
     this.factors.clear();
     this.assessments.clear();
 
-    data.factors.forEach(f => this.factors.set(f.id, f));
-    data.assessments.forEach(a => this.assessments.set(a.id, a));
+    data.factors.forEach((f) => this.factors.set(f.id, f));
+    data.assessments.forEach((a) => this.assessments.set(a.id, a));
 
     if (data.config) {
       this.config = data.config;
@@ -378,14 +378,14 @@ export class RiskAssessor {
       }
 
       case 'MAX': {
-        const maxScore = Math.max(...factorAssessments.map(fa => fa.score));
+        const maxScore = Math.max(...factorAssessments.map((fa) => fa.score));
         return maxScore;
       }
 
       case 'BAYESIAN': {
         // Simple Bayesian-like combination
         let combinedRisk = this.config.baseRiskLevel;
-        factorAssessments.forEach(fa => {
+        factorAssessments.forEach((fa) => {
           combinedRisk = combinedRisk + fa.score * (1 - combinedRisk);
         });
         return Math.min(1, combinedRisk);
@@ -416,16 +416,18 @@ export class RiskAssessor {
     }
 
     // Factors exceeding thresholds
-    const exceeding = factorAssessments.filter(fa => fa.exceedsThreshold);
+    const exceeding = factorAssessments.filter((fa) => fa.exceedsThreshold);
     if (exceeding.length > 0) {
       recommendations.push(
-        `${exceeding.length} risk factors exceed acceptable thresholds: ${exceeding.map(fa => fa.factorName).join(', ')}`
+        `${exceeding.length} risk factors exceed acceptable thresholds: ${exceeding
+          .map((fa) => fa.factorName)
+          .join(', ')}`
       );
     }
 
     // Category-specific recommendations
     const byCategory = new Map<RiskCategory, RiskFactorAssessment[]>();
-    factorAssessments.forEach(fa => {
+    factorAssessments.forEach((fa) => {
       if (!byCategory.has(fa.category)) {
         byCategory.set(fa.category, []);
       }
@@ -435,7 +437,9 @@ export class RiskAssessor {
     byCategory.forEach((assessments, category) => {
       const avgScore = assessments.reduce((sum, a) => sum + a.score, 0) / assessments.length;
       if (avgScore > 0.6) {
-        recommendations.push(`Review ${category} risk factors - average score is ${avgScore.toFixed(2)}`);
+        recommendations.push(
+          `Review ${category} risk factors - average score is ${avgScore.toFixed(2)}`
+        );
       }
     });
 
@@ -444,16 +448,19 @@ export class RiskAssessor {
 
   private generateFactorDetails(factor: RiskFactor, score: number): string {
     const status = score > factor.threshold ? 'EXCEEDS' : 'WITHIN';
-    return `${factor.name}: ${score.toFixed(3)} (${status} threshold of ${factor.threshold}), Trend: ${factor.trend}`;
+    return `${factor.name}: ${score.toFixed(3)} (${status} threshold of ${
+      factor.threshold
+    }), Trend: ${factor.trend}`;
   }
 
   private calculateConfidence(factorAssessments: RiskFactorAssessment[]): number {
     if (factorAssessments.length === 0) return 0.5;
 
     // Confidence based on factor consistency
-    const scores = factorAssessments.map(fa => fa.score);
+    const scores = factorAssessments.map((fa) => fa.score);
     const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
-    const variance = scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / scores.length;
+    const variance =
+      scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / scores.length;
     const stdDev = Math.sqrt(variance);
 
     // Lower variance = higher confidence

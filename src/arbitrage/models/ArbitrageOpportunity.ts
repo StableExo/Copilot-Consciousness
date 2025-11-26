@@ -1,6 +1,6 @@
 /**
  * ArbitrageOpportunity Model
- * 
+ *
  * Complete arbitrage opportunity data structure with risk scoring and lifecycle management.
  * Extracted from AxionCitadel - Operation First Light validated
  * Source: https://github.com/metalxalloy/AxionCitadel
@@ -12,23 +12,23 @@ import { PathStep } from './PathStep';
  * Lifecycle status of arbitrage opportunity
  */
 export enum OpportunityStatus {
-  IDENTIFIED = 'identified',  // Just discovered
-  SIMULATED = 'simulated',    // Simulation completed
-  PENDING = 'pending',        // Queued for execution
-  EXECUTING = 'executing',    // Currently executing
-  EXECUTED = 'executed',      // Successfully executed
-  FAILED = 'failed',          // Execution failed
-  EXPIRED = 'expired',        // Deadline passed
+  IDENTIFIED = 'identified', // Just discovered
+  SIMULATED = 'simulated', // Simulation completed
+  PENDING = 'pending', // Queued for execution
+  EXECUTING = 'executing', // Currently executing
+  EXECUTED = 'executed', // Successfully executed
+  FAILED = 'failed', // Execution failed
+  EXPIRED = 'expired', // Deadline passed
 }
 
 /**
  * Type of arbitrage opportunity
  */
 export enum ArbitrageType {
-  SPATIAL = 'spatial',          // Cross-DEX arbitrage (same pair)
-  TRIANGULAR = 'triangular',    // 3-token cycle
-  MULTI_HOP = 'multi_hop',      // N-hop arbitrage
-  FLASH_LOAN = 'flash_loan',    // Flash loan arbitrage
+  SPATIAL = 'spatial', // Cross-DEX arbitrage (same pair)
+  TRIANGULAR = 'triangular', // 3-token cycle
+  MULTI_HOP = 'multi_hop', // N-hop arbitrage
+  FLASH_LOAN = 'flash_loan', // Flash loan arbitrage
 }
 
 /**
@@ -51,7 +51,7 @@ export interface ArbitrageOpportunity {
   inputAmount: number;
   expectedOutput: number;
   grossProfit: number;
-  profitBps: number;  // Profit in basis points
+  profitBps: number; // Profit in basis points
 
   // Flash loan details
   requiresFlashLoan: boolean;
@@ -103,13 +103,10 @@ const VALID_TRANSITIONS: Record<OpportunityStatus, OpportunityStatus[]> = {
     OpportunityStatus.EXPIRED,
     OpportunityStatus.FAILED,
   ],
-  [OpportunityStatus.EXECUTING]: [
-    OpportunityStatus.EXECUTED,
-    OpportunityStatus.FAILED,
-  ],
-  [OpportunityStatus.EXECUTED]: [],  // Terminal state
-  [OpportunityStatus.FAILED]: [],    // Terminal state
-  [OpportunityStatus.EXPIRED]: [],   // Terminal state
+  [OpportunityStatus.EXECUTING]: [OpportunityStatus.EXECUTED, OpportunityStatus.FAILED],
+  [OpportunityStatus.EXECUTED]: [], // Terminal state
+  [OpportunityStatus.FAILED]: [], // Terminal state
+  [OpportunityStatus.EXPIRED]: [], // Terminal state
 };
 
 /**
@@ -125,23 +122,24 @@ const PROTOCOL_RISK_MAP: Record<string, number> = {
 
 /**
  * Calculate risk score for an opportunity
- * 
+ *
  * Risk factors:
  * - Protocol risk: Each protocol has a base risk (0.1-0.3)
  * - Path length penalty: Longer paths = higher risk
  * - Slippage risk: Based on pool liquidity
  * - Flash loan risk: Additional risk if flash loan required
- * 
+ *
  * Returns: Risk score from 0.0 (low risk) to 1.0 (high risk)
  */
 export function calculateRiskScore(opportunity: ArbitrageOpportunity): number {
   // Calculate average protocol risk
   const protocolRisks = opportunity.protocols.map(
-    p => PROTOCOL_RISK_MAP[p.toLowerCase()] ?? PROTOCOL_RISK_MAP.unknown
+    (p) => PROTOCOL_RISK_MAP[p.toLowerCase()] ?? PROTOCOL_RISK_MAP.unknown
   );
-  const avgProtocolRisk = protocolRisks.length > 0
-    ? protocolRisks.reduce((sum, r) => sum + r, 0) / protocolRisks.length
-    : PROTOCOL_RISK_MAP.unknown;
+  const avgProtocolRisk =
+    protocolRisks.length > 0
+      ? protocolRisks.reduce((sum, r) => sum + r, 0) / protocolRisks.length
+      : PROTOCOL_RISK_MAP.unknown;
 
   // Path length penalty (each hop adds 0.05 risk)
   const pathLength = opportunity.path.length;
@@ -154,12 +152,8 @@ export function calculateRiskScore(opportunity: ArbitrageOpportunity): number {
   const slippageRisk = opportunity.slippageRisk ?? 0.1;
 
   // Combine risks (weighted average)
-  const totalRisk = (
-    avgProtocolRisk * 0.3 +
-    pathPenalty * 0.2 +
-    flashLoanRisk * 0.2 +
-    slippageRisk * 0.3
-  );
+  const totalRisk =
+    avgProtocolRisk * 0.3 + pathPenalty * 0.2 + flashLoanRisk * 0.2 + slippageRisk * 0.3;
 
   // Normalize to 0-1 range
   return Math.min(totalRisk, 1.0);
@@ -183,9 +177,7 @@ export function updateOpportunityStatus(
     return true;
   }
 
-  console.warn(
-    `Invalid status transition: ${opportunity.status} -> ${newStatus}`
-  );
+  console.warn(`Invalid status transition: ${opportunity.status} -> ${newStatus}`);
   return false;
 }
 
@@ -221,7 +213,7 @@ export function updateSimulationResults(
   }
 ): void {
   opportunity.simulationProfit = simulationData.netProfit ?? 0;
-  
+
   if (simulationData.gasUsed !== undefined) {
     opportunity.estimatedGas = simulationData.gasUsed;
   }
@@ -230,11 +222,7 @@ export function updateSimulationResults(
   if (opportunity.simulationProfit > 0) {
     updateOpportunityStatus(opportunity, OpportunityStatus.SIMULATED);
   } else {
-    updateOpportunityStatus(
-      opportunity,
-      OpportunityStatus.FAILED,
-      'Simulation showed no profit'
-    );
+    updateOpportunityStatus(opportunity, OpportunityStatus.FAILED, 'Simulation showed no profit');
   }
 }
 
@@ -256,11 +244,7 @@ export function updateExecutionResults(
   if (success) {
     updateOpportunityStatus(opportunity, OpportunityStatus.EXECUTED);
   } else {
-    updateOpportunityStatus(
-      opportunity,
-      OpportunityStatus.FAILED,
-      'Execution reverted'
-    );
+    updateOpportunityStatus(opportunity, OpportunityStatus.FAILED, 'Execution reverted');
   }
 }
 
@@ -269,11 +253,11 @@ export function updateExecutionResults(
  */
 export function calculateProfitMargin(opportunity: ArbitrageOpportunity): number {
   const profit = opportunity.netProfit ?? opportunity.grossProfit;
-  
+
   if (opportunity.inputAmount > 0) {
     return (profit / opportunity.inputAmount) * 100;
   }
-  
+
   return 0;
 }
 
@@ -319,9 +303,8 @@ export function createArbitrageOpportunity(params: {
   const grossProfit = isCyclic ? expectedOutput - params.inputAmount : 0;
 
   // Calculate profit in basis points
-  const profitBps = params.inputAmount > 0
-    ? Math.floor((grossProfit / params.inputAmount) * 10000)
-    : 0;
+  const profitBps =
+    params.inputAmount > 0 ? Math.floor((grossProfit / params.inputAmount) * 10000) : 0;
 
   // Estimate gas if not provided
   const estimatedGas = params.estimatedGas ?? params.path.length * 150000;

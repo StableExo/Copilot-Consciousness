@@ -40,7 +40,7 @@ describe('Mnemosyne', () => {
         plan: ['Identify the bug', 'Implement fix', 'Test the solution'],
         actions: ['debugged code', 'added tests'],
         keyLearnings: ['learned about bcrypt hashing'],
-        artifactsChanged: ['auth.ts']
+        artifactsChanged: ['auth.ts'],
       });
 
       scribe.record({
@@ -48,11 +48,11 @@ describe('Mnemosyne', () => {
         plan: ['Design API', 'Integrate Stripe', 'Test payments'],
         actions: ['wrote code', 'tested integration'],
         keyLearnings: ['learned about webhook handling'],
-        artifactsChanged: ['payment.ts']
+        artifactsChanged: ['payment.ts'],
       });
 
       const results = mnemosyne.search('authentication bug');
-      
+
       expect(results.length).toBeGreaterThan(0);
       expect(results[0].entry.objective).toContain('authentication');
     });
@@ -63,7 +63,7 @@ describe('Mnemosyne', () => {
         plan: ['Setup OAuth', 'Configure providers'],
         actions: ['implemented OAuth'],
         keyLearnings: ['OAuth best practices'],
-        artifactsChanged: ['oauth.ts']
+        artifactsChanged: ['oauth.ts'],
       });
 
       scribe.record({
@@ -71,11 +71,11 @@ describe('Mnemosyne', () => {
         plan: ['Setup Stripe'],
         actions: ['configured payments'],
         keyLearnings: ['payment handling'],
-        artifactsChanged: ['payment.ts']
+        artifactsChanged: ['payment.ts'],
       });
 
       const results = mnemosyne.search('OAuth authentication');
-      
+
       expect(results.length).toBeGreaterThan(0);
       expect(results[0].entry.objective).toContain('OAuth');
     });
@@ -87,7 +87,7 @@ describe('Mnemosyne', () => {
           plan: ['plan'],
           actions: ['actions'],
           keyLearnings: ['learnings'],
-          artifactsChanged: ['files']
+          artifactsChanged: ['files'],
         });
       }
 
@@ -101,7 +101,7 @@ describe('Mnemosyne', () => {
         plan: ['specific plan'],
         actions: ['specific actions'],
         keyLearnings: ['specific learnings'],
-        artifactsChanged: ['specific.ts']
+        artifactsChanged: ['specific.ts'],
       });
 
       const results = mnemosyne.search('completely different query', { minScore: 0.8 });
@@ -121,7 +121,7 @@ describe('Mnemosyne', () => {
         plan: ['plan'],
         actions: ['actions'],
         keyLearnings: ['learnings'],
-        artifactsChanged: ['files']
+        artifactsChanged: ['files'],
       });
 
       scribe.record({
@@ -129,7 +129,7 @@ describe('Mnemosyne', () => {
         plan: ['plan'],
         actions: ['actions'],
         keyLearnings: ['learnings'],
-        artifactsChanged: ['files']
+        artifactsChanged: ['files'],
       });
 
       const memories = mnemosyne.getAllMemories();
@@ -146,7 +146,7 @@ describe('Mnemosyne', () => {
         plan: ['Setup JWT', 'Add middleware'],
         actions: ['coded auth'],
         keyLearnings: ['JWT best practices'],
-        artifactsChanged: ['auth.ts']
+        artifactsChanged: ['auth.ts'],
       });
 
       scribe.record({
@@ -154,7 +154,7 @@ describe('Mnemosyne', () => {
         plan: ['Configure OAuth'],
         actions: ['integrated OAuth'],
         keyLearnings: ['OAuth flows'],
-        artifactsChanged: ['oauth.ts']
+        artifactsChanged: ['oauth.ts'],
       });
 
       scribe.record({
@@ -162,7 +162,7 @@ describe('Mnemosyne', () => {
         plan: ['Setup Stripe'],
         actions: ['integrated payments'],
         keyLearnings: ['payment processing'],
-        artifactsChanged: ['payment.ts']
+        artifactsChanged: ['payment.ts'],
       });
 
       const authEntry = {
@@ -171,15 +171,15 @@ describe('Mnemosyne', () => {
         plan: ['Review JWT implementation'],
         actions: ['reviewed code'],
         keyLearnings: ['security best practices'],
-        artifactsChanged: ['auth.ts']
+        artifactsChanged: ['auth.ts'],
       };
 
       const related = mnemosyne.findRelated(authEntry, { limit: 2 });
-      
+
       expect(related.length).toBeGreaterThan(0);
       // Should find auth and OAuth related, not payment
-      const objectives = related.map(r => r.entry.objective.toLowerCase());
-      expect(objectives.some(o => o.includes('auth'))).toBe(true);
+      const objectives = related.map((r) => r.entry.objective.toLowerCase());
+      expect(objectives.some((o) => o.includes('auth'))).toBe(true);
     });
   });
 });

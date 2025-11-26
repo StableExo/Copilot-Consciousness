@@ -1,20 +1,20 @@
 /**
  * ProfitabilityCalculator - Enhanced profitability calculations for multi-hop arbitrage
- * 
+ *
  * Accounts for cumulative fees, slippage, and gas costs across all hops.
  * Enhanced version includes flash loan fees, detailed breakdowns, per-token-pair thresholds,
  * and gas cost conversions.
  */
 
-import { 
-  ArbitragePath, 
-  ArbitrageHop, 
+import {
+  ArbitragePath,
+  ArbitrageHop,
   ProfitabilityResult,
   DetailedProfitBreakdown,
   FlashLoanConfig,
   ProfitThresholds,
   PriceOracle,
-  FlashLoanProvider
+  FlashLoanProvider,
 } from './types';
 
 /**
@@ -23,11 +23,11 @@ import {
  * Pairs are alphabetically sorted (e.g., USDC/WETH not WETH/USDC)
  */
 const DEFAULT_THRESHOLDS: ProfitThresholds = {
-  'USDC/WETH': BigInt('50000000000000000000'),   // 50 WETH (18 decimals)
-  'USDT/WETH': BigInt('50000000000000000000'),   // 50 WETH (18 decimals)
-  'USDC/USDT': BigInt('5000000000'),             // 5000 USDC (6 decimals)
-  'WBTC/WETH': BigInt('100000000'),              // 1 WBTC (8 decimals)
-  'DEFAULT': BigInt('10000000000000000000')       // 10 tokens (18 decimals default)
+  'USDC/WETH': BigInt('50000000000000000000'), // 50 WETH (18 decimals)
+  'USDT/WETH': BigInt('50000000000000000000'), // 50 WETH (18 decimals)
+  'USDC/USDT': BigInt('5000000000'), // 5000 USDC (6 decimals)
+  'WBTC/WETH': BigInt('100000000'), // 1 WBTC (8 decimals)
+  DEFAULT: BigInt('10000000000000000000'), // 10 tokens (18 decimals default)
 };
 
 /**
@@ -36,12 +36,12 @@ const DEFAULT_THRESHOLDS: ProfitThresholds = {
 const FLASH_LOAN_CONFIGS: { [key in FlashLoanProvider]: Omit<FlashLoanConfig, 'poolFee'> } = {
   aave: {
     provider: 'aave',
-    feePercentage: 0.0009  // 0.09%
+    feePercentage: 0.0009, // 0.09%
   },
   uniswapv3: {
     provider: 'uniswapv3',
-    feePercentage: 0  // Fee comes from pool fee
-  }
+    feePercentage: 0, // Fee comes from pool fee
+  },
 };
 
 export class ProfitabilityCalculator {
@@ -51,7 +51,7 @@ export class ProfitabilityCalculator {
   private thresholds: ProfitThresholds;
 
   constructor(
-    gasPrice: bigint, 
+    gasPrice: bigint,
     slippageTolerance: number = 0.01,
     priceOracle?: PriceOracle,
     customThresholds?: ProfitThresholds
@@ -70,17 +70,16 @@ export class ProfitabilityCalculator {
     const totalFees = this.calculateTotalFees(path.hops);
     const totalGas = this.calculateTotalGas(path.hops);
     const slippageImpact = this.calculateSlippageImpact(path.hops);
-    
+
     // Adjust profit for slippage
     const adjustedProfit = this.adjustForSlippage(path.estimatedProfit, slippageImpact);
-    
+
     const netProfit = adjustedProfit > totalGas ? adjustedProfit - totalGas : BigInt(0);
     const startAmount = path.hops[0].amountIn;
-    
+
     // Calculate ROI as percentage
-    const roi = startAmount > BigInt(0) 
-      ? Number(netProfit * BigInt(10000) / startAmount) / 100 
-      : 0;
+    const roi =
+      startAmount > BigInt(0) ? Number((netProfit * BigInt(10000)) / startAmount) / 100 : 0;
 
     return {
       profitable: netProfit > BigInt(0),
@@ -89,7 +88,7 @@ export class ProfitabilityCalculator {
       totalGas,
       netProfit,
       roi,
-      slippageImpact
+      slippageImpact,
     };
   }
 
@@ -109,20 +108,20 @@ export class ProfitabilityCalculator {
   ): Promise<ProfitabilityResult> {
     const config = flashLoanConfig || {
       ...FLASH_LOAN_CONFIGS.aave,
-      poolFee: undefined
+      poolFee: undefined,
     };
-    
+
     const breakdown = await this.createDetailedBreakdown(
       path,
       borrowToken,
       borrowTokenDecimals,
       config
     );
-    
+
     // Get threshold for this token pair
     const threshold = this.getThresholdForPair(borrowToken, path.endToken);
     const meetsThreshold = breakdown.netProfit >= threshold;
-    
+
     return {
       profitable: breakdown.profitable,
       estimatedProfit: breakdown.grossProfit,
@@ -132,7 +131,7 @@ export class ProfitabilityCalculator {
       roi: breakdown.roi,
       slippageImpact: this.calculateSlippageImpact(path.hops),
       breakdown,
-      meetsThreshold
+      meetsThreshold,
     };
   }
 
@@ -148,20 +147,20 @@ export class ProfitabilityCalculator {
     const initialAmount = path.hops[0].amountIn;
     const finalAmount = path.hops[path.hops.length - 1].amountOut;
     const grossProfit = finalAmount > initialAmount ? finalAmount - initialAmount : BigInt(0);
-    
+
     // Calculate flash loan fee
     const flashLoanFee = this.calculateFlashLoanFee(initialAmount, flashLoanConfig);
-    
+
     // Calculate swap fees (for informational purposes - already deducted in swap outputs)
     const swapFees = this.calculateSwapFees(path.hops);
-    
+
     // Total fees (flash loan fee is the only additional fee; swap fees already deducted)
     const totalFees = flashLoanFee + swapFees;
-    
+
     // Calculate gas costs
     const gasCostWei = this.calculateTotalGas(path.hops);
     const gasCostInETH = gasCostWei;
-    
+
     // Convert gas cost to borrow token denomination
     let gasCostInToken = BigInt(0);
     if (this.priceOracle) {
@@ -182,16 +181,17 @@ export class ProfitabilityCalculator {
       // Simplified: gasCostInToken ≈ gasCostWei * 3000 / (10^18)
       // For 6-decimal tokens like USDC: gasCostWei * 3000 / 10^12
       const ethToUsd = BigInt(3000);
-      const weiToToken = gasCostWei * ethToUsd / BigInt(10 ** (18 - borrowTokenDecimals));
+      const weiToToken = (gasCostWei * ethToUsd) / BigInt(10 ** (18 - borrowTokenDecimals));
       gasCostInToken = weiToToken;
     }
-    
+
     // Net profit after all costs
     // Note: swap fees are already reflected in finalAmount, so we only subtract flash loan fee and gas
-    const netProfit = grossProfit > (flashLoanFee + gasCostInToken) 
-      ? grossProfit - flashLoanFee - gasCostInToken 
-      : BigInt(0);
-    
+    const netProfit =
+      grossProfit > flashLoanFee + gasCostInToken
+        ? grossProfit - flashLoanFee - gasCostInToken
+        : BigInt(0);
+
     // Convert net profit to native currency (ETH)
     let netProfitNative = BigInt(0);
     if (this.priceOracle && netProfit > BigInt(0)) {
@@ -203,7 +203,7 @@ export class ProfitabilityCalculator {
         18
       );
     }
-    
+
     // Convert net profit to USD
     let netProfitUSD = BigInt(0);
     if (this.priceOracle && netProfit > BigInt(0)) {
@@ -211,20 +211,19 @@ export class ProfitabilityCalculator {
       // netProfitUSD = netProfit * tokenPriceUSD / (10^borrowTokenDecimals)
       netProfitUSD = (netProfit * tokenPriceUSD) / BigInt(10 ** borrowTokenDecimals);
     }
-    
+
     // Calculate profit percentage and ROI
     // Note: profitPercentage and roi are the same value - both represent
     // the percentage return on the initial investment
-    const profitPercentage = initialAmount > BigInt(0)
-      ? Number((netProfit * BigInt(10000)) / initialAmount) / 100
-      : 0;
-    
+    const profitPercentage =
+      initialAmount > BigInt(0) ? Number((netProfit * BigInt(10000)) / initialAmount) / 100 : 0;
+
     const roi = profitPercentage; // ROI and profit percentage are identical
-    
+
     // Check if meets threshold
     const threshold = this.getThresholdForPair(borrowToken, path.endToken);
     const meetsThreshold = netProfit >= threshold;
-    
+
     return {
       initialAmount,
       finalAmount,
@@ -241,7 +240,7 @@ export class ProfitabilityCalculator {
       profitPercentage,
       roi,
       meetsThreshold,
-      profitable: netProfit > BigInt(0)
+      profitable: netProfit > BigInt(0),
     };
   }
 
@@ -273,14 +272,14 @@ export class ProfitabilityCalculator {
    */
   calculateSwapFees(hops: ArbitrageHop[]): bigint {
     let totalFees = BigInt(0);
-    
+
     for (const hop of hops) {
       // Calculate fee for this hop
       // fee = amountIn * fee percentage
       const feeAmount = (hop.amountIn * BigInt(Math.floor(hop.fee * 10000))) / BigInt(10000);
       totalFees += feeAmount;
     }
-    
+
     return totalFees;
   }
 
@@ -294,10 +293,10 @@ export class ProfitabilityCalculator {
     // Normalize token addresses/symbols
     const t1 = this.normalizeTokenSymbol(token1);
     const t2 = this.normalizeTokenSymbol(token2);
-    
+
     // Create pair key (alphabetically sorted)
     const pair = [t1, t2].sort().join('/');
-    
+
     // Return specific threshold or default
     return this.thresholds[pair] || this.thresholds['DEFAULT'] || BigInt(0);
   }
@@ -319,9 +318,9 @@ export class ProfitabilityCalculator {
       '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': 'USDC',
       '0xdac17f958d2ee523a2206206994597c13d831ec7': 'USDT',
       '0x6b175474e89094c44da98b954eedeac495271d0f': 'DAI',
-      '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599': 'WBTC'
+      '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599': 'WBTC',
     };
-    
+
     const normalized = token.toLowerCase();
     return addressToSymbol[normalized] || token.toUpperCase();
   }
@@ -347,25 +346,25 @@ export class ProfitabilityCalculator {
   private calculateSlippageImpact(hops: ArbitrageHop[]): number {
     // Slippage compounds across hops
     let cumulativeSlippage = 0;
-    
+
     for (const hop of hops) {
       let hopSlippage: number;
-      
+
       // Calculate slippage based on reserves if available
       if (hop.reserve0 && hop.reserve0 > BigInt(0)) {
         // Price impact = amountIn / reserve0
         // This is a simplified model; more sophisticated models exist
-        const impact = Number(hop.amountIn * BigInt(10000) / hop.reserve0) / 10000;
+        const impact = Number((hop.amountIn * BigInt(10000)) / hop.reserve0) / 10000;
         hopSlippage = Math.min(impact, 1.0); // Cap at 100%
       } else {
         // Fallback to base slippage if reserves not available
         hopSlippage = 0.001; // 0.1% base slippage per hop
       }
-      
+
       // Compound slippage across hops
-      cumulativeSlippage = cumulativeSlippage + hopSlippage + (cumulativeSlippage * hopSlippage);
+      cumulativeSlippage = cumulativeSlippage + hopSlippage + cumulativeSlippage * hopSlippage;
     }
-    
+
     return cumulativeSlippage;
   }
 
@@ -384,8 +383,8 @@ export class ProfitabilityCalculator {
     if (reserve0 === BigInt(0)) {
       return 1.0; // 100% impact if no liquidity
     }
-    
-    const impact = Number(amountIn * BigInt(10000) / reserve0) / 10000;
+
+    const impact = Number((amountIn * BigInt(10000)) / reserve0) / 10000;
     return Math.min(impact, 1.0);
   }
 
@@ -403,7 +402,7 @@ export class ProfitabilityCalculator {
   comparePathProfitability(path1: ArbitragePath, path2: ArbitragePath): ArbitragePath {
     const profit1 = this.calculateProfitability(path1);
     const profit2 = this.calculateProfitability(path2);
-    
+
     return profit1.netProfit > profit2.netProfit ? path1 : path2;
   }
 

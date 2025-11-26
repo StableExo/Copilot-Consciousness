@@ -32,7 +32,7 @@ describe('Scribe', () => {
         plan: '1. Step one\n2. Step two',
         actions: 'ran tests, committed code',
         keyLearnings: 'learned something important',
-        artifactsChanged: 'file1.ts, file2.ts'
+        artifactsChanged: 'file1.ts, file2.ts',
       });
 
       expect(fs.existsSync(filepath)).toBe(true);
@@ -50,7 +50,7 @@ describe('Scribe', () => {
         plan: ['Step one', 'Step two', 'Step three'],
         actions: ['action1', 'action2'],
         keyLearnings: ['learning1', 'learning2'],
-        artifactsChanged: ['file1.ts', 'file2.ts']
+        artifactsChanged: ['file1.ts', 'file2.ts'],
       });
 
       const content = fs.readFileSync(filepath, 'utf-8');
@@ -67,7 +67,7 @@ describe('Scribe', () => {
         actions: 'actions text',
         keyLearnings: 'learnings text',
         artifactsChanged: 'files text',
-        outcome: 'Successfully completed the task'
+        outcome: 'Successfully completed the task',
       });
 
       const content = fs.readFileSync(filepath, 'utf-8');
@@ -81,18 +81,18 @@ describe('Scribe', () => {
         plan: 'plan',
         actions: 'actions',
         keyLearnings: 'learnings',
-        artifactsChanged: 'files'
+        artifactsChanged: 'files',
       });
 
       // Wait to ensure different timestamp (need at least 1 second for the format)
-      await new Promise(resolve => setTimeout(resolve, 1100));
+      await new Promise((resolve) => setTimeout(resolve, 1100));
 
       const file2 = scribe.record({
         objective: 'Second',
         plan: 'plan',
         actions: 'actions',
         keyLearnings: 'learnings',
-        artifactsChanged: 'files'
+        artifactsChanged: 'files',
       });
 
       expect(file1).not.toBe(file2);
@@ -111,17 +111,17 @@ describe('Scribe', () => {
         plan: 'plan',
         actions: 'actions',
         keyLearnings: 'learnings',
-        artifactsChanged: 'files'
+        artifactsChanged: 'files',
       });
 
-      await new Promise(resolve => setTimeout(resolve, 1100));
+      await new Promise((resolve) => setTimeout(resolve, 1100));
 
       scribe.record({
         objective: 'Second memory',
         plan: 'plan',
         actions: 'actions',
         keyLearnings: 'learnings',
-        artifactsChanged: 'files'
+        artifactsChanged: 'files',
       });
 
       const memories = scribe.listMemories();
@@ -135,18 +135,18 @@ describe('Scribe', () => {
         plan: 'plan',
         actions: 'actions',
         keyLearnings: 'learnings',
-        artifactsChanged: 'files'
+        artifactsChanged: 'files',
       });
 
       // Ensure different timestamp
-      await new Promise(resolve => setTimeout(resolve, 1100));
+      await new Promise((resolve) => setTimeout(resolve, 1100));
 
       const file2 = scribe.record({
         objective: 'Second',
         plan: 'plan',
         actions: 'actions',
         keyLearnings: 'learnings',
-        artifactsChanged: 'files'
+        artifactsChanged: 'files',
       });
 
       const memories = scribe.listMemories();
@@ -163,7 +163,7 @@ describe('Scribe', () => {
         plan: 'plan',
         actions: 'actions',
         keyLearnings: 'learnings',
-        artifactsChanged: 'files'
+        artifactsChanged: 'files',
       });
 
       const filename = path.basename(filepath);

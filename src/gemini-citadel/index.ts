@@ -1,6 +1,6 @@
 /**
  * Gemini Citadel Integration Module
- * 
+ *
  * Provides integration with Google's Gemini AI including:
  * - Standard Gemini API interaction
  * - Citadel Mode for cosmic-scale problem solving

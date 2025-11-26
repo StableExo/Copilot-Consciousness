@@ -21,7 +21,7 @@ export interface DashboardMetrics {
   successfulTrades: number;
   failedTrades: number;
   successRate: number;
-  
+
   // Financial metrics
   totalProfit: string; // bigint as string
   totalLoss: string;
@@ -29,17 +29,17 @@ export interface DashboardMetrics {
   roi: number;
   sharpeRatio: number;
   maxDrawdown: number;
-  
+
   // Performance metrics
   averageExecutionTime: number;
   averageGasCost: string;
-  
+
   // System metrics
   uptime: number;
   latency: number;
   memoryUsage: number;
   errorRate: number;
-  
+
   // Wallet balances
   walletBalances?: WalletBalance[];
 }

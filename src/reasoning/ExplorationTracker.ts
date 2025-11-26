@@ -1,17 +1,12 @@
 /**
  * Exploration Tracker
- * 
+ *
  * Tracks speculative reasoning attempts, records patterns,
  * and learns from failed explorations.
  */
 
 import { generateUUID } from '../utils/uuid';
-import {
-  ExplorationAttempt,
-  ExplorationContext,
-  ExplorationStats,
-  FailurePattern,
-} from './types';
+import { ExplorationAttempt, ExplorationContext, ExplorationStats, FailurePattern } from './types';
 
 export class ExplorationTracker {
   private explorations: Map<string, ExplorationAttempt> = new Map();
@@ -106,19 +101,18 @@ export class ExplorationTracker {
   getStats(): ExplorationStats {
     const explorations = Array.from(this.explorations.values());
     const total = explorations.length;
-    const successful = explorations.filter(e => e.success).length;
-    const failed = explorations.filter(e => !e.success).length;
-    const ethicsViolations = explorations.filter(e => e.ethicsViolation).length;
-    const rolledBack = explorations.filter(e => e.rolledBack).length;
+    const successful = explorations.filter((e) => e.success).length;
+    const failed = explorations.filter((e) => !e.success).length;
+    const ethicsViolations = explorations.filter((e) => e.ethicsViolation).length;
+    const rolledBack = explorations.filter((e) => e.rolledBack).length;
 
-    const completedExplorations = explorations.filter(e => e.endTime);
+    const completedExplorations = explorations.filter((e) => e.endTime);
     const totalDuration = completedExplorations.reduce(
       (sum, e) => sum + ((e.endTime || 0) - e.startTime),
       0
     );
-    const averageDuration = completedExplorations.length > 0
-      ? totalDuration / completedExplorations.length
-      : 0;
+    const averageDuration =
+      completedExplorations.length > 0 ? totalDuration / completedExplorations.length : 0;
 
     return {
       totalExplorations: total,
@@ -136,9 +130,7 @@ export class ExplorationTracker {
    * Get failure patterns
    */
   getFailurePatterns(): FailurePattern[] {
-    return Array.from(this.failurePatterns.values()).sort(
-      (a, b) => b.occurrences - a.occurrences
-    );
+    return Array.from(this.failurePatterns.values()).sort((a, b) => b.occurrences - a.occurrences);
   }
 
   /**
@@ -161,7 +153,7 @@ export class ExplorationTracker {
   getRecentExplorations(timeWindowMs: number): ExplorationAttempt[] {
     const now = Date.now();
     return Array.from(this.explorations.values())
-      .filter(e => now - e.startTime <= timeWindowMs)
+      .filter((e) => now - e.startTime <= timeWindowMs)
       .sort((a, b) => b.startTime - a.startTime);
   }
 
@@ -170,7 +162,7 @@ export class ExplorationTracker {
    */
   getExplorationsByRisk(riskLevel: 'low' | 'medium' | 'high' | 'critical'): ExplorationAttempt[] {
     return Array.from(this.explorations.values())
-      .filter(e => e.context.riskLevel === riskLevel)
+      .filter((e) => e.context.riskLevel === riskLevel)
       .sort((a, b) => b.startTime - a.startTime);
   }
 

@@ -1,16 +1,11 @@
 /**
  * Spatial Reasoning Engine Tests
- * 
+ *
  * Comprehensive test suite for the Spatial Reasoning Engine
  */
 
 import { SpatialReasoningEngine } from '../spatial-reasoning';
-import {
-  ProblemSpace,
-  Node,
-  ConstraintType,
-  Constraint
-} from '../types/problem-space';
+import { ProblemSpace, Node, ConstraintType, Constraint } from '../types/problem-space';
 import { OpportunityType } from '../types/opportunity';
 
 describe('SpatialReasoningEngine', () => {
@@ -32,7 +27,7 @@ describe('SpatialReasoningEngine', () => {
       const customEngine = new SpatialReasoningEngine({
         dimensions: ['x', 'y', 'z'],
         distanceMetric: 'manhattan',
-        clusteringThreshold: 0.5
+        clusteringThreshold: 0.5,
       });
       expect(customEngine).toBeDefined();
     });
@@ -51,9 +46,9 @@ describe('SpatialReasoningEngine', () => {
         dimensions: ['time', 'cost'],
         nodes: [
           { id: 'n1', type: 'solution', properties: {}, position: [1, 2] },
-          { id: 'n2', type: 'solution', properties: {}, position: [3, 4] }
+          { id: 'n2', type: 'solution', properties: {}, position: [3, 4] },
         ],
-        constraints: []
+        constraints: [],
       };
 
       const analysis = engine.analyzeProblem(space);
@@ -72,9 +67,9 @@ describe('SpatialReasoningEngine', () => {
         nodes: [
           { id: 'n1', type: 'solution', properties: {}, position: [1] },
           { id: 'n2', type: 'solution', properties: {}, position: [2] },
-          { id: 'n3', type: 'solution', properties: {}, position: [3] }
+          { id: 'n3', type: 'solution', properties: {}, position: [3] },
         ],
-        constraints: []
+        constraints: [],
       };
 
       const analysis = engine.analyzeProblem(space);
@@ -90,7 +85,7 @@ describe('SpatialReasoningEngine', () => {
         id: 'test_space_3',
         dimensions: ['time'],
         nodes: [],
-        constraints: []
+        constraints: [],
       };
 
       const analysis = engine.analyzeProblem(space);
@@ -104,7 +99,7 @@ describe('SpatialReasoningEngine', () => {
         id: 'test_space_4',
         dimensions: tooManyDimensions,
         nodes: [],
-        constraints: []
+        constraints: [],
       };
 
       expect(() => engine.analyzeProblem(space)).toThrow();
@@ -117,9 +112,9 @@ describe('SpatialReasoningEngine', () => {
         nodes: [
           { id: 'n1', type: 'node', properties: {}, position: [1], connections: ['n2'] },
           { id: 'n2', type: 'node', properties: {}, position: [2], connections: ['n3'] },
-          { id: 'n3', type: 'node', properties: {}, position: [3] }
+          { id: 'n3', type: 'node', properties: {}, position: [3] },
         ],
-        constraints: []
+        constraints: [],
       };
 
       const analysis = engine.analyzeProblem(space);
@@ -141,9 +136,9 @@ describe('SpatialReasoningEngine', () => {
           // Cluster 2
           { id: 'n4', type: 'node', properties: {}, position: [10, 10] },
           { id: 'n5', type: 'node', properties: {}, position: [10.1, 10.1] },
-          { id: 'n6', type: 'node', properties: {}, position: [10.2, 10.2] }
+          { id: 'n6', type: 'node', properties: {}, position: [10.2, 10.2] },
         ],
-        constraints: []
+        constraints: [],
       };
 
       const analysis = engine.analyzeProblem(space);
@@ -157,9 +152,9 @@ describe('SpatialReasoningEngine', () => {
         nodes: [
           { id: 'n1', type: 'node', properties: {}, position: [1] },
           { id: 'n2', type: 'node', properties: {}, position: [2] },
-          { id: 'n3', type: 'node', properties: {}, position: [3] }
+          { id: 'n3', type: 'node', properties: {}, position: [3] },
         ],
-        constraints: []
+        constraints: [],
       };
 
       const analysis = engine.analyzeProblem(space);
@@ -172,7 +167,7 @@ describe('SpatialReasoningEngine', () => {
 
     it('should respect minimum cluster size', () => {
       const smallClusterEngine = new SpatialReasoningEngine({
-        minClusterSize: 5
+        minClusterSize: 5,
       });
 
       const space: ProblemSpace = {
@@ -181,9 +176,9 @@ describe('SpatialReasoningEngine', () => {
         nodes: [
           { id: 'n1', type: 'node', properties: {}, position: [1] },
           { id: 'n2', type: 'node', properties: {}, position: [1.1] },
-          { id: 'n3', type: 'node', properties: {}, position: [1.2] }
+          { id: 'n3', type: 'node', properties: {}, position: [1.2] },
         ],
-        constraints: []
+        constraints: [],
       };
 
       const analysis = smallClusterEngine.analyzeProblem(space);
@@ -201,9 +196,9 @@ describe('SpatialReasoningEngine', () => {
           { id: 'n1', type: 'node', properties: {}, position: [10, 2] },
           { id: 'n2', type: 'node', properties: {}, position: [10.1, 2.1] },
           { id: 'n3', type: 'node', properties: {}, position: [10.2, 2.2] },
-          { id: 'n4', type: 'node', properties: {}, position: [10.3, 2.3] }
+          { id: 'n4', type: 'node', properties: {}, position: [10.3, 2.3] },
         ],
-        constraints: []
+        constraints: [],
       };
 
       const analysis = engine.analyzeProblem(space);
@@ -221,24 +216,22 @@ describe('SpatialReasoningEngine', () => {
           id: `n${i}`,
           type: 'node',
           properties: {},
-          position: [i * 0.1, i * 0.1]
+          position: [i * 0.1, i * 0.1],
         })),
-        constraints: []
+        constraints: [],
       };
 
       const analysis = engine.analyzeProblem(space);
       const opportunities = engine.findOpportunities(analysis);
 
-      const densityOpps = opportunities.filter(
-        opp => opp.type === OpportunityType.EFFICIENCY
-      );
+      const densityOpps = opportunities.filter((opp) => opp.type === OpportunityType.EFFICIENCY);
       // May or may not find depending on clustering threshold
       expect(densityOpps.length).toBeGreaterThanOrEqual(0);
     });
 
     it('should filter opportunities by minimum score', () => {
       const strictEngine = new SpatialReasoningEngine({
-        minOpportunityScore: 0.9
+        minOpportunityScore: 0.9,
       });
 
       const space: ProblemSpace = {
@@ -246,16 +239,16 @@ describe('SpatialReasoningEngine', () => {
         dimensions: ['x'],
         nodes: [
           { id: 'n1', type: 'node', properties: {}, position: [1] },
-          { id: 'n2', type: 'node', properties: {}, position: [2] }
+          { id: 'n2', type: 'node', properties: {}, position: [2] },
         ],
-        constraints: []
+        constraints: [],
       };
 
       const analysis = strictEngine.analyzeProblem(space);
       const opportunities = strictEngine.findOpportunities(analysis);
 
       // All returned opportunities should meet the threshold
-      opportunities.forEach(opp => {
+      opportunities.forEach((opp) => {
         expect(opp.score).toBeGreaterThanOrEqual(0.9);
       });
     });
@@ -268,15 +261,15 @@ describe('SpatialReasoningEngine', () => {
           { id: 'n1', type: 'node', properties: {}, position: [1] },
           { id: 'n2', type: 'node', properties: {}, position: [1.1] },
           { id: 'n3', type: 'node', properties: {}, position: [1.2] },
-          { id: 'n4', type: 'node', properties: {}, position: [1.3] }
+          { id: 'n4', type: 'node', properties: {}, position: [1.3] },
         ],
-        constraints: []
+        constraints: [],
       };
 
       const analysis = engine.analyzeProblem(space);
       const opportunities = engine.findOpportunities(analysis);
 
-      opportunities.forEach(opp => {
+      opportunities.forEach((opp) => {
         expect(opp.id).toBeDefined();
         expect(opp.timestamp).toBeInstanceOf(Date);
         expect(opp.type).toBeDefined();
@@ -293,14 +286,14 @@ describe('SpatialReasoningEngine', () => {
         nodes: [
           { id: 'n1', type: 'node', properties: {}, position: [1, 2] },
           { id: 'n2', type: 'node', properties: {}, position: [2, 4] },
-          { id: 'n3', type: 'node', properties: {}, position: [3, 6] }
+          { id: 'n3', type: 'node', properties: {}, position: [3, 6] },
         ],
-        constraints: []
+        constraints: [],
       };
 
       const patterns = engine.detectPatterns(space);
       expect(Array.isArray(patterns)).toBe(true);
-      
+
       // Perfect correlation should be detected
       if (patterns.length > 0) {
         expect(patterns[0].confidence).toBeGreaterThan(0.7);
@@ -314,13 +307,13 @@ describe('SpatialReasoningEngine', () => {
         nodes: [
           { id: 'n1', type: 'node', properties: {}, position: [1, 10] },
           { id: 'n2', type: 'node', properties: {}, position: [2, 5] },
-          { id: 'n3', type: 'node', properties: {}, position: [3, 8] }
+          { id: 'n3', type: 'node', properties: {}, position: [3, 8] },
         ],
-        constraints: []
+        constraints: [],
       };
 
       const patterns = engine.detectPatterns(space);
-      const strongPatterns = patterns.filter(p => p.confidence > 0.7);
+      const strongPatterns = patterns.filter((p) => p.confidence > 0.7);
       expect(strongPatterns.length).toBe(0);
     });
   });
@@ -331,7 +324,7 @@ describe('SpatialReasoningEngine', () => {
         id: 'test_space_15',
         dimensions: ['x'],
         nodes: [{ id: 'n1', type: 'node', properties: {}, position: [1] }],
-        constraints: []
+        constraints: [],
       };
 
       const initialStats = engine.getStats();
@@ -349,9 +342,9 @@ describe('SpatialReasoningEngine', () => {
           { id: 'n1', type: 'node', properties: {}, position: [0, 0] },
           { id: 'n2', type: 'node', properties: {}, position: [0.1, 0.1] },
           { id: 'n3', type: 'node', properties: {}, position: [0.2, 0.2] },
-          { id: 'n4', type: 'node', properties: {}, position: [0.3, 0.3] }
+          { id: 'n4', type: 'node', properties: {}, position: [0.3, 0.3] },
         ],
-        constraints: []
+        constraints: [],
       };
 
       const initialStats = engine.getStats();
@@ -367,9 +360,9 @@ describe('SpatialReasoningEngine', () => {
         dimensions: ['x'],
         nodes: [
           { id: 'n1', type: 'node', properties: {}, position: [1] },
-          { id: 'n2', type: 'node', properties: {}, position: [2] }
+          { id: 'n2', type: 'node', properties: {}, position: [2] },
         ],
-        constraints: []
+        constraints: [],
       };
 
       const analysis = engine.analyzeProblem(space);

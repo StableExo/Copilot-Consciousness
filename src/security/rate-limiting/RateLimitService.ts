@@ -48,21 +48,21 @@ export class RateLimitService {
 
     // Use Redis sorted set for sliding window
     const multi = this.redis.multi();
-    
+
     // Remove old entries
     multi.zremrangebyscore(key, 0, windowStart);
-    
+
     // Count current requests
     multi.zcard(key);
-    
+
     // Add current request
     multi.zadd(key, now, `${now}-${Math.random()}`);
-    
+
     // Set expiration
     multi.expire(key, Math.ceil(config.windowMs / 1000));
 
     const results = await multi.exec();
-    
+
     if (!results) {
       throw new Error('Redis transaction failed');
     }
@@ -77,7 +77,7 @@ export class RateLimitService {
       allowed,
       remaining,
       resetTime,
-      retryAfter: allowed ? undefined : config.windowMs
+      retryAfter: allowed ? undefined : config.windowMs,
     };
   }
 
@@ -100,7 +100,7 @@ export class RateLimitService {
 
     return {
       count,
-      limit: config.maxRequests
+      limit: config.maxRequests,
     };
   }
 

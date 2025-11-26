@@ -10,7 +10,7 @@ describe('PathPruner', () => {
       minPoolLiquidity: BigInt(100000),
       maxPriceImpactPerHop: 2.0,
       maxCumulativeSlippage: 5.0,
-      minPoolQualityScore: 0.3
+      minPoolQualityScore: 0.3,
     });
   });
 
@@ -24,7 +24,7 @@ describe('PathPruner', () => {
         reserve0: BigInt(10000), // Very low liquidity
         reserve1: BigInt(10000),
         fee: 0.003,
-        gasEstimate: 150000
+        gasEstimate: 150000,
       };
 
       const shouldPrune = pruner.shouldPruneEdge(edge, BigInt(1000));
@@ -40,7 +40,7 @@ describe('PathPruner', () => {
         reserve0: BigInt(1000000), // Good liquidity
         reserve1: BigInt(1000000),
         fee: 0.003,
-        gasEstimate: 150000
+        gasEstimate: 150000,
       };
 
       const shouldPrune = pruner.shouldPruneEdge(edge, BigInt(1000));
@@ -56,7 +56,7 @@ describe('PathPruner', () => {
         reserve0: BigInt(100000),
         reserve1: BigInt(100000),
         fee: 0.003,
-        gasEstimate: 150000
+        gasEstimate: 150000,
       };
 
       // Large trade relative to pool size (will cause high price impact)
@@ -73,7 +73,7 @@ describe('PathPruner', () => {
         reserve0: BigInt(10000),
         reserve1: BigInt(10000),
         fee: 0.003,
-        gasEstimate: 150000
+        gasEstimate: 150000,
       };
 
       pruner.resetStats();
@@ -96,7 +96,7 @@ describe('PathPruner', () => {
           reserve0: BigInt(1000000),
           reserve1: BigInt(1000000),
           fee: 0.1, // Very high fee
-          gasEstimate: 150000
+          gasEstimate: 150000,
         },
         {
           poolAddress: '0x456',
@@ -106,8 +106,8 @@ describe('PathPruner', () => {
           reserve0: BigInt(1000000),
           reserve1: BigInt(1000000),
           fee: 0.1, // Very high fee
-          gasEstimate: 150000
-        }
+          gasEstimate: 150000,
+        },
       ];
 
       const startAmount = BigInt(1000000);
@@ -127,8 +127,8 @@ describe('PathPruner', () => {
           reserve0: BigInt('100000000000000'), // Very large reserves
           reserve1: BigInt('100000000000000'),
           fee: 0.003, // Low fee
-          gasEstimate: 150000
-        }
+          gasEstimate: 150000,
+        },
       ];
 
       const startAmount = BigInt(1000000);
@@ -149,7 +149,7 @@ describe('PathPruner', () => {
         reserve0: BigInt(5000000),
         reserve1: BigInt(5000000), // High liquidity
         fee: 0.003,
-        gasEstimate: 150000
+        gasEstimate: 150000,
       };
 
       const quality = pruner.scorePoolQuality(edge);
@@ -166,7 +166,7 @@ describe('PathPruner', () => {
         reserve0: BigInt(1000000),
         reserve1: BigInt(1000000),
         fee: 0.0004, // Very low fee (Curve)
-        gasEstimate: 180000
+        gasEstimate: 180000,
       };
 
       const quality = pruner.scorePoolQuality(edge);
@@ -182,7 +182,7 @@ describe('PathPruner', () => {
         reserve0: BigInt(1000000),
         reserve1: BigInt(1000000),
         fee: 0.003,
-        gasEstimate: 150000
+        gasEstimate: 150000,
       };
 
       const quality1 = pruner.scorePoolQuality(edge);
@@ -204,8 +204,8 @@ describe('PathPruner', () => {
             amountIn: BigInt(1000000),
             amountOut: BigInt(990000),
             fee: 0.003,
-            gasEstimate: 150000
-          }
+            gasEstimate: 150000,
+          },
         ],
         startToken: '0xToken1',
         endToken: '0xToken1',
@@ -213,7 +213,7 @@ describe('PathPruner', () => {
         totalGasCost: BigInt(500),
         netProfit: BigInt(500),
         totalFees: 0.003,
-        slippageImpact: 0.001
+        slippageImpact: 0.001,
       };
 
       pruner.recordPathFailure(path);
@@ -235,8 +235,8 @@ describe('PathPruner', () => {
             amountIn: BigInt(1000000),
             amountOut: BigInt(990000),
             fee: 0.003,
-            gasEstimate: 150000
-          }
+            gasEstimate: 150000,
+          },
         ],
         startToken: '0xToken1',
         endToken: '0xToken1',
@@ -244,7 +244,7 @@ describe('PathPruner', () => {
         totalGasCost: BigInt(500),
         netProfit: BigInt(500),
         totalFees: 0.003,
-        slippageImpact: 0.001
+        slippageImpact: 0.001,
       };
 
       pruner.recordPathFailure(path);
@@ -262,7 +262,7 @@ describe('PathPruner', () => {
         minPoolLiquidity: BigInt(100000),
         maxPriceImpactPerHop: 1.0, // Stricter
         maxCumulativeSlippage: 2.0,
-        minPoolQualityScore: 0.5
+        minPoolQualityScore: 0.5,
       });
 
       const edge: PoolEdge = {
@@ -273,20 +273,20 @@ describe('PathPruner', () => {
         reserve0: BigInt(100000),
         reserve1: BigInt(100000),
         fee: 0.003,
-        gasEstimate: 150000
+        gasEstimate: 150000,
       };
 
       // Edge that passes medium but fails high aggressiveness
       const shouldPruneHigh = aggressive.shouldPruneEdge(edge, BigInt(2000));
-      
+
       const medium = new PathPruner({
         aggressiveness: 'medium',
         minPoolLiquidity: BigInt(100000),
         maxPriceImpactPerHop: 2.0,
         maxCumulativeSlippage: 5.0,
-        minPoolQualityScore: 0.3
+        minPoolQualityScore: 0.3,
       });
-      
+
       const shouldPruneMedium = medium.shouldPruneEdge(edge, BigInt(2000));
 
       // High aggressiveness should be more likely to prune
@@ -304,7 +304,7 @@ describe('PathPruner', () => {
         reserve0: BigInt(10000),
         reserve1: BigInt(10000),
         fee: 0.003,
-        gasEstimate: 150000
+        gasEstimate: 150000,
       };
 
       pruner.resetStats();
@@ -327,7 +327,7 @@ describe('PathPruner', () => {
         reserve0: BigInt(10000),
         reserve1: BigInt(10000),
         fee: 0.003,
-        gasEstimate: 150000
+        gasEstimate: 150000,
       };
 
       pruner.shouldPruneEdge(edge, BigInt(1000));

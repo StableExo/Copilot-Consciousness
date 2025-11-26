@@ -1,6 +1,6 @@
 /**
  * BridgeManager - Unified bridge protocol integration
- * 
+ *
  * Supports Wormhole, LayerZero, Synapse, Hop Protocol, and Stargate
  * with automatic selection based on fees and speed
  */
@@ -48,7 +48,7 @@ export class BridgeManager {
     this.bridges = new Map();
     this.activeBridges = [];
     this.selectionStrategy = selectionStrategy;
-    
+
     for (const config of bridgeConfigs) {
       if (config.enabled) {
         this.bridges.set(config.name, config);
@@ -70,13 +70,13 @@ export class BridgeManager {
     for (const [name, config] of this.bridges) {
       // Check if bridge supports both chains
       const supported = this.isBridgeSupported(config, fromChain, toChain);
-      
+
       if (!supported) {
         estimates.push({
           bridgeName: name,
           fee: BigInt(0),
           estimatedTime: config.estimatedTime,
-          supported: false
+          supported: false,
         });
         continue;
       }
@@ -87,19 +87,19 @@ export class BridgeManager {
           bridgeName: name,
           fee: BigInt(0),
           estimatedTime: config.estimatedTime,
-          supported: false
+          supported: false,
         });
         continue;
       }
 
       // Estimate fee based on bridge type
       const fee = await this.estimateFeeForBridge(config, amount);
-      
+
       estimates.push({
         bridgeName: name,
         fee,
         estimatedTime: config.estimatedTime,
-        supported: true
+        supported: true,
       });
     }
 
@@ -116,7 +116,7 @@ export class BridgeManager {
     amount: bigint
   ): Promise<BridgeRoute | null> {
     const estimates = await this.estimateBridgeFees(fromChain, toChain, token, amount);
-    const supportedEstimates = estimates.filter(e => e.supported);
+    const supportedEstimates = estimates.filter((e) => e.supported);
 
     if (supportedEstimates.length === 0) {
       return null;
@@ -126,17 +126,17 @@ export class BridgeManager {
 
     switch (this.selectionStrategy) {
       case 'cheapest':
-        selectedEstimate = supportedEstimates.reduce((min, curr) => 
+        selectedEstimate = supportedEstimates.reduce((min, curr) =>
           curr.fee < min.fee ? curr : min
         );
         break;
-      
+
       case 'fastest':
-        selectedEstimate = supportedEstimates.reduce((min, curr) => 
+        selectedEstimate = supportedEstimates.reduce((min, curr) =>
           curr.estimatedTime < min.estimatedTime ? curr : min
         );
         break;
-      
+
       case 'balanced':
       default:
         // Score based on both fee and time
@@ -155,7 +155,7 @@ export class BridgeManager {
       token,
       amount,
       estimatedFee: selectedEstimate.fee,
-      estimatedTime: selectedEstimate.estimatedTime
+      estimatedTime: selectedEstimate.estimatedTime,
     };
   }
 
@@ -177,7 +177,7 @@ export class BridgeManager {
       toChain: route.toChain,
       amount: route.amount,
       timestamp: Date.now(),
-      status: 'pending'
+      status: 'pending',
     };
 
     this.activeBridges.push(transaction);
@@ -187,7 +187,7 @@ export class BridgeManager {
       from: route.fromChain,
       to: route.toChain,
       amount: route.amount.toString(),
-      estimatedTime: route.estimatedTime
+      estimatedTime: route.estimatedTime,
     });
 
     return transaction;
@@ -197,8 +197,8 @@ export class BridgeManager {
    * Track bridge transaction status
    */
   async trackTransaction(txHash: string): Promise<BridgeTransaction | null> {
-    const transaction = this.activeBridges.find(tx => tx.txHash === txHash);
-    
+    const transaction = this.activeBridges.find((tx) => tx.txHash === txHash);
+
     if (!transaction) {
       return null;
     }
@@ -207,7 +207,7 @@ export class BridgeManager {
     // For now, simulate completion after estimated time
     const elapsedTime = (Date.now() - transaction.timestamp) / 1000;
     const config = this.bridges.get(transaction.bridge);
-    
+
     if (config && elapsedTime >= config.estimatedTime) {
       transaction.status = 'completed';
     }
@@ -223,10 +223,10 @@ export class BridgeManager {
     timeoutMs: number = 1800000 // 30 minutes default
   ): Promise<boolean> {
     const startTime = Date.now();
-    
+
     while (Date.now() - startTime < timeoutMs) {
       const transaction = await this.trackTransaction(txHash);
-      
+
       if (!transaction) {
         return false;
       }
@@ -240,7 +240,7 @@ export class BridgeManager {
       }
 
       // Wait before checking again
-      await new Promise(resolve => setTimeout(resolve, 10000)); // Check every 10 seconds
+      await new Promise((resolve) => setTimeout(resolve, 10000)); // Check every 10 seconds
     }
 
     return false; // Timeout
@@ -249,10 +249,7 @@ export class BridgeManager {
   /**
    * Get all supported bridges for a chain pair
    */
-  getSupportedBridges(
-    fromChain: number | string,
-    toChain: number | string
-  ): BridgeConfig[] {
+  getSupportedBridges(fromChain: number | string, toChain: number | string): BridgeConfig[] {
     const supported: BridgeConfig[] = [];
 
     for (const config of this.bridges.values()) {
@@ -272,35 +269,31 @@ export class BridgeManager {
     fromChain: number | string,
     toChain: number | string
   ): boolean {
-    return config.supportedChains.includes(fromChain) &&
-           config.supportedChains.includes(toChain);
+    return config.supportedChains.includes(fromChain) && config.supportedChains.includes(toChain);
   }
 
   /**
    * Estimate fee for a specific bridge
    */
-  private async estimateFeeForBridge(
-    config: BridgeConfig,
-    amount: bigint
-  ): Promise<bigint> {
+  private async estimateFeeForBridge(config: BridgeConfig, amount: bigint): Promise<bigint> {
     // Simplified fee estimation
     // In production, would call bridge APIs
-    
+
     // Base fee as percentage of amount
     const baseFeePercent = 0.001; // 0.1%
     const baseFee = (amount * BigInt(Math.floor(baseFeePercent * 10000))) / BigInt(10000);
-    
+
     // Add fixed fee based on bridge type
     const fixedFees: Record<string, bigint> = {
       wormhole: BigInt(10 ** 17), // 0.1 ETH equivalent
       layerzero: BigInt(5 * 10 ** 16), // 0.05 ETH equivalent
       stargate: BigInt(8 * 10 ** 16), // 0.08 ETH equivalent
       hop: BigInt(15 * 10 ** 16), // 0.15 ETH equivalent
-      synapse: BigInt(12 * 10 ** 16) // 0.12 ETH equivalent
+      synapse: BigInt(12 * 10 ** 16), // 0.12 ETH equivalent
     };
 
     const fixedFee = fixedFees[config.type] || BigInt(10 ** 17);
-    
+
     return baseFee + fixedFee;
   }
 
@@ -310,10 +303,10 @@ export class BridgeManager {
   private calculateBridgeScore(estimate: BridgeFeeEstimate): number {
     // Normalize fee (lower is better)
     const feeScore = 1 / (Number(estimate.fee) / 10 ** 18 + 1);
-    
+
     // Normalize time (lower is better)
     const timeScore = 1 / (estimate.estimatedTime / 3600 + 1);
-    
+
     // Weighted combination (50% fee, 50% time)
     return feeScore * 0.5 + timeScore * 0.5;
   }
@@ -329,7 +322,7 @@ export class BridgeManager {
    * Get all active bridge transactions
    */
   getActiveBridges(): BridgeTransaction[] {
-    return this.activeBridges.filter(tx => tx.status === 'pending');
+    return this.activeBridges.filter((tx) => tx.status === 'pending');
   }
 
   /**
@@ -343,9 +336,9 @@ export class BridgeManager {
   } {
     return {
       totalBridges: this.activeBridges.length,
-      pendingBridges: this.activeBridges.filter(tx => tx.status === 'pending').length,
-      completedBridges: this.activeBridges.filter(tx => tx.status === 'completed').length,
-      failedBridges: this.activeBridges.filter(tx => tx.status === 'failed').length
+      pendingBridges: this.activeBridges.filter((tx) => tx.status === 'pending').length,
+      completedBridges: this.activeBridges.filter((tx) => tx.status === 'completed').length,
+      failedBridges: this.activeBridges.filter((tx) => tx.status === 'failed').length,
     };
   }
 

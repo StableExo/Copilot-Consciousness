@@ -12,7 +12,10 @@ import { TwoFactorService } from './two-factor/TwoFactorService';
 import { RateLimitService } from './rate-limiting/RateLimitService';
 import { IPWhitelistService } from './ip-whitelist/IPWhitelistService';
 import { AuditLogger, AuditLogConfig } from './audit/AuditLogger';
-import { IntrusionDetectionService, IDSConfig } from './intrusion-detection/IntrusionDetectionService';
+import {
+  IntrusionDetectionService,
+  IDSConfig,
+} from './intrusion-detection/IntrusionDetectionService';
 import { SecretsManager, SecretsConfig } from './secrets/SecretsManager';
 import { MultiSigWalletService, MultiSigConfig } from './wallet/MultiSigWalletService';
 import { SecurityMiddleware } from './middleware/authMiddleware';
@@ -49,7 +52,7 @@ export class SecurityManager {
   public idsService: IntrusionDetectionService;
   public secretsManager: SecretsManager;
   public multiSigService?: MultiSigWalletService;
-  
+
   // Middleware
   public middleware: SecurityMiddleware;
 
@@ -62,7 +65,7 @@ export class SecurityManager {
       retryStrategy: (times) => {
         const delay = Math.min(times * 50, 2000);
         return delay;
-      }
+      },
     });
 
     // Initialize services
@@ -108,28 +111,28 @@ export class SecurityManager {
     this.rateLimitService.configureLimit('api', {
       windowMs: 60000, // 1 minute
       maxRequests: 60,
-      keyPrefix: 'ratelimit'
+      keyPrefix: 'ratelimit',
     });
 
     // Authentication endpoints (more restrictive)
     this.rateLimitService.configureLimit('auth', {
       windowMs: 300000, // 5 minutes
       maxRequests: 5,
-      keyPrefix: 'ratelimit'
+      keyPrefix: 'ratelimit',
     });
 
     // Trading endpoints (higher limits for bots)
     this.rateLimitService.configureLimit('trading', {
       windowMs: 1000, // 1 second
       maxRequests: 10,
-      keyPrefix: 'ratelimit'
+      keyPrefix: 'ratelimit',
     });
 
     // Dashboard endpoints
     this.rateLimitService.configureLimit('dashboard', {
       windowMs: 10000, // 10 seconds
       maxRequests: 100,
-      keyPrefix: 'ratelimit'
+      keyPrefix: 'ratelimit',
     });
   }
 
@@ -145,7 +148,7 @@ export class SecurityManager {
     // Intrusion alerts
     this.idsService.on('threat-detected', (alert) => {
       console.error('[SECURITY THREAT]', alert.type, alert.level, alert.ip);
-      
+
       // Could trigger additional actions:
       // - Send notification
       // - Update WAF rules
@@ -183,7 +186,7 @@ export class SecurityManager {
       }
     }
 
-    const healthy = Object.values(services).every(v => v);
+    const healthy = Object.values(services).every((v) => v);
 
     return { healthy, services };
   }
@@ -197,7 +200,7 @@ export class SecurityManager {
   } {
     return {
       audit: this.auditLogger.getStatistics(),
-      threats: this.idsService.getRecentAlerts(50)
+      threats: this.idsService.getRecentAlerts(50),
     };
   }
 
@@ -206,13 +209,13 @@ export class SecurityManager {
    */
   async shutdown(): Promise<void> {
     console.log('[Security] Shutting down...');
-    
+
     // Close Redis connection
     await this.redis.quit();
-    
+
     // Clean up old audit logs
     this.auditLogger.cleanupOldLogs();
-    
+
     console.log('[Security] Shutdown complete');
   }
 }
@@ -227,31 +230,31 @@ export function createDefaultSecurityConfig(): SecurityConfig {
       jwtExpiresIn: '24h',
       apiKeyPrefix: 'arb',
       bcryptRounds: 12,
-      sessionTimeout: 86400000 // 24 hours
+      sessionTimeout: 86400000, // 24 hours
     },
     twoFactor: {
       issuer: 'Arbitrage Bot',
-      window: 2
+      window: 2,
     },
     audit: {
       retentionDays: 2555, // ~7 years
       enableEncryption: true,
-      encryptionKey: process.env.AUDIT_ENCRYPTION_KEY
+      encryptionKey: process.env.AUDIT_ENCRYPTION_KEY,
     },
     ids: {
       bruteForceThreshold: 5,
       bruteForceWindowMs: 300000, // 5 minutes
       autoBlockEnabled: true,
-      autoBlockDurationMs: 3600000 // 1 hour
+      autoBlockDurationMs: 3600000, // 1 hour
     },
     secrets: {
       provider: 'LOCAL_ENCRYPTED' as const,
-      encryptionKey: process.env.SECRETS_ENCRYPTION_KEY
+      encryptionKey: process.env.SECRETS_ENCRYPTION_KEY,
     } as SecretsConfig,
     redis: {
       host: process.env.REDIS_HOST || 'localhost',
       port: parseInt(process.env.REDIS_PORT || '6379'),
-      password: process.env.REDIS_PASSWORD
-    }
+      password: process.env.REDIS_PASSWORD,
+    },
   };
 }

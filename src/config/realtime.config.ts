@@ -1,6 +1,6 @@
 /**
  * Real-Time Monitoring Configuration
- * 
+ *
  * Configuration for WebSocket-based monitoring of DEX liquidity pools
  * and event-driven arbitrage triggers
  */
@@ -189,10 +189,7 @@ export function validateRealtimeConfig(config: RealtimeConfig): boolean {
   // Validate profitability
   if (config.profitability.minProfitPercent < 0 || config.profitability.minProfitPercent > 100)
     return false;
-  if (
-    config.profitability.maxSlippagePercent < 0 ||
-    config.profitability.maxSlippagePercent > 100
-  )
+  if (config.profitability.maxSlippagePercent < 0 || config.profitability.maxSlippagePercent > 100)
     return false;
   if (config.profitability.minProfitAbsolute < 0n) return false;
 

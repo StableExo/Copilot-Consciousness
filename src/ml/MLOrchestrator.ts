@@ -1,6 +1,6 @@
 /**
  * MLOrchestrator - Central orchestrator for ML system
- * 
+ *
  * Coordinates all ML models, provides unified prediction interface,
  * and manages ensemble predictions with confidence scoring.
  */
@@ -41,7 +41,8 @@ export class MLOrchestrator extends EventEmitter {
   private dataCollector: DataCollector;
   private featureExtractor: FeatureExtractor;
   private patternDetector: PatternDetector;
-  private predictionCache: Map<string, { predictions: MLPredictions; timestamp: number }> = new Map();
+  private predictionCache: Map<string, { predictions: MLPredictions; timestamp: number }> =
+    new Map();
   private stats: OrchestratorStats;
 
   // Model loading flags
@@ -58,7 +59,7 @@ export class MLOrchestrator extends EventEmitter {
   constructor(config?: Partial<MLConfig>) {
     super();
     this.config = config ? { ...getMLConfig(), ...config } : getMLConfig();
-    
+
     // Initialize components
     this.dataCollector = new DataCollector(this.config);
     this.featureExtractor = new FeatureExtractor();
@@ -113,7 +114,7 @@ export class MLOrchestrator extends EventEmitter {
     // 1. Load TensorFlow.js LSTM model
     // 2. Load scikit-learn Random Forest via REST API or Python bridge
     // 3. Load GARCH model
-    
+
     // For now, mark as loaded (models will be created when needed)
     this.modelsLoaded.lstm = this.config.models.lstm.enabled;
     this.modelsLoaded.scorer = this.config.models.opportunityScorer.enabled;
@@ -132,7 +133,7 @@ export class MLOrchestrator extends EventEmitter {
       // Check cache
       const cacheKey = this.getCacheKey(path);
       const cached = this.predictionCache.get(cacheKey);
-      
+
       if (cached && Date.now() - cached.timestamp < this.config.inference.cacheTTL) {
         this.updateStats(Date.now() - startTime, true);
         return {
@@ -158,7 +159,7 @@ export class MLOrchestrator extends EventEmitter {
       };
     } catch (error) {
       console.error('[MLOrchestrator] Enhancement error:', error);
-      
+
       // Return path without ML predictions in fallback mode
       if (this.config.inference.fallbackMode === 'skip') {
         return path;
@@ -223,8 +224,8 @@ export class MLOrchestrator extends EventEmitter {
     // In production, this would call the LSTM model
     // For now, return placeholder forecasts
     const horizons = this.config.models.lstm.predictionHorizons;
-    
-    return horizons.map(horizon => ({
+
+    return horizons.map((horizon) => ({
       horizon,
       predictedPrice: 1.0, // Placeholder
       confidence: 0.7,
@@ -309,9 +310,10 @@ export class MLOrchestrator extends EventEmitter {
     };
 
     // Price forecast confidence (average of all horizons)
-    const priceConfidence = priceForecasts.length > 0
-      ? priceForecasts.reduce((sum, f) => sum + f.confidence, 0) / priceForecasts.length
-      : 0.5;
+    const priceConfidence =
+      priceForecasts.length > 0
+        ? priceForecasts.reduce((sum, f) => sum + f.confidence, 0) / priceForecasts.length
+        : 0.5;
 
     // Success probability
     const scorerConfidence = successProbability;
@@ -320,9 +322,8 @@ export class MLOrchestrator extends EventEmitter {
     const volatilityConfidence = Math.max(0, 1 - volatilityForecast.volatility * 10);
 
     // Pattern confidence (best matching pattern)
-    const patternConfidence = patterns.length > 0
-      ? Math.max(...patterns.map(p => p.confidence))
-      : 0.5;
+    const patternConfidence =
+      patterns.length > 0 ? Math.max(...patterns.map((p) => p.confidence)) : 0.5;
 
     // Weighted average
     const confidence =
@@ -357,7 +358,7 @@ export class MLOrchestrator extends EventEmitter {
    */
   private getCacheKey(path: ArbitragePath): string {
     const tokenKey = `${path.startToken}-${path.endToken}`;
-    const hopsKey = path.hops.map(h => h.poolAddress).join('-');
+    const hopsKey = path.hops.map((h) => h.poolAddress).join('-');
     return `${tokenKey}-${hopsKey}`;
   }
 

@@ -8,11 +8,7 @@ import {
   createFlashbotsProtectConfig,
   createMEVShareConfig,
 } from '../PrivateRPCManager';
-import {
-  PrivateRelayType,
-  PrivacyLevel,
-  PrivateRelayConfig,
-} from '../types/PrivateRPCTypes';
+import { PrivateRelayType, PrivacyLevel, PrivateRelayConfig } from '../types/PrivateRPCTypes';
 
 describe('PrivateRPCManager', () => {
   let provider: JsonRpcProvider;
@@ -90,7 +86,7 @@ describe('PrivateRPCManager', () => {
   describe('Flashbots Configuration Helpers', () => {
     it('should create Flashbots Protect config for mainnet', () => {
       const config = createFlashbotsProtectConfig(1);
-      
+
       expect(config.type).toBe(PrivateRelayType.FLASHBOTS_PROTECT);
       expect(config.endpoint).toBe('https://rpc.flashbots.net');
       expect(config.enabled).toBe(true);
@@ -99,13 +95,13 @@ describe('PrivateRPCManager', () => {
 
     it('should create Flashbots Protect config for Goerli', () => {
       const config = createFlashbotsProtectConfig(5);
-      
+
       expect(config.endpoint).toBe('https://rpc-goerli.flashbots.net');
     });
 
     it('should create Flashbots Protect config for Sepolia', () => {
       const config = createFlashbotsProtectConfig(11155111);
-      
+
       expect(config.endpoint).toBe('https://rpc-sepolia.flashbots.net');
     });
 
@@ -115,7 +111,7 @@ describe('PrivateRPCManager', () => {
 
     it('should create MEV-Share config', () => {
       const config = createMEVShareConfig('test-key');
-      
+
       expect(config.type).toBe(PrivateRelayType.MEV_SHARE);
       expect(config.endpoint).toBe('https://relay.flashbots.net');
       expect(config.authKey).toBe('test-key');

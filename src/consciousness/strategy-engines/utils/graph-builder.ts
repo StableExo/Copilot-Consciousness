@@ -1,6 +1,6 @@
 /**
  * Graph Builder Utility
- * 
+ *
  * Utilities for building and manipulating graphs from problem spaces.
  */
 
@@ -32,22 +32,22 @@ export function buildGraph(space: ProblemSpace): Graph {
   const graph: Graph = {
     nodes: new Map(),
     adjacencyList: new Map(),
-    edgeCount: 0
+    edgeCount: 0,
   };
-  
+
   // Add nodes
   for (const node of space.nodes) {
     graph.nodes.set(node.id, node);
     graph.adjacencyList.set(node.id, []);
   }
-  
+
   // Add edges from transitions
   if (space.transitions) {
     for (const transition of space.transitions) {
       addEdge(graph, transition.from, transition.to, transition.cost, transition);
     }
   }
-  
+
   // Add edges from node connections
   for (const node of space.nodes) {
     if (node.connections) {
@@ -58,7 +58,7 @@ export function buildGraph(space: ProblemSpace): Graph {
       }
     }
   }
-  
+
   return graph;
 }
 
@@ -75,11 +75,11 @@ export function addEdge(
   if (!graph.adjacencyList.has(from)) {
     graph.adjacencyList.set(from, []);
   }
-  
+
   const edges = graph.adjacencyList.get(from)!;
-  
+
   // Check if edge already exists
-  const existingEdge = edges.find(e => e.to === to);
+  const existingEdge = edges.find((e) => e.to === to);
   if (existingEdge) {
     existingEdge.weight = weight;
     if (data) existingEdge.data = data;
@@ -94,7 +94,7 @@ export function addEdge(
  */
 export function getNeighbors(graph: Graph, nodeId: string): Node[] {
   const edges = graph.adjacencyList.get(nodeId) || [];
-  return edges.map(edge => graph.nodes.get(edge.to)!).filter(n => n);
+  return edges.map((edge) => graph.nodes.get(edge.to)!).filter((n) => n);
 }
 
 /**
@@ -111,19 +111,19 @@ export function hasPath(graph: Graph, from: string, to: string): boolean {
   if (!graph.nodes.has(from) || !graph.nodes.has(to)) {
     return false;
   }
-  
+
   const visited = new Set<string>();
   const queue: string[] = [from];
-  
+
   while (queue.length > 0) {
     const current = queue.shift();
     if (!current) continue;
-    
+
     if (current === to) return true;
     if (visited.has(current)) continue;
-    
+
     visited.add(current);
-    
+
     const edges = graph.adjacencyList.get(current) || [];
     for (const edge of edges) {
       if (!visited.has(edge.to)) {
@@ -131,7 +131,7 @@ export function hasPath(graph: Graph, from: string, to: string): boolean {
       }
     }
   }
-  
+
   return false;
 }
 
@@ -146,22 +146,22 @@ export function findShortestPath(
   if (!graph.nodes.has(from) || !graph.nodes.has(to)) {
     return null;
   }
-  
+
   const distances = new Map<string, number>();
   const previous = new Map<string, string | null>();
   const unvisited = new Set(graph.nodes.keys());
-  
+
   // Initialize distances
   for (const nodeId of graph.nodes.keys()) {
     distances.set(nodeId, nodeId === from ? 0 : Infinity);
     previous.set(nodeId, null);
   }
-  
+
   while (unvisited.size > 0) {
     // Find unvisited node with minimum distance
     let current: string | null = null;
     let minDist = Infinity;
-    
+
     for (const nodeId of unvisited) {
       const dist = distances.get(nodeId)!;
       if (dist < minDist) {
@@ -169,18 +169,18 @@ export function findShortestPath(
         current = nodeId;
       }
     }
-    
+
     if (current === null || minDist === Infinity) break;
-    
+
     unvisited.delete(current);
-    
+
     if (current === to) break;
-    
+
     // Update distances to neighbors
     const edges = graph.adjacencyList.get(current) || [];
     for (const edge of edges) {
       if (!unvisited.has(edge.to)) continue;
-      
+
       const alt = distances.get(current)! + edge.weight;
       if (alt < distances.get(edge.to)!) {
         distances.set(edge.to, alt);
@@ -188,23 +188,23 @@ export function findShortestPath(
       }
     }
   }
-  
+
   // Reconstruct path
   if (distances.get(to) === Infinity) {
     return null;
   }
-  
+
   const path: string[] = [];
   let current: string | null = to;
-  
+
   while (current !== null) {
     path.unshift(current);
     current = previous.get(current) || null;
   }
-  
+
   return {
     path,
-    distance: distances.get(to)!
+    distance: distances.get(to)!,
   };
 }
 
@@ -215,13 +215,13 @@ export function detectCycle(graph: Graph): string[] | null {
   const visited = new Set<string>();
   const recStack = new Set<string>();
   const path: string[] = [];
-  
+
   function dfs(nodeId: string | undefined): boolean {
     if (!nodeId) return false;
     visited.add(nodeId);
     recStack.add(nodeId);
     path.push(nodeId);
-    
+
     const edges = graph.adjacencyList.get(nodeId) || [];
     for (const edge of edges) {
       if (!visited.has(edge.to)) {
@@ -232,12 +232,12 @@ export function detectCycle(graph: Graph): string[] | null {
         return true;
       }
     }
-    
+
     recStack.delete(nodeId);
     path.pop();
     return false;
   }
-  
+
   for (const nodeId of graph.nodes.keys()) {
     if (!visited.has(nodeId)) {
       if (dfs(nodeId)) {
@@ -245,7 +245,7 @@ export function detectCycle(graph: Graph): string[] | null {
       }
     }
   }
-  
+
   return null;
 }
 
@@ -254,10 +254,10 @@ export function detectCycle(graph: Graph): string[] | null {
  */
 export function calculateConnectivity(graph: Graph): number {
   if (graph.nodes.size === 0) return 0;
-  
+
   const visited = new Set<string>();
   const startNode = graph.nodes.keys().next().value;
-  
+
   function dfs(nodeId: string | undefined) {
     if (!nodeId) return;
     visited.add(nodeId);
@@ -268,8 +268,8 @@ export function calculateConnectivity(graph: Graph): number {
       }
     }
   }
-  
+
   dfs(startNode);
-  
+
   return visited.size / graph.nodes.size;
 }

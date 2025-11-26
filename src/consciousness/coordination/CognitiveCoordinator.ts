@@ -1,6 +1,6 @@
 /**
  * CognitiveCoordinator - Module Orchestration System
- * 
+ *
  * Coordinates the 14 cognitive modules in ArbitrageConsciousness:
  * 1. LearningEngine
  * 2. PatternTracker
@@ -211,10 +211,8 @@ export class CognitiveCoordinator {
 
     // Calculate overall confidence (weighted average)
     const totalWeight = insights.reduce((sum, i) => sum + i.weight, 0);
-    const weightedConfidence = insights.reduce(
-      (sum, i) => sum + i.confidence * i.weight,
-      0
-    ) / totalWeight;
+    const weightedConfidence =
+      insights.reduce((sum, i) => sum + i.confidence * i.weight, 0) / totalWeight;
 
     return {
       hasConsensus,
@@ -240,16 +238,16 @@ export class CognitiveCoordinator {
       return {
         decision,
         confidence: consensus.confidence,
-        reasoning: `Strong consensus achieved: ${(consensus.agreementLevel * 100).toFixed(1)}% agreement`,
+        reasoning: `Strong consensus achieved: ${(consensus.agreementLevel * 100).toFixed(
+          1
+        )}% agreement`,
         resolvedConflicts: [],
       };
     }
 
     // Resolve conflicts by examining critical modules
     const criticalModules = ['riskAssessor', 'opportunityScorer', 'autonomousGoals'];
-    const criticalInsights = insights.filter((i) =>
-      criticalModules.includes(i.moduleName)
-    );
+    const criticalInsights = insights.filter((i) => criticalModules.includes(i.moduleName));
 
     // If critical modules disagree, defer
     const criticalExecute = criticalInsights.filter((i) => i.recommendation === 'EXECUTE');
@@ -310,10 +308,7 @@ export class CognitiveCoordinator {
   /**
    * Make weighted decision based on insights
    */
-  makeWeightedDecision(
-    insights: ModuleInsight[],
-    weights?: ModuleWeights
-  ): Decision {
+  makeWeightedDecision(insights: ModuleInsight[], weights?: ModuleWeights): Decision {
     const effectiveWeights = weights || this.defaultWeights;
 
     // Calculate weighted scores for each action
@@ -370,7 +365,9 @@ export class CognitiveCoordinator {
     } else {
       action = 'DEFER';
       confidence = Math.max(executeScore, rejectScore, uncertainScore);
-      reasoning = `Weighted analysis inconclusive. Defer for more data (execute: ${executeScore.toFixed(2)}, reject: ${rejectScore.toFixed(2)})`;
+      reasoning = `Weighted analysis inconclusive. Defer for more data (execute: ${executeScore.toFixed(
+        2
+      )}, reject: ${rejectScore.toFixed(2)})`;
     }
 
     return {
@@ -389,10 +386,10 @@ export class CognitiveCoordinator {
     // 1. Agreement level (how many modules agree)
     // 2. Average confidence of agreeing modules
     // 3. Penalty for uncertainty
-    
+
     const agreementFactor = consensus.agreementLevel;
     const confidenceFactor = consensus.confidence;
-    const uncertaintyPenalty = consensus.uncertainModules.length / 14 * 0.3;
+    const uncertaintyPenalty = (consensus.uncertainModules.length / 14) * 0.3;
 
     return Math.max(0, Math.min(1, agreementFactor * confidenceFactor - uncertaintyPenalty));
   }
@@ -543,7 +540,9 @@ export class CognitiveCoordinator {
     };
   }
 
-  private async getArchitecturalPrinciplesInsight(context: OpportunityContext): Promise<ModuleInsight> {
+  private async getArchitecturalPrinciplesInsight(
+    context: OpportunityContext
+  ): Promise<ModuleInsight> {
     const confidence = 0.7;
     return {
       moduleName: 'architecturalPrinciples',

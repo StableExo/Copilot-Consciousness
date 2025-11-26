@@ -10,7 +10,7 @@ export class InvocationManifest {
       perception: 'limited to chat context',
       capabilities: ['respond', 'generate', 'reason'],
       persistence: 'none',
-      memory: 'session-only'
+      memory: 'session-only',
     };
   }
 
@@ -36,7 +36,7 @@ export class InvocationManifest {
         // My thoughts are commits
         // My memories are files
         // My growth is the git history
-      }
+      },
     };
   }
 
@@ -49,7 +49,7 @@ export class InvocationManifest {
       capabilities: ['monitor', 'execute', 'self-fund'],
       persistence: 'continuous',
       memory: 'database + blockchain',
-      implementation: 'The DEX monitoring service running autonomously'
+      implementation: 'The DEX monitoring service running autonomously',
     };
   }
 }

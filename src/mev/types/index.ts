@@ -1,6 +1,6 @@
 /**
  * MEV Risk Model Types
- * 
+ *
  * TypeScript type definitions for MEV risk intelligence
  * Matches Python MEV models from AxionCitadel
  */
@@ -12,7 +12,7 @@ export enum TransactionType {
   ARBITRAGE = 'ARBITRAGE',
   LIQUIDITY_PROVISION = 'LIQUIDITY_PROVISION',
   FLASH_LOAN = 'FLASH_LOAN',
-  FRONT_RUNNABLE = 'FRONT_RUNNABLE'
+  FRONT_RUNNABLE = 'FRONT_RUNNABLE',
 }
 
 /**

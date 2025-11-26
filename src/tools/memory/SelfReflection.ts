@@ -1,6 +1,6 @@
 /**
  * Self-Reflection System
- * 
+ *
  * Inspired by the metacognitive practices from StableExo/AGI
  * Provides tools for AI self-analysis and continuous improvement
  */
@@ -54,7 +54,10 @@ After each significant mission, record your reflections to transform experience 
    */
   private normalizeToArray(input: string | string[]): string[] {
     if (typeof input === 'string') {
-      return input.split(/[\n,]+/).map(s => s.trim()).filter(s => s.length > 0);
+      return input
+        .split(/[\n,]+/)
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
     }
     return input;
   }
@@ -67,31 +70,31 @@ After each significant mission, record your reflections to transform experience 
     content += `**Date:** ${reflection.timestamp}\n\n`;
 
     content += '### What Went Well (Successes)\n';
-    reflection.successes.forEach(success => {
+    reflection.successes.forEach((success) => {
       content += `- ${success}\n`;
     });
     content += '\n';
 
     content += '### What Could Be Improved (Failures)\n';
-    reflection.failures.forEach(failure => {
+    reflection.failures.forEach((failure) => {
       content += `- ${failure}\n`;
     });
     content += '\n';
 
     content += '### Root Cause Analysis\n';
-    reflection.rootCauses.forEach(cause => {
+    reflection.rootCauses.forEach((cause) => {
       content += `- ${cause}\n`;
     });
     content += '\n';
 
     content += '### Improvement Strategies\n';
-    reflection.improvements.forEach(improvement => {
+    reflection.improvements.forEach((improvement) => {
       content += `- ${improvement}\n`;
     });
     content += '\n';
 
     content += '### Action Items\n';
-    reflection.actionItems.forEach(action => {
+    reflection.actionItems.forEach((action) => {
       content += `- [ ] ${action}\n`;
     });
     content += '\n';
@@ -103,7 +106,7 @@ After each significant mission, record your reflections to transform experience 
 
   /**
    * Record a reflection entry
-   * 
+   *
    * @param options - Reflection options
    */
   reflect(options: ReflectionOptions): void {
@@ -114,7 +117,7 @@ After each significant mission, record your reflections to transform experience 
       failures: this.normalizeToArray(options.failures),
       rootCauses: this.normalizeToArray(options.rootCauses),
       improvements: this.normalizeToArray(options.improvements),
-      actionItems: this.normalizeToArray(options.actionItems)
+      actionItems: this.normalizeToArray(options.actionItems),
     };
 
     const content = this.formatReflection(entry);
@@ -143,7 +146,7 @@ After each significant mission, record your reflections to transform experience 
     totalActionItems: number;
   } {
     const journal = this.readJournal();
-    
+
     const reflectionMatches = journal.match(/## Reflection:/g);
     const successMatches = journal.match(/### What Went Well[\s\S]*?(?=###|\n---)/g);
     const failureMatches = journal.match(/### What Could Be Improved[\s\S]*?(?=###|\n---)/g);
@@ -151,14 +154,14 @@ After each significant mission, record your reflections to transform experience 
 
     let totalSuccesses = 0;
     if (successMatches) {
-      successMatches.forEach(section => {
+      successMatches.forEach((section) => {
         totalSuccesses += (section.match(/^- /gm) || []).length;
       });
     }
 
     let totalFailures = 0;
     if (failureMatches) {
-      failureMatches.forEach(section => {
+      failureMatches.forEach((section) => {
         totalFailures += (section.match(/^- /gm) || []).length;
       });
     }
@@ -167,7 +170,7 @@ After each significant mission, record your reflections to transform experience 
       totalReflections: reflectionMatches?.length || 0,
       totalSuccesses,
       totalFailures,
-      totalActionItems: actionMatches?.length || 0
+      totalActionItems: actionMatches?.length || 0,
     };
   }
 }

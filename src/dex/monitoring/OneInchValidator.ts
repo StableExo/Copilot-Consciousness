@@ -15,7 +15,7 @@ export class OneInchValidator extends BaseValidator {
     const errors: string[] = [];
 
     const oneInch = this.getDEXConfig();
-    
+
     if (!oneInch) {
       return {
         isHealthy: false,
@@ -49,7 +49,7 @@ export class OneInchValidator extends BaseValidator {
       // Check router contract exists
       const code = await provider.getCode(oneInch.router);
       const isActive = code !== '0x';
-      
+
       components.push({
         name: 'Aggregator Router',
         status: isActive ? 'active' : 'inactive',
@@ -73,12 +73,12 @@ export class OneInchValidator extends BaseValidator {
     } catch (error) {
       const errorMsg = this.handleError(error, 'Error checking 1inch aggregator');
       errors.push(errorMsg);
-      
+
       components.push({
         name: 'Aggregator Protocol',
         status: 'error',
       });
-      
+
       return false;
     }
   }

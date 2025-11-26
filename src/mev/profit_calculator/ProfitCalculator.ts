@@ -1,13 +1,13 @@
 /**
  * ProfitCalculator - MEV-aware profit calculation for arbitrage opportunities
- * 
+ *
  * TypeScript port with Base L2 optimizations
  */
 
 export enum TransactionType {
   ARBITRAGE = 'ARBITRAGE',
   FLASH_LOAN = 'FLASH_LOAN',
-  LIQUIDITY_PROVISION = 'LIQUIDITY_PROVISION'
+  LIQUIDITY_PROVISION = 'LIQUIDITY_PROVISION',
 }
 
 export interface ProfitResult {
@@ -29,7 +29,7 @@ export interface MEVRiskParams {
 
 export class ProfitCalculator {
   private mevRiskParams: MEVRiskParams;
-  
+
   constructor(customParams?: Partial<MEVRiskParams>) {
     this.mevRiskParams = {
       baseRisk: customParams?.baseRisk ?? 0.001,
@@ -38,7 +38,7 @@ export class ProfitCalculator {
       searcherDensityFactor: customParams?.searcherDensityFactor ?? 0.25,
     };
   }
-  
+
   /**
    * Calculate MEV-adjusted profit for an arbitrage opportunity
    */
@@ -52,22 +52,17 @@ export class ProfitCalculator {
   ): ProfitResult {
     // Calculate gross profit
     const grossProfit = revenue - gasCost;
-    
+
     // Calculate MEV risk
-    const mevRisk = this.calculateMEVRisk(
-      txValue,
-      txType,
-      mempoolCongestion,
-      searcherDensity
-    );
-    
+    const mevRisk = this.calculateMEVRisk(txValue, txType, mempoolCongestion, searcherDensity);
+
     // Calculate MEV leakage (expected value lost to frontrunning)
     const mevLeakage = grossProfit * mevRisk;
-    
+
     // Calculate net and adjusted profit
     const netProfit = grossProfit;
     const adjustedProfit = grossProfit - mevLeakage;
-    
+
     return {
       grossProfit,
       gasCost,
@@ -75,10 +70,10 @@ export class ProfitCalculator {
       mevLeakage,
       netProfit,
       adjustedProfit,
-      isProfitable: adjustedProfit > 0
+      isProfitable: adjustedProfit > 0,
     };
   }
-  
+
   /**
    * Calculate MEV risk score using game-theoretic model
    */
@@ -88,22 +83,23 @@ export class ProfitCalculator {
     mempoolCongestion: number,
     searcherDensity: number
   ): number {
-    const { baseRisk, valueSensitivity, congestionFactor, searcherDensityFactor } = this.mevRiskParams;
-    
+    const { baseRisk, valueSensitivity, congestionFactor, searcherDensityFactor } =
+      this.mevRiskParams;
+
     // Get transaction type multiplier
     const typeMultiplier = this.getTransactionTypeMultiplier(txType);
-    
+
     // Calculate composite risk
     const valueTerm = valueSensitivity * Math.log(1 + txValue);
     const congestionTerm = congestionFactor * mempoolCongestion;
     const searcherTerm = searcherDensityFactor * searcherDensity;
-    
+
     const risk = baseRisk + typeMultiplier * (valueTerm + congestionTerm + searcherTerm);
-    
+
     // Clamp to [0, 1] range
     return Math.max(0, Math.min(1, risk));
   }
-  
+
   /**
    * Get multiplier based on transaction type
    */
@@ -119,7 +115,7 @@ export class ProfitCalculator {
         return 1.0;
     }
   }
-  
+
   /**
    * Calculate breakeven gas price for an opportunity
    */
@@ -133,11 +129,11 @@ export class ProfitCalculator {
   ): number {
     const mevRisk = this.calculateMEVRisk(txValue, txType, mempoolCongestion, searcherDensity);
     const adjustedRevenue = revenue * (1 - mevRisk);
-    
+
     // breakeven = adjustedRevenue / gasEstimate
     return gasEstimate > 0 ? adjustedRevenue / gasEstimate : 0;
   }
-  
+
   /**
    * Simulate profit under different congestion scenarios
    */
@@ -148,7 +144,7 @@ export class ProfitCalculator {
     txType: TransactionType = TransactionType.ARBITRAGE
   ): Array<{ congestion: number; profit: ProfitResult }> {
     const scenarios: Array<{ congestion: number; profit: ProfitResult }> = [];
-    
+
     // Test low, medium, high congestion
     for (const congestion of [0.2, 0.5, 0.8]) {
       const profit = this.calculateProfit(
@@ -159,23 +155,23 @@ export class ProfitCalculator {
         congestion,
         0.1 // Fixed searcher density
       );
-      
+
       scenarios.push({ congestion, profit });
     }
-    
+
     return scenarios;
   }
-  
+
   /**
    * Update MEV risk parameters (for calibration)
    */
   updateRiskParams(params: Partial<MEVRiskParams>): void {
     this.mevRiskParams = {
       ...this.mevRiskParams,
-      ...params
+      ...params,
     };
   }
-  
+
   /**
    * Get current risk parameters
    */

@@ -1,6 +1,6 @@
 /**
  * TimeSeriesDB - TimescaleDB integration for historical data storage
- * 
+ *
  * Provides efficient storage and querying for time-series data
  * including metrics, trades, and performance data
  */
@@ -34,11 +34,11 @@ export class TimeSeriesDB {
       // 1. Create a PostgreSQL connection pool
       // 2. Create TimescaleDB extension
       // 3. Create hypertables for time-series data
-      
+
       console.log('Initializing TimescaleDB connection...');
       console.log(`Host: ${this.config.host}:${this.config.port}`);
       console.log(`Database: ${this.config.database}`);
-      
+
       // NOTE: This is a simulated connection for demonstration purposes.
       // In production, implement actual PostgreSQL/TimescaleDB connection using 'pg' library:
       // this.pool = new Pool({
@@ -50,10 +50,10 @@ export class TimeSeriesDB {
       // });
       // await this.pool.query('SELECT 1');
       this.connected = true;
-      
+
       // Create tables if they don't exist
       await this.createTables();
-      
+
       console.log('TimescaleDB initialized successfully (simulated)');
       console.log('Note: Implement actual database connection for production use');
     } catch (error) {
@@ -104,7 +104,7 @@ export class TimeSeriesDB {
     
     SELECT create_hypertable('trades', 'time', if_not_exists => TRUE);
     */
-    
+
     console.log('Tables created/verified');
   }
 
@@ -308,7 +308,7 @@ export class TimeSeriesDB {
         totalTrades: 0,
         avgProfit: '0',
         maxProfit: '0',
-        minProfit: '0'
+        minProfit: '0',
       };
     }
 
@@ -344,7 +344,7 @@ export class TimeSeriesDB {
       totalTrades: 0,
       avgProfit: '0',
       maxProfit: '0',
-      minProfit: '0'
+      minProfit: '0',
     };
   }
 

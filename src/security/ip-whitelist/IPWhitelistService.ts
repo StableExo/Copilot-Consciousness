@@ -41,7 +41,7 @@ export class IPWhitelistService {
     const whitelistEntry: IPWhitelistEntry = {
       ...entry,
       id,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
 
     this.whitelist.set(id, whitelistEntry);
@@ -61,7 +61,7 @@ export class IPWhitelistService {
   isWhitelisted(ip: string): boolean {
     for (const entry of this.whitelist.values()) {
       if (!entry.isActive) continue;
-      
+
       // Check expiration
       if (entry.expiresAt && entry.expiresAt < new Date()) {
         continue;
@@ -85,11 +85,11 @@ export class IPWhitelistService {
 
     // Get geolocation
     const geo = geoip.lookup(ip);
-    
+
     if (!geo) {
       return {
         allowed: false,
-        reason: 'Unable to determine IP location'
+        reason: 'Unable to determine IP location',
       };
     }
 
@@ -98,7 +98,7 @@ export class IPWhitelistService {
       return {
         allowed: false,
         reason: `Access from ${geo.country} is blocked`,
-        country: geo.country
+        country: geo.country,
       };
     }
 
@@ -109,14 +109,14 @@ export class IPWhitelistService {
         allowed: false,
         reason: 'VPN/Proxy detected',
         country: geo.country,
-        isVPN: true
+        isVPN: true,
       };
     }
 
     return {
       allowed: true,
       country: geo.country,
-      city: geo.city
+      city: geo.city,
     };
   }
 
@@ -181,14 +181,10 @@ export class IPWhitelistService {
     // - IPHub (https://iphub.info/)
     // - ProxyCheck.io
     // - IPQualityScore
-    
-    // Check common VPN/datacenter IP ranges (simplified)
-    const knownVPNRanges = [
-      '10.0.0.0/8',
-      '172.16.0.0/12',
-      '192.168.0.0/16'
-    ];
 
-    return knownVPNRanges.some(range => this.ipMatchesCIDR(ip, range));
+    // Check common VPN/datacenter IP ranges (simplified)
+    const knownVPNRanges = ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16'];
+
+    return knownVPNRanges.some((range) => this.ipMatchesCIDR(ip, range));
   }
 }

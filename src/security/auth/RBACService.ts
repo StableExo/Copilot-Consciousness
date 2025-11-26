@@ -25,13 +25,13 @@ export class RBACService {
     }
 
     // Check for wildcard permission (ADMIN has * resource with * actions)
-    const wildcardPerm = rolePermissions.find(p => p.resource === '*');
+    const wildcardPerm = rolePermissions.find((p) => p.resource === '*');
     if (wildcardPerm && wildcardPerm.actions.includes('*')) {
       return true;
     }
 
     // Check specific resource permissions
-    const resourcePerm = rolePermissions.find(p => p.resource === resource);
+    const resourcePerm = rolePermissions.find((p) => p.resource === resource);
     if (!resourcePerm) {
       return false;
     }
@@ -52,7 +52,7 @@ export class RBACService {
    */
   addPermission(role: UserRole, resource: string, actions: string[]): void {
     const rolePermissions = this.permissions.get(role) || [];
-    const existingPerm = rolePermissions.find(p => p.resource === resource);
+    const existingPerm = rolePermissions.find((p) => p.resource === resource);
 
     if (existingPerm) {
       // Merge actions
@@ -75,13 +75,13 @@ export class RBACService {
       // Remove entire resource permission
       this.permissions.set(
         role,
-        rolePermissions.filter(p => p.resource !== resource)
+        rolePermissions.filter((p) => p.resource !== resource)
       );
     } else {
       // Remove specific actions
-      const resourcePerm = rolePermissions.find(p => p.resource === resource);
+      const resourcePerm = rolePermissions.find((p) => p.resource === resource);
       if (resourcePerm) {
-        resourcePerm.actions = resourcePerm.actions.filter(a => !actions.includes(a));
+        resourcePerm.actions = resourcePerm.actions.filter((a) => !actions.includes(a));
       }
     }
   }
@@ -94,7 +94,7 @@ export class RBACService {
       [UserRole.ADMIN]: 4,
       [UserRole.OPERATOR]: 3,
       [UserRole.BOT]: 2,
-      [UserRole.VIEWER]: 1
+      [UserRole.VIEWER]: 1,
     };
 
     return hierarchy[role1] > hierarchy[role2];

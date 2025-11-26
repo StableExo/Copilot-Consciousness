@@ -1,7 +1,7 @@
 /**
  * MempoolCongestionSensor - Real-time mempool congestion score
  * Ported from AxionCitadel's mev_risk_arb/sensors/mempool_congestion.py
- * 
+ *
  * Calculates a 0-1 congestion score based on:
  * 1. Pending transactions ratio
  * 2. Gas usage deviation
@@ -28,11 +28,7 @@ export class MempoolCongestionSensor {
   private weights: CongestionWeights;
   private windowSize: number;
 
-  constructor(
-    provider: Provider,
-    windowSize: number = 5,
-    weights?: Partial<CongestionWeights>
-  ) {
+  constructor(provider: Provider, windowSize: number = 5, weights?: Partial<CongestionWeights>) {
     this.provider = provider;
     this.windowSize = windowSize;
     this.weights = { ...DEFAULT_WEIGHTS, ...weights };

@@ -1,9 +1,9 @@
 /**
  * BlackBoxLogger - Strategic Operational Logger
- * 
+ *
  * Integrated from AxionCitadel's "Conscious Knowledge Loop" architecture.
  * Logs strategic operational data for continuous learning and improvement.
- * 
+ *
  * This logger captures critical operational metrics, decisions, and outcomes
  * that form the foundation for the consciousness system's learning process.
  */
@@ -48,9 +48,7 @@ export class BlackBoxLogger {
     if (autoFlush) {
       // Flush to disk every 30 seconds
       this.flushInterval = setInterval(() => {
-        this.flush().catch((err) =>
-          console.error('Error in auto-flush:', err)
-        );
+        this.flush().catch((err) => console.error('Error in auto-flush:', err));
       }, 30000);
     }
   }
@@ -162,8 +160,7 @@ export class BlackBoxLogger {
     };
 
     logs.forEach((log) => {
-      summary.eventTypes[log.eventType] =
-        (summary.eventTypes[log.eventType] || 0) + 1;
+      summary.eventTypes[log.eventType] = (summary.eventTypes[log.eventType] || 0) + 1;
     });
 
     return summary;

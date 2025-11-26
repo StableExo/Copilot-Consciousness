@@ -1,6 +1,6 @@
 /**
  * DEX Integration Module
- * 
+ *
  * Provides standardized DEX monitoring and integration with the consciousness system
  */
 

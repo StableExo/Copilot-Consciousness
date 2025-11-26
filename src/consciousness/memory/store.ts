@@ -61,8 +61,7 @@ export class InMemoryStore extends MemoryStore {
     if (query.timeRange) {
       results = results.filter(
         (entry) =>
-          entry.timestamp >= query.timeRange!.start &&
-          entry.timestamp <= query.timeRange!.end
+          entry.timestamp >= query.timeRange!.start && entry.timestamp <= query.timeRange!.end
       );
     }
 

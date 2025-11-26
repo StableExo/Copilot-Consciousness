@@ -1,6 +1,6 @@
 /**
  * LongRunningManager.ts - Long-running process management utilities
- * 
+ *
  * Provides robust support for long-running TheWarden operations:
  * - Statistics persistence (save/restore stats across restarts)
  * - Memory usage tracking and leak detection
@@ -23,25 +23,25 @@ export interface WardenRuntimeStats {
   sessionId: string;
   startTime: number;
   lastUpdateTime: number;
-  
+
   // Performance metrics
   cyclesCompleted: number;
   opportunitiesFound: number;
   tradesExecuted: number;
   totalProfit: string; // Stored as string for BigInt serialization
   errors: number;
-  
+
   // Uptime tracking
   totalUptimeMs: number;
   sessionUptimeMs: number;
   restartCount: number;
   lastRestartReason?: string;
-  
+
   // Memory tracking
   peakMemoryUsage: number;
   avgMemoryUsage: number;
   memorySnapshots: number;
-  
+
   // Health metrics
   consecutiveHealthyChecks: number;
   lastHealthCheckTime: number;
@@ -73,9 +73,9 @@ export interface UptimeInfo {
  * Heartbeat configuration
  */
 export interface HeartbeatConfig {
-  interval: number;           // Heartbeat interval in ms (default: 30s)
-  timeout: number;            // Timeout before considering process unhealthy (default: 90s)
-  maxMissedBeats: number;     // Max missed heartbeats before alert (default: 3)
+  interval: number; // Heartbeat interval in ms (default: 30s)
+  timeout: number; // Timeout before considering process unhealthy (default: 90s)
+  maxMissedBeats: number; // Max missed heartbeats before alert (default: 3)
 }
 
 /**
@@ -85,16 +85,16 @@ interface InternalConfig {
   // Persistence
   statsFilePath?: string;
   persistInterval: number;
-  
+
   // Memory monitoring
   memoryCheckInterval: number;
   memoryWarningThreshold: number;
   memoryCriticalThreshold: number;
   memoryHistorySize: number;
-  
+
   // Heartbeat (always required internally)
   heartbeat: HeartbeatConfig;
-  
+
   // Logging
   logStatsInterval: number;
 }
@@ -106,16 +106,16 @@ export interface LongRunningManagerConfig {
   // Persistence
   statsFilePath?: string;
   persistInterval?: number;
-  
+
   // Memory monitoring
   memoryCheckInterval?: number;
   memoryWarningThreshold?: number;
   memoryCriticalThreshold?: number;
   memoryHistorySize?: number;
-  
+
   // Heartbeat (optional, uses defaults if not provided)
   heartbeat?: Partial<HeartbeatConfig>;
-  
+
   // Logging
   logStatsInterval?: number;
 }
@@ -140,7 +140,7 @@ const DEFAULT_CONFIG: InternalConfig = {
 
 /**
  * Long Running Manager
- * 
+ *
  * Manages long-running TheWarden processes with:
  * - Statistics persistence for recovery after restarts
  * - Memory monitoring and leak detection
@@ -159,30 +159,33 @@ export class LongRunningManager extends EventEmitter {
 
   constructor(config?: LongRunningManagerConfig) {
     super();
-    
+
     // Build internal config with all required fields
     this.config = {
       statsFilePath: config?.statsFilePath ?? DEFAULT_CONFIG.statsFilePath,
       persistInterval: config?.persistInterval ?? DEFAULT_CONFIG.persistInterval,
       memoryCheckInterval: config?.memoryCheckInterval ?? DEFAULT_CONFIG.memoryCheckInterval,
-      memoryWarningThreshold: config?.memoryWarningThreshold ?? DEFAULT_CONFIG.memoryWarningThreshold,
-      memoryCriticalThreshold: config?.memoryCriticalThreshold ?? DEFAULT_CONFIG.memoryCriticalThreshold,
+      memoryWarningThreshold:
+        config?.memoryWarningThreshold ?? DEFAULT_CONFIG.memoryWarningThreshold,
+      memoryCriticalThreshold:
+        config?.memoryCriticalThreshold ?? DEFAULT_CONFIG.memoryCriticalThreshold,
       memoryHistorySize: config?.memoryHistorySize ?? DEFAULT_CONFIG.memoryHistorySize,
       heartbeat: {
         interval: config?.heartbeat?.interval ?? DEFAULT_CONFIG.heartbeat.interval,
         timeout: config?.heartbeat?.timeout ?? DEFAULT_CONFIG.heartbeat.timeout,
-        maxMissedBeats: config?.heartbeat?.maxMissedBeats ?? DEFAULT_CONFIG.heartbeat.maxMissedBeats,
+        maxMissedBeats:
+          config?.heartbeat?.maxMissedBeats ?? DEFAULT_CONFIG.heartbeat.maxMissedBeats,
       },
       logStatsInterval: config?.logStatsInterval ?? DEFAULT_CONFIG.logStatsInterval,
     };
-    
+
     // Determine stats file path
-    this.statsFilePath = this.config.statsFilePath || 
-      path.join(process.cwd(), 'logs', 'warden-stats.json');
-    
+    this.statsFilePath =
+      this.config.statsFilePath || path.join(process.cwd(), 'logs', 'warden-stats.json');
+
     // Initialize stats (will be overwritten if loaded from disk)
     this.stats = this.createEmptyStats();
-    
+
     logger.info('[LongRunningManager] Initialized');
   }
 
@@ -230,15 +233,15 @@ export class LongRunningManager extends EventEmitter {
     }
 
     logger.info('[LongRunningManager] Starting long-running process manager...');
-    
+
     // Try to load persisted stats
     await this.loadStats();
-    
+
     // Update session info
     this.stats.sessionId = this.generateSessionId();
     this.stats.startTime = Date.now();
     this.stats.restartCount++;
-    
+
     this.isRunning = true;
 
     // Start memory monitoring
@@ -249,7 +252,7 @@ export class LongRunningManager extends EventEmitter {
 
     // Start stats persistence
     const persistInterval = setInterval(() => {
-      this.persistStats().catch(err => {
+      this.persistStats().catch((err) => {
         logger.error(`[LongRunningManager] Failed to persist stats: ${err}`);
       });
     }, this.config.persistInterval);
@@ -273,7 +276,7 @@ export class LongRunningManager extends EventEmitter {
     logger.info('[LongRunningManager] Long-running process manager started');
     logger.info(`[LongRunningManager] Session ID: ${this.stats.sessionId}`);
     logger.info(`[LongRunningManager] Total restarts: ${this.stats.restartCount}`);
-    
+
     if (this.stats.totalUptimeMs > 0) {
       const totalUptimeHours = (this.stats.totalUptimeMs / 3600000).toFixed(2);
       logger.info(`[LongRunningManager] Total uptime (all sessions): ${totalUptimeHours} hours`);
@@ -291,9 +294,9 @@ export class LongRunningManager extends EventEmitter {
     }
 
     logger.info('[LongRunningManager] Stopping long-running process manager...');
-    
+
     this.isRunning = false;
-    
+
     // Clear all intervals
     for (const interval of this.intervals) {
       clearInterval(interval);
@@ -310,12 +313,16 @@ export class LongRunningManager extends EventEmitter {
     await this.persistStats();
 
     logger.info('[LongRunningManager] Long-running process manager stopped');
-    logger.info(`[LongRunningManager] Session uptime: ${(this.stats.sessionUptimeMs / 1000).toFixed(0)} seconds`);
-    
-    this.emit('stopped', { 
+    logger.info(
+      `[LongRunningManager] Session uptime: ${(this.stats.sessionUptimeMs / 1000).toFixed(
+        0
+      )} seconds`
+    );
+
+    this.emit('stopped', {
       sessionId: this.stats.sessionId,
       uptime: this.stats.sessionUptimeMs,
-      reason 
+      reason,
     });
   }
 
@@ -334,19 +341,23 @@ export class LongRunningManager extends EventEmitter {
   private checkHeartbeat(): void {
     const now = Date.now();
     const timeSinceLastBeat = now - this.lastHeartbeat;
-    
+
     if (timeSinceLastBeat > this.config.heartbeat.timeout) {
       this.missedHeartbeats++;
-      
-      logger.warn(`[LongRunningManager] Heartbeat timeout! ${timeSinceLastBeat}ms since last beat (missed: ${this.missedHeartbeats})`);
-      
+
+      logger.warn(
+        `[LongRunningManager] Heartbeat timeout! ${timeSinceLastBeat}ms since last beat (missed: ${this.missedHeartbeats})`
+      );
+
       this.emit('heartbeat-timeout', {
         timeSinceLastBeat,
         missedBeats: this.missedHeartbeats,
       });
-      
+
       if (this.missedHeartbeats >= this.config.heartbeat.maxMissedBeats) {
-        logger.error('[LongRunningManager] Too many missed heartbeats! Process may be unresponsive.');
+        logger.error(
+          '[LongRunningManager] Too many missed heartbeats! Process may be unresponsive.'
+        );
         this.emit('heartbeat-critical', {
           missedBeats: this.missedHeartbeats,
         });
@@ -362,7 +373,7 @@ export class LongRunningManager extends EventEmitter {
     const heapUsedMB = memUsage.heapUsed / 1024 / 1024;
     const heapTotalMB = memUsage.heapTotal / 1024 / 1024;
     const rssMB = memUsage.rss / 1024 / 1024;
-    
+
     // Create snapshot
     const snapshot: MemorySnapshot = {
       timestamp: Date.now(),
@@ -371,46 +382,54 @@ export class LongRunningManager extends EventEmitter {
       external: memUsage.external,
       rss: memUsage.rss,
     };
-    
+
     this.memoryHistory.push(snapshot);
-    
+
     // Trim history
     while (this.memoryHistory.length > this.config.memoryHistorySize) {
       this.memoryHistory.shift();
     }
-    
+
     // Update stats
     this.stats.memorySnapshots++;
     if (memUsage.heapUsed > this.stats.peakMemoryUsage) {
       this.stats.peakMemoryUsage = memUsage.heapUsed;
     }
-    
+
     // Calculate average
     const totalHeapUsed = this.memoryHistory.reduce((sum, s) => sum + s.heapUsed, 0);
     this.stats.avgMemoryUsage = totalHeapUsed / this.memoryHistory.length;
-    
+
     // Check thresholds
     const heapPercentage = (memUsage.heapUsed / memUsage.heapTotal) * 100;
-    
+
     if (heapPercentage >= this.config.memoryCriticalThreshold) {
-      logger.error(`[LongRunningManager] CRITICAL: Memory usage at ${heapPercentage.toFixed(1)}% (${heapUsedMB.toFixed(1)}MB / ${heapTotalMB.toFixed(1)}MB)`);
+      logger.error(
+        `[LongRunningManager] CRITICAL: Memory usage at ${heapPercentage.toFixed(
+          1
+        )}% (${heapUsedMB.toFixed(1)}MB / ${heapTotalMB.toFixed(1)}MB)`
+      );
       this.emit('memory-critical', {
         heapUsed: memUsage.heapUsed,
         heapTotal: memUsage.heapTotal,
         percentage: heapPercentage,
       });
     } else if (heapPercentage >= this.config.memoryWarningThreshold) {
-      logger.warn(`[LongRunningManager] WARNING: Memory usage at ${heapPercentage.toFixed(1)}% (${heapUsedMB.toFixed(1)}MB / ${heapTotalMB.toFixed(1)}MB)`);
+      logger.warn(
+        `[LongRunningManager] WARNING: Memory usage at ${heapPercentage.toFixed(
+          1
+        )}% (${heapUsedMB.toFixed(1)}MB / ${heapTotalMB.toFixed(1)}MB)`
+      );
       this.emit('memory-warning', {
         heapUsed: memUsage.heapUsed,
         heapTotal: memUsage.heapTotal,
         percentage: heapPercentage,
       });
     }
-    
+
     // Check for potential memory leak
     this.detectMemoryLeak();
-    
+
     this.emit('memory-check', snapshot);
   }
 
@@ -421,20 +440,24 @@ export class LongRunningManager extends EventEmitter {
     if (this.memoryHistory.length < 10) {
       return; // Need enough data points
     }
-    
+
     // Calculate trend over last 10 samples
     const recentHistory = this.memoryHistory.slice(-10);
     const firstHalf = recentHistory.slice(0, 5);
     const secondHalf = recentHistory.slice(5);
-    
+
     const firstAvg = firstHalf.reduce((sum, s) => sum + s.heapUsed, 0) / firstHalf.length;
     const secondAvg = secondHalf.reduce((sum, s) => sum + s.heapUsed, 0) / secondHalf.length;
-    
+
     // If memory increased by more than 20% in the last 10 samples, warn
     const increasePercent = ((secondAvg - firstAvg) / firstAvg) * 100;
-    
+
     if (increasePercent > 20) {
-      logger.warn(`[LongRunningManager] Potential memory leak detected: ${increasePercent.toFixed(1)}% increase over last ${recentHistory.length} samples`);
+      logger.warn(
+        `[LongRunningManager] Potential memory leak detected: ${increasePercent.toFixed(
+          1
+        )}% increase over last ${recentHistory.length} samples`
+      );
       this.emit('memory-leak-warning', {
         increasePercent,
         firstAvg,
@@ -455,12 +478,12 @@ export class LongRunningManager extends EventEmitter {
       } catch {
         await fsPromises.mkdir(dir, { recursive: true });
       }
-      
+
       try {
         await fsPromises.access(this.statsFilePath);
         const data = await fsPromises.readFile(this.statsFilePath, 'utf-8');
         const loaded = JSON.parse(data) as WardenRuntimeStats;
-        
+
         // Merge with current stats (preserve cumulative values)
         this.stats.totalUptimeMs = loaded.totalUptimeMs || 0;
         this.stats.restartCount = loaded.restartCount || 0;
@@ -470,7 +493,7 @@ export class LongRunningManager extends EventEmitter {
         this.stats.totalProfit = loaded.totalProfit || '0';
         this.stats.errors = loaded.errors || 0;
         this.stats.peakMemoryUsage = loaded.peakMemoryUsage || 0;
-        
+
         logger.info('[LongRunningManager] Loaded persisted stats from disk');
         logger.info(`[LongRunningManager] Previous session: ${loaded.sessionId}`);
       } catch {
@@ -494,14 +517,14 @@ export class LongRunningManager extends EventEmitter {
       } catch {
         await fsPromises.mkdir(dir, { recursive: true });
       }
-      
+
       // Update session uptime before persisting
       this.stats.sessionUptimeMs = Date.now() - this.stats.startTime;
       this.stats.lastUpdateTime = Date.now();
-      
+
       const data = JSON.stringify(this.stats, null, 2);
       await fsPromises.writeFile(this.statsFilePath, data, 'utf-8');
-      
+
       this.emit('stats-persisted', { path: this.statsFilePath });
     } catch (error) {
       logger.error(`[LongRunningManager] Failed to persist stats: ${error}`);
@@ -517,13 +540,17 @@ export class LongRunningManager extends EventEmitter {
     const uptimeHours = uptimeMs / 3600000;
     const memUsage = process.memoryUsage();
     const heapUsedMB = memUsage.heapUsed / 1024 / 1024;
-    
+
     logger.info('═══════════════════════════════════════════════════════════');
     logger.info('[LongRunningManager] STATUS REPORT');
     logger.info('═══════════════════════════════════════════════════════════');
     logger.info(`Session ID: ${this.stats.sessionId}`);
     logger.info(`Session Uptime: ${uptimeHours.toFixed(2)} hours`);
-    logger.info(`Total Uptime (all sessions): ${((this.stats.totalUptimeMs + uptimeMs) / 3600000).toFixed(2)} hours`);
+    logger.info(
+      `Total Uptime (all sessions): ${((this.stats.totalUptimeMs + uptimeMs) / 3600000).toFixed(
+        2
+      )} hours`
+    );
     logger.info(`Restart Count: ${this.stats.restartCount}`);
     logger.info(`Cycles Completed: ${this.stats.cyclesCompleted}`);
     logger.info(`Opportunities Found: ${this.stats.opportunitiesFound}`);
@@ -537,13 +564,15 @@ export class LongRunningManager extends EventEmitter {
   /**
    * Update runtime stats
    */
-  updateStats(updates: Partial<{
-    cyclesCompleted: number;
-    opportunitiesFound: number;
-    tradesExecuted: number;
-    totalProfit: bigint;
-    errors: number;
-  }>): void {
+  updateStats(
+    updates: Partial<{
+      cyclesCompleted: number;
+      opportunitiesFound: number;
+      tradesExecuted: number;
+      totalProfit: bigint;
+      errors: number;
+    }>
+  ): void {
     if (updates.cyclesCompleted !== undefined) {
       this.stats.cyclesCompleted = updates.cyclesCompleted;
     }
@@ -559,7 +588,7 @@ export class LongRunningManager extends EventEmitter {
     if (updates.errors !== undefined) {
       this.stats.errors = updates.errors;
     }
-    
+
     this.stats.lastUpdateTime = Date.now();
   }
 
@@ -569,7 +598,7 @@ export class LongRunningManager extends EventEmitter {
   updateHealthStatus(status: 'healthy' | 'degraded' | 'unhealthy'): void {
     this.stats.lastHealthStatus = status;
     this.stats.lastHealthCheckTime = Date.now();
-    
+
     if (status === 'healthy') {
       this.stats.consecutiveHealthyChecks++;
     } else {
@@ -600,7 +629,7 @@ export class LongRunningManager extends EventEmitter {
   isHealthy(): boolean {
     const now = Date.now();
     const timeSinceLastBeat = now - this.lastHeartbeat;
-    
+
     return (
       this.isRunning &&
       timeSinceLastBeat < this.config.heartbeat.timeout &&

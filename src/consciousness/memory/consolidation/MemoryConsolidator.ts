@@ -1,6 +1,6 @@
 /**
  * MemoryConsolidator - Sleep-like Memory Processing
- * 
+ *
  * Consolidates short-term memories to long-term storage,
  * similar to human sleep cycles. Strengthens important memories,
  * builds associations, and prunes irrelevant information.
@@ -72,7 +72,7 @@ export class MemoryConsolidator {
   private consolidationHistory: ConsolidationResult[] = [];
   private isConsolidating: boolean = false;
   private backgroundInterval: NodeJS.Timeout | null = null;
-  
+
   // Consolidation parameters
   private params = {
     importanceThreshold: 0.5,
@@ -264,14 +264,12 @@ export class MemoryConsolidator {
     strength += temporalScore * 0.3;
 
     // Shared metadata
-    const sharedKeys = Object.keys(memory1.metadata).filter(key =>
-      key in memory2.metadata &&
-      memory1.metadata[key] === memory2.metadata[key]
+    const sharedKeys = Object.keys(memory1.metadata).filter(
+      (key) => key in memory2.metadata && memory1.metadata[key] === memory2.metadata[key]
     );
-    const metadataScore = sharedKeys.length / Math.max(
-      Object.keys(memory1.metadata).length,
-      Object.keys(memory2.metadata).length
-    );
+    const metadataScore =
+      sharedKeys.length /
+      Math.max(Object.keys(memory1.metadata).length, Object.keys(memory2.metadata).length);
     strength += metadataScore * 0.4;
 
     // Importance correlation
@@ -296,17 +294,12 @@ export class MemoryConsolidator {
     }
 
     // Check metadata for causal indicators
-    if (
-      memory1.metadata.causedBy === memory2.id ||
-      memory2.metadata.causedBy === memory1.id
-    ) {
+    if (memory1.metadata.causedBy === memory2.id || memory2.metadata.causedBy === memory1.id) {
       return 'causal';
     }
 
     // Check for emotional markers
-    if (
-      memory1.metadata.emotional || memory2.metadata.emotional
-    ) {
+    if (memory1.metadata.emotional || memory2.metadata.emotional) {
       return 'emotional';
     }
 
@@ -368,7 +361,7 @@ export class MemoryConsolidator {
     const accessScore = Math.min(1, memory.accessCount / 10);
     const importanceScore = memory.importance;
 
-    return (ageDecay * 0.3 + accessScore * 0.3 + importanceScore * 0.4);
+    return ageDecay * 0.3 + accessScore * 0.3 + importanceScore * 0.4;
   }
 
   /**

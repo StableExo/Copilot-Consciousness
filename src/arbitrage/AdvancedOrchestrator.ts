@@ -1,6 +1,6 @@
 /**
  * AdvancedOrchestrator - Enhanced orchestrator with advanced pathfinding
- * 
+ *
  * Extends ArbitrageOrchestrator with support for multiple strategies,
  * path caching, pruning, and enhanced slippage calculations
  */
@@ -71,59 +71,64 @@ export class AdvancedOrchestrator {
   private registry: DEXRegistry;
   private config: AdvancedOrchestratorConfig;
   private basicOrchestrator: ArbitrageOrchestrator;
-  
+
   // Advanced components
   private advancedPathFinder: AdvancedPathFinder | null = null;
   private pathPruner: PathPruner | null = null;
   private pathCache: PathCache | null = null;
   private slippageCalculator: EnhancedSlippageCalculator | null = null;
   private patternDetector: ArbitragePatterns | null = null;
-  
+
   private profitCalculator: ProfitabilityCalculator;
   private dataFetcher: MultiHopDataFetcher;
   private mode: OrchestratorMode = 'polling';
 
-  constructor(registry: DEXRegistry, config: AdvancedOrchestratorConfig, chainId?: number, poolDataStore?: PoolDataStore) {
+  constructor(
+    registry: DEXRegistry,
+    config: AdvancedOrchestratorConfig,
+    chainId?: number,
+    poolDataStore?: PoolDataStore
+  ) {
     this.registry = registry;
     this.config = config;
-    
+
     // Initialize basic orchestrator for fallback
     const basicConfig: PathfindingConfig = {
       maxHops: config.pathfinding.maxHops,
       minProfitThreshold: config.pathfinding.minProfitThreshold,
       maxSlippage: config.pathfinding.maxSlippage,
-      gasPrice: config.pathfinding.gasPrice
+      gasPrice: config.pathfinding.gasPrice,
     };
-    
+
     this.basicOrchestrator = new ArbitrageOrchestrator(
       registry,
       basicConfig,
       config.pathfinding.gasPrice
     );
-    
+
     this.profitCalculator = new ProfitabilityCalculator(config.pathfinding.gasPrice);
     this.dataFetcher = new MultiHopDataFetcher(registry, chainId, poolDataStore);
-    
+
     // Initialize advanced components if enabled
     if (config.enableAdvancedFeatures) {
       this.initializeAdvancedComponents();
     }
   }
-  
+
   /**
    * Set the chain ID for filtering DEXes
    */
   setChainId(chainId: number): void {
     this.dataFetcher.setChainId(chainId);
   }
-  
+
   /**
    * Load preloaded pool data from disk cache
    */
   async loadPreloadedData(chainId?: number): Promise<boolean> {
     return this.dataFetcher.loadPreloadedData(chainId);
   }
-  
+
   /**
    * Get DEXes for a specific network
    */
@@ -149,15 +154,16 @@ export class AdvancedOrchestrator {
 
     // Fetch pool data and build graph
     const edges = await this.dataFetcher.buildGraphEdges(tokens);
-    
+
     // Apply pruning if enabled
-    const filteredEdges = this.pathPruner && this.config.pruning.aggressiveness !== 'low'
-      ? this.pruneEdges(edges, startAmount)
-      : edges;
+    const filteredEdges =
+      this.pathPruner && this.config.pruning.aggressiveness !== 'low'
+        ? this.pruneEdges(edges, startAmount)
+        : edges;
 
     // Use advanced pathfinder if available
     let paths: ArbitragePath[] = [];
-    
+
     if (this.advancedPathFinder && this.config.enableAdvancedFeatures) {
       // Clear and rebuild graph
       this.advancedPathFinder.clear();
@@ -186,7 +192,7 @@ export class AdvancedOrchestrator {
     }
 
     // Filter by profitability with enhanced calculations
-    const profitablePaths = paths.filter(path => 
+    const profitablePaths = paths.filter((path) =>
       this.profitCalculator.isProfitable(path, this.config.pathfinding.minProfitThreshold)
     );
 
@@ -221,9 +227,9 @@ export class AdvancedOrchestrator {
     if (this.advancedPathFinder) {
       const originalStrategy = this.config.pathfinding.strategy;
       this.config.pathfinding.strategy = 'bellman-ford'; // Fast for real-time
-      
+
       const paths = await this.findOpportunities(tokens, startAmount);
-      
+
       this.config.pathfinding.strategy = originalStrategy;
       return paths;
     }
@@ -234,10 +240,7 @@ export class AdvancedOrchestrator {
   /**
    * Compare performance between basic and advanced pathfinding
    */
-  async comparePerformance(
-    tokens: string[],
-    startAmount: bigint
-  ): Promise<PerformanceComparison> {
+  async comparePerformance(tokens: string[], startAmount: bigint): Promise<PerformanceComparison> {
     // Test basic pathfinder
     const basicStart = Date.now();
     const basicPaths = await this.basicOrchestrator.findOpportunities(tokens, startAmount);
@@ -254,17 +257,17 @@ export class AdvancedOrchestrator {
     return {
       basicPathfinder: {
         pathsFound: basicPaths.length,
-        timeMs: basicTime
+        timeMs: basicTime,
       },
       advancedPathfinder: {
         pathsFound: advancedPaths.length,
         timeMs: advancedTime,
-        strategy: this.config.pathfinding.strategy
+        strategy: this.config.pathfinding.strategy,
       },
       improvement: {
         speedup,
-        additionalPaths
-      }
+        additionalPaths,
+      },
     };
   }
 
@@ -273,7 +276,7 @@ export class AdvancedOrchestrator {
    */
   getStats(): AdvancedOrchestratorStats {
     const baseStats = this.basicOrchestrator.getStats();
-    
+
     const advancedStats: AdvancedOrchestratorStats = {
       ...baseStats,
       advancedFeaturesEnabled: this.config.enableAdvancedFeatures,
@@ -291,7 +294,7 @@ export class AdvancedOrchestrator {
    */
   updateConfig(config: Partial<AdvancedOrchestratorConfig>): void {
     this.config = { ...this.config, ...config };
-    
+
     // Reinitialize advanced components if feature flag changed
     if (config.enableAdvancedFeatures !== undefined) {
       if (config.enableAdvancedFeatures) {
@@ -346,7 +349,7 @@ export class AdvancedOrchestrator {
       ...this.config.pathfinding,
       strategy: this.config.pathfinding.strategy,
       pruningEnabled: true,
-      cacheEnabled: this.config.cache.enabled
+      cacheEnabled: this.config.cache.enabled,
     });
 
     this.pathPruner = new PathPruner(this.config.pruning);
@@ -368,7 +371,7 @@ export class AdvancedOrchestrator {
       return edges;
     }
 
-    return edges.filter(edge => !this.pathPruner!.shouldPruneEdge(edge, startAmount));
+    return edges.filter((edge) => !this.pathPruner!.shouldPruneEdge(edge, startAmount));
   }
 
   private getCachedPathsForTokens(tokens: string[]): ArbitragePath[] {
@@ -377,7 +380,7 @@ export class AdvancedOrchestrator {
     }
 
     const paths: ArbitragePath[] = [];
-    
+
     // Look for paths with these token sequences
     for (const token of tokens) {
       const tokenPaths = this.pathCache.findByTemplate([token]);
@@ -393,8 +396,8 @@ export class AdvancedOrchestrator {
   ): Promise<ArbitragePath[]> {
     // Would need to re-fetch current prices and recalculate
     // For now, return cached paths that still meet threshold
-    return cachedPaths.filter(path => 
-      path.netProfit >= this.config.pathfinding.minProfitThreshold
+    return cachedPaths.filter(
+      (path) => path.netProfit >= this.config.pathfinding.minProfitThreshold
     );
   }
 
@@ -403,16 +406,17 @@ export class AdvancedOrchestrator {
       return paths;
     }
 
-    return paths.map(path => {
+    return paths.map((path) => {
       const slippageResult = this.slippageCalculator!.calculatePathSlippage(path.hops);
-      
+
       // Update path with accurate slippage
       return {
         ...path,
         slippageImpact: slippageResult.cumulativeSlippage / 100,
-        estimatedProfit: slippageResult.finalAmount > path.hops[0].amountIn
-          ? slippageResult.finalAmount - path.hops[0].amountIn
-          : BigInt(0)
+        estimatedProfit:
+          slippageResult.finalAmount > path.hops[0].amountIn
+            ? slippageResult.finalAmount - path.hops[0].amountIn
+            : BigInt(0),
       };
     });
   }
@@ -423,7 +427,7 @@ export class AdvancedOrchestrator {
     }
 
     // Detect patterns and add metadata (would extend path type in production)
-    paths.forEach(path => {
+    paths.forEach((path) => {
       const analysis = this.patternDetector!.detectPattern(path);
       // Store pattern analysis in path metadata (would need type extension)
       path.patternAnalysis = analysis;

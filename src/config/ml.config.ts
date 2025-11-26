@@ -1,6 +1,6 @@
 /**
  * Machine Learning Configuration
- * 
+ *
  * Configuration for ML-powered prediction system including data collection,
  * model settings, inference parameters, and training configuration.
  */
@@ -177,8 +177,8 @@ export function getMLConfig(): MLConfig {
         ...mlConfig.models.opportunityScorer,
         enabled: process.env.ML_SCORER_ENABLED !== 'false',
         confidenceThreshold: parseFloat(
-          process.env.ML_CONFIDENCE_THRESHOLD || 
-          String(mlConfig.models.opportunityScorer.confidenceThreshold)
+          process.env.ML_CONFIDENCE_THRESHOLD ||
+            String(mlConfig.models.opportunityScorer.confidenceThreshold)
         ),
       },
       volatility: {
@@ -211,8 +211,10 @@ export function validateMLConfig(config: MLConfig): { valid: boolean; errors: st
   if (config.models.lstm.sequenceLength < 10) {
     errors.push('LSTM sequence length must be at least 10');
   }
-  if (config.models.opportunityScorer.confidenceThreshold < 0 || 
-      config.models.opportunityScorer.confidenceThreshold > 1) {
+  if (
+    config.models.opportunityScorer.confidenceThreshold < 0 ||
+    config.models.opportunityScorer.confidenceThreshold > 1
+  ) {
     errors.push('Confidence threshold must be between 0 and 1');
   }
 

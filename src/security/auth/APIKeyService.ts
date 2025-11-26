@@ -43,9 +43,11 @@ export class APIKeyService {
       keyHash,
       name,
       scopes,
-      expiresAt: expiresInDays ? new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000) : undefined,
+      expiresAt: expiresInDays
+        ? new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000)
+        : undefined,
       createdAt: new Date(),
-      isActive: true
+      isActive: true,
     };
 
     this.keys.set(keyHash, apiKey);
@@ -91,14 +93,14 @@ export class APIKeyService {
    */
   getUserAPIKeys(userId: string): Omit<APIKey, 'key' | 'keyHash'>[] {
     const userKeys: Omit<APIKey, 'key' | 'keyHash'>[] = [];
-    
+
     for (const apiKey of this.keys.values()) {
       if (apiKey.userId === userId) {
         const { key, keyHash, ...safeKey } = apiKey;
         userKeys.push(safeKey);
       }
     }
-    
+
     return userKeys;
   }
 

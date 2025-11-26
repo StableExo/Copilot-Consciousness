@@ -60,7 +60,7 @@ describe('SpatialArbEngine', () => {
       const opportunities = engine.findOpportunities(pools, 1);
 
       expect(opportunities.length).toBeGreaterThan(0);
-      
+
       const opp = opportunities[0];
       expect(opp.arbType).toBe(ArbitrageType.SPATIAL);
       expect(opp.status).toBe(OpportunityStatus.IDENTIFIED);

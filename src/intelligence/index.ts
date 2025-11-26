@@ -1,9 +1,9 @@
 /**
  * Intelligence Layer - Consolidated AI/ML/AGI Components
- * 
+ *
  * This module consolidates all AI/ML capabilities for TheWarden/AEV
  * by re-exporting from the specialized modules:
- * 
+ *
  * Modules:
  * - mev-awareness: MEV risk modeling, real-time monitoring, profit calculation
  * - flashbots: Advanced Flashbots integration, bundle optimization, builder reputation
@@ -11,12 +11,12 @@
  * - agi: AGI-aligned memory and neural bridge protocol
  * - ml: ML orchestration, data collection, pattern detection
  * - learning: Adaptive strategies, knowledge loop
- * 
+ *
  * Usage:
  * ```typescript
  * // Import directly from intelligence module
  * import { StrategyRLAgent, OpportunityNNScorer, MLOrchestrator } from './intelligence';
- * 
+ *
  * // Or import from specific submodules
  * import { StrategyRLAgent } from './ai';
  * import { MLOrchestrator } from './ml';

@@ -1,6 +1,6 @@
 /**
  * MEV Calculator Bridge
- * 
+ *
  * Bridges TypeScript to Python MEV calculator with caching
  */
 
@@ -10,7 +10,7 @@ import pino from 'pino';
 
 const logger = pino({
   name: 'MEVCalculatorBridge',
-  level: process.env.LOG_LEVEL || 'info'
+  level: process.env.LOG_LEVEL || 'info',
 });
 
 export interface MEVRiskResult {
@@ -36,16 +36,13 @@ export class MEVCalculatorBridge {
   private pythonPath: string;
   private scriptPath: string;
 
-  constructor(
-    redis?: Redis,
-    cacheEnabled: boolean = true,
-    cacheTTL: number = 60
-  ) {
+  constructor(redis?: Redis, cacheEnabled: boolean = true, cacheTTL: number = 60) {
     this.redis = redis;
     this.cacheEnabled = cacheEnabled && !!redis;
     this.cacheTTL = cacheTTL;
     this.pythonPath = process.env.PYTHON_PATH || 'python3';
-    this.scriptPath = process.env.MEV_CALCULATOR_SCRIPT || 
+    this.scriptPath =
+      process.env.MEV_CALCULATOR_SCRIPT ||
       '/home/runner/work/Copilot-Consciousness/Copilot-Consciousness/src/mev/profit_calculator/profit_calculator.py';
   }
 
@@ -80,14 +77,17 @@ export class MEVCalculatorBridge {
     return new Promise((resolve, reject) => {
       const pythonArgs = [
         this.scriptPath,
-        '--value', params.value.toString(),
-        '--gas-price', params.gasPrice.toString(),
-        '--tx-type', params.txType,
-        '--json'
+        '--value',
+        params.value.toString(),
+        '--gas-price',
+        params.gasPrice.toString(),
+        '--tx-type',
+        params.txType,
+        '--json',
       ];
 
       const pythonProcess = spawn(this.pythonPath, pythonArgs);
-      
+
       let stdout = '';
       let stderr = '';
 
@@ -112,7 +112,7 @@ export class MEVCalculatorBridge {
             riskScore: result.risk_score || 0,
             estimatedLeakage: result.estimated_leakage || 0,
             mempoolCongestion: result.mempool_congestion || 0,
-            searcherDensity: result.searcher_density || 0
+            searcherDensity: result.searcher_density || 0,
           });
         } catch (error) {
           logger.error(`Failed to parse Python output: ${error}`);
@@ -146,7 +146,7 @@ export class MEVCalculatorBridge {
     try {
       const key = this.getCacheKey(params);
       const cached = await this.redis.get(key);
-      
+
       if (cached) {
         return JSON.parse(cached);
       }
@@ -203,10 +203,15 @@ export class MEVCalculatorBridge {
    * Warmup cache with common transaction types
    */
   async warmupCache(values: number[], gasPrices: number[]): Promise<void> {
-    const txTypes: TransactionParams['txType'][] = ['arbitrage', 'liquidity_provision', 'flash_loan', 'front_runnable'];
-    
+    const txTypes: TransactionParams['txType'][] = [
+      'arbitrage',
+      'liquidity_provision',
+      'flash_loan',
+      'front_runnable',
+    ];
+
     const promises: Promise<MEVRiskResult>[] = [];
-    
+
     for (const value of values) {
       for (const gasPrice of gasPrices) {
         for (const txType of txTypes) {

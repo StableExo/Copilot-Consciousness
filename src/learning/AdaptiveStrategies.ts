@@ -1,9 +1,9 @@
 /**
  * AdaptiveStrategies - Strategy Adaptation System
- * 
+ *
  * Integrated from AxionCitadel's game-theoretic learning approach.
  * Adapts trading strategies based on environmental conditions and past performance.
- * 
+ *
  * This module implements adaptive strategy selection and parameter tuning
  * based on the "game-theoretic warfare" learning philosophy.
  */
@@ -33,10 +33,7 @@ export class AdaptiveStrategies {
   private calibrationEngine: CalibrationEngine;
   private memoryFormation: MemoryFormation;
 
-  constructor(
-    calibrationEngine: CalibrationEngine,
-    memoryFormation: MemoryFormation
-  ) {
+  constructor(calibrationEngine: CalibrationEngine, memoryFormation: MemoryFormation) {
     this.strategies = new Map();
     this.calibrationEngine = calibrationEngine;
     this.memoryFormation = memoryFormation;
@@ -59,9 +56,7 @@ export class AdaptiveStrategies {
   /**
    * Select optimal strategy based on current conditions
    */
-  async selectStrategy(
-    currentConditions: Record<string, any>
-  ): Promise<StrategySelection | null> {
+  async selectStrategy(currentConditions: Record<string, any>): Promise<StrategySelection | null> {
     if (this.strategies.size === 0) {
       return null;
     }
@@ -132,9 +127,7 @@ export class AdaptiveStrategies {
 
     // Boost score based on relevant success patterns in memories
     const relevantSuccesses = memories.filter(
-      (m) =>
-        m.type === 'success_pattern' &&
-        this.isMemoryRelevant(m, strategy.conditions)
+      (m) => m.type === 'success_pattern' && this.isMemoryRelevant(m, strategy.conditions)
     );
 
     if (relevantSuccesses.length > 0) {
@@ -144,9 +137,7 @@ export class AdaptiveStrategies {
 
     // Penalize for relevant failure patterns
     const relevantFailures = memories.filter(
-      (m) =>
-        m.type === 'failure_pattern' &&
-        this.isMemoryRelevant(m, strategy.conditions)
+      (m) => m.type === 'failure_pattern' && this.isMemoryRelevant(m, strategy.conditions)
     );
 
     if (relevantFailures.length > 0) {
@@ -167,10 +158,7 @@ export class AdaptiveStrategies {
   /**
    * Check if a memory is relevant to given conditions
    */
-  private isMemoryRelevant(
-    memory: StrategicMemory,
-    conditions: Record<string, any>
-  ): boolean {
+  private isMemoryRelevant(memory: StrategicMemory, conditions: Record<string, any>): boolean {
     let matchCount = 0;
     const memoryKeys = Object.keys(memory.context);
 
@@ -209,10 +197,7 @@ export class AdaptiveStrategies {
   /**
    * Update strategy performance after execution
    */
-  updateStrategyPerformance(
-    strategyId: string,
-    success: boolean
-  ): void {
+  updateStrategyPerformance(strategyId: string, success: boolean): void {
     const strategy = this.strategies.get(strategyId);
     if (!strategy) {
       throw new Error(`Strategy ${strategyId} not found`);
@@ -256,8 +241,6 @@ export class AdaptiveStrategies {
    */
   getTopStrategies(limit: number = 5): Strategy[] {
     const strategies = this.getAllStrategies();
-    return strategies
-      .sort((a, b) => b.successRate - a.successRate)
-      .slice(0, limit);
+    return strategies.sort((a, b) => b.successRate - a.successRate).slice(0, limit);
   }
 }

@@ -27,8 +27,12 @@ describe('EventDrivenTrigger', () => {
       gasPrice: BigInt(50000000000),
     };
 
-    orchestrator = new ArbitrageOrchestrator(registry, pathfindingConfig, pathfindingConfig.gasPrice);
-    
+    orchestrator = new ArbitrageOrchestrator(
+      registry,
+      pathfindingConfig,
+      pathfindingConfig.gasPrice
+    );
+
     // Mock findOpportunities to return empty array
     (orchestrator.findOpportunities as jest.Mock) = jest.fn().mockResolvedValue([]);
 
@@ -67,7 +71,7 @@ describe('EventDrivenTrigger', () => {
       await trigger.handleEvent(event);
 
       // Wait for async processing
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       const metrics = trigger.getMetrics();
       expect(metrics.opportunitiesDetected).toBe(1);
@@ -142,10 +146,10 @@ describe('EventDrivenTrigger', () => {
       };
 
       await trigger.handleEvent(event);
-      
+
       // Wait for processing
-      await new Promise(resolve => setTimeout(resolve, 50));
-      
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
       trigger.resetMetrics();
 
       const metrics = trigger.getMetrics();
@@ -180,7 +184,7 @@ describe('EventDrivenTrigger', () => {
 
       await trigger.handleEvent(event);
       trigger.clearDebounceCache();
-      
+
       // After clearing cache, next event should not be debounced
       await trigger.handleEvent(event);
 

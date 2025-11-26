@@ -1,6 +1,6 @@
 /**
  * TransactionManager Tests
- * 
+ *
  * Tests for production-tested transaction management from AxionCitadel
  */
 
@@ -59,7 +59,7 @@ describe('TransactionManager', () => {
     it('should initialize with default config', () => {
       const defaultManager = new TransactionManager(mockProvider, mockNonceManager);
       expect(defaultManager).toBeDefined();
-      
+
       const stats = defaultManager.getStatistics();
       expect(stats.totalTransactions).toBe(0);
       expect(stats.successfulTransactions).toBe(0);
@@ -90,15 +90,19 @@ describe('TransactionManager', () => {
   describe('executeTransaction', () => {
     it('should execute transaction successfully', async () => {
       // Mock successful execution
-      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') }); // 50 Gwei
-      
+      mockProvider.getFeeData.mockResolvedValue({
+        gasPrice: BigInt('50000000000'),
+        maxFeePerGas: BigInt('50000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      }); // 50 Gwei
+
       const mockTxResponse = {
         hash: '0xabcdef',
         nonce: 1,
         gasPrice: BigInt('50000000000'),
         wait: jest.fn(),
       } as any;
-      
+
       mockNonceManager.sendTransaction.mockResolvedValue(mockTxResponse);
 
       const mockReceipt = {
@@ -115,11 +119,9 @@ describe('TransactionManager', () => {
 
       mockProvider.waitForTransaction.mockResolvedValue(mockReceipt);
 
-      const result = await manager.executeTransaction(
-        '0xTargetContract',
-        '0x1234',
-        { gasLimit: BigInt('150000') }
-      );
+      const result = await manager.executeTransaction('0xTargetContract', '0x1234', {
+        gasLimit: BigInt('150000'),
+      });
 
       expect(result.success).toBe(true);
       expect(result.txHash).toBe('0xabcdef');
@@ -128,7 +130,11 @@ describe('TransactionManager', () => {
     }, 15000);
 
     it('should retry on transient failures', async () => {
-      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
+      mockProvider.getFeeData.mockResolvedValue({
+        gasPrice: BigInt('50000000000'),
+        maxFeePerGas: BigInt('50000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      });
 
       // First attempt fails, second succeeds
       const mockTxResponse = {
@@ -154,27 +160,23 @@ describe('TransactionManager', () => {
 
       mockProvider.waitForTransaction.mockResolvedValue(mockReceipt);
 
-      const result = await manager.executeTransaction(
-        '0xTargetContract',
-        '0x1234'
-      );
+      const result = await manager.executeTransaction('0xTargetContract', '0x1234');
 
       expect(result.success).toBe(true);
       expect(mockNonceManager.sendTransaction).toHaveBeenCalledTimes(2);
     }, 15000);
 
     it('should not retry on fatal errors', async () => {
-      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
+      mockProvider.getFeeData.mockResolvedValue({
+        gasPrice: BigInt('50000000000'),
+        maxFeePerGas: BigInt('50000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      });
 
       // Simulate insufficient funds error
-      mockNonceManager.sendTransaction.mockRejectedValue(
-        new Error('insufficient funds for gas')
-      );
+      mockNonceManager.sendTransaction.mockRejectedValue(new Error('insufficient funds for gas'));
 
-      const result = await manager.executeTransaction(
-        '0xTargetContract',
-        '0x1234'
-      );
+      const result = await manager.executeTransaction('0xTargetContract', '0x1234');
 
       expect(result.success).toBe(false);
       expect(mockNonceManager.sendTransaction).toHaveBeenCalledTimes(1);
@@ -182,17 +184,16 @@ describe('TransactionManager', () => {
     }, 15000);
 
     it('should fail after max retries exhausted', async () => {
-      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
+      mockProvider.getFeeData.mockResolvedValue({
+        gasPrice: BigInt('50000000000'),
+        maxFeePerGas: BigInt('50000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      });
 
       // All attempts fail
-      mockNonceManager.sendTransaction.mockRejectedValue(
-        new Error('Network error')
-      );
+      mockNonceManager.sendTransaction.mockRejectedValue(new Error('Network error'));
 
-      const result = await manager.executeTransaction(
-        '0xTargetContract',
-        '0x1234'
-      );
+      const result = await manager.executeTransaction('0xTargetContract', '0x1234');
 
       expect(result.success).toBe(false);
       // maxRetries is 1 (from beforeEach), so total attempts = 1 initial + 1 retry = 2
@@ -201,11 +202,15 @@ describe('TransactionManager', () => {
     }, 15000);
 
     it('should increase gas price on retry', async () => {
-      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
+      mockProvider.getFeeData.mockResolvedValue({
+        gasPrice: BigInt('50000000000'),
+        maxFeePerGas: BigInt('50000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      });
 
       const initialGasPrice = BigInt('50000000000');
       // ethers v6 uses native bigint - multiply and divide using BigInt math
-      const expectedIncreasedGasPrice = initialGasPrice * BigInt(110) / BigInt(100); // 10% increase
+      const expectedIncreasedGasPrice = (initialGasPrice * BigInt(110)) / BigInt(100); // 10% increase
 
       mockNonceManager.sendTransaction
         .mockRejectedValueOnce(new Error('Network error'))
@@ -226,11 +231,9 @@ describe('TransactionManager', () => {
         confirmations: 1,
       } as any);
 
-      const result = await manager.executeTransaction(
-        '0xTargetContract',
-        '0x1234',
-        { gasPrice: initialGasPrice }
-      );
+      const result = await manager.executeTransaction('0xTargetContract', '0x1234', {
+        gasPrice: initialGasPrice,
+      });
 
       expect(result.success).toBe(true);
       expect(mockNonceManager.sendTransaction).toHaveBeenCalledTimes(2);
@@ -240,12 +243,13 @@ describe('TransactionManager', () => {
   describe('gas spike protection', () => {
     it('should reject transaction if gas price exceeds maximum', async () => {
       // Mock extremely high gas price (600 Gwei)
-      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('600000000000'), maxFeePerGas: BigInt('600000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
+      mockProvider.getFeeData.mockResolvedValue({
+        gasPrice: BigInt('600000000000'),
+        maxFeePerGas: BigInt('600000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      });
 
-      const result = await manager.executeTransaction(
-        '0xTargetContract',
-        '0x1234'
-      );
+      const result = await manager.executeTransaction('0xTargetContract', '0x1234');
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Gas spike detected');
@@ -253,7 +257,11 @@ describe('TransactionManager', () => {
     }, 15000);
 
     it('should allow transaction if gas price is acceptable', async () => {
-      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') }); // 50 Gwei
+      mockProvider.getFeeData.mockResolvedValue({
+        gasPrice: BigInt('50000000000'),
+        maxFeePerGas: BigInt('50000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      }); // 50 Gwei
 
       mockNonceManager.sendTransaction.mockResolvedValue({
         hash: '0xabcdef',
@@ -269,10 +277,7 @@ describe('TransactionManager', () => {
         confirmations: 1,
       } as any);
 
-      const result = await manager.executeTransaction(
-        '0xTargetContract',
-        '0x1234'
-      );
+      const result = await manager.executeTransaction('0xTargetContract', '0x1234');
 
       expect(result.success).toBe(true);
     }, 15000);
@@ -281,7 +286,11 @@ describe('TransactionManager', () => {
   describe('replaceTransaction', () => {
     it('should replace stuck transaction with higher gas price', async () => {
       // First, execute a transaction that gets stuck
-      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
+      mockProvider.getFeeData.mockResolvedValue({
+        gasPrice: BigInt('50000000000'),
+        maxFeePerGas: BigInt('50000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      });
 
       const mockTxResponse = {
         hash: '0xoriginal',
@@ -303,10 +312,7 @@ describe('TransactionManager', () => {
         confirmations: 1,
       } as any);
 
-      const result = await manager.executeTransaction(
-        '0xTargetContract',
-        '0x1234'
-      );
+      const result = await manager.executeTransaction('0xTargetContract', '0x1234');
 
       expect(result.success).toBe(true);
       const txId = result.metadata.id;
@@ -330,10 +336,7 @@ describe('TransactionManager', () => {
         confirmations: 1,
       } as any);
 
-      const replaceResult = await manager.replaceTransaction(
-        txId,
-        BigInt('75000000000')
-      );
+      const replaceResult = await manager.replaceTransaction(txId, BigInt('75000000000'));
 
       expect(replaceResult.success).toBe(true);
       expect(replaceResult.txHash).toBe('0xreplacement');
@@ -349,7 +352,11 @@ describe('TransactionManager', () => {
 
   describe('getTransactionStatus', () => {
     it('should return transaction metadata', async () => {
-      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
+      mockProvider.getFeeData.mockResolvedValue({
+        gasPrice: BigInt('50000000000'),
+        maxFeePerGas: BigInt('50000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      });
 
       mockNonceManager.sendTransaction.mockResolvedValue({
         hash: '0xabcdef',
@@ -365,10 +372,7 @@ describe('TransactionManager', () => {
         confirmations: 1,
       } as any);
 
-      const result = await manager.executeTransaction(
-        '0xTargetContract',
-        '0x1234'
-      );
+      const result = await manager.executeTransaction('0xTargetContract', '0x1234');
 
       const status = manager.getTransactionStatus(result.metadata.id);
       expect(status).toBeDefined();
@@ -384,7 +388,11 @@ describe('TransactionManager', () => {
 
   describe('getStatistics', () => {
     it('should track transaction statistics', async () => {
-      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
+      mockProvider.getFeeData.mockResolvedValue({
+        gasPrice: BigInt('50000000000'),
+        maxFeePerGas: BigInt('50000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      });
 
       // Execute successful transaction
       mockNonceManager.sendTransaction.mockResolvedValue({
@@ -411,7 +419,11 @@ describe('TransactionManager', () => {
     }, 15000);
 
     it('should calculate success rate correctly', async () => {
-      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
+      mockProvider.getFeeData.mockResolvedValue({
+        gasPrice: BigInt('50000000000'),
+        maxFeePerGas: BigInt('50000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      });
 
       // One success
       mockNonceManager.sendTransaction.mockResolvedValueOnce({
@@ -431,9 +443,7 @@ describe('TransactionManager', () => {
       await manager.executeTransaction('0xTargetContract', '0x1234');
 
       // One failure
-      mockNonceManager.sendTransaction.mockRejectedValue(
-        new Error('insufficient funds')
-      );
+      mockNonceManager.sendTransaction.mockRejectedValue(new Error('insufficient funds'));
 
       await manager.executeTransaction('0xTargetContract', '0x5678');
 
@@ -447,7 +457,11 @@ describe('TransactionManager', () => {
 
   describe('nonce error handling', () => {
     it('should handle nonce too low error', async () => {
-      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
+      mockProvider.getFeeData.mockResolvedValue({
+        gasPrice: BigInt('50000000000'),
+        maxFeePerGas: BigInt('50000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      });
 
       // Simulate nonce error on first attempt, then success
       mockNonceManager.sendTransaction
@@ -466,10 +480,7 @@ describe('TransactionManager', () => {
         confirmations: 1,
       } as any);
 
-      const result = await manager.executeTransaction(
-        '0xTargetContract',
-        '0x1234'
-      );
+      const result = await manager.executeTransaction('0xTargetContract', '0x1234');
 
       expect(result.success).toBe(true);
       expect(mockNonceManager.sendTransaction).toHaveBeenCalledTimes(2);
@@ -478,7 +489,11 @@ describe('TransactionManager', () => {
 
   describe('EIP-1559 transactions', () => {
     it('should handle EIP-1559 gas parameters', async () => {
-      mockProvider.getFeeData.mockResolvedValue({ gasPrice: BigInt('50000000000'), maxFeePerGas: BigInt('50000000000'), maxPriorityFeePerGas: BigInt('2000000000') });
+      mockProvider.getFeeData.mockResolvedValue({
+        gasPrice: BigInt('50000000000'),
+        maxFeePerGas: BigInt('50000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      });
 
       mockNonceManager.sendTransaction.mockResolvedValue({
         hash: '0xabcdef',
@@ -495,14 +510,10 @@ describe('TransactionManager', () => {
         confirmations: 1,
       } as any);
 
-      const result = await manager.executeTransaction(
-        '0xTargetContract',
-        '0x1234',
-        {
-          maxFeePerGas: BigInt('100000000000'),
-          maxPriorityFeePerGas: BigInt('2000000000'),
-        }
-      );
+      const result = await manager.executeTransaction('0xTargetContract', '0x1234', {
+        maxFeePerGas: BigInt('100000000000'),
+        maxPriorityFeePerGas: BigInt('2000000000'),
+      });
 
       expect(result.success).toBe(true);
     }, 15000);

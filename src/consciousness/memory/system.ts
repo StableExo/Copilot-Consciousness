@@ -20,7 +20,7 @@ export class MemorySystem {
    * Add a sensory memory (very short-term)
    */
   addSensoryMemory(
-    content: unknown, 
+    content: unknown,
     metadata: Record<string, unknown> = {},
     emotionalContext?: EmotionalContext
   ): string {
@@ -113,15 +113,13 @@ export class MemorySystem {
   /**
    * Search memories
    */
-  searchMemories(
-    query: {
-      type?: MemoryType;
-      priority?: Priority;
-      timeRange?: { start: number; end: number };
-      content?: string;
-      limit?: number;
-    }
-  ): MemoryEntry[] {
+  searchMemories(query: {
+    type?: MemoryType;
+    priority?: Priority;
+    timeRange?: { start: number; end: number };
+    content?: string;
+    limit?: number;
+  }): MemoryEntry[] {
     return this.store.search(query);
   }
 

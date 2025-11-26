@@ -1,6 +1,6 @@
 /**
  * Cross-Chain Arbitrage Configuration
- * 
+ *
  * Comprehensive configuration for cross-chain arbitrage system
  */
 
@@ -72,15 +72,15 @@ export const DEFAULT_CROSS_CHAIN_CONFIG: CrossChainConfig = {
       rpcUrls: [
         'https://eth.llamarpc.com',
         'https://rpc.ankr.com/eth',
-        'https://ethereum.publicnode.com'
+        'https://ethereum.publicnode.com',
       ],
       nativeCurrency: {
         name: 'Ether',
         symbol: 'ETH',
-        decimals: 18
+        decimals: 18,
       },
       blockTime: 12,
-      enabled: true
+      enabled: true,
     },
     {
       chainId: 56,
@@ -89,15 +89,15 @@ export const DEFAULT_CROSS_CHAIN_CONFIG: CrossChainConfig = {
       rpcUrls: [
         'https://bsc-dataseed1.binance.org',
         'https://bsc-dataseed2.binance.org',
-        'https://rpc.ankr.com/bsc'
+        'https://rpc.ankr.com/bsc',
       ],
       nativeCurrency: {
         name: 'Binance Coin',
         symbol: 'BNB',
-        decimals: 18
+        decimals: 18,
       },
       blockTime: 3,
-      enabled: true
+      enabled: true,
     },
     {
       chainId: 137,
@@ -106,15 +106,15 @@ export const DEFAULT_CROSS_CHAIN_CONFIG: CrossChainConfig = {
       rpcUrls: [
         'https://polygon-rpc.com',
         'https://rpc.ankr.com/polygon',
-        'https://polygon.llamarpc.com'
+        'https://polygon.llamarpc.com',
       ],
       nativeCurrency: {
         name: 'MATIC',
         symbol: 'MATIC',
-        decimals: 18
+        decimals: 18,
       },
       blockTime: 2,
-      enabled: true
+      enabled: true,
     },
     {
       chainId: 43114,
@@ -123,15 +123,15 @@ export const DEFAULT_CROSS_CHAIN_CONFIG: CrossChainConfig = {
       rpcUrls: [
         'https://api.avax.network/ext/bc/C/rpc',
         'https://rpc.ankr.com/avalanche',
-        'https://avalanche.public-rpc.com'
+        'https://avalanche.public-rpc.com',
       ],
       nativeCurrency: {
         name: 'Avalanche',
         symbol: 'AVAX',
-        decimals: 18
+        decimals: 18,
       },
       blockTime: 2,
-      enabled: true
+      enabled: true,
     },
     {
       chainId: 42161,
@@ -140,15 +140,15 @@ export const DEFAULT_CROSS_CHAIN_CONFIG: CrossChainConfig = {
       rpcUrls: [
         'https://arb1.arbitrum.io/rpc',
         'https://rpc.ankr.com/arbitrum',
-        'https://arbitrum.llamarpc.com'
+        'https://arbitrum.llamarpc.com',
       ],
       nativeCurrency: {
         name: 'Ether',
         symbol: 'ETH',
-        decimals: 18
+        decimals: 18,
       },
       blockTime: 0.25,
-      enabled: true
+      enabled: true,
     },
     {
       chainId: 10,
@@ -157,15 +157,15 @@ export const DEFAULT_CROSS_CHAIN_CONFIG: CrossChainConfig = {
       rpcUrls: [
         'https://mainnet.optimism.io',
         'https://rpc.ankr.com/optimism',
-        'https://optimism.llamarpc.com'
+        'https://optimism.llamarpc.com',
       ],
       nativeCurrency: {
         name: 'Ether',
         symbol: 'ETH',
-        decimals: 18
+        decimals: 18,
       },
       blockTime: 2,
-      enabled: true
+      enabled: true,
     },
     {
       chainId: 8453,
@@ -174,32 +174,29 @@ export const DEFAULT_CROSS_CHAIN_CONFIG: CrossChainConfig = {
       rpcUrls: [
         'https://mainnet.base.org',
         'https://base.llamarpc.com',
-        'https://base.meowrpc.com'
+        'https://base.meowrpc.com',
       ],
       nativeCurrency: {
         name: 'Ether',
         symbol: 'ETH',
-        decimals: 18
+        decimals: 18,
       },
       blockTime: 2,
-      enabled: true
+      enabled: true,
     },
     {
       chainId: 'mainnet-beta',
       name: 'Solana',
       type: 'Solana',
-      rpcUrls: [
-        'https://api.mainnet-beta.solana.com',
-        'https://solana-api.projectserum.com'
-      ],
+      rpcUrls: ['https://api.mainnet-beta.solana.com', 'https://solana-api.projectserum.com'],
       nativeCurrency: {
         name: 'Solana',
         symbol: 'SOL',
-        decimals: 9
+        decimals: 9,
       },
       blockTime: 0.4,
-      enabled: true
-    }
+      enabled: true,
+    },
   ],
   bridges: [
     {
@@ -210,7 +207,7 @@ export const DEFAULT_CROSS_CHAIN_CONFIG: CrossChainConfig = {
       maxAmount: BigInt(1000000) * BigInt(10 ** 18), // 1M tokens
       estimatedTime: 900, // 15 minutes
       supportedChains: [1, 56, 137, 43114, 42161, 10, 8453, 'mainnet-beta'],
-      priority: 1
+      priority: 1,
     },
     {
       name: 'LayerZero',
@@ -220,7 +217,7 @@ export const DEFAULT_CROSS_CHAIN_CONFIG: CrossChainConfig = {
       maxAmount: BigInt(500000) * BigInt(10 ** 18),
       estimatedTime: 600, // 10 minutes
       supportedChains: [1, 56, 137, 43114, 42161, 10, 8453],
-      priority: 2
+      priority: 2,
     },
     {
       name: 'Stargate',
@@ -230,7 +227,7 @@ export const DEFAULT_CROSS_CHAIN_CONFIG: CrossChainConfig = {
       maxAmount: BigInt(1000000) * BigInt(10 ** 18),
       estimatedTime: 300, // 5 minutes
       supportedChains: [1, 56, 137, 43114, 42161, 10],
-      priority: 3
+      priority: 3,
     },
     {
       name: 'Hop',
@@ -240,7 +237,7 @@ export const DEFAULT_CROSS_CHAIN_CONFIG: CrossChainConfig = {
       maxAmount: BigInt(100000) * BigInt(10 ** 18),
       estimatedTime: 1200, // 20 minutes
       supportedChains: [1, 137, 42161, 10],
-      priority: 4
+      priority: 4,
     },
     {
       name: 'Synapse',
@@ -250,30 +247,30 @@ export const DEFAULT_CROSS_CHAIN_CONFIG: CrossChainConfig = {
       maxAmount: BigInt(500000) * BigInt(10 ** 18),
       estimatedTime: 900, // 15 minutes
       supportedChains: [1, 56, 137, 43114, 42161, 10, 8453],
-      priority: 5
-    }
+      priority: 5,
+    },
   ],
   scanner: {
     scanIntervalMs: 5000, // 5 seconds
     priceDiscrepancyThreshold: 2.0, // 2% minimum difference
     parallelChainScans: true,
     maxConcurrentScans: 10,
-    enableWebSocket: true
+    enableWebSocket: true,
   },
   pathfinding: {
     maxHops: 5,
     maxBridgeHops: 2,
     minBridgeFeeRatio: 10, // Amount must be 10x the fee
     maxPathExplorationTime: 5000, // 5 seconds
-    pruneUnprofitablePaths: true
+    pruneUnprofitablePaths: true,
   },
   execution: {
     maxConcurrentPaths: 10,
     bridgeTimeoutMs: 1800000, // 30 minutes
     retryAttempts: 3,
     slippageTolerance: 1.0, // 1%
-    enableEmergencyRecovery: true
-  }
+    enableEmergencyRecovery: true,
+  },
 };
 
 export default DEFAULT_CROSS_CHAIN_CONFIG;

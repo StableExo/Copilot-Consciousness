@@ -23,11 +23,11 @@ export class JWTService {
       userId: user.id,
       username: user.username,
       role: user.role,
-      sessionId
+      sessionId,
     };
 
     return jwt.sign(payload, this.config.jwtSecret, {
-      expiresIn: this.config.jwtExpiresIn as StringValue | number
+      expiresIn: this.config.jwtExpiresIn as StringValue | number,
     });
   }
 
@@ -51,11 +51,11 @@ export class JWTService {
       userId: payload.userId,
       username: payload.username,
       role: payload.role,
-      sessionId: uuidv4()
+      sessionId: uuidv4(),
     };
 
     return jwt.sign(newPayload, this.config.jwtSecret, {
-      expiresIn: this.config.jwtExpiresIn as StringValue | number
+      expiresIn: this.config.jwtExpiresIn as StringValue | number,
     });
   }
 

@@ -1,6 +1,6 @@
 /**
  * DashboardServer - Main server for the Real-Time Analytics Dashboard
- * 
+ *
  * Integrates Express, Socket.IO, and all dashboard services
  * Provides REST API and WebSocket streaming for real-time data
  */
@@ -21,13 +21,13 @@ export class DashboardServer {
   private app: Express;
   private httpServer: HttpServer;
   private config: DashboardConfig;
-  
+
   // Services
   private metricsAggregator: MetricsAggregator;
   private alertSystem: AlertSystem;
   private timeSeriesDB?: TimeSeriesDB;
   private wsHandler: WebSocketHandler;
-  
+
   // Performance tracking
   private requestCount: number = 0;
   private lastRequestTime: number = Date.now();
@@ -45,10 +45,10 @@ export class DashboardServer {
       maxConnections: config.maxConnections || 100,
       alerts: config.alerts || {
         channels: {
-          websocket: true
-        }
+          websocket: true,
+        },
       },
-      ...config
+      ...config,
     };
 
     // Initialize Express app
@@ -58,7 +58,7 @@ export class DashboardServer {
     // Initialize services
     this.metricsAggregator = new MetricsAggregator(gasAnalytics, crossChainAnalytics);
     this.alertSystem = new AlertSystem(this.config.alerts);
-    
+
     if (this.config.timescaledb) {
       this.timeSeriesDB = new TimeSeriesDB(this.config.timescaledb);
     }
@@ -83,11 +83,13 @@ export class DashboardServer {
     // NOTE: For production, configure specific origins via DashboardConfig
     // Example: cors: { origin: ['https://dashboard.example.com', 'https://app.example.com'] }
     if (this.config.enableCors) {
-      this.app.use(cors({
-        origin: '*', // TODO: Configure specific origins in production via config.cors
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
-        allowedHeaders: ['Content-Type', 'Authorization']
-      }));
+      this.app.use(
+        cors({
+          origin: '*', // TODO: Configure specific origins in production via config.cors
+          methods: ['GET', 'POST', 'PUT', 'DELETE'],
+          allowedHeaders: ['Content-Type', 'Authorization'],
+        })
+      );
     }
 
     // Parse JSON bodies
@@ -99,13 +101,13 @@ export class DashboardServer {
     // Request logging and performance tracking
     this.app.use((req: Request, res: Response, next: NextFunction) => {
       const startTime = Date.now();
-      
+
       res.on('finish', () => {
         const duration = Date.now() - startTime;
-        
+
         // Update performance metrics
         this.wsHandler.updateApiLatency(duration);
-        
+
         // Track request rate
         this.requestCount++;
         const timeSinceLastUpdate = Date.now() - this.lastRequestTime;
@@ -141,12 +143,12 @@ export class DashboardServer {
           alerts: '/api/alerts',
           performance: '/api/performance',
           crossChain: '/api/cross-chain/summary',
-          gas: '/api/gas/analytics'
+          gas: '/api/gas/analytics',
         },
         websocket: {
           enabled: true,
-          activeConnections: this.wsHandler.getConnectedClientsCount()
-        }
+          activeConnections: this.wsHandler.getConnectedClientsCount(),
+        },
       });
     });
 
@@ -169,18 +171,18 @@ export class DashboardServer {
       res.status(404).json({
         success: false,
         error: 'Not Found',
-        path: req.path
+        path: req.path,
       });
     });
 
     // Global error handler
     this.app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
       console.error('Unhandled error:', err);
-      
+
       res.status(500).json({
         success: false,
         error: 'Internal Server Error',
-        message: err.message
+        message: err.message,
       });
     });
   }
@@ -215,7 +217,6 @@ export class DashboardServer {
 
       // Setup graceful shutdown
       this.setupGracefulShutdown();
-
     } catch (error) {
       console.error('Failed to start dashboard server:', error);
       throw error;

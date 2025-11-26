@@ -1,6 +1,6 @@
 /**
  * Evolution Tracker
- * 
+ *
  * Adapted from AxionCitadel's development roadmap tracking
  * Tracks system evolution, capability development, and adaptation over time
  */
@@ -10,7 +10,7 @@ export enum EvolutionPhase {
   LEARNING = 'LEARNING',
   OPTIMIZATION = 'OPTIMIZATION',
   ADAPTATION = 'ADAPTATION',
-  MASTERY = 'MASTERY'
+  MASTERY = 'MASTERY',
 }
 
 export enum CapabilityStatus {
@@ -18,7 +18,7 @@ export enum CapabilityStatus {
   IN_DEVELOPMENT = 'IN_DEVELOPMENT',
   TESTING = 'TESTING',
   DEPLOYED = 'DEPLOYED',
-  DEPRECATED = 'DEPRECATED'
+  DEPRECATED = 'DEPRECATED',
 }
 
 export interface Capability {
@@ -123,17 +123,19 @@ export class EvolutionTracker {
         usageCount: 0,
         successRate: 0,
         averagePerformance: 0,
-        errorRate: 0
+        errorRate: 0,
       },
-      developmentHistory: [{
-        timestamp: Date.now(),
-        eventType: 'CREATED',
-        description: 'Capability registered',
-        impact: ['New capability added to system']
-      }],
+      developmentHistory: [
+        {
+          timestamp: Date.now(),
+          eventType: 'CREATED',
+          description: 'Capability registered',
+          impact: ['New capability added to system'],
+        },
+      ],
       createdAt: Date.now(),
       updatedAt: Date.now(),
-      metadata: {}
+      metadata: {},
     };
 
     this.capabilities.set(capability.id, capability);
@@ -156,7 +158,7 @@ export class EvolutionTracker {
       [CapabilityStatus.IN_DEVELOPMENT]: 'IMPROVED',
       [CapabilityStatus.TESTING]: 'TESTED',
       [CapabilityStatus.DEPLOYED]: 'DEPLOYED',
-      [CapabilityStatus.DEPRECATED]: 'DEPRECATED'
+      [CapabilityStatus.DEPRECATED]: 'DEPRECATED',
     };
 
     capability.status = status;
@@ -165,7 +167,7 @@ export class EvolutionTracker {
       timestamp: Date.now(),
       eventType: eventTypeMap[status],
       description,
-      impact: [`Status changed to ${status}`]
+      impact: [`Status changed to ${status}`],
     });
 
     // Update maturity level based on status
@@ -174,13 +176,10 @@ export class EvolutionTracker {
       [CapabilityStatus.IN_DEVELOPMENT]: 30,
       [CapabilityStatus.TESTING]: 60,
       [CapabilityStatus.DEPLOYED]: 80,
-      [CapabilityStatus.DEPRECATED]: 0
+      [CapabilityStatus.DEPRECATED]: 0,
     };
 
-    capability.maturityLevel = Math.max(
-      capability.maturityLevel,
-      maturityByStatus[status]
-    );
+    capability.maturityLevel = Math.max(capability.maturityLevel, maturityByStatus[status]);
 
     return true;
   }
@@ -237,7 +236,7 @@ export class EvolutionTracker {
       criteria,
       progress: 0,
       relatedCapabilities,
-      metadata: {}
+      metadata: {},
     };
 
     this.milestones.set(milestone.id, milestone);
@@ -274,13 +273,13 @@ export class EvolutionTracker {
       trigger,
       context,
       changes,
-      metadata: {}
+      metadata: {},
     };
 
     this.adaptations.set(adaptation.id, adaptation);
 
     // Apply changes to capabilities if relevant
-    changes.forEach(change => {
+    changes.forEach((change) => {
       if (change.targetType === 'CAPABILITY') {
         const capability = this.capabilities.get(change.targetId);
         if (capability) {
@@ -288,7 +287,7 @@ export class EvolutionTracker {
             timestamp: Date.now(),
             eventType: 'OPTIMIZED',
             description: `Adapted due to: ${trigger}`,
-            impact: [change.reasoning]
+            impact: [change.reasoning],
           });
         }
       }
@@ -302,12 +301,12 @@ export class EvolutionTracker {
    */
   transitionPhase(newPhase: EvolutionPhase, reason: string): void {
     const previousPhase = this.currentPhase;
-    
+
     this.phaseTransitions.push({
       timestamp: Date.now(),
       from: previousPhase,
       to: newPhase,
-      reason
+      reason,
     });
 
     this.currentPhase = newPhase;
@@ -326,16 +325,17 @@ export class EvolutionTracker {
   } {
     const capabilities = Array.from(this.capabilities.values());
     const deployedCapabilities = capabilities.filter(
-      c => c.status === CapabilityStatus.DEPLOYED
+      (c) => c.status === CapabilityStatus.DEPLOYED
     ).length;
 
-    const averageMaturity = capabilities.length > 0
-      ? capabilities.reduce((sum, c) => sum + c.maturityLevel, 0) / capabilities.length
-      : 0;
+    const averageMaturity =
+      capabilities.length > 0
+        ? capabilities.reduce((sum, c) => sum + c.maturityLevel, 0) / capabilities.length
+        : 0;
 
-    const completedMilestones = Array.from(this.milestones.values())
-      .filter(m => m.completedDate)
-      .length;
+    const completedMilestones = Array.from(this.milestones.values()).filter(
+      (m) => m.completedDate
+    ).length;
 
     return {
       currentPhase: this.currentPhase,
@@ -343,7 +343,7 @@ export class EvolutionTracker {
       deployedCapabilities,
       averageMaturity,
       completedMilestones,
-      totalAdaptations: this.adaptations.size
+      totalAdaptations: this.adaptations.size,
     };
   }
 
@@ -358,7 +358,7 @@ export class EvolutionTracker {
   }> {
     const categories = new Map<string, Capability[]>();
 
-    this.capabilities.forEach(capability => {
+    this.capabilities.forEach((capability) => {
       if (!categories.has(capability.category)) {
         categories.set(capability.category, []);
       }
@@ -369,7 +369,7 @@ export class EvolutionTracker {
       category,
       capabilities: caps.length,
       averageMaturity: caps.reduce((sum, c) => sum + c.maturityLevel, 0) / caps.length,
-      deployedCount: caps.filter(c => c.status === CapabilityStatus.DEPLOYED).length
+      deployedCount: caps.filter((c) => c.status === CapabilityStatus.DEPLOYED).length,
     }));
   }
 
@@ -383,21 +383,20 @@ export class EvolutionTracker {
     recentAdaptations: AdaptationEvent[];
   } {
     const adaptations = Array.from(this.adaptations.values());
-    const measured = adaptations.filter(a => a.effectiveness !== undefined);
-    
-    const averageEffectiveness = measured.length > 0
-      ? measured.reduce((sum, a) => sum + (a.effectiveness || 0), 0) / measured.length
-      : 0;
+    const measured = adaptations.filter((a) => a.effectiveness !== undefined);
 
-    const recentAdaptations = adaptations
-      .sort((a, b) => b.timestamp - a.timestamp)
-      .slice(0, 10);
+    const averageEffectiveness =
+      measured.length > 0
+        ? measured.reduce((sum, a) => sum + (a.effectiveness || 0), 0) / measured.length
+        : 0;
+
+    const recentAdaptations = adaptations.sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
 
     return {
       totalAdaptations: adaptations.length,
       measuredAdaptations: measured.length,
       averageEffectiveness,
-      recentAdaptations
+      recentAdaptations,
     };
   }
 
@@ -416,7 +415,7 @@ export class EvolutionTracker {
       milestones: Array.from(this.milestones.values()),
       adaptations: Array.from(this.adaptations.values()),
       currentPhase: this.currentPhase,
-      phaseTransitions: [...this.phaseTransitions]
+      phaseTransitions: [...this.phaseTransitions],
     };
   }
 
@@ -434,9 +433,9 @@ export class EvolutionTracker {
     this.milestones.clear();
     this.adaptations.clear();
 
-    data.capabilities.forEach(c => this.capabilities.set(c.id, c));
-    data.milestones.forEach(m => this.milestones.set(m.id, m));
-    data.adaptations.forEach(a => this.adaptations.set(a.id, a));
+    data.capabilities.forEach((c) => this.capabilities.set(c.id, c));
+    data.milestones.forEach((m) => this.milestones.set(m.id, m));
+    data.adaptations.forEach((a) => this.adaptations.set(a.id, a));
 
     this.currentPhase = data.currentPhase;
     this.phaseTransitions = [...data.phaseTransitions];

@@ -37,7 +37,7 @@ describe('WebSocketStreamManager', () => {
         { url: 'wss://test2.example.com', description: 'Test 2', priority: 2 },
         { url: 'wss://test1.example.com', description: 'Test 1', priority: 1 },
       ];
-      
+
       const sortedManager = new WebSocketStreamManager(unsortedEndpoints, retryConfig);
       expect(sortedManager).toBeDefined();
     });

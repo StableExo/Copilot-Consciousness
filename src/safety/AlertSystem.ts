@@ -1,6 +1,6 @@
 /**
  * AlertSystem - Multi-channel alert and notification system
- * 
+ *
  * Provides critical alerts through multiple channels:
  * - Console logging
  * - Webhook notifications
@@ -15,7 +15,7 @@ export enum AlertSeverity {
   INFO = 'INFO',
   WARNING = 'WARNING',
   ERROR = 'ERROR',
-  CRITICAL = 'CRITICAL'
+  CRITICAL = 'CRITICAL',
 }
 
 export enum AlertType {
@@ -27,7 +27,7 @@ export enum AlertType {
   NETWORK_ERROR = 'NETWORK_ERROR',
   SECURITY = 'SECURITY',
   PERFORMANCE = 'PERFORMANCE',
-  MILESTONE = 'MILESTONE'
+  MILESTONE = 'MILESTONE',
 }
 
 export interface Alert {
@@ -53,20 +53,20 @@ export interface AlertChannel {
 export interface AlertSystemConfig {
   // Throttling
   enableThrottling: boolean;
-  throttleWindowMs: number;         // Time window for throttling
-  maxAlertsPerWindow: number;       // Max alerts per window per type
-  
+  throttleWindowMs: number; // Time window for throttling
+  maxAlertsPerWindow: number; // Max alerts per window per type
+
   // Channels
   enableConsole: boolean;
   enableWebhooks: boolean;
   webhookUrls?: string[];
-  
+
   // Filtering
   minSeverityForNotification: AlertSeverity;
-  
+
   // Storage
-  maxStoredAlerts: number;          // Max alerts to keep in memory
-  alertRetentionMs: number;         // How long to keep old alerts
+  maxStoredAlerts: number; // Max alerts to keep in memory
+  alertRetentionMs: number; // How long to keep old alerts
 }
 
 /**
@@ -76,21 +76,21 @@ export class AlertSystem extends EventEmitter {
   private config: AlertSystemConfig;
   private alerts: Alert[] = [];
   private channels: Map<string, AlertChannel> = new Map();
-  
+
   // Throttling state
   private alertCounts: Map<string, { count: number; windowStart: number }> = new Map();
-  
+
   // Severity levels (for comparison)
   private readonly severityLevels = {
     [AlertSeverity.INFO]: 0,
     [AlertSeverity.WARNING]: 1,
     [AlertSeverity.ERROR]: 2,
-    [AlertSeverity.CRITICAL]: 3
+    [AlertSeverity.CRITICAL]: 3,
   };
 
   constructor(config?: Partial<AlertSystemConfig>) {
     super();
-    
+
     this.config = {
       enableThrottling: config?.enableThrottling ?? true,
       throttleWindowMs: config?.throttleWindowMs ?? 60000, // 1 minute
@@ -100,12 +100,12 @@ export class AlertSystem extends EventEmitter {
       webhookUrls: config?.webhookUrls ?? [],
       minSeverityForNotification: config?.minSeverityForNotification ?? AlertSeverity.WARNING,
       maxStoredAlerts: config?.maxStoredAlerts ?? 1000,
-      alertRetentionMs: config?.alertRetentionMs ?? 86400000 // 24 hours
+      alertRetentionMs: config?.alertRetentionMs ?? 86400000, // 24 hours
     };
-    
+
     // Setup default channels
     this.setupDefaultChannels();
-    
+
     logger.info('[AlertSystem] Initialized', 'ALERTS');
   }
 
@@ -126,19 +126,23 @@ export class AlertSystem extends EventEmitter {
           if (alert.metadata) {
             console.log(`  Metadata:`, alert.metadata);
           }
-        }
+        },
       });
     }
-    
+
     // Webhook channel
-    if (this.config.enableWebhooks && this.config.webhookUrls && this.config.webhookUrls.length > 0) {
+    if (
+      this.config.enableWebhooks &&
+      this.config.webhookUrls &&
+      this.config.webhookUrls.length > 0
+    ) {
       this.registerChannel({
         name: 'webhook',
         enabled: true,
         minSeverity: this.config.minSeverityForNotification,
         handler: async (alert) => {
           await this.sendWebhooks(alert);
-        }
+        },
       });
     }
   }
@@ -166,7 +170,7 @@ export class AlertSystem extends EventEmitter {
       logger.debug(`[AlertSystem] Alert throttled: ${type}`, 'ALERTS');
       return null; // Return null instead of throwing
     }
-    
+
     // Create alert
     const alert: Alert = {
       id: this.generateAlertId(),
@@ -176,30 +180,27 @@ export class AlertSystem extends EventEmitter {
       title,
       message,
       metadata,
-      acknowledged: false
+      acknowledged: false,
     };
-    
+
     // Store alert
     this.alerts.push(alert);
     this.cleanupOldAlerts();
-    
+
     // Update throttling counter
     if (this.config.enableThrottling) {
       this.updateThrottleCount(type);
     }
-    
+
     // Log the alert
-    logger.info(
-      `[AlertSystem] Alert sent: [${severity}] ${type} - ${title}`,
-      'ALERTS'
-    );
-    
+    logger.info(`[AlertSystem] Alert sent: [${severity}] ${type} - ${title}`, 'ALERTS');
+
     // Emit alert event
     this.emit('alert', alert);
-    
+
     // Send through channels
     await this.distributeAlert(alert);
-    
+
     return alert;
   }
 
@@ -208,21 +209,24 @@ export class AlertSystem extends EventEmitter {
    */
   private async distributeAlert(alert: Alert): Promise<void> {
     const promises = Array.from(this.channels.values())
-      .filter(channel => 
-        channel.enabled && 
-        this.severityLevels[alert.severity] >= this.severityLevels[channel.minSeverity]
+      .filter(
+        (channel) =>
+          channel.enabled &&
+          this.severityLevels[alert.severity] >= this.severityLevels[channel.minSeverity]
       )
-      .map(async channel => {
+      .map(async (channel) => {
         try {
           await channel.handler(alert);
         } catch (error) {
           logger.error(
-            `[AlertSystem] Failed to send alert to ${channel.name}: ${error instanceof Error ? error.message : String(error)}`,
+            `[AlertSystem] Failed to send alert to ${channel.name}: ${
+              error instanceof Error ? error.message : String(error)
+            }`,
             'ALERTS'
           );
         }
       });
-    
+
     await Promise.allSettled(promises);
   }
 
@@ -233,7 +237,7 @@ export class AlertSystem extends EventEmitter {
     if (!this.config.webhookUrls || this.config.webhookUrls.length === 0) {
       return;
     }
-    
+
     const payload = {
       alert_id: alert.id,
       timestamp: new Date(alert.timestamp).toISOString(),
@@ -241,10 +245,10 @@ export class AlertSystem extends EventEmitter {
       type: alert.type,
       title: alert.title,
       message: alert.message,
-      metadata: alert.metadata
+      metadata: alert.metadata,
     };
-    
-    const promises = this.config.webhookUrls.map(async url => {
+
+    const promises = this.config.webhookUrls.map(async (url) => {
       try {
         // Use dynamic import for node-fetch or axios if available
         // For now, log webhook call (actual HTTP client would be injected in production)
@@ -252,19 +256,20 @@ export class AlertSystem extends EventEmitter {
           `[AlertSystem] Webhook payload prepared for ${url}: ${JSON.stringify(payload)}`,
           'ALERTS'
         );
-        
+
         // In production, this would be:
         // const response = await axios.post(url, payload);
         // or use fetch if available
-        
       } catch (error) {
         logger.error(
-          `[AlertSystem] Webhook failed for ${url}: ${error instanceof Error ? error.message : String(error)}`,
+          `[AlertSystem] Webhook failed for ${url}: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
           'ALERTS'
         );
       }
     });
-    
+
     await Promise.allSettled(promises);
   }
 
@@ -275,18 +280,18 @@ export class AlertSystem extends EventEmitter {
     const key = type.toString();
     const now = Date.now();
     const throttleData = this.alertCounts.get(key);
-    
+
     if (!throttleData) {
       return false;
     }
-    
+
     // Check if we're still in the window
     if (now - throttleData.windowStart > this.config.throttleWindowMs) {
       // Window expired, reset
       this.alertCounts.delete(key);
       return false;
     }
-    
+
     // Check if we've hit the limit
     return throttleData.count >= this.config.maxAlertsPerWindow;
   }
@@ -298,7 +303,7 @@ export class AlertSystem extends EventEmitter {
     const key = type.toString();
     const now = Date.now();
     const throttleData = this.alertCounts.get(key);
-    
+
     if (!throttleData || now - throttleData.windowStart > this.config.throttleWindowMs) {
       this.alertCounts.set(key, { count: 1, windowStart: now });
     } else {
@@ -310,20 +315,20 @@ export class AlertSystem extends EventEmitter {
    * Acknowledge an alert
    */
   acknowledgeAlert(alertId: string, acknowledgedBy: string): boolean {
-    const alert = this.alerts.find(a => a.id === alertId);
-    
+    const alert = this.alerts.find((a) => a.id === alertId);
+
     if (!alert) {
       return false;
     }
-    
+
     alert.acknowledged = true;
     alert.acknowledgedAt = Date.now();
     alert.acknowledgedBy = acknowledgedBy;
-    
+
     logger.info(`[AlertSystem] Alert acknowledged: ${alertId} by ${acknowledgedBy}`, 'ALERTS');
-    
+
     this.emit('alert-acknowledged', alert);
-    
+
     return true;
   }
 
@@ -332,7 +337,7 @@ export class AlertSystem extends EventEmitter {
    */
   getAllAlerts(unacknowledgedOnly: boolean = false): Alert[] {
     if (unacknowledgedOnly) {
-      return this.alerts.filter(a => !a.acknowledged);
+      return this.alerts.filter((a) => !a.acknowledged);
     }
     return [...this.alerts];
   }
@@ -341,14 +346,14 @@ export class AlertSystem extends EventEmitter {
    * Get alerts by severity
    */
   getAlertsBySeverity(severity: AlertSeverity): Alert[] {
-    return this.alerts.filter(a => a.severity === severity);
+    return this.alerts.filter((a) => a.severity === severity);
   }
 
   /**
    * Get alerts by type
    */
   getAlertsByType(type: AlertType): Alert[] {
-    return this.alerts.filter(a => a.type === type);
+    return this.alerts.filter((a) => a.type === type);
   }
 
   /**
@@ -363,8 +368,8 @@ export class AlertSystem extends EventEmitter {
    */
   private cleanupOldAlerts(): void {
     const cutoff = Date.now() - this.config.alertRetentionMs;
-    this.alerts = this.alerts.filter(a => a.timestamp > cutoff);
-    
+    this.alerts = this.alerts.filter((a) => a.timestamp > cutoff);
+
     // Also limit by max count
     if (this.alerts.length > this.config.maxStoredAlerts) {
       this.alerts = this.alerts.slice(-this.config.maxStoredAlerts);
@@ -399,19 +404,39 @@ export class AlertSystem extends EventEmitter {
   /**
    * Convenience methods for common alert types
    */
-  async critical(type: AlertType, title: string, message: string, metadata?: Record<string, any>): Promise<Alert | null> {
+  async critical(
+    type: AlertType,
+    title: string,
+    message: string,
+    metadata?: Record<string, any>
+  ): Promise<Alert | null> {
     return this.sendAlert(AlertSeverity.CRITICAL, type, title, message, metadata);
   }
 
-  async error(type: AlertType, title: string, message: string, metadata?: Record<string, any>): Promise<Alert | null> {
+  async error(
+    type: AlertType,
+    title: string,
+    message: string,
+    metadata?: Record<string, any>
+  ): Promise<Alert | null> {
     return this.sendAlert(AlertSeverity.ERROR, type, title, message, metadata);
   }
 
-  async warning(type: AlertType, title: string, message: string, metadata?: Record<string, any>): Promise<Alert | null> {
+  async warning(
+    type: AlertType,
+    title: string,
+    message: string,
+    metadata?: Record<string, any>
+  ): Promise<Alert | null> {
     return this.sendAlert(AlertSeverity.WARNING, type, title, message, metadata);
   }
 
-  async info(type: AlertType, title: string, message: string, metadata?: Record<string, any>): Promise<Alert | null> {
+  async info(
+    type: AlertType,
+    title: string,
+    message: string,
+    metadata?: Record<string, any>
+  ): Promise<Alert | null> {
     return this.sendAlert(AlertSeverity.INFO, type, title, message, metadata);
   }
 
@@ -427,25 +452,25 @@ export class AlertSystem extends EventEmitter {
     const byLevel: Record<string, number> = {};
     const byType: Record<string, number> = {};
     let unacknowledged = 0;
-    
+
     for (const alert of this.alerts) {
       // Count by level
       byLevel[alert.severity] = (byLevel[alert.severity] || 0) + 1;
-      
+
       // Count by type
       byType[alert.type] = (byType[alert.type] || 0) + 1;
-      
+
       // Count unacknowledged
       if (!alert.acknowledged) {
         unacknowledged++;
       }
     }
-    
+
     return {
       total: this.alerts.length,
       byLevel,
       byType,
-      unacknowledged
+      unacknowledged,
     };
   }
 

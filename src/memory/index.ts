@@ -1,9 +1,9 @@
 /**
  * Memory System Module (Backward Compatibility Export)
- * 
+ *
  * This module re-exports from the new location at src/consciousness/memory/
  * for backward compatibility.
- * 
+ *
  * @deprecated Use imports from 'src/consciousness/memory' instead
  */
 

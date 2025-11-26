@@ -1,6 +1,6 @@
 /**
  * Health Check HTTP Endpoint
- * 
+ *
  * Express HTTP server providing health and metrics endpoints.
  * - GET /health - Returns system health status
  * - GET /metrics - Returns performance metrics
@@ -90,8 +90,8 @@ export class HealthCheckServer {
     this.app.get('/health', async (req: Request, res: Response) => {
       try {
         const health = await this.getHealthStatus();
-        const statusCode = health.status === 'healthy' ? 200 : 
-                          health.status === 'degraded' ? 200 : 503;
+        const statusCode =
+          health.status === 'healthy' ? 200 : health.status === 'degraded' ? 200 : 503;
         res.status(statusCode).json(health);
       } catch (error) {
         logger.error(`Error in /health endpoint: ${error}`, 'HEALTH');
@@ -155,7 +155,9 @@ export class HealthCheckServer {
     // Check wallet
     if (this.components?.wallet) {
       try {
-        const balance = await this.components.wallet.provider?.getBalance(this.components.wallet.address);
+        const balance = await this.components.wallet.provider?.getBalance(
+          this.components.wallet.address
+        );
         if (balance === 0n) {
           components.wallet = { status: 'degraded', message: 'Zero balance' };
           if (overallStatus === 'healthy') overallStatus = 'degraded';
@@ -238,9 +240,7 @@ export class HealthCheckServer {
     // Calculate success rate
     const totalExecutions = this.stats.tradesExecuted;
     const successRate =
-      totalExecutions > 0
-        ? (this.stats.tradesExecuted / totalExecutions) * 100
-        : 0;
+      totalExecutions > 0 ? (this.stats.tradesExecuted / totalExecutions) * 100 : 0;
 
     return {
       timestamp: new Date().toISOString(),
@@ -298,7 +298,10 @@ export class HealthCheckServer {
         this.server = this.app.listen(this.config.port, () => {
           logger.info(`Health check server listening on port ${this.config.port}`, 'HEALTH');
           logger.info(`  - Health endpoint: http://localhost:${this.config.port}/health`, 'HEALTH');
-          logger.info(`  - Metrics endpoint: http://localhost:${this.config.port}/metrics`, 'HEALTH');
+          logger.info(
+            `  - Metrics endpoint: http://localhost:${this.config.port}/metrics`,
+            'HEALTH'
+          );
           resolve();
         });
 

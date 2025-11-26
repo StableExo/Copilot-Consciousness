@@ -51,7 +51,7 @@ describe('RealtimeDataPipeline', () => {
       await pipeline.processEvent(event);
 
       // Wait for async processing
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       const metrics = pipeline.getMetrics();
       expect(metrics.eventsReceived).toBe(1);
@@ -74,7 +74,7 @@ describe('RealtimeDataPipeline', () => {
       await pipeline.processEvent(event);
 
       // Wait for async processing
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       const metrics = pipeline.getMetrics();
       expect(metrics.eventsReceived).toBe(1);
@@ -122,13 +122,13 @@ describe('RealtimeDataPipeline', () => {
       }
 
       // Wait for processing
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const metrics = smallPipeline.getMetrics();
       // Verify metrics are being tracked
       expect(metrics.eventsReceived).toBeGreaterThan(0);
       expect(metrics.queueSize).toBeGreaterThanOrEqual(0);
-      
+
       smallPipeline.destroy();
     });
 
@@ -156,11 +156,11 @@ describe('RealtimeDataPipeline', () => {
       }
 
       // Wait for processing
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const metrics = smallPipeline.getMetrics();
       expect(metrics.eventsReceived).toBe(3);
-      
+
       smallPipeline.destroy();
     });
   });
@@ -168,7 +168,7 @@ describe('RealtimeDataPipeline', () => {
   describe('getPriceTrend', () => {
     it('should return price history for pool', async () => {
       const poolAddress = '0x1234567890123456789012345678901234567890';
-      
+
       const event: PoolEvent = {
         eventType: 'Sync',
         poolAddress,
@@ -194,7 +194,7 @@ describe('RealtimeDataPipeline', () => {
   describe('getMetrics', () => {
     it('should return current metrics', () => {
       const metrics = pipeline.getMetrics();
-      
+
       expect(metrics).toHaveProperty('eventsReceived');
       expect(metrics).toHaveProperty('eventsFiltered');
       expect(metrics).toHaveProperty('eventsEmitted');
@@ -229,7 +229,7 @@ describe('RealtimeDataPipeline', () => {
   describe('clearPriceHistory', () => {
     it('should clear price history', async () => {
       const poolAddress = '0x1234567890123456789012345678901234567890';
-      
+
       const event: PoolEvent = {
         eventType: 'Sync',
         poolAddress,

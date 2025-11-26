@@ -1,6 +1,6 @@
 /**
  * Graph Data Structure
- * 
+ *
  * Represents pool connectivity for arbitrage path finding.
  * Used by GraphBuilder for triangle and cycle detection.
  */
@@ -13,10 +13,10 @@ import { PoolState } from '../engines/SpatialArbEngine';
 export interface GraphEdge {
   /** Pool that enables this connection */
   pool: PoolState;
-  
+
   /** Destination token */
   to: string;
-  
+
   /** Weight (can be used for optimization) */
   weight?: number;
 }
@@ -27,10 +27,10 @@ export interface GraphEdge {
 export class Graph {
   // Adjacency list: token -> edges
   private adjacencyList: Map<string, GraphEdge[]>;
-  
+
   // All unique tokens in graph
   private tokens: Set<string>;
-  
+
   // All pools in graph
   private pools: Map<string, PoolState>;
 
@@ -67,7 +67,7 @@ export class Graph {
     this.adjacencyList.get(from)!.push({
       pool,
       to,
-      weight: 1,  // Can be customized for optimization
+      weight: 1, // Can be customized for optimization
     });
   }
 
@@ -83,7 +83,7 @@ export class Graph {
    */
   getNeighbors(token: string): string[] {
     const edges = this.getEdges(token);
-    return edges.map(edge => edge.to);
+    return edges.map((edge) => edge.to);
   }
 
   /**
@@ -209,13 +209,7 @@ export class Graph {
 
       const edges = this.getEdges(current);
       for (const edge of edges) {
-        dfs(
-          edge.to,
-          target,
-          [...path, edge.to],
-          [...pools, edge.pool],
-          newVisited
-        );
+        dfs(edge.to, target, [...path, edge.to], [...pools, edge.pool], newVisited);
       }
     };
 

@@ -64,7 +64,7 @@ class ScannerService {
         this.rabbitmqConnection = connection;
         const channel = await connection.createChannel();
         this.rabbitmqChannel = channel;
-        
+
         // Declare opportunity queue
         await channel.assertQueue('opportunities', {
           durable: true,
@@ -81,7 +81,9 @@ class ScannerService {
         retries--;
         console.error(`[Scanner] Failed to connect to RabbitMQ (${retries} retries left):`, error);
         if (retries === 0) {
-          console.error('[Scanner] Could not connect to RabbitMQ after multiple attempts. Exiting.');
+          console.error(
+            '[Scanner] Could not connect to RabbitMQ after multiple attempts. Exiting.'
+          );
           process.exit(1);
         }
         await this.sleep(5000);
@@ -122,7 +124,7 @@ class ScannerService {
     // TODO: Implement actual scanning logic
     // For now, this is a placeholder that would integrate with existing arbitrage detection
     console.log('[Scanner] Scanning for opportunities...');
-    
+
     // Simulate finding an opportunity
     const opportunity = {
       id: `opp-${Date.now()}`,
@@ -134,31 +136,25 @@ class ScannerService {
 
     // Publish to RabbitMQ
     if (this.rabbitmqChannel) {
-      this.rabbitmqChannel.sendToQueue(
-        'opportunities',
-        Buffer.from(JSON.stringify(opportunity)),
-        { persistent: true }
-      );
+      this.rabbitmqChannel.sendToQueue('opportunities', Buffer.from(JSON.stringify(opportunity)), {
+        persistent: true,
+      });
     }
 
     // Cache in Redis for deduplication
     if (this.redis) {
-      await this.redis.setex(
-        `opportunity:${opportunity.id}`,
-        300,
-        JSON.stringify(opportunity)
-      );
+      await this.redis.setex(`opportunity:${opportunity.id}`, 300, JSON.stringify(opportunity));
     }
   }
 
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   async stop(): Promise<void> {
     console.log('[Scanner] Stopping service...');
     this.isRunning = false;
-    
+
     if (this.rabbitmqChannel) await this.rabbitmqChannel.close();
     if (this.rabbitmqConnection) await this.rabbitmqConnection.close();
     if (this.redis) await this.redis.quit();

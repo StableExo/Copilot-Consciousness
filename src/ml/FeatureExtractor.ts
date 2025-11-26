@@ -1,6 +1,6 @@
 /**
  * FeatureExtractor - Transform raw market data into ML-ready features
- * 
+ *
  * Extracts features including price momentum, volume metrics, liquidity ratios,
  * gas trends, volatility measures, time-based patterns, and MEV risk indicators.
  */
@@ -105,7 +105,14 @@ export class FeatureExtractor {
   private extractMomentumFeatures(
     history: PriceDataPoint[],
     currentTime: number
-  ): Pick<MarketFeatures, 'priceMomentum5s' | 'priceMomentum15s' | 'priceMomentum30s' | 'priceMomentum1m' | 'priceMomentum5m'> {
+  ): Pick<
+    MarketFeatures,
+    | 'priceMomentum5s'
+    | 'priceMomentum15s'
+    | 'priceMomentum30s'
+    | 'priceMomentum1m'
+    | 'priceMomentum5m'
+  > {
     const currentPrice = history[history.length - 1].price;
 
     const momentum5s = this.calculateMomentum(history, currentTime, 5000, currentPrice);
@@ -133,7 +140,7 @@ export class FeatureExtractor {
     currentPrice: number
   ): number {
     const startTime = currentTime - windowMs;
-    const windowData = history.filter(p => p.timestamp >= startTime);
+    const windowData = history.filter((p) => p.timestamp >= startTime);
 
     if (windowData.length === 0) {
       return 0;
@@ -150,11 +157,11 @@ export class FeatureExtractor {
     history: PriceDataPoint[]
   ): Pick<MarketFeatures, 'volumeMA' | 'volumeRatio' | 'vwap'> {
     const recentHistory = history.slice(-12); // Last minute (5s intervals)
-    
+
     const volumeMA = recentHistory.reduce((sum, p) => sum + p.volume, 0) / recentHistory.length;
     const currentVolume = history[history.length - 1].volume;
     const volumeRatio = volumeMA > 0 ? currentVolume / volumeMA : 1;
-    
+
     const vwap = this.calculateVWAP(recentHistory);
 
     return {
@@ -176,7 +183,9 @@ export class FeatureExtractor {
       totalVolume += point.volume;
     }
 
-    return totalVolume > 0 ? totalVolumePrice / totalVolume : history[history.length - 1]?.price || 0;
+    return totalVolume > 0
+      ? totalVolumePrice / totalVolume
+      : history[history.length - 1]?.price || 0;
   }
 
   /**
@@ -189,17 +198,17 @@ export class FeatureExtractor {
     const previousPoint = history[history.length - 2];
 
     const liquidityDepth = currentPoint.liquidity;
-    const liquidityRatio = previousPoint 
+    const liquidityRatio = previousPoint
       ? currentPoint.liquidity / (previousPoint.liquidity || 1)
       : 1;
 
     // Estimate bid-ask spread from price volatility
-    const recentPrices = history.slice(-10).map(p => p.price);
+    const recentPrices = history.slice(-10).map((p) => p.price);
     const priceStd = this.calculateStandardDeviation(recentPrices);
     const bidAskSpread = priceStd / currentPoint.price;
 
     // Spread trend
-    const olderPrices = history.slice(-20, -10).map(p => p.price);
+    const olderPrices = history.slice(-20, -10).map((p) => p.price);
     const olderPriceStd = this.calculateStandardDeviation(olderPrices);
     const spreadTrend = olderPriceStd > 0 ? (priceStd - olderPriceStd) / olderPriceStd : 0;
 
@@ -217,9 +226,7 @@ export class FeatureExtractor {
   private extractGasFeatures(
     history: PriceDataPoint[]
   ): Pick<MarketFeatures, 'gasPricePercentile' | 'gasTrend'> {
-    const gasPrices = history
-      .filter(p => p.gasPrice !== undefined)
-      .map(p => p.gasPrice!);
+    const gasPrices = history.filter((p) => p.gasPrice !== undefined).map((p) => p.gasPrice!);
 
     if (gasPrices.length === 0) {
       return { gasPricePercentile: 0.5, gasTrend: 0 };
@@ -233,9 +240,8 @@ export class FeatureExtractor {
     const recentGas = gasPrices.slice(-10);
     const olderGas = gasPrices.slice(-20, -10);
     const recentAvg = recentGas.reduce((a, b) => a + b, 0) / recentGas.length;
-    const olderAvg = olderGas.length > 0 
-      ? olderGas.reduce((a, b) => a + b, 0) / olderGas.length
-      : recentAvg;
+    const olderAvg =
+      olderGas.length > 0 ? olderGas.reduce((a, b) => a + b, 0) / olderGas.length : recentAvg;
     const gasTrend = olderAvg > 0 ? (recentAvg - olderAvg) / olderAvg : 0;
 
     return {
@@ -250,7 +256,7 @@ export class FeatureExtractor {
   private extractVolatilityFeatures(
     history: PriceDataPoint[]
   ): Pick<MarketFeatures, 'volatility' | 'atr'> {
-    const prices = history.map(p => p.price);
+    const prices = history.map((p) => p.price);
     const volatility = this.calculateVolatility(prices);
     const atr = this.calculateATR(history);
 
@@ -282,17 +288,13 @@ export class FeatureExtractor {
     if (history.length < period + 1) return 0;
 
     const trueRanges: number[] = [];
-    
+
     for (let i = 1; i < history.length; i++) {
       const high = history[i].price;
       const low = history[i].price * 0.99; // Simplified, would use actual high/low
       const prevClose = history[i - 1].price;
-      
-      const tr = Math.max(
-        high - low,
-        Math.abs(high - prevClose),
-        Math.abs(low - prevClose)
-      );
+
+      const tr = Math.max(high - low, Math.abs(high - prevClose), Math.abs(low - prevClose));
       trueRanges.push(tr);
     }
 
@@ -326,9 +328,8 @@ export class FeatureExtractor {
     }
 
     // Calculate composite MEV risk score
-    const mevRiskScore = 
-      (mevRiskParams.mempoolCongestion * 0.4 + 
-       mevRiskParams.searcherDensity * 0.6);
+    const mevRiskScore =
+      mevRiskParams.mempoolCongestion * 0.4 + mevRiskParams.searcherDensity * 0.6;
 
     return {
       mempoolCongestion: mevRiskParams.mempoolCongestion,
@@ -342,11 +343,11 @@ export class FeatureExtractor {
    */
   private calculateStandardDeviation(values: number[]): number {
     if (values.length === 0) return 0;
-    
+
     const mean = values.reduce((a, b) => a + b, 0) / values.length;
-    const squaredDiffs = values.map(v => Math.pow(v - mean, 2));
+    const squaredDiffs = values.map((v) => Math.pow(v - mean, 2));
     const variance = squaredDiffs.reduce((a, b) => a + b, 0) / values.length;
-    
+
     return Math.sqrt(variance);
   }
 
@@ -391,16 +392,14 @@ export class FeatureExtractor {
    */
   private calculateAverageLiquidity(path: ArbitragePath): number {
     const liquidities = path.hops
-      .map(hop => {
+      .map((hop) => {
         const r0 = Number(hop.reserve0 || 0n);
         const r1 = Number(hop.reserve1 || 0n);
         return Math.sqrt(r0 * r1);
       })
-      .filter(l => l > 0);
+      .filter((l) => l > 0);
 
-    return liquidities.length > 0
-      ? liquidities.reduce((a, b) => a + b, 0) / liquidities.length
-      : 0;
+    return liquidities.length > 0 ? liquidities.reduce((a, b) => a + b, 0) / liquidities.length : 0;
   }
 
   /**
@@ -408,12 +407,12 @@ export class FeatureExtractor {
    */
   private calculateMinLiquidity(path: ArbitragePath): number {
     const liquidities = path.hops
-      .map(hop => {
+      .map((hop) => {
         const r0 = Number(hop.reserve0 || 0n);
         const r1 = Number(hop.reserve1 || 0n);
         return Math.sqrt(r0 * r1);
       })
-      .filter(l => l > 0);
+      .filter((l) => l > 0);
 
     return liquidities.length > 0 ? Math.min(...liquidities) : 0;
   }
@@ -433,7 +432,7 @@ export class FeatureExtractor {
    */
   setFeatureImportance(importance: FeatureImportance[]): void {
     this.featureImportance.clear();
-    importance.forEach(fi => {
+    importance.forEach((fi) => {
       this.featureImportance.set(fi.feature, fi.importance);
     });
   }

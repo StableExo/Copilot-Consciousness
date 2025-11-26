@@ -1,9 +1,9 @@
 /**
  * KnowledgeLoop - Conscious Learning System
- * 
+ *
  * Integrated from AxionCitadel's "Conscious Knowledge Loop" architecture.
  * Orchestrates the complete learning cycle: observe → learn → adapt → execute.
- * 
+ *
  * This is the central nervous system of the consciousness learning framework,
  * connecting operational logging, memory formation, calibration, and strategy adaptation.
  */
@@ -29,18 +29,12 @@ export class KnowledgeLoop {
   private learningInterval: NodeJS.Timeout | null = null;
   private isRunning: boolean = false;
 
-  constructor(
-    logDirectory: string = '.memory/strategic-logger',
-    autoStart: boolean = false
-  ) {
+  constructor(logDirectory: string = '.memory/strategic-logger', autoStart: boolean = false) {
     // Initialize components
     this.logger = new BlackBoxLogger(logDirectory);
     this.calibrationEngine = new CalibrationEngine(this.logger);
     this.memoryFormation = new MemoryFormation(this.logger, logDirectory);
-    this.adaptiveStrategies = new AdaptiveStrategies(
-      this.calibrationEngine,
-      this.memoryFormation
-    );
+    this.adaptiveStrategies = new AdaptiveStrategies(this.calibrationEngine, this.memoryFormation);
 
     if (autoStart) {
       this.start();
@@ -61,15 +55,11 @@ export class KnowledgeLoop {
     console.log(`Knowledge loop started (interval: ${intervalMs}ms)`);
 
     // Run immediately
-    this.runLearningCycle().catch((err) =>
-      console.error('Error in initial learning cycle:', err)
-    );
+    this.runLearningCycle().catch((err) => console.error('Error in initial learning cycle:', err));
 
     // Then run periodically
     this.learningInterval = setInterval(() => {
-      this.runLearningCycle().catch((err) =>
-        console.error('Error in learning cycle:', err)
-      );
+      this.runLearningCycle().catch((err) => console.error('Error in learning cycle:', err));
     }, intervalMs);
   }
 
@@ -205,9 +195,7 @@ export class KnowledgeLoop {
   /**
    * Select optimal strategy for current conditions
    */
-  async selectStrategy(
-    currentConditions: Record<string, any>
-  ): Promise<StrategySelection | null> {
+  async selectStrategy(currentConditions: Record<string, any>): Promise<StrategySelection | null> {
     return this.adaptiveStrategies.selectStrategy(currentConditions);
   }
 
@@ -229,10 +217,8 @@ export class KnowledgeLoop {
     topStrategies: Strategy[];
   }> {
     const summary = await this.logger.getSummary();
-    const totalOps =
-      summary.successCount + summary.failureCount + summary.pendingCount;
-    const successRate =
-      totalOps > 0 ? summary.successCount / totalOps : 0;
+    const totalOps = summary.successCount + summary.failureCount + summary.pendingCount;
+    const successRate = totalOps > 0 ? summary.successCount / totalOps : 0;
 
     return {
       totalOperations: totalOps,

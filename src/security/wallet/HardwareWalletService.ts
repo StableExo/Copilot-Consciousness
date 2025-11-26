@@ -7,7 +7,7 @@ import { ethers, getAddress, TransactionRequest } from 'ethers';
 
 export enum HardwareWalletType {
   LEDGER = 'LEDGER',
-  TREZOR = 'TREZOR'
+  TREZOR = 'TREZOR',
 }
 
 export interface HardwareWalletConfig {
@@ -41,7 +41,7 @@ export class HardwareWalletService {
   constructor(config: HardwareWalletConfig) {
     this.config = {
       ...config,
-      derivationPath: config.derivationPath || this.DEFAULT_PATH
+      derivationPath: config.derivationPath || this.DEFAULT_PATH,
     };
   }
 
@@ -71,8 +71,10 @@ export class HardwareWalletService {
     // const transport = await TransportWebUSB.create();
     // const eth = new Eth(transport);
     // const { address } = await eth.getAddress(this.config.derivationPath!);
-    
-    throw new Error('Ledger connection requires browser/USB access. Use @ledgerhq/hw-app-eth in browser environment.');
+
+    throw new Error(
+      'Ledger connection requires browser/USB access. Use @ledgerhq/hw-app-eth in browser environment.'
+    );
   }
 
   /**
@@ -91,16 +93,16 @@ export class HardwareWalletService {
     // const result = await TrezorConnect.ethereumGetAddress({
     //   path: this.config.derivationPath!
     // });
-    
-    throw new Error('Trezor connection requires browser access. Use trezor-connect in browser environment.');
+
+    throw new Error(
+      'Trezor connection requires browser access. Use trezor-connect in browser environment.'
+    );
   }
 
   /**
    * Sign transaction with hardware wallet
    */
-  async signTransaction(
-    transaction: TransactionRequest
-  ): Promise<SignedTransaction> {
+  async signTransaction(transaction: TransactionRequest): Promise<SignedTransaction> {
     if (!this.connectedAddress) {
       throw new Error('Hardware wallet not connected');
     }
@@ -120,25 +122,21 @@ export class HardwareWalletService {
   /**
    * Sign with Ledger
    */
-  private async signWithLedger(
-    transaction: TransactionRequest
-  ): Promise<SignedTransaction> {
+  private async signWithLedger(transaction: TransactionRequest): Promise<SignedTransaction> {
     // Placeholder - actual implementation
     // const serializedTx = ethers.utils.serializeTransaction(transaction);
     // const signature = await eth.signTransaction(
     //   this.config.derivationPath!,
     //   serializedTx
     // );
-    
+
     throw new Error('Ledger signing requires hardware access');
   }
 
   /**
    * Sign with Trezor
    */
-  private async signWithTrezor(
-    transaction: TransactionRequest
-  ): Promise<SignedTransaction> {
+  private async signWithTrezor(transaction: TransactionRequest): Promise<SignedTransaction> {
     // Placeholder - actual implementation
     // const result = await TrezorConnect.ethereumSignTransaction({
     //   path: this.config.derivationPath!,
@@ -151,7 +149,7 @@ export class HardwareWalletService {
     //     data: transaction.data
     //   }
     // });
-    
+
     throw new Error('Trezor signing requires hardware access');
   }
 
@@ -184,7 +182,7 @@ export class HardwareWalletService {
     //   this.config.derivationPath!,
     //   Buffer.from(message).toString('hex')
     // );
-    
+
     throw new Error('Ledger message signing requires hardware access');
   }
 
@@ -197,7 +195,7 @@ export class HardwareWalletService {
     //   path: this.config.derivationPath!,
     //   message
     // });
-    
+
     throw new Error('Trezor message signing requires hardware access');
   }
 

@@ -1,8 +1,8 @@
 /**
  * CrossChainScanner - Continuously scan for price differences across chains
- * 
+ *
  * Monitors token prices across all chains in parallel and identifies arbitrage opportunities
- * 
+ *
  * ⚠️ EXPERIMENTAL FEATURE: Cross-chain scanning is experimental and requires careful configuration.
  * Ensure proper RPC endpoints and network IDs are configured before use.
  */
@@ -57,10 +57,10 @@ export class CrossChainScanner extends EventEmitter {
     this.isScanning = false;
     this.tokenList = tokenList;
     this.lastScanResults = null;
-    
+
     // Validate configuration
     this.validateConfiguration();
-    
+
     // Initialize adapters synchronously (network validation happens on first scan)
     this.initializeAdapters();
   }
@@ -72,21 +72,27 @@ export class CrossChainScanner extends EventEmitter {
     if (!this.config) {
       throw new Error('Scanner configuration is required');
     }
-    
+
     if (this.config.scanIntervalMs < CrossChainScanner.MIN_SAFE_SCAN_INTERVAL_MS) {
-      console.warn(`⚠️ WARNING: Scan interval is very short (<${CrossChainScanner.MIN_SAFE_SCAN_INTERVAL_MS}ms), this may cause rate limiting`);
+      console.warn(
+        `⚠️ WARNING: Scan interval is very short (<${CrossChainScanner.MIN_SAFE_SCAN_INTERVAL_MS}ms), this may cause rate limiting`
+      );
     }
-    
+
     if (this.config.maxConcurrentScans > CrossChainScanner.MAX_SAFE_CONCURRENT_SCANS) {
-      console.warn(`⚠️ WARNING: High concurrent scan limit (>${CrossChainScanner.MAX_SAFE_CONCURRENT_SCANS}), may cause performance issues`);
+      console.warn(
+        `⚠️ WARNING: High concurrent scan limit (>${CrossChainScanner.MAX_SAFE_CONCURRENT_SCANS}), may cause performance issues`
+      );
     }
-    
-    console.log('⚠️ Cross-chain scanning is an EXPERIMENTAL feature. Monitor for unexpected behavior.');
+
+    console.log(
+      '⚠️ Cross-chain scanning is an EXPERIMENTAL feature. Monitor for unexpected behavior.'
+    );
   }
 
   /**
    * Initialize adapters for all active chains
-   * 
+   *
    * Network validation happens during startScanning() to avoid async constructor
    */
   private initializeAdapters(): void {
@@ -115,14 +121,14 @@ export class CrossChainScanner extends EventEmitter {
       }
     }
   }
-  
+
   /**
    * Validate provider networks match expected chain IDs
    * Called during startScanning to catch provider mismatches early
    */
   private async validateProviderNetworks(): Promise<boolean> {
     let allValid = true;
-    
+
     for (const [chainId, adapter] of this.adapters.entries()) {
       if (typeof chainId === 'number' && adapter.chainType === 'EVM') {
         try {
@@ -137,7 +143,7 @@ export class CrossChainScanner extends EventEmitter {
               this.emit('providerMismatch', {
                 expectedChainId: chainId,
                 actualChainId: network.chainId,
-                timestamp: Date.now()
+                timestamp: Date.now(),
               });
               allValid = false;
             }
@@ -148,7 +154,7 @@ export class CrossChainScanner extends EventEmitter {
         }
       }
     }
-    
+
     return allValid;
   }
 
@@ -160,19 +166,21 @@ export class CrossChainScanner extends EventEmitter {
       console.warn('Scanner already running');
       return;
     }
-    
+
     // Validate we have adapters before starting
     if (this.adapters.size === 0) {
       console.error('⚠️ Cannot start scanner: No chain adapters initialized');
       this.emit('error', new Error('No chain adapters available'));
       return;
     }
-    
+
     // Validate provider networks match expected chain IDs
     console.log('Validating provider networks...');
     const networksValid = await this.validateProviderNetworks();
     if (!networksValid) {
-      console.warn('⚠️ Some provider networks do not match expected chain IDs. Proceeding with available adapters.');
+      console.warn(
+        '⚠️ Some provider networks do not match expected chain IDs. Proceeding with available adapters.'
+      );
     }
 
     this.isScanning = true;
@@ -182,18 +190,18 @@ export class CrossChainScanner extends EventEmitter {
     this.emit('started', {
       chainsMonitored: this.adapters.size,
       tokensWatched: this.tokenList.length,
-      scanInterval: this.config.scanIntervalMs
+      scanInterval: this.config.scanIntervalMs,
     });
 
     // Run initial scan
-    this.scan().catch(err => {
+    this.scan().catch((err) => {
       console.error('Initial scan failed:', err);
       this.emit('scanError', { error: String(err), timestamp: Date.now() });
     });
 
     // Schedule periodic scans
     this.scanInterval = setInterval(() => {
-      this.scan().catch(err => {
+      this.scan().catch((err) => {
         console.error('Periodic scan failed:', err);
         this.emit('scanError', { error: String(err), timestamp: Date.now() });
       });
@@ -226,19 +234,19 @@ export class CrossChainScanner extends EventEmitter {
 
       // Compare prices across all chain pairs
       const chainIds = Array.from(pricesByChain.keys());
-      
+
       for (let i = 0; i < chainIds.length; i++) {
         for (let j = i + 1; j < chainIds.length; j++) {
           const chainA = chainIds[i];
           const chainB = chainIds[j];
-          
+
           const pricesA = pricesByChain.get(chainA) || [];
           const pricesB = pricesByChain.get(chainB) || [];
 
           // Find matching tokens
           for (const priceA of pricesA) {
-            const priceB = pricesB.find(p => this.isSameToken(p.token, priceA.token));
-            
+            const priceB = pricesB.find((p) => this.isSameToken(p.token, priceA.token));
+
             if (priceB && priceA.priceUSD > 0 && priceB.priceUSD > 0) {
               const discrepancy = this.calculateDiscrepancy(priceA.priceUSD, priceB.priceUSD);
 
@@ -257,7 +265,7 @@ export class CrossChainScanner extends EventEmitter {
                     chainB,
                     priceA.priceUSD,
                     priceB.priceUSD
-                  )
+                  ),
                 });
               }
             }
@@ -266,28 +274,32 @@ export class CrossChainScanner extends EventEmitter {
       }
 
       const result: ScanResult = {
-        discrepancies: discrepancies.sort((a, b) => Math.abs(b.discrepancy) - Math.abs(a.discrepancy)),
+        discrepancies: discrepancies.sort(
+          (a, b) => Math.abs(b.discrepancy) - Math.abs(a.discrepancy)
+        ),
         scanTime: Date.now() - startTime,
         chainsScanned: chainIds.length,
-        tokensScanned: this.tokenList.length
+        tokensScanned: this.tokenList.length,
       };
 
       this.lastScanResults = result;
-      
+
       if (discrepancies.length > 0) {
-        console.log(`Found ${discrepancies.length} price discrepancies across ${chainIds.length} chains`);
+        console.log(
+          `Found ${discrepancies.length} price discrepancies across ${chainIds.length} chains`
+        );
         this.emit('discrepanciesFound', {
           count: discrepancies.length,
           topDiscrepancies: discrepancies.slice(0, 5),
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
       }
-      
+
       this.emit('scanComplete', {
         chainsScanned: chainIds.length,
         tokensScanned: this.tokenList.length,
         discrepanciesFound: discrepancies.length,
-        scanTime: result.scanTime
+        scanTime: result.scanTime,
       });
 
       return result;
@@ -297,7 +309,7 @@ export class CrossChainScanner extends EventEmitter {
         discrepancies: [],
         scanTime: Date.now() - startTime,
         chainsScanned: 0,
-        tokensScanned: 0
+        tokensScanned: 0,
       };
     }
   }
@@ -313,10 +325,10 @@ export class CrossChainScanner extends EventEmitter {
       // Process adapters in chunks to respect maxConcurrentScans limit
       const adapterEntries = Array.from(this.adapters.entries());
       const chunkSize = this.config.maxConcurrentScans;
-      
+
       for (let i = 0; i < adapterEntries.length; i += chunkSize) {
         const chunk = adapterEntries.slice(i, i + chunkSize);
-        
+
         const chunkPromises = chunk.map(async ([chainId, adapter]) => {
           try {
             const prices = await adapter.getTokenPrices(this.tokenList);
@@ -387,10 +399,11 @@ export class CrossChainScanner extends EventEmitter {
     // - Gas costs on both chains
     // - Slippage
     // - Time value
-    
+
     const discrepancy = Math.abs(priceA - priceB);
-    const minProfitableDiscrepancy = Math.max(priceA, priceB) * CrossChainScanner.MIN_PROFITABILITY_THRESHOLD;
-    
+    const minProfitableDiscrepancy =
+      Math.max(priceA, priceB) * CrossChainScanner.MIN_PROFITABILITY_THRESHOLD;
+
     return discrepancy >= minProfitableDiscrepancy;
   }
 
@@ -407,7 +420,7 @@ export class CrossChainScanner extends EventEmitter {
    * Remove token from watch list
    */
   removeToken(tokenAddress: string): void {
-    this.tokenList = this.tokenList.filter(t => t !== tokenAddress);
+    this.tokenList = this.tokenList.filter((t) => t !== tokenAddress);
   }
 
   /**
@@ -431,7 +444,7 @@ export class CrossChainScanner extends EventEmitter {
     if (!this.lastScanResults) {
       return [];
     }
-    return this.lastScanResults.discrepancies.filter(d => d.isProfitable);
+    return this.lastScanResults.discrepancies.filter((d) => d.isProfitable);
   }
 
   /**
@@ -456,7 +469,7 @@ export class CrossChainScanner extends EventEmitter {
       tokensWatched: this.tokenList.length,
       chainsMonitored: this.adapters.size,
       lastScanTime: this.lastScanResults?.scanTime,
-      discrepanciesFound: this.lastScanResults?.discrepancies.length
+      discrepanciesFound: this.lastScanResults?.discrepancies.length,
     };
   }
 }

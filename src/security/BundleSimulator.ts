@@ -1,22 +1,22 @@
 /**
  * BundleSimulator - Pre-Crime MEV Protection
- * 
+ *
  * Tier S Feature #3: Active bundle simulation for MEV threat detection
- * 
+ *
  * This module extends BloodhoundScanner from passive monitoring to active
  * simulation. It simulates your own bundles against the current mempool
  * and recent private bundles to detect potential frontrunning/backrunning
  * threats before submission.
- * 
+ *
  * Detection thresholds:
  * - >30% probability of being attacked
  * - >50% profit erosion from attack
- * 
+ *
  * Response:
  * - Auto-abort if above thresholds
  * - Or route to private bundle with coinbase payment
  * - Integrates with CoherenceEthics for ethical review
- * 
+ *
  * Integration: Used by execution orchestrators before bundle submission
  */
 
@@ -26,19 +26,19 @@ import { Provider, TransactionRequest } from 'ethers';
 export interface BundleThreatAssessment {
   /** Probability of being attacked (0.0 to 1.0) */
   probability: number;
-  
+
   /** Expected profit erosion if attacked (0.0 to 1.0) */
   profitErosion: number;
-  
+
   /** Specific threat types detected */
   threats: ThreatType[];
-  
+
   /** Recommended action */
   recommendation: 'execute_public' | 'execute_private' | 'abort';
-  
+
   /** Reasoning for recommendation */
   reasoning: string[];
-  
+
   /** Confidence in assessment */
   confidence: number;
 }
@@ -54,30 +54,30 @@ export enum ThreatType {
 export interface SimulationConfig {
   /** Threshold for threat probability */
   threatProbabilityThreshold: number;
-  
+
   /** Threshold for profit erosion */
   profitErosionThreshold: number;
-  
+
   /** Number of mempool transactions to analyze */
   mempoolSampleSize: number;
-  
+
   /** Number of recent private bundles to consider */
   privateBundleHistorySize: number;
-  
+
   /** Enable private bundle routing when threatened */
   enablePrivateFallback: boolean;
-  
+
   /** Sandwich attack multiplier (higher = more weight to sandwich threats) */
   sandwichMultiplier: number;
 }
 
 const DEFAULT_CONFIG: SimulationConfig = {
-  threatProbabilityThreshold: 0.3,   // 30%
-  profitErosionThreshold: 0.5,       // 50%
+  threatProbabilityThreshold: 0.3, // 30%
+  profitErosionThreshold: 0.5, // 50%
   mempoolSampleSize: 100,
   privateBundleHistorySize: 5,
   enablePrivateFallback: true,
-  sandwichMultiplier: 1.5,  // Sandwich attacks are 1.5x more profitable than individual attacks
+  sandwichMultiplier: 1.5, // Sandwich attacks are 1.5x more profitable than individual attacks
 };
 
 /**
@@ -182,11 +182,11 @@ export class BundleSimulator extends EventEmitter {
     for (const [, pendingTx] of this.mempoolCache) {
       if (pendingTx.to === bundleTx.to) {
         competingTxCount++;
-        
+
         // Higher gas price = higher frontrun risk
         const ourGasPrice = BigInt(bundleTx.gasPrice || bundleTx.maxFeePerGas || 0n);
         const theirGasPrice = BigInt(pendingTx.gasPrice || pendingTx.maxFeePerGas || 0n);
-        
+
         if (theirGasPrice >= ourGasPrice) {
           riskScore += 0.15; // 15% risk per competing high-gas tx
         }
@@ -216,10 +216,12 @@ export class BundleSimulator extends EventEmitter {
     }, 0n);
 
     // Risk increases with transaction size
-    if (totalValue > BigInt(1e18)) { // > 1 ETH
+    if (totalValue > BigInt(1e18)) {
+      // > 1 ETH
       riskScore += 0.2;
     }
-    if (totalValue > BigInt(10e18)) { // > 10 ETH
+    if (totalValue > BigInt(10e18)) {
+      // > 10 ETH
       riskScore += 0.2;
     }
 
@@ -280,11 +282,11 @@ export class BundleSimulator extends EventEmitter {
 
     // Different threat types cause different levels of erosion
     const erosionFactors = {
-      [ThreatType.FRONTRUN]: 0.3,              // Frontrun takes 30% profit
-      [ThreatType.BACKRUN]: 0.2,               // Backrun takes 20% profit
-      [ThreatType.SANDWICH]: 0.6,              // Sandwich takes 60% profit
-      [ThreatType.GENERALIZED_FRONTRUN]: 0.4,  // Generalized takes 40%
-      [ThreatType.UNCLE_BANDIT]: 0.1,          // Uncle takes 10%
+      [ThreatType.FRONTRUN]: 0.3, // Frontrun takes 30% profit
+      [ThreatType.BACKRUN]: 0.2, // Backrun takes 20% profit
+      [ThreatType.SANDWICH]: 0.6, // Sandwich takes 60% profit
+      [ThreatType.GENERALIZED_FRONTRUN]: 0.4, // Generalized takes 40%
+      [ThreatType.UNCLE_BANDIT]: 0.1, // Uncle takes 10%
     };
 
     for (const threat of threats) {
@@ -324,7 +326,7 @@ export class BundleSimulator extends EventEmitter {
    */
   private async updateMempoolCache(): Promise<void> {
     const now = Date.now();
-    
+
     // Rate limit updates (don't fetch more than once per 5 seconds)
     if (now - this.lastMempoolUpdate < 5000) {
       return;

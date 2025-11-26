@@ -1,6 +1,6 @@
 /**
  * ArbitrageOrchestrator - Main orchestrator for multi-hop arbitrage
- * 
+ *
  * Coordinates pathfinding, data fetching, and profitability calculations
  * Supports both single-chain and cross-chain arbitrage
  * Now includes advanced gas estimation and pre-execution validation
@@ -58,14 +58,14 @@ export class ArbitrageOrchestrator {
   private crossChainConfig?: CrossChainPathConfig;
   private mlOrchestrator?: MLOrchestrator;
   private mlEnabled: boolean = false;
-  
+
   // Statistics for monitoring
   private stats = {
     totalOpportunitiesFound: 0,
     profitableBeforeGas: 0,
     profitableAfterGas: 0,
     blockedByGasValidation: 0,
-    blockedByMLFilter: 0
+    blockedByMLFilter: 0,
   };
 
   constructor(
@@ -89,24 +89,23 @@ export class ArbitrageOrchestrator {
     this.crossChainConfig = crossChainConfig;
     this.mlOrchestrator = mlOrchestrator;
     this.mlEnabled = !!mlOrchestrator;
-    
+
     // Initialize cross-chain pathfinder if bridge manager is provided
     if (bridgeManager && crossChainConfig) {
-      this.crossChainPathFinder = new CrossChainPathFinder(
-        bridgeManager,
-        crossChainConfig,
-        config
-      );
+      this.crossChainPathFinder = new CrossChainPathFinder(bridgeManager, crossChainConfig, config);
     }
   }
 
   /**
    * Find profitable arbitrage opportunities for given tokens
    */
-  async findOpportunities(tokens: string[], startAmount: bigint): Promise<ArbitragePath[] | EnhancedArbitragePath[]> {
+  async findOpportunities(
+    tokens: string[],
+    startAmount: bigint
+  ): Promise<ArbitragePath[] | EnhancedArbitragePath[]> {
     // 1. Fetch pool data and build graph
     const edges = await this.dataFetcher.buildGraphEdges(tokens);
-    
+
     // 2. Clear previous graph and add new edges
     this.pathFinder.clear();
     for (const edge of edges) {
@@ -115,7 +114,7 @@ export class ArbitrageOrchestrator {
 
     // 3. Find arbitrage paths for each token
     const allPaths: ArbitragePath[] = [];
-    
+
     for (const token of tokens) {
       const paths = this.pathFinder.findArbitragePaths(token, startAmount);
       allPaths.push(...paths);
@@ -124,7 +123,7 @@ export class ArbitrageOrchestrator {
     this.stats.totalOpportunitiesFound += allPaths.length;
 
     // 4. Filter paths by profitability
-    let profitablePaths = allPaths.filter(path => 
+    let profitablePaths = allPaths.filter((path) =>
       this.profitCalculator.isProfitable(path, this.config.minProfitThreshold)
     );
 
@@ -133,10 +132,10 @@ export class ArbitrageOrchestrator {
     // 5. Apply advanced gas validation if available
     if (this.advancedGasEstimator) {
       const validatedPaths: ArbitragePath[] = [];
-      
+
       for (const path of profitablePaths) {
         const validation = await this.advancedGasEstimator.validateExecution(path);
-        
+
         if (validation.executable) {
           validatedPaths.push(path);
         } else {
@@ -145,7 +144,7 @@ export class ArbitrageOrchestrator {
           this.stats.blockedByGasValidation++;
         }
       }
-      
+
       profitablePaths = validatedPaths;
       this.stats.profitableAfterGas += profitablePaths.length;
     } else if (this.gasFilter) {
@@ -163,11 +162,11 @@ export class ArbitrageOrchestrator {
     // 6. Enhance with ML predictions if enabled
     if (this.mlEnabled && this.mlOrchestrator) {
       const enhancedPaths = await Promise.all(
-        profitablePaths.map(path => this.mlOrchestrator!.enhanceOpportunity(path))
+        profitablePaths.map((path) => this.mlOrchestrator!.enhanceOpportunity(path))
       );
 
       // Filter by ML confidence
-      const mlFilteredPaths = enhancedPaths.filter(path => {
+      const mlFilteredPaths = enhancedPaths.filter((path) => {
         if (!path.mlPredictions) return true;
         const shouldSkip = path.mlPredictions.recommendation === 'SKIP';
         if (shouldSkip) {
@@ -180,12 +179,12 @@ export class ArbitrageOrchestrator {
       return mlFilteredPaths.sort((a, b) => {
         const aConfidence = a.mlPredictions?.confidence || 0;
         const bConfidence = b.mlPredictions?.confidence || 0;
-        
+
         // Prioritize by confidence, then by profit
         if (Math.abs(aConfidence - bConfidence) > 0.1) {
           return bConfidence - aConfidence;
         }
-        
+
         if (a.netProfit > b.netProfit) return -1;
         if (a.netProfit < b.netProfit) return 1;
         return 0;
@@ -258,7 +257,7 @@ export class ArbitrageOrchestrator {
       blockedByMLFilter: this.stats.blockedByMLFilter,
       mlEnabled: this.mlEnabled,
       mlStats: this.mlOrchestrator?.getStats(),
-      advancedGasEstimatorStats: this.advancedGasEstimator?.getStats()
+      advancedGasEstimatorStats: this.advancedGasEstimator?.getStats(),
     };
   }
 
@@ -295,7 +294,7 @@ export class ArbitrageOrchestrator {
 
   /**
    * Handle real-time event trigger
-   * 
+   *
    * Process arbitrage opportunity from real-time event.
    * This method is called by EventDrivenTrigger when a profitable opportunity is detected.
    */
@@ -316,7 +315,7 @@ export class ArbitrageOrchestrator {
 
   /**
    * Quick path evaluation for event-driven mode
-   * 
+   *
    * Evaluates paths involving a specific pool without full graph rebuild
    */
   private async evaluateQuickPath(
@@ -332,7 +331,7 @@ export class ArbitrageOrchestrator {
 
   /**
    * Find cross-chain arbitrage opportunities
-   * 
+   *
    * Discovers profitable arbitrage paths across multiple blockchains
    */
   async findCrossChainOpportunities(
@@ -342,7 +341,9 @@ export class ArbitrageOrchestrator {
     maxPaths: number = 10
   ): Promise<CrossChainPath[]> {
     if (!this.crossChainPathFinder) {
-      throw new Error('Cross-chain pathfinding not enabled. Provide bridgeManager and crossChainConfig in constructor.');
+      throw new Error(
+        'Cross-chain pathfinding not enabled. Provide bridgeManager and crossChainConfig in constructor.'
+      );
     }
 
     // Find cross-chain paths
@@ -354,9 +355,7 @@ export class ArbitrageOrchestrator {
     );
 
     // Filter by profitability threshold
-    return paths.filter(path => 
-      path.netProfit > this.config.minProfitThreshold
-    );
+    return paths.filter((path) => path.netProfit > this.config.minProfitThreshold);
   }
 
   /**
@@ -400,7 +399,7 @@ export class ArbitrageOrchestrator {
 
     return {
       enabled: true,
-      chains: 0 // Placeholder - would calculate from edges
+      chains: 0, // Placeholder - would calculate from edges
     };
   }
 
@@ -435,7 +434,7 @@ export class ArbitrageOrchestrator {
       profitableBeforeGas: 0,
       profitableAfterGas: 0,
       blockedByGasValidation: 0,
-      blockedByMLFilter: 0
+      blockedByMLFilter: 0,
     };
   }
 

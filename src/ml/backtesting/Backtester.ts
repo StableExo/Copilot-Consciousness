@@ -1,6 +1,6 @@
 /**
  * Backtester - Comprehensive backtesting framework
- * 
+ *
  * Replays historical market data, simulates trades using ML predictions,
  * and compares ML-enhanced performance vs baseline.
  */
@@ -62,7 +62,8 @@ export class Backtester extends EventEmitter {
 
     // Filter data by date range
     const filteredData = historicalData.filter(
-      record => record.timestamp >= this.config.startDate && record.timestamp <= this.config.endDate
+      (record) =>
+        record.timestamp >= this.config.startDate && record.timestamp <= this.config.endDate
     );
 
     console.log(`  Filtered to ${filteredData.length} data points in range`);
@@ -77,7 +78,7 @@ export class Backtester extends EventEmitter {
 
     // Calculate results
     const result = this.calculateResults();
-    
+
     console.log('[Backtester] Backtest completed');
     console.log(`  Total trades: ${result.totalTrades}`);
     console.log(`  Profitable trades: ${result.profitableTrades}`);
@@ -102,7 +103,7 @@ export class Backtester extends EventEmitter {
       // Enhance with ML if enabled
       if (this.config.useML && this.mlOrchestrator) {
         const enhanced = await this.mlOrchestrator.enhanceOpportunity(record.path);
-        
+
         if (enhanced.mlPredictions) {
           trade.mlConfidence = enhanced.mlPredictions.confidence;
           trade.mlRecommendation = enhanced.mlPredictions.recommendation;
@@ -142,12 +143,12 @@ export class Backtester extends EventEmitter {
 
         // Deduct gas cost
         this.runningCapital -= trade.gasUsed;
-        
+
         trade.reason = record.outcome.failureReason || 'Trade failed';
       }
 
       this.trades.push(trade);
-      
+
       // Emit progress
       if (this.trades.length % 100 === 0) {
         this.emit('progress', {
@@ -167,8 +168,8 @@ export class Backtester extends EventEmitter {
    * Calculate backtest results
    */
   private calculateResults(): BacktestResult {
-    const executedTrades = this.trades.filter(t => t.executed);
-    const profitableTrades = executedTrades.filter(t => t.successful && (t.profit || 0n) > 0n);
+    const executedTrades = this.trades.filter((t) => t.executed);
+    const profitableTrades = executedTrades.filter((t) => t.successful && (t.profit || 0n) > 0n);
 
     // Calculate profits and losses
     let totalProfit = 0n;
@@ -187,12 +188,10 @@ export class Backtester extends EventEmitter {
     }
 
     const netProfit = totalProfit - totalLoss;
-    const winRate = executedTrades.length > 0 
-      ? profitableTrades.length / executedTrades.length 
-      : 0;
+    const winRate = executedTrades.length > 0 ? profitableTrades.length / executedTrades.length : 0;
 
     // Calculate Sharpe ratio (simplified)
-    const returns = executedTrades.map(t => {
+    const returns = executedTrades.map((t) => {
       const profit = Number(t.profit || 0n);
       const capital = Number(this.config.initialCapital);
       return capital > 0 ? profit / capital : 0;
@@ -227,9 +226,8 @@ export class Backtester extends EventEmitter {
     }
 
     // Average profit per trade
-    const avgProfitPerTrade = profitableTrades.length > 0
-      ? Number(totalProfit) / profitableTrades.length
-      : 0;
+    const avgProfitPerTrade =
+      profitableTrades.length > 0 ? Number(totalProfit) / profitableTrades.length : 0;
 
     return {
       startDate: this.config.startDate,
@@ -265,9 +263,12 @@ export class Backtester extends EventEmitter {
     const baselineResult = await this.run(historicalData);
 
     // Calculate improvement
-    const improvement = baselineResult.netProfit > 0n
-      ? Number((mlResult.netProfit - baselineResult.netProfit) * 100n / baselineResult.netProfit)
-      : 0;
+    const improvement =
+      baselineResult.netProfit > 0n
+        ? Number(
+            ((mlResult.netProfit - baselineResult.netProfit) * 100n) / baselineResult.netProfit
+          )
+        : 0;
 
     mlResult.baselineComparison = {
       netProfit: baselineResult.netProfit,
@@ -298,16 +299,18 @@ export class Backtester extends EventEmitter {
     executed?: boolean;
     minConfidence?: number;
   }): SimulatedTrade[] {
-    return this.trades.filter(trade => {
+    return this.trades.filter((trade) => {
       if (filter.successful !== undefined && trade.successful !== filter.successful) {
         return false;
       }
       if (filter.executed !== undefined && trade.executed !== filter.executed) {
         return false;
       }
-      if (filter.minConfidence !== undefined && 
-          trade.mlConfidence !== undefined && 
-          trade.mlConfidence < filter.minConfidence) {
+      if (
+        filter.minConfidence !== undefined &&
+        trade.mlConfidence !== undefined &&
+        trade.mlConfidence < filter.minConfidence
+      ) {
         return false;
       }
       return true;
@@ -318,9 +321,11 @@ export class Backtester extends EventEmitter {
    * Export results to JSON
    */
   exportResults(result: BacktestResult): string {
-    return JSON.stringify(result, (_, value) =>
-      typeof value === 'bigint' ? value.toString() : value
-    , 2);
+    return JSON.stringify(
+      result,
+      (_, value) => (typeof value === 'bigint' ? value.toString() : value),
+      2
+    );
   }
 
   /**
@@ -330,7 +335,9 @@ export class Backtester extends EventEmitter {
     const lines = [
       '=== BACKTEST REPORT ===',
       '',
-      `Period: ${new Date(result.startDate).toISOString()} to ${new Date(result.endDate).toISOString()}`,
+      `Period: ${new Date(result.startDate).toISOString()} to ${new Date(
+        result.endDate
+      ).toISOString()}`,
       `ML Enhanced: ${result.mlEnhanced}`,
       '',
       '--- Trading Metrics ---',

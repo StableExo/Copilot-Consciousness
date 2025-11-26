@@ -1,6 +1,6 @@
 /**
  * Transactional Reasoning Module
- * 
+ *
  * Cognitive flash loan pattern for safe exploration of speculative reasoning.
  */
 

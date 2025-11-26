@@ -1,6 +1,6 @@
 /**
  * RPCManager - Advanced Rate Limiting with p-queue
- * 
+ *
  * Implements the "Regulator" pattern from AxionCitadel for production-grade
  * RPC rate limiting. Each RPC endpoint gets its own queue with configurable
  * concurrency and rate limits.
@@ -11,15 +11,15 @@ import pino from 'pino';
 
 const logger = pino({
   name: 'RPCManager',
-  level: process.env.LOG_LEVEL || 'info'
+  level: process.env.LOG_LEVEL || 'info',
 });
 
 export interface RPCQueueConfig {
-  concurrency: number;      // Max concurrent requests
-  interval: number;          // Time window (ms)
-  intervalCap: number;       // Max requests per interval
-  timeout: number;           // Request timeout (ms)
-  throwOnTimeout: boolean;   // Whether to throw on timeout
+  concurrency: number; // Max concurrent requests
+  interval: number; // Time window (ms)
+  intervalCap: number; // Max requests per interval
+  timeout: number; // Request timeout (ms)
+  throwOnTimeout: boolean; // Whether to throw on timeout
 }
 
 export interface RPCManagerConfig {
@@ -31,16 +31,16 @@ export interface RPCManagerConfig {
  * Default queue configuration for RPC endpoints
  */
 const DEFAULT_QUEUE_CONFIG: RPCQueueConfig = {
-  concurrency: 10,           // Max concurrent requests
-  interval: 1000,            // Time window (1 second)
-  intervalCap: 50,           // Max 50 requests per second
-  timeout: 30000,            // 30 second timeout
-  throwOnTimeout: true
+  concurrency: 10, // Max concurrent requests
+  interval: 1000, // Time window (1 second)
+  intervalCap: 50, // Max 50 requests per second
+  timeout: 30000, // 30 second timeout
+  throwOnTimeout: true,
 };
 
 /**
  * RPCManager manages rate-limited RPC calls using p-queue
- * 
+ *
  * Features:
  * - Per-endpoint queuing
  * - Configurable rate limits
@@ -50,14 +50,17 @@ const DEFAULT_QUEUE_CONFIG: RPCQueueConfig = {
 export class RPCManager {
   private queues: Map<string, PQueue>;
   private configs: Map<string, RPCQueueConfig>;
-  private metrics: Map<string, {
-    totalRequests: number;
-    successfulRequests: number;
-    failedRequests: number;
-    timeouts: number;
-    avgLatency: number;
-    lastRequestTime: number;
-  }>;
+  private metrics: Map<
+    string,
+    {
+      totalRequests: number;
+      successfulRequests: number;
+      failedRequests: number;
+      timeouts: number;
+      avgLatency: number;
+      lastRequestTime: number;
+    }
+  >;
 
   constructor(config?: RPCManagerConfig) {
     this.queues = new Map();
@@ -87,13 +90,13 @@ export class RPCManager {
   private getQueue(rpcUrl: string): PQueue {
     if (!this.queues.has(rpcUrl)) {
       const config = this.configs.get(rpcUrl) || this.configs.get('default')!;
-      
+
       const queue = new PQueue({
         concurrency: config.concurrency,
         interval: config.interval,
         intervalCap: config.intervalCap,
         timeout: config.timeout,
-        throwOnTimeout: config.throwOnTimeout
+        throwOnTimeout: config.throwOnTimeout,
       });
 
       // Set up queue event handlers
@@ -110,7 +113,7 @@ export class RPCManager {
       });
 
       this.queues.set(rpcUrl, queue);
-      
+
       // Initialize metrics
       this.metrics.set(rpcUrl, {
         totalRequests: 0,
@@ -118,7 +121,7 @@ export class RPCManager {
         failedRequests: 0,
         timeouts: 0,
         avgLatency: 0,
-        lastRequestTime: 0
+        lastRequestTime: 0,
       });
 
       logger.info(`Created new queue for ${rpcUrl}: ${JSON.stringify(config)}`);
@@ -129,15 +132,12 @@ export class RPCManager {
 
   /**
    * Execute operation with rate limiting
-   * 
+   *
    * @param rpcUrl - The RPC endpoint URL
    * @param operation - The async operation to execute
    * @returns Promise with operation result
    */
-  async executeWithRateLimit<T>(
-    rpcUrl: string,
-    operation: () => Promise<T>
-  ): Promise<T> {
+  async executeWithRateLimit<T>(rpcUrl: string, operation: () => Promise<T>): Promise<T> {
     const queue = this.getQueue(rpcUrl);
     const metrics = this.metrics.get(rpcUrl)!;
     const startTime = Date.now();
@@ -147,17 +147,19 @@ export class RPCManager {
 
     try {
       const result = await queue.add(operation);
-      
+
       const latency = Date.now() - startTime;
       metrics.successfulRequests++;
-      metrics.avgLatency = (metrics.avgLatency * (metrics.successfulRequests - 1) + latency) / metrics.successfulRequests;
+      metrics.avgLatency =
+        (metrics.avgLatency * (metrics.successfulRequests - 1) + latency) /
+        metrics.successfulRequests;
 
       logger.debug(`RPC call to ${rpcUrl} completed in ${latency}ms`);
-      
+
       return result as T;
     } catch (error: unknown) {
       metrics.failedRequests++;
-      
+
       if (error instanceof Error && error.name === 'TimeoutError') {
         metrics.timeouts++;
         logger.warn(`RPC call to ${rpcUrl} timed out after ${Date.now() - startTime}ms`);
@@ -165,7 +167,7 @@ export class RPCManager {
         const message = error instanceof Error ? error.message : 'Unknown error';
         logger.error(`RPC call to ${rpcUrl} failed: ${message}`);
       }
-      
+
       throw error;
     }
   }
@@ -176,15 +178,15 @@ export class RPCManager {
   configureEndpoint(rpcUrl: string, config: Partial<RPCQueueConfig>): void {
     const existingConfig = this.configs.get(rpcUrl) || this.configs.get('default')!;
     const newConfig = { ...existingConfig, ...config };
-    
+
     this.configs.set(rpcUrl, newConfig);
-    
+
     // If queue already exists, we need to recreate it
     if (this.queues.has(rpcUrl)) {
       const oldQueue = this.queues.get(rpcUrl)!;
       oldQueue.clear();
       this.queues.delete(rpcUrl);
-      
+
       logger.info(`Reconfigured queue for ${rpcUrl}: ${JSON.stringify(newConfig)}`);
     }
   }
@@ -223,7 +225,7 @@ export class RPCManager {
     return {
       size: queue.size,
       pending: queue.pending,
-      isPaused: queue.isPaused
+      isPaused: queue.isPaused,
     };
   }
 
@@ -265,14 +267,14 @@ export class RPCManager {
    */
   async shutdown(): Promise<void> {
     logger.info('Shutting down RPCManager...');
-    
-    const shutdownPromises = Array.from(this.queues.values()).map(queue => {
+
+    const shutdownPromises = Array.from(this.queues.values()).map((queue) => {
       queue.pause();
       return queue.onIdle();
     });
 
     await Promise.all(shutdownPromises);
-    
+
     this.queues.clear();
     logger.info('RPCManager shutdown complete');
   }

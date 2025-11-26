@@ -71,13 +71,7 @@ describe('MEV Awareness Intelligence Layer', () => {
     });
 
     it('should have higher MEV risk for front-runnable transactions', () => {
-      const arbResult = calculator.calculateProfit(
-        1.0,
-        0.1,
-        0.5,
-        TransactionType.ARBITRAGE,
-        0.5
-      );
+      const arbResult = calculator.calculateProfit(1.0, 0.1, 0.5, TransactionType.ARBITRAGE, 0.5);
 
       const frontrunResult = calculator.calculateProfit(
         1.0,
@@ -136,7 +130,7 @@ describe('MEV Awareness Intelligence Layer', () => {
 
     it('should start and stop sensor hub', () => {
       const hub = new MEVSensorHub(provider, 1000);
-      
+
       hub.start();
       expect(hub.isActive()).toBe(true);
 
@@ -147,7 +141,7 @@ describe('MEV Awareness Intelligence Layer', () => {
     it('should get risk params from hub', () => {
       const hub = new MEVSensorHub(provider);
       const params = hub.getRiskParams();
-      
+
       expect(params).toHaveProperty('mempoolCongestion');
       expect(params).toHaveProperty('searcherDensity');
       expect(params).toHaveProperty('timestamp');
@@ -168,11 +162,7 @@ describe('MEV Awareness Intelligence Layer', () => {
       const calculator = new ProfitCalculator(riskModel);
 
       // 3. Calculate detailed risk
-      const detailedRisk = riskModel.calculateDetailedRisk(
-        1.0,
-        TransactionType.ARBITRAGE,
-        0.5
-      );
+      const detailedRisk = riskModel.calculateDetailedRisk(1.0, TransactionType.ARBITRAGE, 0.5);
 
       expect(detailedRisk.riskEth).toBeGreaterThan(0);
       expect(detailedRisk.frontrunProbability).toBe(0.7); // ARBITRAGE default
@@ -201,9 +191,7 @@ describe('MEV Awareness Intelligence Layer', () => {
         TransactionType.FRONT_RUNNABLE,
       ];
 
-      const results = types.map((type) =>
-        calculator.calculateProfit(1.0, 0.1, 0.5, type, 0.5)
-      );
+      const results = types.map((type) => calculator.calculateProfit(1.0, 0.1, 0.5, type, 0.5));
 
       // Verify risk increases across transaction types
       expect(results[0].mevRisk).toBeLessThan(results[1].mevRisk); // LP < ARB
@@ -244,9 +232,7 @@ describe('MEV Awareness Intelligence Layer', () => {
       );
 
       expect(best.adjustedProfit).toBeGreaterThan(0);
-      expect(evaluations.every((e) => e.adjustedProfit <= best.adjustedProfit)).toBe(
-        true
-      );
+      expect(evaluations.every((e) => e.adjustedProfit <= best.adjustedProfit)).toBe(true);
     });
   });
 });

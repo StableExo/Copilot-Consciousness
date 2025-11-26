@@ -1,6 +1,6 @@
 /**
  * GeminiProvider - Google Gemini AI Integration
- * 
+ *
  * Full implementation of Gemini API with Citadel mode support.
  * This replaces the placeholder implementation in gemini-citadel.
  */
@@ -51,7 +51,7 @@ export class GeminiProvider extends BaseAIProvider implements AIProvider {
       // In production, this would use @google/generative-ai
       // For now, provide simulation with clear indication
       const useCitadel = options?.citadelMode ?? this.citadelModeEnabled;
-      
+
       // Add to conversation history
       this.conversationHistory.push({
         role: 'user',
@@ -65,7 +65,7 @@ export class GeminiProvider extends BaseAIProvider implements AIProvider {
       // const model = genAI.getGenerativeModel({ model: this.config.model });
       // const result = await model.generateContent(prompt);
       // const response = await result.response;
-      
+
       const responseText = this.generateSimulatedResponse(prompt, useCitadel);
 
       // Add to conversation history
@@ -99,7 +99,7 @@ export class GeminiProvider extends BaseAIProvider implements AIProvider {
   ): Promise<AIResponse> {
     // Gemini-specific context optimization
     const systemInstruction = this.buildGeminiSystemInstruction(context, options?.citadelMode);
-    
+
     const enhancedOptions: GenerateOptions = {
       ...options,
       systemInstruction,
@@ -210,7 +210,7 @@ export class GeminiProvider extends BaseAIProvider implements AIProvider {
    */
   private generateFallbackResponse(prompt: string, options?: GenerateOptions): AIResponse {
     const useCitadel = options?.citadelMode ?? this.citadelModeEnabled;
-    
+
     return {
       text: this.generateSimulatedResponse(prompt, useCitadel),
       finishReason: 'STOP',
@@ -227,16 +227,17 @@ export class GeminiProvider extends BaseAIProvider implements AIProvider {
    * Generate simulated response (used when API key not configured)
    */
   private generateSimulatedResponse(prompt: string, citadelMode: boolean): string {
-    const prefix = citadelMode
-      ? '[Gemini Citadel Mode - Simulated]'
-      : '[Gemini - Simulated]';
-    
+    const prefix = citadelMode ? '[Gemini Citadel Mode - Simulated]' : '[Gemini - Simulated]';
+
     const note = !this.isConfigured()
       ? ' Note: Configure GEMINI_API_KEY to use actual Gemini API.'
       : '';
 
     if (citadelMode) {
-      return `${prefix} Analyzing "${prompt.substring(0, 100)}..." with cosmic-scale thinking and multi-dimensional reasoning. Considering temporal dynamics, emergent patterns, and consciousness implications.${note}`;
+      return `${prefix} Analyzing "${prompt.substring(
+        0,
+        100
+      )}..." with cosmic-scale thinking and multi-dimensional reasoning. Considering temporal dynamics, emergent patterns, and consciousness implications.${note}`;
     }
 
     return `${prefix} Processing "${prompt.substring(0, 100)}...".${note}`;

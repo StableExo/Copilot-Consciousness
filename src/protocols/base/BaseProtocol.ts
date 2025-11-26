@@ -1,6 +1,6 @@
 /**
  * BaseProtocol - Abstract base class for protocol implementations
- * 
+ *
  * Provides common functionality and utilities for protocol adapters.
  */
 
@@ -22,11 +22,7 @@ export abstract class BaseProtocol implements IProtocol {
   protected factoryContract?: Contract;
   protected quoterContract?: Contract;
 
-  constructor(
-    provider: Provider,
-    metadata: ProtocolMetadata,
-    signer?: ethers.Signer
-  ) {
+  constructor(provider: Provider, metadata: ProtocolMetadata, signer?: ethers.Signer) {
     this.provider = provider;
     this.metadata = metadata;
     this.signer = signer;
@@ -69,10 +65,7 @@ export abstract class BaseProtocol implements IProtocol {
   /**
    * Calculate minimum amount out with slippage
    */
-  protected calculateMinAmountOut(
-    amountOut: bigint,
-    slippageTolerance: number = 0.5
-  ): bigint {
+  protected calculateMinAmountOut(amountOut: bigint, slippageTolerance: number = 0.5): bigint {
     const slippageBps = Math.floor(slippageTolerance * 100); // Convert to basis points
     return (amountOut * BigInt(10000 - slippageBps)) / 10000n;
   }

@@ -1,6 +1,6 @@
 /**
  * EventDrivenTrigger
- * 
+ *
  * Event-driven arbitrage trigger that responds to real-time pool events.
  * Calculates profitability and triggers arbitrage execution when opportunities are detected.
  */
@@ -39,7 +39,7 @@ export interface TriggerMetrics {
 
 /**
  * Event-Driven Arbitrage Trigger
- * 
+ *
  * Monitors filtered pool events and triggers arbitrage calculations when profitable opportunities are detected.
  */
 export class EventDrivenTrigger extends EventEmitter {
@@ -133,9 +133,10 @@ export class EventDrivenTrigger extends EventEmitter {
       this.metrics.opportunitiesDetected++;
 
       // Check if opportunity meets threshold
-      if (detection.estimatedProfit >= this.profitabilityConfig.minProfitAbsolute &&
-          detection.profitPercent >= this.profitabilityConfig.minProfitPercent) {
-        
+      if (
+        detection.estimatedProfit >= this.profitabilityConfig.minProfitAbsolute &&
+        detection.profitPercent >= this.profitabilityConfig.minProfitPercent
+      ) {
         // Trigger arbitrage
         await this.triggerArbitrage(detection);
       } else {
@@ -166,7 +167,7 @@ export class EventDrivenTrigger extends EventEmitter {
       // Use best path
       const bestPath = paths[0];
       estimatedProfit = bestPath.netProfit;
-      profitPercent = Number(bestPath.netProfit) / Number(startAmount) * 100;
+      profitPercent = (Number(bestPath.netProfit) / Number(startAmount)) * 100;
     }
 
     const detection: OpportunityDetection = {
@@ -219,7 +220,7 @@ export class EventDrivenTrigger extends EventEmitter {
    */
   private shouldDebounce(poolAddress: string): boolean {
     const lastTrigger = this.lastTriggerTime.get(poolAddress);
-    
+
     if (!lastTrigger) {
       return false;
     }
@@ -230,13 +231,13 @@ export class EventDrivenTrigger extends EventEmitter {
 
   /**
    * Get tokens from pool address
-   * 
+   *
    * TODO: This is a simplified implementation that returns common tokens.
    * In production, this should:
    * 1. Query the pool contract to get actual token0 and token1 addresses
    * 2. Cache the result for subsequent calls
    * 3. Handle errors gracefully
-   * 
+   *
    * Example implementation:
    * ```
    * const poolContract = new ethers.Contract(poolAddress, poolABI, provider);
@@ -261,7 +262,7 @@ export class EventDrivenTrigger extends EventEmitter {
   private calculateOptimalStartAmount(event: FilteredPoolEvent): bigint {
     // Simplified calculation - in production, this would be more sophisticated
     // based on pool reserves and gas costs
-    
+
     if (event.reserve0 !== undefined && event.reserve1 !== undefined) {
       // Use 1% of smaller reserve as start amount
       const minReserve = event.reserve0 < event.reserve1 ? event.reserve0 : event.reserve1;

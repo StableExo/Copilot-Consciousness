@@ -15,9 +15,9 @@ export const UINT24_MAX = 16777215;
  * @property {string} borrowTokenAddress - The address of the token being borrowed.
  */
 export interface BuildResult {
-    params: object;
-    typeString: string;
-    borrowTokenAddress: string;
+  params: object;
+  typeString: string;
+  borrowTokenAddress: string;
 }
 
 /**
@@ -28,9 +28,9 @@ export interface BuildResult {
  * @property {bigint} finalAmountSimulated - The final amount after all hops in the simulation.
  */
 export interface SimulationResult {
-    initialAmount: bigint;
-    hop1AmountOutSimulated: bigint;
-    finalAmountSimulated: bigint;
+  initialAmount: bigint;
+  hop1AmountOutSimulated: bigint;
+  finalAmountSimulated: bigint;
 }
 
 /**
@@ -44,12 +44,12 @@ export interface SimulationResult {
  * @property {number} fee - The pool fee tier (e.g., 3000 for 0.3%, 500 for 0.05%).
  */
 export interface SwapStep {
-    dexType: number;
-    pool: string;
-    tokenIn: string;
-    tokenOut: string;
-    minOut: bigint;
-    fee: number;
+  dexType: number;
+  pool: string;
+  tokenIn: string;
+  tokenOut: string;
+  minOut: bigint;
+  fee: number;
 }
 
 /**
@@ -57,38 +57,38 @@ export interface SwapStep {
  * Maps DEX names to numeric identifiers for contract encoding.
  */
 export enum DexType {
-    UniswapV3 = 0,
-    SushiSwap = 1,
-    DODO = 2
+  UniswapV3 = 0,
+  SushiSwap = 1,
+  DODO = 2,
 }
 
 /**
  * Arbitrage Opportunity interface
  */
 export interface ArbitrageOpportunity {
-    type: 'spatial' | 'triangular' | 'multi-hop';
-    path: ArbitragePath[];
-    borrowToken: string;
-    expectedProfit: bigint;
+  type: 'spatial' | 'triangular' | 'multi-hop';
+  path: ArbitragePath[];
+  borrowToken: string;
+  expectedProfit: bigint;
 }
 
 /**
  * Arbitrage Path step
  */
 export interface ArbitragePath {
-    dexName: string;
-    poolAddress: string;
-    tokenIn: string;
-    tokenOut: string;
-    fee: number;
-    token0?: string;
-    token1?: string;
+  dexName: string;
+  poolAddress: string;
+  tokenIn: string;
+  tokenOut: string;
+  fee: number;
+  token0?: string;
+  token1?: string;
 }
 
 /**
  * Configuration interface
  */
 export interface Config {
-    SLIPPAGE_TOLERANCE_BPS: number;
-    [key: string]: unknown;
+  SLIPPAGE_TOLERANCE_BPS: number;
+  [key: string]: unknown;
 }

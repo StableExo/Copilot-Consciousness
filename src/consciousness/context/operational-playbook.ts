@@ -1,6 +1,6 @@
 /**
  * Operational Playbook
- * 
+ *
  * Adapted from AxionCitadel's ctx_operational_playbook.txt
  * Defines operational decision-making procedures and best practices
  */
@@ -10,7 +10,7 @@ export enum OperationType {
   DECISION = 'DECISION',
   EXECUTION = 'EXECUTION',
   MONITORING = 'MONITORING',
-  RECOVERY = 'RECOVERY'
+  RECOVERY = 'RECOVERY',
 }
 
 export enum DecisionConfidence {
@@ -18,7 +18,7 @@ export enum DecisionConfidence {
   HIGH = 0.75,
   MEDIUM = 0.5,
   LOW = 0.25,
-  VERY_LOW = 0.1
+  VERY_LOW = 0.1,
 }
 
 export interface PlaybookEntry {
@@ -92,7 +92,10 @@ export interface DecisionAlternative {
 export class OperationalPlaybook {
   private playbooks: Map<string, PlaybookEntry> = new Map();
   private decisions: Map<string, DecisionRecord> = new Map();
-  private activeOperations: Map<string, { playbookId: string; startTime: number; currentStep: number }> = new Map();
+  private activeOperations: Map<
+    string,
+    { playbookId: string; startTime: number; currentStep: number }
+  > = new Map();
 
   /**
    * Register a new playbook entry
@@ -117,7 +120,7 @@ export class OperationalPlaybook {
       lessons: [],
       usageCount: 0,
       successRate: 0,
-      metadata: {}
+      metadata: {},
     };
 
     this.playbooks.set(playbook.id, playbook);
@@ -139,7 +142,7 @@ export class OperationalPlaybook {
 
     // Score alternatives
     const scoredAlternatives = this.scoreAlternatives(alternatives, context);
-    
+
     // Select best alternative
     const selected = scoredAlternatives.reduce((best, current) =>
       current.score > best.score ? current : best
@@ -156,7 +159,7 @@ export class OperationalPlaybook {
       alternatives: scoredAlternatives,
       selectedAlternative: selected.id,
       confidence,
-      reasoning: this.generateReasoning(selected, scoredAlternatives, context)
+      reasoning: this.generateReasoning(selected, scoredAlternatives, context),
     };
 
     this.decisions.set(decision.id, decision);
@@ -181,19 +184,19 @@ export class OperationalPlaybook {
     decision.outcome = {
       success,
       actualResults,
-      deviations
+      deviations,
     };
 
     // Update playbook success rate
     const playbook = this.playbooks.get(decision.playbookId);
     if (playbook) {
-      const totalDecisions = Array.from(this.decisions.values())
-        .filter(d => d.playbookId === decision.playbookId && d.outcome)
-        .length;
+      const totalDecisions = Array.from(this.decisions.values()).filter(
+        (d) => d.playbookId === decision.playbookId && d.outcome
+      ).length;
 
-      const successfulDecisions = Array.from(this.decisions.values())
-        .filter(d => d.playbookId === decision.playbookId && d.outcome?.success)
-        .length;
+      const successfulDecisions = Array.from(this.decisions.values()).filter(
+        (d) => d.playbookId === decision.playbookId && d.outcome?.success
+      ).length;
 
       playbook.successRate = totalDecisions > 0 ? successfulDecisions / totalDecisions : 0;
 
@@ -203,7 +206,7 @@ export class OperationalPlaybook {
         context: JSON.stringify(decision.context),
         outcome: success ? 'SUCCESS' : 'FAILURE',
         insights: deviations,
-        adjustments: []
+        adjustments: [],
       });
     }
   }
@@ -216,7 +219,7 @@ export class OperationalPlaybook {
     if (!playbook) return false;
 
     playbook.lessons.push(lesson);
-    
+
     // Keep only recent lessons (last 100)
     if (playbook.lessons.length > 100) {
       playbook.lessons = playbook.lessons.slice(-100);
@@ -233,10 +236,10 @@ export class OperationalPlaybook {
     context: Record<string, unknown>
   ): PlaybookEntry | null {
     const candidates = Array.from(this.playbooks.values())
-      .filter(p => p.operationType === operationType)
-      .map(playbook => ({
+      .filter((p) => p.operationType === operationType)
+      .map((playbook) => ({
         playbook,
-        score: this.scorePlaybook(playbook, context)
+        score: this.scorePlaybook(playbook, context),
       }))
       .sort((a, b) => b.score - a.score);
 
@@ -255,7 +258,7 @@ export class OperationalPlaybook {
    */
   getPlaybooksByType(operationType: OperationType): PlaybookEntry[] {
     return Array.from(this.playbooks.values())
-      .filter(p => p.operationType === operationType)
+      .filter((p) => p.operationType === operationType)
       .sort((a, b) => b.successRate - a.successRate);
   }
 
@@ -280,18 +283,20 @@ export class OperationalPlaybook {
     const playbook = this.playbooks.get(playbookId);
     if (!playbook) return null;
 
-    const decisions = Array.from(this.decisions.values())
-      .filter(d => d.playbookId === playbookId);
+    const decisions = Array.from(this.decisions.values()).filter(
+      (d) => d.playbookId === playbookId
+    );
 
-    const averageConfidence = decisions.length > 0
-      ? decisions.reduce((sum, d) => sum + d.confidence, 0) / decisions.length
-      : 0;
+    const averageConfidence =
+      decisions.length > 0
+        ? decisions.reduce((sum, d) => sum + d.confidence, 0) / decisions.length
+        : 0;
 
     return {
       usageCount: playbook.usageCount,
       successRate: playbook.successRate,
       averageConfidence,
-      recentLessons: playbook.lessons.slice(-10)
+      recentLessons: playbook.lessons.slice(-10),
     };
   }
 
@@ -307,7 +312,7 @@ export class OperationalPlaybook {
    */
   importPlaybooks(playbooks: PlaybookEntry[]): void {
     this.playbooks.clear();
-    playbooks.forEach(playbook => {
+    playbooks.forEach((playbook) => {
       this.playbooks.set(playbook.id, playbook);
     });
   }
@@ -316,9 +321,9 @@ export class OperationalPlaybook {
     alternatives: DecisionAlternative[],
     context: Record<string, unknown>
   ): DecisionAlternative[] {
-    return alternatives.map(alt => ({
+    return alternatives.map((alt) => ({
       ...alt,
-      score: this.calculateAlternativeScore(alt, context)
+      score: this.calculateAlternativeScore(alt, context),
     }));
   }
 
@@ -329,10 +334,9 @@ export class OperationalPlaybook {
     // Simple risk-reward scoring
     const riskWeight = 0.4;
     const rewardWeight = 0.6;
-    
+
     return (
-      (1 - alternative.estimatedRisk) * riskWeight +
-      alternative.estimatedReward * rewardWeight
+      (1 - alternative.estimatedRisk) * riskWeight + alternative.estimatedReward * rewardWeight
     );
   }
 
@@ -358,10 +362,12 @@ export class OperationalPlaybook {
 
     reasoning.push(`Selected alternative: ${selected.name}`);
     reasoning.push(`Score: ${selected.score.toFixed(3)}`);
-    reasoning.push(`Risk: ${selected.estimatedRisk.toFixed(3)}, Reward: ${selected.estimatedReward.toFixed(3)}`);
+    reasoning.push(
+      `Risk: ${selected.estimatedRisk.toFixed(3)}, Reward: ${selected.estimatedReward.toFixed(3)}`
+    );
 
     if (alternatives.length > 1) {
-      const otherOptions = alternatives.filter(a => a.id !== selected.id);
+      const otherOptions = alternatives.filter((a) => a.id !== selected.id);
       reasoning.push(`Rejected ${otherOptions.length} alternatives with lower scores`);
     }
 
@@ -371,7 +377,7 @@ export class OperationalPlaybook {
   private scorePlaybook(playbook: PlaybookEntry, context: Record<string, unknown>): number {
     // Score based on success rate and recency
     const successScore = playbook.successRate * 0.7;
-    const recencyScore = playbook.lastUsed 
+    const recencyScore = playbook.lastUsed
       ? Math.max(0, 1 - (Date.now() - playbook.lastUsed) / (1000 * 60 * 60 * 24 * 30)) * 0.3
       : 0;
 

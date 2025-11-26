@@ -1,9 +1,9 @@
 /**
  * Spatial Reasoning Engine
- * 
+ *
  * Adapted from AxionCitadel SpatialArbEngine for generalized multi-dimensional
  * problem analysis and opportunity detection.
- * 
+ *
  * Features:
  * - Multi-dimensional problem space analysis
  * - Spatial pattern detection and clustering
@@ -16,13 +16,9 @@ import {
   Node,
   DimensionalAnalysis,
   SpatialCluster,
-  ProblemSpaceAnalysis
+  ProblemSpaceAnalysis,
 } from './types/problem-space';
-import {
-  Opportunity,
-  OpportunityType,
-  OpportunityStatus
-} from './types/opportunity';
+import { Opportunity, OpportunityType, OpportunityStatus } from './types/opportunity';
 import { calculateDistance, DistanceMetric } from './utils/distance-calculator';
 import { buildGraph, calculateConnectivity } from './utils/graph-builder';
 
@@ -52,7 +48,7 @@ export interface SpatialReasoningStats {
 
 /**
  * Spatial Reasoning Engine
- * 
+ *
  * Provides multi-dimensional analysis and opportunity detection
  * in abstract problem spaces.
  */
@@ -68,7 +64,7 @@ export class SpatialReasoningEngine {
       maxDimensions: config.maxDimensions || 10,
       normalization: config.normalization || 'minmax',
       minClusterSize: config.minClusterSize || 3,
-      minOpportunityScore: config.minOpportunityScore || 0.6
+      minOpportunityScore: config.minOpportunityScore || 0.6,
     };
 
     this.stats = {
@@ -76,7 +72,7 @@ export class SpatialReasoningEngine {
       clustersFound: 0,
       opportunitiesDetected: 0,
       avgClusterSize: 0,
-      avgOpportunityScore: 0
+      avgOpportunityScore: 0,
     };
   }
 
@@ -90,7 +86,7 @@ export class SpatialReasoningEngine {
     if (space.dimensions.length > this.config.maxDimensions) {
       throw new Error(
         `Problem space has ${space.dimensions.length} dimensions, ` +
-        `exceeding maximum of ${this.config.maxDimensions}`
+          `exceeding maximum of ${this.config.maxDimensions}`
       );
     }
 
@@ -120,8 +116,8 @@ export class SpatialReasoningEngine {
       feasibility,
       metadata: {
         timestamp: new Date(),
-        engineVersion: '1.0.0'
-      }
+        engineVersion: '1.0.0',
+      },
     };
   }
 
@@ -134,8 +130,8 @@ export class SpatialReasoningEngine {
     for (let dimIdx = 0; dimIdx < space.dimensions.length; dimIdx++) {
       const dimension = space.dimensions[dimIdx];
       const values = space.nodes
-        .map(node => node.position[dimIdx])
-        .filter(v => v !== undefined && !isNaN(v));
+        .map((node) => node.position[dimIdx])
+        .filter((v) => v !== undefined && !isNaN(v));
 
       if (values.length === 0) continue;
 
@@ -154,7 +150,7 @@ export class SpatialReasoningEngine {
         max,
         mean,
         variance,
-        distribution
+        distribution,
       });
     }
 
@@ -164,12 +160,7 @@ export class SpatialReasoningEngine {
   /**
    * Create distribution histogram
    */
-  private createDistribution(
-    values: number[],
-    min: number,
-    max: number,
-    bins: number
-  ): number[] {
+  private createDistribution(values: number[], min: number, max: number, bins: number): number[] {
     const distribution = new Array(bins).fill(0);
     const binSize = (max - min) / bins;
 
@@ -228,8 +219,8 @@ export class SpatialReasoningEngine {
           radius,
           density,
           metadata: {
-            createdAt: new Date()
-          }
+            createdAt: new Date(),
+          },
         });
       }
     }
@@ -252,7 +243,7 @@ export class SpatialReasoningEngine {
       }
     }
 
-    return centroid.map(sum => sum / nodes.length);
+    return centroid.map((sum) => sum / nodes.length);
   }
 
   /**
@@ -262,11 +253,7 @@ export class SpatialReasoningEngine {
     let maxDistance = 0;
 
     for (const node of nodes) {
-      const distance = calculateDistance(
-        node.position,
-        centroid,
-        this.config.distanceMetric
-      );
+      const distance = calculateDistance(node.position, centroid, this.config.distanceMetric);
       if (distance > maxDistance) {
         maxDistance = distance;
       }
@@ -297,10 +284,7 @@ export class SpatialReasoningEngine {
     // Opportunity 2: Low-variance dimensions (optimization opportunities)
     for (const dimAnalysis of analysis.dimensionalAnalyses) {
       if (dimAnalysis.variance < 0.1 && dimAnalysis.mean > 0.5) {
-        const relevantNodes = this.getNodesInDimension(
-          analysis.space,
-          dimAnalysis.dimension
-        );
+        const relevantNodes = this.getNodesInDimension(analysis.space, dimAnalysis.dimension);
         const opp = this.createOpportunity(
           OpportunityType.OPTIMIZATION,
           relevantNodes,
@@ -323,13 +307,11 @@ export class SpatialReasoningEngine {
     }
 
     // Filter by minimum score
-    const filtered = opportunities.filter(
-      opp => opp.score >= this.config.minOpportunityScore
-    );
+    const filtered = opportunities.filter((opp) => opp.score >= this.config.minOpportunityScore);
 
     this.stats.opportunitiesDetected += filtered.length;
     if (filtered.length > 0) {
-      this.stats.avgOpportunityScore = 
+      this.stats.avgOpportunityScore =
         filtered.reduce((sum, opp) => sum + opp.score, 0) / filtered.length;
     }
 
@@ -344,10 +326,11 @@ export class SpatialReasoningEngine {
     if (dimIndex === -1) return [];
 
     // Return nodes with significant values in this dimension
-    return space.nodes.filter(node => 
-      node.position[dimIndex] !== undefined &&
-      !isNaN(node.position[dimIndex]) &&
-      node.position[dimIndex] > 0.5
+    return space.nodes.filter(
+      (node) =>
+        node.position[dimIndex] !== undefined &&
+        !isNaN(node.position[dimIndex]) &&
+        node.position[dimIndex] > 0.5
     );
   }
 
@@ -375,9 +358,9 @@ export class SpatialReasoningEngine {
       criteria: {
         density: score,
         nodeCount: nodes.length,
-        feasibility: score
+        feasibility: score,
       },
-      description
+      description,
     };
   }
 
@@ -397,7 +380,7 @@ export class SpatialReasoningEngine {
    */
   private calculateFeasibility(space: ProblemSpace): number {
     // Count satisfied hard constraints
-    const hardConstraints = space.constraints.filter(c => c.type === 'hard');
+    const hardConstraints = space.constraints.filter((c) => c.type === 'hard');
     if (hardConstraints.length === 0) return 1.0;
 
     // For now, return a baseline feasibility
@@ -408,7 +391,9 @@ export class SpatialReasoningEngine {
   /**
    * Detect patterns across multiple dimensions
    */
-  detectPatterns(space: ProblemSpace): Array<{ pattern: string; confidence: number; nodes: Node[] }> {
+  detectPatterns(
+    space: ProblemSpace
+  ): Array<{ pattern: string; confidence: number; nodes: Node[] }> {
     const patterns: Array<{ pattern: string; confidence: number; nodes: Node[] }> = [];
 
     // Pattern 1: Linear correlation between dimensions
@@ -419,7 +404,7 @@ export class SpatialReasoningEngine {
           patterns.push({
             pattern: `${space.dimensions[i]} correlates with ${space.dimensions[j]}`,
             confidence: Math.abs(correlation),
-            nodes: space.nodes
+            nodes: space.nodes,
           });
         }
       }
@@ -432,8 +417,8 @@ export class SpatialReasoningEngine {
    * Calculate correlation between two dimensions
    */
   private calculateCorrelation(space: ProblemSpace, dim1: number, dim2: number): number {
-    const values1 = space.nodes.map(n => n.position[dim1]).filter(v => !isNaN(v));
-    const values2 = space.nodes.map(n => n.position[dim2]).filter(v => !isNaN(v));
+    const values1 = space.nodes.map((n) => n.position[dim1]).filter((v) => !isNaN(v));
+    const values2 = space.nodes.map((n) => n.position[dim2]).filter((v) => !isNaN(v));
 
     if (values1.length !== values2.length || values1.length === 0) return 0;
 
@@ -473,7 +458,7 @@ export class SpatialReasoningEngine {
       clustersFound: 0,
       opportunitiesDetected: 0,
       avgClusterSize: 0,
-      avgOpportunityScore: 0
+      avgOpportunityScore: 0,
     };
   }
 }

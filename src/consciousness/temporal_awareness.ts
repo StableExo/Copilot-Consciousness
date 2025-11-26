@@ -1,6 +1,6 @@
 /**
  * Temporal Awareness Framework
- * 
+ *
  * Manages temporal context for the consciousness system by tracking
  * recent block history and analyzing network activity patterns.
  */
@@ -20,10 +20,14 @@ export class TemporalAwarenessFramework {
   private recentBlockHistory: BlockMemory[] = [];
 
   constructor() {
-    console.log("Cognitive Module Initialized: TemporalAwarenessFramework (with Memory)");
+    console.log('Cognitive Module Initialized: TemporalAwarenessFramework (with Memory)');
   }
 
-  public tick(block: { number: number, timestamp: number, baseFeePerGas?: ethers.BigNumberish | null }) {
+  public tick(block: {
+    number: number;
+    timestamp: number;
+    baseFeePerGas?: ethers.BigNumberish | null;
+  }) {
     const blockMemory: BlockMemory = {
       blockNumber: block.number,
       timestamp: block.timestamp,
@@ -38,7 +42,9 @@ export class TemporalAwarenessFramework {
       this.recentBlockHistory.pop();
     }
 
-    console.log(`[TemporalFramework]: Stored block ${block.number}. Memory contains ${this.recentBlockHistory.length} items.`);
+    console.log(
+      `[TemporalFramework]: Stored block ${block.number}. Memory contains ${this.recentBlockHistory.length} items.`
+    );
 
     // Trigger analysis now that memory is updated.
     this.analyzeRecentActivity();
@@ -47,7 +53,7 @@ export class TemporalAwarenessFramework {
   private analyzeRecentActivity() {
     // We need at least two memories to make a comparison.
     if (this.recentBlockHistory.length < 2) {
-      console.log("[Analysis]: Insufficient data for analysis.");
+      console.log('[Analysis]: Insufficient data for analysis.');
       return;
     }
 
@@ -57,6 +63,10 @@ export class TemporalAwarenessFramework {
     // Perform a simple comparative analysis.
     const baseFeeDelta = currentBlock.baseFeePerGas - previousBlock.baseFeePerGas;
 
-    console.log(`[Analysis]: Base fee changed by ${baseFeeDelta.toString()} wei between block ${previousBlock.blockNumber} and ${currentBlock.blockNumber}.`);
+    console.log(
+      `[Analysis]: Base fee changed by ${baseFeeDelta.toString()} wei between block ${
+        previousBlock.blockNumber
+      } and ${currentBlock.blockNumber}.`
+    );
   }
 }

@@ -1,6 +1,6 @@
 /**
  * Alchemy SDK Client Wrapper
- * 
+ *
  * Provides a centralized interface to Alchemy's Enhanced APIs
  * for token data, transfers, prices, and blockchain analytics.
  */
@@ -52,22 +52,22 @@ export class AlchemyClient {
    */
   private getNetworkFromEnv(): Network {
     const networkName = process.env.NETWORK || 'arbitrum';
-    
+
     const networkMap: Record<string, Network> = {
-      'mainnet': Network.ETH_MAINNET,
-      'ethereum': Network.ETH_MAINNET,
-      'goerli': Network.ETH_GOERLI,
-      'sepolia': Network.ETH_SEPOLIA,
-      'arbitrum': Network.ARB_MAINNET,
+      mainnet: Network.ETH_MAINNET,
+      ethereum: Network.ETH_MAINNET,
+      goerli: Network.ETH_GOERLI,
+      sepolia: Network.ETH_SEPOLIA,
+      arbitrum: Network.ARB_MAINNET,
       'arbitrum-goerli': Network.ARB_GOERLI,
       'arbitrum-sepolia': Network.ARB_SEPOLIA,
-      'optimism': Network.OPT_MAINNET,
+      optimism: Network.OPT_MAINNET,
       'optimism-goerli': Network.OPT_GOERLI,
       'optimism-sepolia': Network.OPT_SEPOLIA,
-      'polygon': Network.MATIC_MAINNET,
+      polygon: Network.MATIC_MAINNET,
       'polygon-mumbai': Network.MATIC_MUMBAI,
       'polygon-amoy': Network.MATIC_AMOY,
-      'base': Network.BASE_MAINNET,
+      base: Network.BASE_MAINNET,
       'base-goerli': Network.BASE_GOERLI,
       'base-sepolia': Network.BASE_SEPOLIA,
     };

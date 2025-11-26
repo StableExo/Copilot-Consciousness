@@ -144,7 +144,7 @@ describe('GraphBuilder', () => {
       const triangles = builder.findTriangles();
 
       expect(triangles.length).toBeGreaterThan(0);
-      
+
       const triangle = triangles[0];
       expect(triangle.tokens.length).toBe(3);
       expect(triangle.pools.length).toBe(3);
@@ -216,7 +216,7 @@ describe('GraphBuilder', () => {
 
       // Should find triangle only once despite multiple start points
       const signatures = new Set<string>();
-      triangles.forEach(t => {
+      triangles.forEach((t) => {
         const sig = t.tokens.slice().sort().join('_');
         expect(signatures.has(sig)).toBe(false);
         signatures.add(sig);
@@ -260,7 +260,7 @@ describe('GraphBuilder', () => {
       const triangles = builder.findTrianglesForToken('0xWETH');
 
       expect(triangles.length).toBeGreaterThan(0);
-      triangles.forEach(t => {
+      triangles.forEach((t) => {
         expect(t.tokens).toContain('0xWETH');
       });
     });
@@ -321,8 +321,8 @@ describe('GraphBuilder', () => {
       const cycles = builder.findCycles('0xWETH', 3);
 
       expect(cycles.length).toBeGreaterThanOrEqual(0);
-      
-      cycles.forEach(cycle => {
+
+      cycles.forEach((cycle) => {
         expect(cycle.tokens[0]).toBe('0xWETH');
         expect(cycle.tokens[cycle.tokens.length - 1]).toBe('0xWETH');
       });
@@ -362,7 +362,7 @@ describe('GraphBuilder', () => {
       builder.buildGraph(pools);
       const cycles = builder.findCycles('0xWETH', 2);
 
-      cycles.forEach(cycle => {
+      cycles.forEach((cycle) => {
         // Should have at most 2 intermediate hops + start/end
         expect(cycle.tokens.length).toBeLessThanOrEqual(3);
       });
@@ -438,7 +438,7 @@ describe('GraphBuilder', () => {
       // Should find at least 2 paths (direct and via USDC)
       expect(paths.length).toBeGreaterThanOrEqual(1);
 
-      paths.forEach(path => {
+      paths.forEach((path) => {
         expect(path.tokens[0]).toBe('0xWETH');
         expect(path.tokens[path.tokens.length - 1]).toBe('0xDAI');
       });

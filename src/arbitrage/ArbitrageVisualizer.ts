@@ -1,6 +1,6 @@
 /**
  * ArbitrageVisualizer - Dashboard visualization for multi-hop arbitrage
- * 
+ *
  * Provides text-based visualization of arbitrage opportunities and metrics
  */
 
@@ -12,24 +12,26 @@ export class ArbitrageVisualizer {
    */
   formatPath(path: ArbitragePath): string {
     const lines: string[] = [];
-    
+
     lines.push('\n=== Arbitrage Path ===');
     lines.push(`Start Token: ${path.startToken}`);
     lines.push(`End Token: ${path.endToken}`);
     lines.push(`Number of Hops: ${path.hops.length}`);
     lines.push('');
-    
+
     lines.push('Route:');
     path.hops.forEach((hop, index) => {
       lines.push(`  ${index + 1}. ${hop.dexName}`);
-      lines.push(`     ${this.formatTokenAddress(hop.tokenIn)} → ${this.formatTokenAddress(hop.tokenOut)}`);
+      lines.push(
+        `     ${this.formatTokenAddress(hop.tokenIn)} → ${this.formatTokenAddress(hop.tokenOut)}`
+      );
       lines.push(`     Amount In: ${this.formatAmount(hop.amountIn)}`);
       lines.push(`     Amount Out: ${this.formatAmount(hop.amountOut)}`);
       lines.push(`     Fee: ${(hop.fee * 100).toFixed(2)}%`);
       lines.push(`     Gas Estimate: ${hop.gasEstimate.toLocaleString()}`);
       lines.push('');
     });
-    
+
     lines.push('Profitability:');
     lines.push(`  Estimated Profit: ${this.formatAmount(path.estimatedProfit)}`);
     lines.push(`  Total Gas Cost: ${this.formatAmount(path.totalGasCost)}`);
@@ -37,7 +39,7 @@ export class ArbitrageVisualizer {
     lines.push(`  Total Fees: ${(path.totalFees * 100).toFixed(2)}%`);
     lines.push(`  Slippage Impact: ${(path.slippageImpact * 100).toFixed(2)}%`);
     lines.push('');
-    
+
     return lines.join('\n');
   }
 
@@ -50,31 +52,30 @@ export class ArbitrageVisualizer {
     }
 
     const lines: string[] = [];
-    
+
     lines.push('\n=== Arbitrage Opportunities ===\n');
     lines.push('┌─────┬──────────┬───────────────────┬───────────────────┬─────────┐');
     lines.push('│ No. │ Hops     │ Estimated Profit  │ Net Profit        │ ROI     │');
     lines.push('├─────┼──────────┼───────────────────┼───────────────────┼─────────┤');
-    
+
     paths.slice(0, 10).forEach((path, index) => {
       const startAmount = path.hops[0].amountIn;
-      const roi = startAmount > BigInt(0) 
-        ? Number(path.netProfit * BigInt(10000) / startAmount) / 100 
-        : 0;
-      
+      const roi =
+        startAmount > BigInt(0) ? Number((path.netProfit * BigInt(10000)) / startAmount) / 100 : 0;
+
       lines.push(
         `│ ${this.padRight((index + 1).toString(), 3)} │ ` +
-        `${this.padRight(path.hops.length.toString(), 8)} │ ` +
-        `${this.padLeft(this.formatAmount(path.estimatedProfit), 17)} │ ` +
-        `${this.padLeft(this.formatAmount(path.netProfit), 17)} │ ` +
-        `${this.padLeft(roi.toFixed(2) + '%', 7)} │`
+          `${this.padRight(path.hops.length.toString(), 8)} │ ` +
+          `${this.padLeft(this.formatAmount(path.estimatedProfit), 17)} │ ` +
+          `${this.padLeft(this.formatAmount(path.netProfit), 17)} │ ` +
+          `${this.padLeft(roi.toFixed(2) + '%', 7)} │`
       );
     });
-    
+
     lines.push('└─────┴──────────┴───────────────────┴───────────────────┴─────────┘');
     lines.push(`\nTotal opportunities: ${paths.length}`);
     lines.push('');
-    
+
     return lines.join('\n');
   }
 
@@ -83,7 +84,7 @@ export class ArbitrageVisualizer {
    */
   formatProfitability(result: ProfitabilityResult): string {
     const lines: string[] = [];
-    
+
     lines.push('\n=== Profitability Analysis ===');
     lines.push(`Status: ${result.profitable ? '✓ PROFITABLE' : '✗ NOT PROFITABLE'}`);
     lines.push(`Estimated Profit: ${this.formatAmount(result.estimatedProfit)}`);
@@ -93,7 +94,7 @@ export class ArbitrageVisualizer {
     lines.push(`ROI: ${result.roi.toFixed(2)}%`);
     lines.push(`Slippage Impact: ${(result.slippageImpact * 100).toFixed(2)}%`);
     lines.push('');
-    
+
     return lines.join('\n');
   }
 
@@ -102,30 +103,30 @@ export class ArbitrageVisualizer {
    */
   formatRouteMap(path: ArbitragePath): string {
     const lines: string[] = [];
-    
+
     lines.push('\n=== Route Map ===\n');
-    
+
     if (path.hops.length === 0) {
       return 'No hops in path\n';
     }
 
     // Start
     lines.push(`  ${this.formatTokenAddress(path.hops[0].tokenIn)}`);
-    
+
     // Each hop
     path.hops.forEach((hop, index) => {
       lines.push(`  │`);
       lines.push(`  │ [${hop.dexName}]`);
       lines.push(`  ↓`);
       lines.push(`  ${this.formatTokenAddress(hop.tokenOut)}`);
-      
+
       if (index < path.hops.length - 1) {
         lines.push('');
       }
     });
-    
+
     lines.push('');
-    
+
     return lines.join('\n');
   }
 
@@ -138,14 +139,20 @@ export class ArbitrageVisualizer {
     }
 
     const lines: string[] = [];
-    
+
     const totalProfit = paths.reduce((sum, path) => sum + path.netProfit, BigInt(0));
     const avgProfit = totalProfit / BigInt(paths.length);
-    const maxProfit = paths.reduce((max, path) => path.netProfit > max ? path.netProfit : max, BigInt(0));
-    const minProfit = paths.reduce((min, path) => path.netProfit < min ? path.netProfit : min, paths[0].netProfit);
-    
+    const maxProfit = paths.reduce(
+      (max, path) => (path.netProfit > max ? path.netProfit : max),
+      BigInt(0)
+    );
+    const minProfit = paths.reduce(
+      (min, path) => (path.netProfit < min ? path.netProfit : min),
+      paths[0].netProfit
+    );
+
     const avgHops = paths.reduce((sum, path) => sum + path.hops.length, 0) / paths.length;
-    
+
     lines.push('\n=== Summary Statistics ===');
     lines.push(`Total Opportunities: ${paths.length}`);
     lines.push(`Total Potential Profit: ${this.formatAmount(totalProfit)}`);
@@ -154,7 +161,7 @@ export class ArbitrageVisualizer {
     lines.push(`Minimum Profit: ${this.formatAmount(minProfit)}`);
     lines.push(`Average Hops: ${avgHops.toFixed(2)}`);
     lines.push('');
-    
+
     return lines.join('\n');
   }
 
@@ -176,7 +183,7 @@ export class ArbitrageVisualizer {
     const wholePart = amount / BigInt('1000000000000000000');
     const fractionalPart = amount % BigInt('1000000000000000000');
     const fractionalStr = fractionalPart.toString().padStart(18, '0').substring(0, 4);
-    
+
     return `${wholePart}.${fractionalStr}`;
   }
 

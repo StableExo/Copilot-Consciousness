@@ -1,9 +1,9 @@
 /**
  * MulticallBatcher - Batch multiple RPC calls into a single request
- * 
+ *
  * Performance optimization for pool detection and data fetching.
  * Reduces RPC latency by combining multiple contract calls into one request.
- * 
+ *
  * This is especially important for pool scanning where we check 60+ pools,
  * reducing scan time from 60+ seconds to under 10 seconds.
  */
@@ -47,17 +47,13 @@ export class MulticallBatcher {
   ) {
     this.provider = provider;
     this.multicallAddress = multicallAddress;
-    this.multicallContract = new ethers.Contract(
-      multicallAddress,
-      MULTICALL3_ABI,
-      provider
-    );
+    this.multicallContract = new ethers.Contract(multicallAddress, MULTICALL3_ABI, provider);
     this.batchSize = batchSize;
   }
 
   /**
    * Execute multiple contract calls in a single RPC request
-   * 
+   *
    * @param calls Array of calls to execute
    * @returns Array of results corresponding to each call
    */
@@ -138,7 +134,7 @@ export class MulticallBatcher {
 
 /**
  * Helper function to batch pool existence checks
- * 
+ *
  * Instead of checking each pool individually with provider.getCode(),
  * batch them all into a single multicall request.
  */
@@ -167,9 +163,7 @@ export async function batchCheckPoolsExist(
   // Create multicall requests for code checks
   // We use eth_getCode which isn't directly supported by multicall,
   // so we'll use a different approach: call a standard function that all pools have
-  const poolInterface = new Interface([
-    'function token0() external view returns (address)',
-  ]);
+  const poolInterface = new Interface(['function token0() external view returns (address)']);
 
   const calls: MulticallRequest[] = poolAddresses.map((address) => ({
     target: address,
@@ -190,7 +184,7 @@ export async function batchCheckPoolsExist(
 
 /**
  * Helper function to batch pool data fetches
- * 
+ *
  * Fetches token0, token1, and reserves/liquidity for multiple pools in one call.
  */
 export async function batchFetchPoolData(

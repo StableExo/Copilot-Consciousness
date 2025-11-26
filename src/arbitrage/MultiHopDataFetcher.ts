@@ -1,19 +1,24 @@
 /**
  * MultiHopDataFetcher - Fetches multi-hop price and liquidity data
- * 
+ *
  * Extends DEX registry functionality to support multi-token paths
  */
 
-import { Contract, Interface, JsonRpcProvider, Provider, ZeroAddress, getCreate2Address, keccak256, solidityPacked } from 'ethers';
+import {
+  Contract,
+  Interface,
+  JsonRpcProvider,
+  Provider,
+  ZeroAddress,
+  getCreate2Address,
+  keccak256,
+  solidityPacked,
+} from 'ethers';
 import { DEXRegistry } from '../dex/core/DEXRegistry';
 import { DEXConfig } from '../dex/types';
 import { PoolEdge, Token } from './types';
 import { logger } from '../utils/logger';
-import { 
-  UNISWAP_V3_FEE_TIERS, 
-  V3_LIQUIDITY_SCALE_FACTOR, 
-  isV3StyleProtocol 
-} from './constants';
+import { UNISWAP_V3_FEE_TIERS, V3_LIQUIDITY_SCALE_FACTOR, isV3StyleProtocol } from './constants';
 import { PoolDataStore } from './PoolDataStore';
 
 /**
@@ -47,7 +52,7 @@ export class MultiHopDataFetcher {
     this.currentChainId = chainId;
     this.poolDataStore = poolDataStore || new PoolDataStore();
   }
-  
+
   /**
    * Set the current chain ID for filtering DEXes
    */
@@ -70,12 +75,18 @@ export class MultiHopDataFetcher {
       if (pools && pools.length > 0) {
         this.preloadedEdges = pools;
         this.preloadedTimestamp = Date.now();
-        logger.info(`✓ Loaded ${pools.length} preloaded pools for chain ${targetChainId}`, 'DATAFETCH');
+        logger.info(
+          `✓ Loaded ${pools.length} preloaded pools for chain ${targetChainId}`,
+          'DATAFETCH'
+        );
         return true;
       }
       return false;
     } catch (error) {
-      logger.warn(`Failed to load preloaded data: ${error instanceof Error ? error.message : String(error)}`, 'DATAFETCH');
+      logger.warn(
+        `Failed to load preloaded data: ${error instanceof Error ? error.message : String(error)}`,
+        'DATAFETCH'
+      );
       return false;
     }
   }
@@ -89,9 +100,10 @@ export class MultiHopDataFetcher {
     }
     const age = Date.now() - this.preloadedTimestamp;
     const cacheDurationEnv = process.env.POOL_CACHE_DURATION;
-    const maxAge = cacheDurationEnv && !isNaN(parseInt(cacheDurationEnv))
-      ? parseInt(cacheDurationEnv) * 1000
-      : 3600000; // 1 hour default
+    const maxAge =
+      cacheDurationEnv && !isNaN(parseInt(cacheDurationEnv))
+        ? parseInt(cacheDurationEnv) * 1000
+        : 3600000; // 1 hour default
     return age < maxAge;
   }
 
@@ -102,10 +114,13 @@ export class MultiHopDataFetcher {
     if (!this.providers.has(network)) {
       // Get RPC URL from environment variables based on network/chainId
       let rpcUrl: string;
-      
+
       switch (network) {
         case '1':
-          rpcUrl = process.env.ETHEREUM_RPC_URL || process.env.MAINNET_RPC_URL || 'https://eth.llamarpc.com';
+          rpcUrl =
+            process.env.ETHEREUM_RPC_URL ||
+            process.env.MAINNET_RPC_URL ||
+            'https://eth.llamarpc.com';
           break;
         case '8453':
           rpcUrl = process.env.BASE_RPC_URL || 'https://mainnet.base.org';
@@ -122,28 +137,24 @@ export class MultiHopDataFetcher {
         default:
           rpcUrl = process.env.RPC_URL || 'https://eth.llamarpc.com';
       }
-      
+
       const provider = new JsonRpcProvider(rpcUrl);
       this.providers.set(network, provider);
     }
-    
+
     return this.providers.get(network)!;
   }
 
   /**
    * Fetch pool data for a token pair on a specific DEX
    */
-  async fetchPoolData(
-    dex: DEXConfig,
-    token0: string,
-    token1: string
-  ): Promise<PoolData | null> {
+  async fetchPoolData(dex: DEXConfig, token0: string, token1: string): Promise<PoolData | null> {
     try {
       const provider = this.getProvider(dex.network);
-      
+
       // Generate pool address (simplified - actual implementation depends on DEX)
       const poolAddress = await this.getPoolAddress(dex, token0, token1, provider);
-      
+
       if (!poolAddress) {
         return null;
       }
@@ -156,7 +167,7 @@ export class MultiHopDataFetcher {
 
       // Fetch reserves - method varies by protocol
       const reserves = await this.getReserves(poolAddress, provider, dex.protocol);
-      
+
       if (!reserves) {
         return null;
       }
@@ -166,7 +177,7 @@ export class MultiHopDataFetcher {
         token0,
         token1,
         reserve0: reserves.reserve0,
-        reserve1: reserves.reserve1
+        reserve1: reserves.reserve1,
       };
 
       // Cache the result with timestamp
@@ -187,20 +198,23 @@ export class MultiHopDataFetcher {
     // Try to use preloaded data first
     if (this.isPreloadedDataValid()) {
       logger.debug('Using preloaded pool data', 'DATAFETCH');
-      
+
       // Filter preloaded edges to only include pools with tokens we're scanning
-      const tokenSet = new Set(tokens.map(t => t.toLowerCase()));
-      const filteredEdges = this.preloadedEdges!.filter(edge => 
-        tokenSet.has(edge.tokenIn.toLowerCase()) && tokenSet.has(edge.tokenOut.toLowerCase())
+      const tokenSet = new Set(tokens.map((t) => t.toLowerCase()));
+      const filteredEdges = this.preloadedEdges!.filter(
+        (edge) =>
+          tokenSet.has(edge.tokenIn.toLowerCase()) && tokenSet.has(edge.tokenOut.toLowerCase())
       );
-      
+
       if (filteredEdges.length < this.preloadedEdges!.length) {
         logger.debug(
-          `Filtered preloaded pools: ${this.preloadedEdges!.length} total → ${filteredEdges.length} matching scan tokens`,
+          `Filtered preloaded pools: ${this.preloadedEdges!.length} total → ${
+            filteredEdges.length
+          } matching scan tokens`,
           'DATAFETCH'
         );
       }
-      
+
       // Log pool distribution by DEX for diagnostic purposes
       if (filteredEdges.length > 0) {
         const poolsByDex = new Map<string, number>();
@@ -214,33 +228,39 @@ export class MultiHopDataFetcher {
           .join(', ');
         logger.debug(`Pool distribution: ${dexSummary}`, 'DATAFETCH');
       }
-      
+
       return filteredEdges;
     }
 
     // If preloaded data is not available or stale, fetch from network
     const edges: PoolEdge[] = [];
-    
+
     // Get DEXes - filter by current chain if set
     let dexes = this.registry.getAllDEXes();
     if (this.currentChainId !== undefined) {
       const chainIdStr = this.currentChainId.toString();
       dexes = this.registry.getDEXesByNetwork(chainIdStr);
-      logger.debug(`Filtering DEXes for chain ${this.currentChainId}: Found ${dexes.length} DEXes`, 'DATAFETCH');
+      logger.debug(
+        `Filtering DEXes for chain ${this.currentChainId}: Found ${dexes.length} DEXes`,
+        'DATAFETCH'
+      );
     }
-    
+
     if (dexes.length === 0) {
       logger.warn(`No DEXes found for chain ${this.currentChainId}`, 'DATAFETCH');
       return edges;
     }
 
-    logger.debug(`Building graph edges for ${tokens.length} tokens across ${dexes.length} DEXes`, 'DATAFETCH');
+    logger.debug(
+      `Building graph edges for ${tokens.length} tokens across ${dexes.length} DEXes`,
+      'DATAFETCH'
+    );
     let poolsChecked = 0;
     let poolsFound = 0;
 
     // Generate all token pair + DEX combinations for parallel fetching
-    const fetchTasks: Array<{token0: string, token1: string, dex: DEXConfig}> = [];
-    
+    const fetchTasks: Array<{ token0: string; token1: string; dex: DEXConfig }> = [];
+
     for (let i = 0; i < tokens.length; i++) {
       for (let j = 0; j < tokens.length; j++) {
         if (i === j) continue;
@@ -254,13 +274,18 @@ export class MultiHopDataFetcher {
         }
       }
     }
-    
+
     poolsChecked = fetchTasks.length;
-    
+
     // Fetch pools in parallel with concurrency limit
     const PARALLEL_LIMIT = 10; // Fetch 10 pools at a time
-    const results: Array<{poolData: PoolData | null, token0: string, token1: string, dex: DEXConfig}> = [];
-    
+    const results: Array<{
+      poolData: PoolData | null;
+      token0: string;
+      token1: string;
+      dex: DEXConfig;
+    }> = [];
+
     for (let i = 0; i < fetchTasks.length; i += PARALLEL_LIMIT) {
       const batch = fetchTasks.slice(i, i + PARALLEL_LIMIT);
       const batchResults = await Promise.all(
@@ -268,19 +293,22 @@ export class MultiHopDataFetcher {
           poolData: await this.fetchPoolData(dex, token0, token1),
           token0,
           token1,
-          dex
+          dex,
         }))
       );
       results.push(...batchResults);
-      
+
       // Log progress for long scans (every 25% or at least every 100 batches)
       const progressInterval = Math.max(100, Math.floor(fetchTasks.length / 4));
       if (i > 0 && i % progressInterval === 0) {
         const percentComplete = Math.round((i / fetchTasks.length) * 100);
-        logger.debug(`Pool scan progress: ${i}/${fetchTasks.length} checked (${percentComplete}%)`, 'DATAFETCH');
+        logger.debug(
+          `Pool scan progress: ${i}/${fetchTasks.length} checked (${percentComplete}%)`,
+          'DATAFETCH'
+        );
       }
     }
-    
+
     // Process results
     for (const { poolData, token0, token1, dex } of results) {
       if (poolData) {
@@ -289,12 +317,18 @@ export class MultiHopDataFetcher {
         const threshold = isV3StyleProtocol(dex.protocol)
           ? dex.liquidityThreshold / BigInt(V3_LIQUIDITY_SCALE_FACTOR)
           : dex.liquidityThreshold;
-        
+
         // Log pool rejection details for debugging
         if (poolData.reserve0 <= threshold && logger.isDebugEnabled()) {
-          logger.debug(`Pool rejected: ${dex.name} ${token0.slice(0,6)}.../${token1.slice(0,6)}... - liquidity ${poolData.reserve0} <= threshold ${threshold}`, 'DATAFETCH');
+          logger.debug(
+            `Pool rejected: ${dex.name} ${token0.slice(0, 6)}.../${token1.slice(
+              0,
+              6
+            )}... - liquidity ${poolData.reserve0} <= threshold ${threshold}`,
+            'DATAFETCH'
+          );
         }
-        
+
         if (poolData.reserve0 > threshold) {
           poolsFound++;
           // Create edge in both directions
@@ -306,18 +340,27 @@ export class MultiHopDataFetcher {
             reserve0: poolData.reserve0,
             reserve1: poolData.reserve1,
             fee: this.getDEXFee(dex),
-            gasEstimate: dex.gasEstimate || 150000
+            gasEstimate: dex.gasEstimate || 150000,
           });
-          
+
           // Only perform string operations if debug is enabled
           if (logger.isDebugEnabled()) {
-            logger.debug(`Found pool: ${dex.name} ${token0.slice(0,6)}.../${token1.slice(0,6)}... (reserves: ${poolData.reserve0}/${poolData.reserve1})`, 'DATAFETCH');
+            logger.debug(
+              `Found pool: ${dex.name} ${token0.slice(0, 6)}.../${token1.slice(
+                0,
+                6
+              )}... (reserves: ${poolData.reserve0}/${poolData.reserve1})`,
+              'DATAFETCH'
+            );
           }
         }
       }
     }
 
-    logger.info(`Pool scan complete: Checked ${poolsChecked} potential pools, found ${poolsFound} valid pools with sufficient liquidity`, 'DATAFETCH');
+    logger.info(
+      `Pool scan complete: Checked ${poolsChecked} potential pools, found ${poolsFound} valid pools with sufficient liquidity`,
+      'DATAFETCH'
+    );
     return edges;
   }
 
@@ -332,22 +375,21 @@ export class MultiHopDataFetcher {
   ): Promise<string | null> {
     try {
       // Sort tokens
-      const [tokenA, tokenB] = token0.toLowerCase() < token1.toLowerCase() 
-        ? [token0, token1] 
-        : [token1, token0];
+      const [tokenA, tokenB] =
+        token0.toLowerCase() < token1.toLowerCase() ? [token0, token1] : [token1, token0];
 
       // Uniswap V3 style - check multiple fee tiers using factory.getPool()
       if (isV3StyleProtocol(dex.protocol)) {
         const factoryInterface = new Interface([
-          'function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)'
+          'function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)',
         ]);
-        
+
         const factory = new Contract(dex.factory, factoryInterface, provider);
-        
+
         for (const fee of UNISWAP_V3_FEE_TIERS) {
           try {
             const poolAddress = await factory.getPool(tokenA, tokenB, fee);
-            
+
             if (poolAddress && poolAddress !== ZeroAddress) {
               // Verify pool has liquidity
               const code = await provider.getCode(poolAddress);
@@ -365,21 +407,15 @@ export class MultiHopDataFetcher {
             continue;
           }
         }
-        
+
         return null;
       }
 
       // Uniswap V2 style pool address calculation
       if (dex.initCodeHash) {
-        const salt = keccak256(
-          solidityPacked(['address', 'address'], [tokenA, tokenB])
-        );
-        
-        const poolAddress = getCreate2Address(
-          dex.factory,
-          salt,
-          dex.initCodeHash
-        );
+        const salt = keccak256(solidityPacked(['address', 'address'], [tokenA, tokenB]));
+
+        const poolAddress = getCreate2Address(dex.factory, salt, dex.initCodeHash);
 
         // Verify pool exists
         const code = await provider.getCode(poolAddress);
@@ -409,15 +445,15 @@ export class MultiHopDataFetcher {
           'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
           'function liquidity() external view returns (uint128)',
           'function token0() external view returns (address)',
-          'function token1() external view returns (address)'
+          'function token1() external view returns (address)',
         ]);
 
         const contract = new Contract(poolAddress, poolInterface, provider);
-        
+
         // Get liquidity and price
         const liquidity = await contract.liquidity();
         const slot0 = await contract.slot0();
-        
+
         // For V3, we use liquidity (L) as a proxy for pool size
         // Note: This is a simplified approximation. In V3, L = sqrt(x * y) where x and y are token amounts
         // For accurate reserve calculation, we would need to:
@@ -425,24 +461,24 @@ export class MultiHopDataFetcher {
         // 2. Calculate actual token amounts based on the current tick and liquidity
         // However, for pool filtering purposes, using L directly is sufficient as it correlates with pool size
         const liquidityBigInt = BigInt(liquidity.toString());
-        
+
         // If there's no liquidity, return null
         if (liquidityBigInt === BigInt(0)) {
           return null;
         }
-        
+
         // Use liquidity value for both reserves as a proxy
         // This allows threshold comparisons while acknowledging the limitation
         // TODO: Implement proper V3 reserve calculation using sqrtPriceX96 and tick data
         return {
           reserve0: liquidityBigInt,
-          reserve1: liquidityBigInt
+          reserve1: liquidityBigInt,
         };
       }
 
       // Standard Uniswap V2 getReserves function
       const poolInterface = new Interface([
-        'function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)'
+        'function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)',
       ]);
 
       const contract = new Contract(poolAddress, poolInterface, provider);
@@ -450,7 +486,7 @@ export class MultiHopDataFetcher {
 
       return {
         reserve0: BigInt(reserves.reserve0.toString()),
-        reserve1: BigInt(reserves.reserve1.toString())
+        reserve1: BigInt(reserves.reserve1.toString()),
       };
     } catch (error) {
       return null;
@@ -465,17 +501,17 @@ export class MultiHopDataFetcher {
     const fees: Record<string, number> = {
       'Uniswap V3': 0.003,
       'Uniswap V2': 0.003,
-      'SushiSwap': 0.003,
-      'Curve': 0.0004,
-      'Balancer': 0.001,
+      SushiSwap: 0.003,
+      Curve: 0.0004,
+      Balancer: 0.001,
       '1inch': 0.003,
       'PancakeSwap V3': 0.0025,
       // Base-specific DEXes
       'Uniswap V3 on Base': 0.003,
       'Aerodrome on Base': 0.003,
-      'BaseSwap': 0.003,
+      BaseSwap: 0.003,
       'Uniswap V2 on Base': 0.003,
-      'SushiSwap on Base': 0.003
+      'SushiSwap on Base': 0.003,
     };
 
     return fees[dex.name] || 0.003;
@@ -501,7 +537,7 @@ export class MultiHopDataFetcher {
    */
   setMode(mode: 'polling' | 'event-driven'): void {
     this.mode = mode;
-    
+
     // In event-driven mode, use longer cache TTL since data is updated via events
     if (mode === 'event-driven') {
       this.cacheTTL = 300000; // 5 minutes
@@ -519,7 +555,7 @@ export class MultiHopDataFetcher {
 
   /**
    * Update pool data from real-time event
-   * 
+   *
    * Used in event-driven mode to update cache with fresh data from WebSocket events
    */
   updatePoolDataFromEvent(
@@ -531,13 +567,13 @@ export class MultiHopDataFetcher {
     reserve1: bigint
   ): void {
     const cacheKey = `${dexName}-${poolAddress}`;
-    
+
     const poolData: PoolData = {
       poolAddress,
       token0,
       token1,
       reserve0,
-      reserve1
+      reserve1,
     };
 
     this.poolCache.set(cacheKey, poolData);
@@ -546,7 +582,7 @@ export class MultiHopDataFetcher {
 
   /**
    * Check if cached data is still valid
-   * 
+   *
    * Note: This method performs a Map lookup on every cache validation.
    * For better performance in high-frequency scenarios, consider storing
    * the timestamp alongside the cached data in a single object.

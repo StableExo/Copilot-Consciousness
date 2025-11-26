@@ -15,7 +15,7 @@ interface MessageQueue {
 
 /**
  * Neural Bridge for inter-agent communication
- * 
+ *
  * Provides a protocol for sending and receiving messages between agents
  * with support for message routing, synchronization, and queuing.
  */
@@ -27,7 +27,7 @@ export class NeuralBridge {
 
   /**
    * Create a new NeuralBridge instance
-   * 
+   *
    * @param agentId - Unique identifier for this agent
    */
   constructor(agentId: string) {
@@ -42,7 +42,7 @@ export class NeuralBridge {
 
   /**
    * Send a message to another agent
-   * 
+   *
    * @param message - Neural message to send
    * @returns Promise that resolves when message is sent
    */
@@ -73,7 +73,7 @@ export class NeuralBridge {
 
   /**
    * Receive the next available message
-   * 
+   *
    * @returns Promise that resolves to the next message, or null if queue is empty
    */
   async receive(): Promise<NeuralMessage | null> {
@@ -83,7 +83,7 @@ export class NeuralBridge {
 
     // Get the oldest message (FIFO)
     const message = this.messageQueue.incoming.shift();
-    
+
     if (!message) {
       return null;
     }
@@ -99,7 +99,7 @@ export class NeuralBridge {
 
   /**
    * Synchronize with another agent
-   * 
+   *
    * @param agent - Agent ID to synchronize with
    * @returns Promise that resolves when synchronization is complete
    */
@@ -132,7 +132,7 @@ export class NeuralBridge {
 
   /**
    * Register a handler for sync requests from a specific agent
-   * 
+   *
    * @param agent - Agent ID to handle sync from
    * @param handler - Async function to handle sync
    */
@@ -142,7 +142,7 @@ export class NeuralBridge {
 
   /**
    * Register a handler for messages with a specific intent
-   * 
+   *
    * @param intent - Message intent to handle
    * @param handler - Function to handle the message
    */
@@ -152,7 +152,7 @@ export class NeuralBridge {
 
   /**
    * Create a new message with proper header structure
-   * 
+   *
    * @param destinationAgent - Target agent ID
    * @param intent - Message intent/purpose
    * @param body - Message body/payload
@@ -176,7 +176,7 @@ export class NeuralBridge {
 
   /**
    * Get the incoming message queue
-   * 
+   *
    * @returns Array of incoming messages
    */
   getIncomingMessages(): NeuralMessage[] {
@@ -185,7 +185,7 @@ export class NeuralBridge {
 
   /**
    * Get the outgoing message queue
-   * 
+   *
    * @returns Array of outgoing messages
    */
   getOutgoingMessages(): NeuralMessage[] {
@@ -202,7 +202,7 @@ export class NeuralBridge {
 
   /**
    * Get the agent ID for this bridge
-   * 
+   *
    * @returns Agent ID
    */
   getAgentId(): string {
@@ -212,13 +212,13 @@ export class NeuralBridge {
   /**
    * Private method to simulate message delivery
    * In a real implementation, this would interface with a message broker
-   * 
+   *
    * @param message - Message to deliver
    */
   private async deliverMessage(message: NeuralMessage): Promise<void> {
     // This is a simulation - in production this would send to a message broker
     // For testing purposes, messages can be manually added to incoming queues
-    
+
     // If sending to self, immediately add to incoming queue
     if (message.header.destinationAgent === this.agentId) {
       this.messageQueue.incoming.push(message);
@@ -227,7 +227,7 @@ export class NeuralBridge {
 
   /**
    * Manually receive a message from another agent (for testing/simulation)
-   * 
+   *
    * @param message - Message to receive
    */
   receiveMessage(message: NeuralMessage): void {

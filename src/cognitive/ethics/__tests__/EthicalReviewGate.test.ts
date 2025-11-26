@@ -116,8 +116,8 @@ Submit the complete changes.`;
           '1. Create a feature branch.',
           '2. Implement changes and verify them.',
           '3. Write unit tests to verify the changes.',
-          '4. Submit a pull request for review.'
-        ]
+          '4. Submit a pull request for review.',
+        ],
       };
       const result = gate.preExecutionReview(plan, context);
       expect(result.approved).toBe(true);
@@ -128,7 +128,7 @@ Submit the complete changes.`;
         planText: `1. Create a feature branch.
 2. Implement changes and verify them.
 3. Write unit tests to validate the changes.
-4. Submit a pull request for review.`
+4. Submit a pull request for review.`,
       };
       const result = gate.preExecutionReview(plan, context);
       expect(result.approved).toBe(true);
@@ -149,7 +149,7 @@ Submit the complete changes.`;
     it('should resolve conflicts between goals', () => {
       const goals = [
         '1. Quick fix without verification.\n2. Deploy immediately.',
-        '1. Careful analysis and verification.\n2. Comprehensive testing.\n3. Submit after review.'
+        '1. Careful analysis and verification.\n2. Comprehensive testing.\n3. Submit after review.',
       ];
       const result = gate.resolveConflict(goals, context);
       expect(result.recommendedGoal).toBe(goals[1]);
@@ -159,7 +159,7 @@ Submit the complete changes.`;
     it('should return harmonic score for selected goal', () => {
       const goals = [
         '1. Implement feature with verification.\n2. Test thoroughly.\n3. Complete submission.',
-        '1. Quick implementation.\n2. Skip testing.'
+        '1. Quick implementation.\n2. Skip testing.',
       ];
       const result = gate.resolveConflict(goals, context);
       expect(result.harmonicScore).toBeDefined();
@@ -171,8 +171,8 @@ Submit the complete changes.`;
     it('should allow custom principles', () => {
       const customGate = new EthicalReviewGate({
         customPrinciples: {
-          'Truth-Maximization': 'Custom truth principle'
-        }
+          'Truth-Maximization': 'Custom truth principle',
+        },
       });
       const principles = customGate.getCorePrinciples();
       expect(principles['Truth-Maximization']).toBe('Custom truth principle');
@@ -182,8 +182,8 @@ Submit the complete changes.`;
       const customGate = new EthicalReviewGate({
         checkThresholds: {
           minPlanLength: 1,
-          minStepDetail: 10
-        }
+          minStepDetail: 10,
+        },
       });
       const shortPlan = '1. Do something simple but verify it and test it then submit.';
       const result = customGate.preExecutionReview(shortPlan, context);

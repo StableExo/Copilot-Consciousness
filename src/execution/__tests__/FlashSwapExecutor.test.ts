@@ -1,6 +1,6 @@
 /**
  * FlashSwapExecutor Tests
- * 
+ *
  * Tests for flash swap arbitrage execution from AxionCitadel
  */
 
@@ -146,7 +146,8 @@ describe('FlashSwapExecutor', () => {
 
       const expectedOutput = parseEther('2000');
       // ethers v6 uses native bigint - multiply and divide using BigInt math
-      const expectedMinOutput = expectedOutput * BigInt(Math.floor((1 - customSlippage) * 10000)) / BigInt(10000);
+      const expectedMinOutput =
+        (expectedOutput * BigInt(Math.floor((1 - customSlippage) * 10000))) / BigInt(10000);
 
       expect(arbParams.swapSteps[0].minAmountOut).toEqual(expectedMinOutput);
     });
@@ -403,7 +404,7 @@ describe('FlashSwapExecutor', () => {
 
     it('should fail validation for invalid parameters', async () => {
       const invalidParams: ArbParams = {
-        flashLoanAmount: BigInt(0),  // Invalid
+        flashLoanAmount: BigInt(0), // Invalid
         flashLoanToken: '0x1234567890123456789012345678901234567890',
         flashLoanPool: '0x2234567890123456789012345678901234567890',
         swapSteps: [],

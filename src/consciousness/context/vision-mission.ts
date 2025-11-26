@@ -1,6 +1,6 @@
 /**
  * Vision and Mission Framework
- * 
+ *
  * Adapted from AxionCitadel's ctx_vision_mission.txt
  * Maintains strategic vision and mission alignment across sessions
  */
@@ -96,11 +96,11 @@ export class VisionMission {
       alignmentScore: 1.0,
       createdAt: Date.now(),
       revisionHistory: [],
-      metadata: {}
+      metadata: {},
     };
 
     this.visions.set(vision.id, vision);
-    
+
     // Set as current if first vision
     if (!this.currentVisionId) {
       this.currentVisionId = vision.id;
@@ -129,11 +129,11 @@ export class VisionMission {
       createdAt: Date.now(),
       updatedAt: Date.now(),
       alignmentChecks: [],
-      metadata: {}
+      metadata: {},
     };
 
     this.missions.set(mission.id, mission);
-    
+
     // Set as current if first mission
     if (!this.currentMissionId) {
       this.currentMissionId = mission.id;
@@ -156,7 +156,7 @@ export class VisionMission {
       previousStatement: vision.statement,
       newStatement,
       reason,
-      triggerEvent
+      triggerEvent,
     };
 
     vision.revisionHistory.push(revision);
@@ -182,7 +182,7 @@ export class VisionMission {
       return {
         aligned: false,
         deviationScore: 1.0,
-        recommendations: ['No mission statement defined']
+        recommendations: ['No mission statement defined'],
       };
     }
 
@@ -191,7 +191,7 @@ export class VisionMission {
       return {
         aligned: false,
         deviationScore: 1.0,
-        recommendations: ['Mission statement not found']
+        recommendations: ['Mission statement not found'],
       };
     }
 
@@ -209,7 +209,7 @@ export class VisionMission {
       itemId,
       aligned,
       deviationScore: alignmentScore,
-      notes: itemDescription
+      notes: itemDescription,
     };
 
     mission.alignmentChecks.push(check);
@@ -242,15 +242,15 @@ export class VisionMission {
       description,
       linkedVisionId: this.currentVisionId,
       linkedMissionId: this.currentMissionId,
-      keyResults: keyResults.map(kr => ({
+      keyResults: keyResults.map((kr) => ({
         ...kr,
-        id: this.generateId('kr')
+        id: this.generateId('kr'),
       })),
       dependencies: [],
       status: 'PLANNING',
       progress: 0,
       createdAt: Date.now(),
-      updatedAt: Date.now()
+      updatedAt: Date.now(),
     };
 
     this.objectives.set(objective.id, objective);
@@ -264,11 +264,11 @@ export class VisionMission {
     const objective = this.objectives.get(objectiveId);
     if (!objective) return false;
 
-    const keyResult = objective.keyResults.find(kr => kr.id === keyResultId);
+    const keyResult = objective.keyResults.find((kr) => kr.id === keyResultId);
     if (!keyResult) return false;
 
     keyResult.current = currentValue;
-    
+
     // Update objective progress
     const totalProgress = objective.keyResults.reduce((sum, kr) => {
       const krProgress = Math.min(100, (kr.current / kr.target) * 100);
@@ -279,7 +279,7 @@ export class VisionMission {
     objective.updatedAt = Date.now();
 
     // Auto-complete if all key results met
-    if (objective.keyResults.every(kr => kr.current >= kr.target)) {
+    if (objective.keyResults.every((kr) => kr.current >= kr.target)) {
       objective.status = 'COMPLETED';
     }
 
@@ -295,7 +295,7 @@ export class VisionMission {
   } {
     return {
       vision: this.currentVisionId ? this.visions.get(this.currentVisionId) || null : null,
-      mission: this.currentMissionId ? this.missions.get(this.currentMissionId) || null : null
+      mission: this.currentMissionId ? this.missions.get(this.currentMissionId) || null : null,
     };
   }
 
@@ -316,19 +316,18 @@ export class VisionMission {
         alignedCount: 0,
         misalignedCount: 0,
         averageDeviation: 0,
-        recentMisalignments: []
+        recentMisalignments: [],
       };
     }
 
     const checks = mission.alignmentChecks;
-    const alignedCount = checks.filter(c => c.aligned).length;
-    const misalignedCount = checks.filter(c => !c.aligned).length;
-    const averageDeviation = checks.length > 0
-      ? checks.reduce((sum, c) => sum + c.deviationScore, 0) / checks.length
-      : 0;
+    const alignedCount = checks.filter((c) => c.aligned).length;
+    const misalignedCount = checks.filter((c) => !c.aligned).length;
+    const averageDeviation =
+      checks.length > 0 ? checks.reduce((sum, c) => sum + c.deviationScore, 0) / checks.length : 0;
 
     const recentMisalignments = checks
-      .filter(c => !c.aligned)
+      .filter((c) => !c.aligned)
       .sort((a, b) => b.timestamp - a.timestamp)
       .slice(0, 10);
 
@@ -337,7 +336,7 @@ export class VisionMission {
       alignedCount,
       misalignedCount,
       averageDeviation,
-      recentMisalignments
+      recentMisalignments,
     };
   }
 
@@ -346,7 +345,7 @@ export class VisionMission {
    */
   getActiveObjectives(): StrategicObjective[] {
     return Array.from(this.objectives.values())
-      .filter(obj => obj.status === 'ACTIVE' || obj.status === 'PLANNING')
+      .filter((obj) => obj.status === 'ACTIVE' || obj.status === 'PLANNING')
       .sort((a, b) => b.progress - a.progress);
   }
 
@@ -365,7 +364,7 @@ export class VisionMission {
       missions: Array.from(this.missions.values()),
       objectives: Array.from(this.objectives.values()),
       currentVisionId: this.currentVisionId,
-      currentMissionId: this.currentMissionId
+      currentMissionId: this.currentMissionId,
     };
   }
 
@@ -383,29 +382,33 @@ export class VisionMission {
     this.missions.clear();
     this.objectives.clear();
 
-    data.visions.forEach(v => this.visions.set(v.id, v));
-    data.missions.forEach(m => this.missions.set(m.id, m));
-    data.objectives.forEach(o => this.objectives.set(o.id, o));
+    data.visions.forEach((v) => this.visions.set(v.id, v));
+    data.missions.forEach((m) => this.missions.set(m.id, m));
+    data.objectives.forEach((o) => this.objectives.set(o.id, o));
 
     this.currentVisionId = data.currentVisionId;
     this.currentMissionId = data.currentMissionId;
   }
 
-  private calculateAlignment(itemText: string, missionText: string, coreValuesText: string): number {
+  private calculateAlignment(
+    itemText: string,
+    missionText: string,
+    coreValuesText: string
+  ): number {
     // Simple word overlap scoring
     const itemWords = new Set(itemText.split(/\s+/));
     const missionWords = new Set(missionText.split(/\s+/));
     const valueWords = new Set(coreValuesText.split(/\s+/));
 
     let overlap = 0;
-    itemWords.forEach(word => {
+    itemWords.forEach((word) => {
       if (missionWords.has(word) || valueWords.has(word)) {
         overlap++;
       }
     });
 
     const maxPossible = itemWords.size;
-    return maxPossible > 0 ? 1 - (overlap / maxPossible) : 1.0;
+    return maxPossible > 0 ? 1 - overlap / maxPossible : 1.0;
   }
 
   private generateId(prefix: string): string {

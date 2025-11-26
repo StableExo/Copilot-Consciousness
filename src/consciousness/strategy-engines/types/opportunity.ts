@@ -1,6 +1,6 @@
 /**
  * Opportunity Type Definitions
- * 
+ *
  * Types for opportunity detection, evaluation, scoring, and ranking
  * in multi-dimensional problem spaces.
  */
@@ -16,7 +16,7 @@ export enum OpportunityType {
   ARBITRAGE = 'arbitrage',
   INNOVATION = 'innovation',
   EFFICIENCY = 'efficiency',
-  RISK_REDUCTION = 'risk_reduction'
+  RISK_REDUCTION = 'risk_reduction',
 }
 
 /**
@@ -29,7 +29,7 @@ export enum OpportunityStatus {
   EXECUTING = 'executing',
   REALIZED = 'realized',
   EXPIRED = 'expired',
-  REJECTED = 'rejected'
+  REJECTED = 'rejected',
 }
 
 /**
@@ -50,28 +50,28 @@ export interface Opportunity {
   type: OpportunityType;
   status: OpportunityStatus;
   timestamp: Date;
-  
+
   // Context
   nodes?: Node[];
   path?: Path;
-  
+
   // Metrics
   value: number;
   cost: number;
   risk: number;
   complexity: number;
   timeToRealize: number;
-  
+
   // Scoring
   score: number;
   rank?: number;
   criteria: Record<string, number>;
-  
+
   // Risk-adjusted metrics
   riskAdjustedValue?: number;
   expectedValue?: number;
   confidenceLevel?: number;
-  
+
   // Metadata
   description?: string;
   metadata?: Record<string, any>;
@@ -81,10 +81,13 @@ export interface Opportunity {
  * Opportunity scoring configuration
  */
 export interface OpportunityScoringConfig {
-  criteria: Record<string, {
-    weight: number;
-    type: 'maximize' | 'minimize';
-  }>;
+  criteria: Record<
+    string,
+    {
+      weight: number;
+      type: 'maximize' | 'minimize';
+    }
+  >;
   scoringMethod: 'weighted-sum' | 'weighted-product' | 'topsis' | 'promethee';
   normalization: boolean;
   riskAdjustment: boolean;

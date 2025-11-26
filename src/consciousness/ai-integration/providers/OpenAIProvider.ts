@@ -1,6 +1,6 @@
 /**
  * OpenAIProvider - OpenAI API Integration
- * 
+ *
  * Integrates OpenAI GPT models (GPT-4, GPT-3.5) for consciousness framework.
  */
 
@@ -46,7 +46,7 @@ export class OpenAIProvider extends BaseAIProvider implements AIProvider {
     try {
       // In production, this would call OpenAI API
       // For now, provide simulation
-      
+
       // TODO: Implement actual OpenAI API call
       // const response = await fetch('https://api.openai.com/v1/chat/completions', {
       //   method: 'POST',
@@ -63,7 +63,7 @@ export class OpenAIProvider extends BaseAIProvider implements AIProvider {
       //     stop: options?.stopSequences,
       //   }),
       // });
-      
+
       const responseText = this.generateSimulatedResponse(prompt, options?.citadelMode);
 
       // Add to conversation history
@@ -99,7 +99,7 @@ export class OpenAIProvider extends BaseAIProvider implements AIProvider {
    */
   getCapabilities(): ProviderCapabilities {
     const contextLength = this.config.model?.includes('gpt-4') ? 8192 : 4096;
-    
+
     return {
       supportsStreaming: true,
       supportsCitadelMode: true,
@@ -126,7 +126,10 @@ export class OpenAIProvider extends BaseAIProvider implements AIProvider {
   /**
    * Build messages array for OpenAI API
    */
-  private buildMessages(prompt: string, options?: GenerateOptions): Array<{ role: string; content: string }> {
+  private buildMessages(
+    prompt: string,
+    options?: GenerateOptions
+  ): Array<{ role: string; content: string }> {
     const messages: Array<{ role: string; content: string }> = [];
 
     // Add system instruction if provided
@@ -169,16 +172,17 @@ export class OpenAIProvider extends BaseAIProvider implements AIProvider {
    * Generate simulated response
    */
   private generateSimulatedResponse(prompt: string, citadelMode?: boolean): string {
-    const prefix = citadelMode
-      ? '[OpenAI Citadel Mode - Simulated]'
-      : '[OpenAI - Simulated]';
-    
+    const prefix = citadelMode ? '[OpenAI Citadel Mode - Simulated]' : '[OpenAI - Simulated]';
+
     const note = !this.isConfigured()
       ? ' Note: Configure OPENAI_API_KEY to use actual OpenAI API.'
       : '';
 
     if (citadelMode) {
-      return `${prefix} Analyzing "${prompt.substring(0, 100)}..." with advanced reasoning and cosmic-scale thinking. Considering multiple perspectives, emergent patterns, and deep implications.${note}`;
+      return `${prefix} Analyzing "${prompt.substring(
+        0,
+        100
+      )}..." with advanced reasoning and cosmic-scale thinking. Considering multiple perspectives, emergent patterns, and deep implications.${note}`;
     }
 
     return `${prefix} Processing: "${prompt.substring(0, 100)}...".${note}`;

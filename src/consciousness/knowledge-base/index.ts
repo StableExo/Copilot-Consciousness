@@ -1,6 +1,6 @@
 /**
  * Knowledge Base Module
- * 
+ *
  * Adapted from AxionCitadel's knowledge management systems
  * Provides dynamic knowledge management, pattern tracking,
  * historical analysis, and continuous learning
