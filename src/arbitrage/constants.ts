@@ -55,10 +55,26 @@ export const V3_STYLE_PROTOCOLS = [
   'pancakeswapv3',  // Legacy naming
   'Velodrome',      // Velodrome Slipstream concentrated liquidity
   'velodrome',      // Legacy naming
+  'VelodromeV2',    // Velodrome V2 on Optimism - concentrated liquidity
+  'velodromev2',    // Legacy naming
   'MaverickV2',     // Maverick V2 dynamic distribution AMM
   'maverickv2',     // Legacy naming
   'AlienBase',      // AlienBase (Uniswap V3 fork)
-  'alienbase'       // Legacy naming
+  'alienbase',      // Legacy naming
+  'SushiSwapV3',    // SushiSwap V3 concentrated liquidity
+  'sushiswapv3',    // Legacy naming
+  'KyberSwapV3',    // KyberSwap Elastic (V3-style)
+  'kyberswapv3',    // Legacy naming
+  'DODOV3',         // DODO V3 Proactive Market Maker
+  'dodov3',         // Legacy naming
+  'CamelotV3',      // Camelot V3 on Arbitrum
+  'camelotv3',      // Legacy naming
+  'TraderJoeV3',    // Trader Joe V3 Liquidity Book
+  'traderjoeV3',    // Legacy naming
+  'ZyberSwap',      // ZyberSwap on Arbitrum (V3-style)
+  'zyberswap',      // Legacy naming
+  'Ramses',         // Ramses Exchange (Solidly V2 with concentrated liquidity)
+  'ramses'          // Legacy naming
 ] as const;
 
 /**
