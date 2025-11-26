@@ -107,7 +107,7 @@ export const realtimeConfig: AdvancedOrchestratorConfig = {
     ...defaultAdvancedArbitrageConfig.pruning,
     aggressiveness: 'low', // Changed from 'high' to discover more pools
     minPoolLiquidity: BigInt(20000), // Reduced from 200000 for Base L2
-    maxPriceImpactPerHop: 2.0 // More lenient for real-time
+    maxPriceImpactPerHop: 3.0 // More lenient for real-time
   },
   cache: {
     ...defaultAdvancedArbitrageConfig.cache,
