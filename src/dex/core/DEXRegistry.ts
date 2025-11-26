@@ -3,10 +3,10 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import { DEXConfig, ChainType } from '../types';
 
 // Liquidity threshold constants for Base L2 network
-// V3 pools use concentrated liquidity (L = sqrt(x*y)), values are typically 10^15-10^24
-// V2 pools use raw reserves in wei, values are typically 10^18-10^24
-const V3_MIN_LIQUIDITY_THRESHOLD = BigInt(1000000000000);    // 10^12 for high liquidity V3 pools
-const V3_LOW_LIQUIDITY_THRESHOLD = BigInt(100000000000);     // 10^11 for smaller V3 pools
+// V3 pools use concentrated liquidity (L = sqrt(x*y)), values are typically 10^15-10^24.
+// The thresholds below are intentionally set much lower (10^12-10^11) to maximize pool discovery on Base L2, targeting relatively higher liquidity among small pools.
+const V3_MIN_LIQUIDITY_THRESHOLD = BigInt(1000000000000);    // 10^12: relatively higher liquidity among small V3 pools on Base L2 (well below typical V3 pool values)
+const V3_LOW_LIQUIDITY_THRESHOLD = BigInt(100000000000);     // 10^11: for even smaller V3 pools on Base L2
 const V2_MIN_LIQUIDITY_THRESHOLD = BigInt(1000000000000000); // 10^15 = ~0.001 ETH for V2 pools
 
 const getSolanaRpcEndpoint = (network: string): string => {
