@@ -325,8 +325,8 @@ export class DEXRegistry {
             chainType: 'EVM',
             network: '8453',
             router: '0x1111111254fb6c44bAC0beD2854e76F90643097d', // 1inch Aggregation Router (standard across chains)
-            factory: '0x1111111254fb6c44bAC0beD2854e76F90643097d', // 1inch uses router for aggregation
-            initCodeHash: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
+            factory: '0x1111111254fb6c44bAC0beD2854e76F90643097d', // 1inch is an aggregator, no separate factory
+            initCodeHash: undefined, // Aggregator doesn't create pools, routes through other DEXs
             priority: 14,
             liquidityThreshold: V2_MIN_LIQUIDITY_THRESHOLD, // 10^15 for aggregator
             gasEstimate: 160000
