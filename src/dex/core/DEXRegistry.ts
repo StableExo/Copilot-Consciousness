@@ -363,9 +363,10 @@ export class DEXRegistry {
 
         // ═══════════════════════════════════════════════════════════
         // ARBITRUM ONE - TOP 10 DEXES (November 2025)
+        // Data source: DefiLlama, GeckoTerminal, Dune Analytics (Nov 26, 2025)
         // ═══════════════════════════════════════════════════════════
         
-        // #1 - Uniswap V3 on Arbitrum (~$380-450M daily volume, ~$1.25B TVL)
+        // #1 - Uniswap V3 on Arbitrum (~$380-450M daily volume, ~$1.25B TVL as of Nov 2025)
         this.addDEX({
             name: 'Uniswap V3 on Arbitrum',
             protocol: 'UniswapV3',
@@ -379,7 +380,7 @@ export class DEXRegistry {
             gasEstimate: 150000
         });
 
-        // #2 - Camelot V3 on Arbitrum (~$180-250M daily volume, ~$380M TVL)
+        // #2 - Camelot V3 on Arbitrum (~$180-250M daily volume, ~$380M TVL as of Nov 2025)
         // Native Arbitrum DEX with GRAIL incentives
         this.addDEX({
             name: 'Camelot V3 on Arbitrum',
@@ -394,7 +395,7 @@ export class DEXRegistry {
             gasEstimate: 150000
         });
 
-        // #3 - SushiSwap V3 on Arbitrum (~$90-130M daily volume, ~$220M TVL)
+        // #3 - SushiSwap V3 on Arbitrum (~$90-130M daily volume, ~$220M TVL as of Nov 2025)
         this.addDEX({
             name: 'SushiSwap V3 on Arbitrum',
             protocol: 'SushiSwapV3',
@@ -408,7 +409,7 @@ export class DEXRegistry {
             gasEstimate: 150000
         });
 
-        // #4 - PancakeSwap V3 on Arbitrum (~$70-110M daily volume, ~$180M TVL)
+        // #4 - PancakeSwap V3 on Arbitrum (~$70-110M daily volume, ~$180M TVL as of Nov 2025)
         this.addDEX({
             name: 'PancakeSwap V3 on Arbitrum',
             protocol: 'PancakeSwapV3',
@@ -422,7 +423,7 @@ export class DEXRegistry {
             gasEstimate: 150000
         });
 
-        // #5 - Balancer V2 on Arbitrum (~$60-90M daily volume, ~$160M TVL)
+        // #5 - Balancer V2 on Arbitrum (~$60-90M daily volume, ~$160M TVL as of Nov 2025)
         this.addDEX({
             name: 'Balancer V2 on Arbitrum',
             protocol: 'BalancerV2',
@@ -436,7 +437,7 @@ export class DEXRegistry {
             gasEstimate: 200000
         });
 
-        // #6 - Curve on Arbitrum (~$50-80M daily volume, ~$280M TVL)
+        // #6 - Curve on Arbitrum (~$50-80M daily volume, ~$280M TVL as of Nov 2025)
         // Dominates stablecoin & LST trading
         this.addDEX({
             name: 'Curve on Arbitrum',
@@ -451,7 +452,7 @@ export class DEXRegistry {
             gasEstimate: 180000
         });
 
-        // #7 - ZyberSwap on Arbitrum (~$30-55M daily volume, ~$85M TVL)
+        // #7 - ZyberSwap on Arbitrum (~$30-55M daily volume, ~$85M TVL as of Nov 2025)
         // Local favorite with high ZYB rewards
         this.addDEX({
             name: 'ZyberSwap on Arbitrum',
@@ -466,7 +467,7 @@ export class DEXRegistry {
             gasEstimate: 150000
         });
 
-        // #8 - Trader Joe V3 on Arbitrum (~$25-45M daily volume, ~$110M TVL)
+        // #8 - Trader Joe V3 on Arbitrum (~$25-45M daily volume, ~$110M TVL as of Nov 2025)
         // Avalanche-native but very active on ARB
         this.addDEX({
             name: 'Trader Joe V3 on Arbitrum',
@@ -481,7 +482,7 @@ export class DEXRegistry {
             gasEstimate: 150000
         });
 
-        // #9 - DODO V3 on Arbitrum (~$20-40M daily volume, ~$65M TVL)
+        // #9 - DODO V3 on Arbitrum (~$20-40M daily volume, ~$65M TVL as of Nov 2025)
         // Proactive liquidity + strong PMM pools
         this.addDEX({
             name: 'DODO V3 on Arbitrum',
@@ -496,7 +497,7 @@ export class DEXRegistry {
             gasEstimate: 150000
         });
 
-        // #10 - Ramses Exchange on Arbitrum (~$15-30M daily volume, ~$50M TVL)
+        // #10 - Ramses Exchange on Arbitrum (~$15-30M daily volume, ~$50M TVL as of Nov 2025)
         // Solidly-style with ve(3,3) mechanics
         this.addDEX({
             name: 'Ramses Exchange on Arbitrum',

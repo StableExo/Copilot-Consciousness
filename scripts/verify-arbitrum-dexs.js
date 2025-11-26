@@ -9,6 +9,17 @@
  * 3. Priority ordering is correct
  */
 
+const fs = require('fs');
+const path = require('path');
+
+// Check if dist directory exists and has recent build
+const distPath = path.join(__dirname, '../dist/src/dex/core/DEXRegistry.js');
+if (!fs.existsSync(distPath)) {
+    console.error('\n❌ ERROR: Build output not found.');
+    console.error('Please run: npm run build\n');
+    process.exit(1);
+}
+
 const { DEXRegistry } = require('../dist/src/dex/core/DEXRegistry.js');
 
 console.log('\n═══════════════════════════════════════════════════════════');
