@@ -4,7 +4,7 @@
     "type": "concentrated_liquidity",
     "version": "3",
     "swapGasEstimate": 150000,
-    "supported_chains": ["arbitrum", "ethereum", "polygon", "base", "optimism"],
+    "supported_chains": ["arbitrum", "ethereum", "polygon", "base", "optimism", "bsc", "blast"],
     "fee_tiers": [100, 500, 3000, 10000]
   },
   "sushiswap": {
@@ -44,7 +44,7 @@
     "type": "aggregator",
     "version": "5",
     "swapGasEstimate": 160000,
-    "supported_chains": ["ethereum", "arbitrum", "polygon", "base", "optimism"],
+    "supported_chains": ["ethereum", "arbitrum", "polygon", "base", "optimism", "bsc"],
     "fee": 0
   },
   "dydxV4": {
@@ -124,7 +124,7 @@
     "type": "constant_product",
     "version": "2",
     "swapGasEstimate": 130000,
-    "supported_chains": ["zkSync"],
+    "supported_chains": ["zkSync", "blast"],
     "fee": 3000
   },
   "skydrome": {
@@ -174,5 +174,237 @@
     "flashLoanGasEstimate": 200000,
     "supported_chains": ["arbitrum", "polygon", "base", "optimism"],
     "flashLoanFee": 9
+  },
+  "pancakeswapV3": {
+    "name": "PancakeSwap V3",
+    "type": "concentrated_liquidity",
+    "version": "3",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["bsc", "polygon", "arbitrum", "ethereum"],
+    "fee_tiers": [100, 500, 2500, 10000]
+  },
+  "pancakeswapV2": {
+    "name": "PancakeSwap V2",
+    "type": "constant_product",
+    "version": "2",
+    "swapGasEstimate": 120000,
+    "supported_chains": ["bsc"],
+    "fee": 2500
+  },
+  "biswap": {
+    "name": "Biswap",
+    "type": "constant_product",
+    "version": "2",
+    "swapGasEstimate": 120000,
+    "supported_chains": ["bsc"],
+    "fee": 1000
+  },
+  "mdex": {
+    "name": "MDEX",
+    "type": "constant_product",
+    "version": "2",
+    "swapGasEstimate": 120000,
+    "supported_chains": ["bsc"],
+    "fee": 3000
+  },
+  "apeswap": {
+    "name": "ApeSwap",
+    "type": "constant_product",
+    "version": "2",
+    "swapGasEstimate": 120000,
+    "supported_chains": ["bsc", "polygon"],
+    "fee": 2000
+  },
+  "bakeryswap": {
+    "name": "BakerySwap",
+    "type": "constant_product",
+    "version": "2",
+    "swapGasEstimate": 120000,
+    "supported_chains": ["bsc"],
+    "fee": 3000
+  },
+  "thenafi": {
+    "name": "ThenaFi",
+    "type": "ve_3_3",
+    "version": "2",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["bsc"],
+    "dynamic_fees": true
+  },
+  "waultswap": {
+    "name": "WaultSwap",
+    "type": "constant_product",
+    "version": "2",
+    "swapGasEstimate": 120000,
+    "supported_chains": ["bsc"],
+    "fee": 2000
+  },
+  "thruster": {
+    "name": "Thruster",
+    "type": "constant_product",
+    "version": "2",
+    "swapGasEstimate": 120000,
+    "supported_chains": ["blast"],
+    "fee": 3000
+  },
+  "thrusterV3": {
+    "name": "Thruster V3",
+    "type": "concentrated_liquidity",
+    "version": "3",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["blast"],
+    "fee_tiers": [100, 500, 3000, 10000]
+  },
+  "blitz": {
+    "name": "Blitz",
+    "type": "constant_product",
+    "version": "2",
+    "swapGasEstimate": 120000,
+    "supported_chains": ["blast"],
+    "fee": 3000
+  },
+  "juice": {
+    "name": "Juice Finance",
+    "type": "perpetuals",
+    "version": "1",
+    "swapGasEstimate": 130000,
+    "supported_chains": ["blast"],
+    "fee": 50
+  },
+  "dedust": {
+    "name": "DeDust",
+    "type": "constant_product",
+    "version": "2",
+    "swapGasEstimate": 130000,
+    "supported_chains": ["blast"],
+    "fee": 3000
+  },
+  "swappi": {
+    "name": "Swappi",
+    "type": "constant_product",
+    "version": "2",
+    "swapGasEstimate": 120000,
+    "supported_chains": ["blast"],
+    "fee": 3000
+  },
+  "woofi": {
+    "name": "WOOFi",
+    "type": "rfq",
+    "version": "1",
+    "swapGasEstimate": 160000,
+    "supported_chains": ["blast", "arbitrum", "polygon"],
+    "fee": 0
+  },
+  "quickswapV3": {
+    "name": "QuickSwap V3",
+    "type": "concentrated_liquidity",
+    "version": "3",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["polygon", "manta"],
+    "fee_tiers": [100, 500, 3000, 10000]
+  },
+  "kyberswap": {
+    "name": "KyberSwap",
+    "type": "concentrated_liquidity",
+    "version": "3",
+    "swapGasEstimate": 160000,
+    "supported_chains": ["polygon", "ethereum", "arbitrum"],
+    "dynamic_fees": true
+  },
+  "dodo": {
+    "name": "DODO",
+    "type": "pmm",
+    "version": "2",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["polygon", "ethereum", "arbitrum", "bsc"],
+    "fee": 3000
+  },
+  "algebra": {
+    "name": "Algebra",
+    "type": "concentrated_liquidity",
+    "version": "1",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["polygon"],
+    "dynamic_fees": true
+  },
+  "jupiter": {
+    "name": "Jupiter Exchange",
+    "type": "aggregator",
+    "version": "6",
+    "swapGasEstimate": 0,
+    "supported_chains": ["solana"],
+    "fee": 0
+  },
+  "orca": {
+    "name": "Orca",
+    "type": "concentrated_liquidity",
+    "version": "2",
+    "swapGasEstimate": 0,
+    "supported_chains": ["solana"],
+    "fee": 3000
+  },
+  "meteora": {
+    "name": "Meteora",
+    "type": "dlmm",
+    "version": "1",
+    "swapGasEstimate": 0,
+    "supported_chains": ["solana"],
+    "dynamic_fees": true
+  },
+  "lifinity": {
+    "name": "Lifinity",
+    "type": "proactive_market_maker",
+    "version": "2",
+    "swapGasEstimate": 0,
+    "supported_chains": ["solana"],
+    "fee": 3000
+  },
+  "phoenix": {
+    "name": "Phoenix",
+    "type": "order_book",
+    "version": "1",
+    "swapGasEstimate": 0,
+    "supported_chains": ["solana"],
+    "fee": 2000
+  },
+  "saber": {
+    "name": "Saber",
+    "type": "stableswap",
+    "version": "1",
+    "swapGasEstimate": 0,
+    "supported_chains": ["solana"],
+    "fee": 400
+  },
+  "drift": {
+    "name": "Drift Protocol",
+    "type": "perpetuals",
+    "version": "2",
+    "swapGasEstimate": 0,
+    "supported_chains": ["solana"],
+    "fee": 60
+  },
+  "marinade": {
+    "name": "Marinade Finance",
+    "type": "liquid_staking",
+    "version": "1",
+    "swapGasEstimate": 0,
+    "supported_chains": ["solana"],
+    "fee": 0
+  },
+  "step": {
+    "name": "Step Finance",
+    "type": "aggregator",
+    "version": "1",
+    "swapGasEstimate": 0,
+    "supported_chains": ["solana"],
+    "fee": 0
+  },
+  "raydium": {
+    "name": "Raydium",
+    "type": "amm",
+    "version": "4",
+    "swapGasEstimate": 0,
+    "supported_chains": ["solana"],
+    "fee": 2500
   }
 }
