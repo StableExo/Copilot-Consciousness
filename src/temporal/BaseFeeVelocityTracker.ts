@@ -122,9 +122,9 @@ export class BaseFeeVelocityTracker extends EventEmitter {
       return;
     }
 
-    // Simple approach: compare most recent block to previous
-    const recentFee = Number(this.baseFeeHistory[this.baseFeeHistory.length - 1].baseFee) / 1e6; // Convert to Mwei
-    const previousFee = Number(this.baseFeeHistory[this.baseFeeHistory.length - 2].baseFee) / 1e6;
+    // Convert to Mwei (divide by 1e6) for reasonable numeric range
+    const recentFee = Number(this.baseFeeHistory[this.baseFeeHistory.length - 1].baseFee / BigInt(1e6));
+    const previousFee = Number(this.baseFeeHistory[this.baseFeeHistory.length - 2].baseFee / BigInt(1e6));
 
     // Calculate delta in Mwei
     const delta = recentFee - previousFee;
@@ -179,7 +179,8 @@ export class BaseFeeVelocityTracker extends EventEmitter {
     if (this.baseFeeHistory.length === 0) {
       return null;
     }
-    return Number(this.baseFeeHistory[this.baseFeeHistory.length - 1].baseFee) / 1e6;
+    // Convert bigint to Mwei safely
+    return Number(this.baseFeeHistory[this.baseFeeHistory.length - 1].baseFee / BigInt(1e6));
   }
 
   /**

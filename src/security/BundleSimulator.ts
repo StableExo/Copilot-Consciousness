@@ -66,6 +66,9 @@ export interface SimulationConfig {
   
   /** Enable private bundle routing when threatened */
   enablePrivateFallback: boolean;
+  
+  /** Sandwich attack multiplier (higher = more weight to sandwich threats) */
+  sandwichMultiplier: number;
 }
 
 const DEFAULT_CONFIG: SimulationConfig = {
@@ -74,6 +77,7 @@ const DEFAULT_CONFIG: SimulationConfig = {
   mempoolSampleSize: 100,
   privateBundleHistorySize: 5,
   enablePrivateFallback: true,
+  sandwichMultiplier: 1.5,  // Sandwich attacks are 1.5x more profitable than individual attacks
 };
 
 /**
@@ -180,8 +184,8 @@ export class BundleSimulator extends EventEmitter {
         competingTxCount++;
         
         // Higher gas price = higher frontrun risk
-        const ourGasPrice = bundleTx.gasPrice || bundleTx.maxFeePerGas || 0n;
-        const theirGasPrice = pendingTx.gasPrice || pendingTx.maxFeePerGas || 0n;
+        const ourGasPrice = BigInt(bundleTx.gasPrice || bundleTx.maxFeePerGas || 0n);
+        const theirGasPrice = BigInt(pendingTx.gasPrice || pendingTx.maxFeePerGas || 0n);
         
         if (theirGasPrice >= ourGasPrice) {
           riskScore += 0.15; // 15% risk per competing high-gas tx
@@ -242,7 +246,8 @@ export class BundleSimulator extends EventEmitter {
 
     // Sandwich risk is the product of frontrun and backrun risks
     // (both must be possible for sandwich to work)
-    return frontrunRisk * backrunRisk * 1.5; // 1.5x multiplier as sandwich is more profitable
+    // Use configurable multiplier as sandwich is typically more profitable
+    return frontrunRisk * backrunRisk * this.config.sandwichMultiplier;
   }
 
   /**

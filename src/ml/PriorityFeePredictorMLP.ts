@@ -255,11 +255,22 @@ export class PriorityFeePredictorMLP extends EventEmitter {
     this.featureMean = allValues.reduce((a, b) => a + b, 0) / allValues.length;
     
     const variance = allValues.reduce((sum, val) => sum + Math.pow(val - this.featureMean, 2), 0) / allValues.length;
-    this.featureStd = Math.sqrt(variance) || 1;
+    // Use small epsilon if variance is zero to avoid division by zero
+    this.featureStd = Math.sqrt(variance) || 1e-8;
   }
 
   /**
    * Train on a single example using backpropagation
+   * 
+   * NOTE: This is a simplified implementation for lightweight operation.
+   * Full backpropagation would propagate gradients through all hidden layers.
+   * For production with more demanding accuracy requirements, consider:
+   * - Full gradient computation through hidden layers
+   * - Using a proper ML library (TensorFlow.js, ONNX.js)
+   * - More sophisticated optimization (Adam, RMSprop)
+   * 
+   * Current implementation updates output layer only, which is sufficient
+   * for basic pattern learning with limited computational overhead.
    */
   private trainSingleExample(input: number[], target: number[]): void {
     // Normalize input
@@ -280,7 +291,7 @@ export class PriorityFeePredictorMLP extends EventEmitter {
     // Calculate loss (MSE)
     const error = output.map((val, i) => val - normalizedTarget[i]);
 
-    // Simplified backpropagation (gradient descent)
+    // Simplified backpropagation (output layer only)
     // Update output layer
     for (let i = 0; i < this.weightsHidden2Output.length; i++) {
       for (let j = 0; j < this.weightsHidden2Output[i].length; j++) {
@@ -295,9 +306,6 @@ export class PriorityFeePredictorMLP extends EventEmitter {
         this.config.learningRate * error[i];
       this.biasOutput[i] += this.velocityBiasOutput[i];
     }
-
-    // Note: Full backpropagation would continue through hidden layers
-    // This is a simplified version for lightweight operation
   }
 
   /**
