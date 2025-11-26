@@ -43,6 +43,8 @@ Quick reference guide to all project documentation.
 ### Operational Guides
 - **[🔥 MAINNET_DEPLOYMENT.md](docs/MAINNET_DEPLOYMENT.md)** - **Live Fire Guide: Run TheWarden on mainnet**
 - **[🔑 PRIVATE_KEY_SETUP.md](docs/PRIVATE_KEY_SETUP.md)** - **Private key format and verification guide**
+- **[🔍 AUTONOMOUS_MONITORING.md](docs/AUTONOMOUS_MONITORING.md)** - **🆕 Autonomous monitoring & diagnostics system**
+- **[📋 MONITORING_QUICK_REFERENCE.md](docs/MONITORING_QUICK_REFERENCE.md)** - **🆕 Quick reference for monitoring mode**
 - **[MAIN_RUNNER.md](docs/MAIN_RUNNER.md)** - TheWarden operational guide
 - **[PROFITABLE_EXECUTION_PLAN.md](docs/PROFITABLE_EXECUTION_PLAN.md)** - Path to profitable execution implementation plan
 - **[QUICK_START_PRODUCTION.md](docs/QUICK_START_PRODUCTION.md)** - Production deployment guide

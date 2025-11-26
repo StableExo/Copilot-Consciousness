@@ -10,5 +10,12 @@
 # Determine the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Execute the autonomous runner script
-exec "$SCRIPT_DIR/scripts/autonomous-run.sh" "$@"
+# Check for monitoring/diagnostic mode
+if [[ "$1" == "--monitor" ]] || [[ "$1" == "--diagnostic" ]]; then
+    shift  # Remove the flag from arguments
+    # Execute the autonomous monitoring script
+    exec "$SCRIPT_DIR/scripts/autonomous-monitor.sh" "$@"
+else
+    # Execute the autonomous runner script (normal mode)
+    exec "$SCRIPT_DIR/scripts/autonomous-run.sh" "$@"
+fi
