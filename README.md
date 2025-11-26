@@ -8,16 +8,17 @@
 
 **AEV (Autonomous Extracted Value)** - An intelligent autonomous agent system competing with traditional MEV through learning-based value extraction, powered by **TheWarden**.
 
-📚 **[Documentation Index](DOCUMENTATION_INDEX.md)** | 🎯 **[Project Status](PROJECT_STATUS.md)** | 🚀 **[Quick Start](MAINNET_QUICKSTART.md)** | 📊 **[DEX Status](DEX_INTEGRATION_STATUS.md)**
+📚 **[Documentation Index](DOCUMENTATION_INDEX.md)** | 🎯 **[Project Status](PROJECT_STATUS.md)** | 🚀 **[Quick Start](MAINNET_QUICKSTART.md)** | 📊 **[DEX Status](DEX_INTEGRATION_STATUS.md)** | 🎯 **[Aerodrome Integration](docs/AERODROME_INTEGRATION.md)**
 
-## 🎉 Latest: Arbitrum Top 10 DEXs Integrated! 🚀
+## 🎉 Latest: DEX Management Tools & Aerodrome Ready! 🚀
 
 **Status**: Production-Ready (v3.1.0)  
-**Achievement**: All top 10 DEXs on Arbitrum One integrated (November 2025)  
-**Impact**: Arbitrum pool discovery 0 → 200-500+ pools expected  
-**Tests**: 1,103/1,109 passing (99.5%)  
-**DEX Coverage**: 42 DEXes across 9 chains  
-**Latest**: See [Project Status](PROJECT_STATUS.md) | [DEX Integration Status](DEX_INTEGRATION_STATUS.md)
+**New**: DEX management scripts and Aerodrome Finance verification tools  
+**Aerodrome**: ✅ Fully integrated on Base with 0.1-0.4% mispricing opportunities  
+**Tests**: 210/211 unit tests passing (99.5%)  
+**DEX Coverage**: 95 DEXes across 9 chains (16 on Base including Aerodrome)  
+**Quick Start**: `npm run verify:aerodrome` to confirm setup  
+**Latest**: See [Aerodrome Integration](docs/AERODROME_INTEGRATION.md) | [Implementation Summary](AERODROME_IMPLEMENTATION_SUMMARY.md)
 
 ## Phase 3: Advanced AI & AEV Evolution ✨
 
@@ -202,6 +203,15 @@ See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for TheWarden's operation
 - **Smart Contracts**: Production-tested FlashSwapV2 execution contract
 - **Codex Manager**: LlamaIndex-based documentation and knowledge base system
 - **Comprehensive Testing**: Unit tests, integration tests, and realistic scenarios
+
+### 🎯 DEX Management Tools (New)
+- **DEX Registry**: 95 DEXes across 9 chains (Ethereum, Base, Arbitrum, Optimism, BSC, Polygon, Solana, and more)
+- **Add DEX Script**: `npm run add:dex` - List, verify, and manage DEX configurations
+- **Pool Preloading**: `npm run preload:pools -- --chain 8453` - Fast startup with cached pools
+- **Aerodrome Verification**: `npm run verify:aerodrome` - Confirm Aerodrome integration on Base
+- **Base Coverage**: 16 DEXes including Uniswap V3, Aerodrome, BaseSwap, PancakeSwap V3, Velodrome, and more
+
+See [Aerodrome Integration Guide](./docs/AERODROME_INTEGRATION.md) for complete documentation on managing DEXes and capturing 0.1-0.4% mispricings on Base.
 
 ### 🧠 Strategic Intelligence & Learning (New - Integrated from AxionCitadel)
 - **Conscious Knowledge Loop**: Systematic learning cycle (Sense → Simulate → Strategize → Act → Learn → Evolve)
