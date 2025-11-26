@@ -33,7 +33,7 @@ export abstract class BaseValidator implements DEXValidator {
    * Emit an event to all registered callbacks
    */
   protected emitEvent(event: DEXEvent): void {
-    this.eventCallbacks.forEach(callback => {
+    this.eventCallbacks.forEach((callback) => {
       try {
         callback(event);
       } catch (error) {

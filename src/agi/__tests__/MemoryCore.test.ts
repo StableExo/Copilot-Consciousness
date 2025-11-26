@@ -35,7 +35,7 @@ describe('MemoryCore', () => {
       };
 
       await memoryCore.store(memory);
-      
+
       expect(memoryCore.getSize()).toBe(1);
       expect(memoryCore.getMemory('test-1')).toEqual(memory);
     });
@@ -129,20 +129,20 @@ describe('MemoryCore', () => {
 
     it('should find memories matching the query', async () => {
       const results = await memoryCore.search('blue');
-      
+
       expect(results.length).toBeGreaterThan(0);
-      expect(results.some(m => m.content.includes('blue'))).toBe(true);
+      expect(results.some((m) => m.content.includes('blue'))).toBe(true);
     });
 
     it('should limit results', async () => {
       const results = await memoryCore.search('blue', 1);
-      
+
       expect(results.length).toBeLessThanOrEqual(1);
     });
 
     it('should return empty array when no matches found', async () => {
       const results = await memoryCore.search('nonexistent');
-      
+
       expect(results).toEqual([]);
     });
   });

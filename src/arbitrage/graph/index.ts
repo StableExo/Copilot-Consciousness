@@ -1,6 +1,6 @@
 /**
  * Graph Infrastructure
- * 
+ *
  * Graph data structures and builders for arbitrage path finding.
  */
 

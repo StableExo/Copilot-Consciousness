@@ -1,6 +1,6 @@
 /**
  * PathStep Model
- * 
+ *
  * Represents a single swap step in an arbitrage path.
  * Extracted from AxionCitadel - Operation First Light validated
  */

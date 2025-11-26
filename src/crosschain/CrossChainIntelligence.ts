@@ -1,20 +1,20 @@
 /**
  * CrossChainIntelligence - Multi-Chain MEV Awareness and Arbitrage
- * 
+ *
  * Phase 3: Cross-Chain Intelligence
- * 
+ *
  * This component provides comprehensive cross-chain intelligence for TheWarden/AEV:
  * - Multi-chain MEV condition monitoring
  * - Cross-chain arbitrage pattern detection
  * - Unified risk modeling across chains
  * - Bridge and routing optimization
- * 
+ *
  * Core capabilities:
  * - Track MEV conditions across multiple chains simultaneously
  * - Detect price divergences and arbitrage opportunities
  * - Assess cross-chain execution risks
  * - Optimize routing through bridges and DEXs
- * 
+ *
  * Integration with TheWarden/AEV:
  * - Extends MEVSensorHub with multi-chain awareness
  * - Integrates with existing ChainProviderManager
@@ -61,13 +61,13 @@ export class CrossChainIntelligence extends EventEmitter {
   private detectedPatterns: CrossChainArbitragePattern[] = [];
   private bridgeMetrics: Map<string, BridgeRiskMetrics> = new Map();
   private updateTimer: NodeJS.Timeout | null = null;
-  
+
   // Price caches for divergence detection
   private priceCache: Map<string, Map<number, { price: number; timestamp: number }>> = new Map();
-  
+
   constructor(config?: Partial<CrossChainConfig>) {
     super();
-    
+
     this.config = {
       enabledChains: config?.enabledChains ?? [1, 8453, 42161, 10], // Ethereum, Base, Arbitrum, Optimism
       updateInterval: config?.updateInterval ?? 15000, // 15 seconds
@@ -76,7 +76,7 @@ export class CrossChainIntelligence extends EventEmitter {
       riskThreshold: config?.riskThreshold ?? 0.7,
       enableRiskAggregation: config?.enableRiskAggregation ?? true,
     };
-    
+
     // Initialize chain states
     for (const chainId of this.config.enabledChains) {
       this.chainStates.set(chainId, {
@@ -87,13 +87,13 @@ export class CrossChainIntelligence extends EventEmitter {
         health: 1.0,
       });
     }
-    
+
     // Initialize known bridges
     this.initializeBridgeMetrics();
-    
+
     console.log('[CrossChainIntelligence] Initialized for chains:', this.config.enabledChains);
   }
-  
+
   /**
    * Initialize bridge risk metrics
    */
@@ -113,7 +113,7 @@ export class CrossChainIntelligence extends EventEmitter {
       feeVolatility: 0.1,
       riskScore: 0.05,
     });
-    
+
     // Arbitrum <-> Ethereum (Native Bridge)
     this.bridgeMetrics.set('arbitrum-eth', {
       bridgeName: 'Arbitrum Native Bridge',
@@ -129,7 +129,7 @@ export class CrossChainIntelligence extends EventEmitter {
       feeVolatility: 0.15,
       riskScore: 0.05,
     });
-    
+
     // Optimism <-> Ethereum (Native Bridge)
     this.bridgeMetrics.set('optimism-eth', {
       bridgeName: 'Optimism Native Bridge',
@@ -146,7 +146,7 @@ export class CrossChainIntelligence extends EventEmitter {
       riskScore: 0.05,
     });
   }
-  
+
   /**
    * Start monitoring cross-chain conditions
    */
@@ -155,23 +155,23 @@ export class CrossChainIntelligence extends EventEmitter {
       console.log('[CrossChainIntelligence] Already running');
       return;
     }
-    
+
     console.log('[CrossChainIntelligence] Starting cross-chain monitoring');
-    
+
     // Initial update
     this.updateAllChains();
-    
+
     // Schedule periodic updates
     this.updateTimer = setInterval(() => {
       this.updateAllChains();
     }, this.config.updateInterval);
-    
+
     this.emit('started', {
       chains: this.config.enabledChains,
       updateInterval: this.config.updateInterval,
     });
   }
-  
+
   /**
    * Stop monitoring
    */
@@ -183,63 +183,63 @@ export class CrossChainIntelligence extends EventEmitter {
       this.emit('stopped');
     }
   }
-  
+
   /**
    * Update conditions for all chains
    */
   private async updateAllChains(): Promise<void> {
     const startTime = Date.now();
     const updates: Promise<void>[] = [];
-    
+
     for (const chainId of this.config.enabledChains) {
       updates.push(this.updateChainConditions(chainId));
     }
-    
+
     await Promise.all(updates);
-    
+
     // Analyze cross-chain patterns
     await this.analyzeCrossChainPatterns();
-    
+
     const duration = Date.now() - startTime;
-    
+
     this.emit('updated', {
       chains: this.config.enabledChains.length,
       patterns: this.detectedPatterns.length,
       duration,
     });
   }
-  
+
   /**
    * Update MEV conditions for a specific chain
-   * 
+   *
    * Integration point: Would query MEVSensorHub for each chain
-   * 
+   *
    * @param chainId Chain ID to update
    */
   async updateChainConditions(chainId: number): Promise<void> {
     const state = this.chainStates.get(chainId);
     if (!state) return;
-    
+
     try {
       // In production, this would query actual MEVSensorHub for the chain
       const conditions = await this.fetchChainMEVConditions(chainId);
       const snapshot = await this.fetchChainSnapshot(chainId);
-      
+
       state.conditions = conditions;
       state.snapshot = snapshot;
       state.lastUpdate = Date.now();
       state.health = conditions.rpcHealth;
-      
+
       // Update price cache
       this.updatePriceCache(chainId, snapshot);
-      
+
       this.emit('chainUpdated', { chainId, conditions });
     } catch (error) {
       console.error(`[CrossChainIntelligence] Error updating chain ${chainId}:`, error);
       state.health = Math.max(0, state.health - 0.1);
     }
   }
-  
+
   /**
    * Fetch MEV conditions for chain
    * In production, integrates with actual MEVSensorHub
@@ -252,7 +252,7 @@ export class CrossChainIntelligence extends EventEmitter {
       42161: 'Arbitrum',
       10: 'Optimism',
     };
-    
+
     return {
       chainId,
       chainName: chainNames[chainId] ?? `Chain ${chainId}`,
@@ -267,8 +267,8 @@ export class CrossChainIntelligence extends EventEmitter {
       frontrunRisk: 0.2 + Math.random() * 0.3,
       totalLiquidity: 500000000 + Math.random() * 1000000000,
       topDexLiquidity: {
-        'Uniswap': 200000000,
-        'SushiSwap': 100000000,
+        Uniswap: 200000000,
+        SushiSwap: 100000000,
       },
       blockTime: chainId === 1 ? 12 : 2,
       confirmationTime: chainId === 1 ? 12 : 2,
@@ -276,7 +276,7 @@ export class CrossChainIntelligence extends EventEmitter {
       indexerHealth: 0.9 + Math.random() * 0.1,
     };
   }
-  
+
   /**
    * Fetch chain state snapshot
    */
@@ -296,7 +296,7 @@ export class CrossChainIntelligence extends EventEmitter {
       },
     };
   }
-  
+
   /**
    * Update price cache from snapshot
    */
@@ -304,45 +304,46 @@ export class CrossChainIntelligence extends EventEmitter {
     // Extract prices from top pools
     for (const pool of snapshot.topPools) {
       const pairKey = this.getPairKey(pool.tokenA, pool.tokenB);
-      
+
       if (!this.priceCache.has(pairKey)) {
         this.priceCache.set(pairKey, new Map());
       }
-      
+
       const chainPrices = this.priceCache.get(pairKey)!;
-      
+
       // Calculate price (simplified)
       const price = pool.liquidity > 0 ? pool.volume24h / pool.liquidity : 0;
-      
+
       chainPrices.set(chainId, {
         price,
         timestamp: snapshot.timestamp,
       });
     }
   }
-  
+
   /**
    * Analyze cross-chain patterns
-   * 
+   *
    * Primary analysis function - detects arbitrage opportunities
    */
   async analyzeCrossChainPatterns(): Promise<CrossChainArbitragePattern[]> {
     const patterns: CrossChainArbitragePattern[] = [];
-    
+
     // Check price divergences across chains
     for (const [pairKey, chainPrices] of this.priceCache.entries()) {
       if (chainPrices.size < 2) continue;
-      
+
       const priceArray = Array.from(chainPrices.entries());
-      
+
       // Compare all chain pairs
       for (let i = 0; i < priceArray.length; i++) {
         for (let j = i + 1; j < priceArray.length; j++) {
           const [chain1, price1] = priceArray[i];
           const [chain2, price2] = priceArray[j];
-          
-          const divergence = Math.abs(price1.price - price2.price) / Math.min(price1.price, price2.price);
-          
+
+          const divergence =
+            Math.abs(price1.price - price2.price) / Math.min(price1.price, price2.price);
+
           if (divergence >= this.config.minPriceDivergence) {
             const pattern = await this.createArbitragePattern(
               pairKey,
@@ -352,7 +353,7 @@ export class CrossChainIntelligence extends EventEmitter {
               price2.price,
               divergence
             );
-            
+
             if (pattern) {
               patterns.push(pattern);
             }
@@ -360,19 +361,19 @@ export class CrossChainIntelligence extends EventEmitter {
         }
       }
     }
-    
+
     this.detectedPatterns = patterns;
-    
+
     if (patterns.length > 0) {
       this.emit('patternsDetected', {
         count: patterns.length,
         patterns: patterns.slice(0, 5), // Top 5
       });
     }
-    
+
     return patterns;
   }
-  
+
   /**
    * Create arbitrage pattern from price divergence
    */
@@ -385,32 +386,32 @@ export class CrossChainIntelligence extends EventEmitter {
     divergence: number
   ): Promise<CrossChainArbitragePattern | null> {
     const [tokenA, tokenB] = pairKey.split('-');
-    
+
     // Determine direction (buy low, sell high)
     const buyChain = sourcePrice < targetPrice ? sourceChain : targetChain;
     const sellChain = sourcePrice < targetPrice ? targetChain : sourceChain;
     const buyPrice = Math.min(sourcePrice, targetPrice);
     const sellPrice = Math.max(sourcePrice, targetPrice);
-    
+
     // Get bridge metrics
     const bridgeKey = this.getBridgeKey(buyChain, sellChain);
     const bridgeMetrics = this.bridgeMetrics.get(bridgeKey);
-    
+
     if (!bridgeMetrics || bridgeMetrics.avgBridgingTime > this.config.maxBridgingTime) {
       return null;
     }
-    
+
     // Estimate costs and profit
     const requiredCapital = 10000; // $10k example
     const bridgingCost = requiredCapital * bridgeMetrics.avgFee;
     const estimatedGasCost = 50; // $50 example
     const grossProfit = requiredCapital * divergence;
     const netProfit = grossProfit - bridgingCost - estimatedGasCost;
-    
+
     if (netProfit <= 0) {
       return null;
     }
-    
+
     // Build execution steps
     const steps: ArbitrageStep[] = [
       {
@@ -433,7 +434,7 @@ export class CrossChainIntelligence extends EventEmitter {
         inputToken: tokenA,
         outputToken: tokenA,
         inputAmount: requiredCapital / buyPrice,
-        expectedOutput: requiredCapital / buyPrice * (1 - bridgeMetrics.slippageRate),
+        expectedOutput: (requiredCapital / buyPrice) * (1 - bridgeMetrics.slippageRate),
         estimatedGas: 100000,
         estimatedTime: bridgeMetrics.avgBridgingTime,
       },
@@ -450,7 +451,7 @@ export class CrossChainIntelligence extends EventEmitter {
         estimatedTime: 3,
       },
     ];
-    
+
     return {
       patternId: `xchain_${Date.now()}_${buyChain}_${sellChain}`,
       timestamp: Date.now(),
@@ -482,42 +483,43 @@ export class CrossChainIntelligence extends EventEmitter {
       executionSteps: steps,
     };
   }
-  
+
   /**
    * Get unified risk view across all chains
-   * 
+   *
    * Primary risk assessment function
    */
   async getUnifiedRiskModel(): Promise<UnifiedRiskView> {
     const chainRisks = new Map<number, ChainRiskMetrics>();
     let totalExposure = 0;
     const perChainExposure = new Map<number, number>();
-    
+
     // Calculate per-chain risks
     for (const [chainId, state] of this.chainStates.entries()) {
       if (!state.conditions) continue;
-      
+
       const metrics = this.calculateChainRiskMetrics(state.conditions);
       chainRisks.set(chainId, metrics);
-      
+
       // Estimate exposure (in production, would track actual positions)
       const exposure = 10000; // $10k example per chain
       perChainExposure.set(chainId, exposure);
       totalExposure += exposure;
     }
-    
+
     // Calculate overall metrics
-    const avgChainRisk = Array.from(chainRisks.values())
-      .reduce((sum, m) => sum + m.riskScore, 0) / chainRisks.size;
-    
-    const avgBridgeRisk = Array.from(this.bridgeMetrics.values())
-      .reduce((sum, m) => sum + m.riskScore, 0) / this.bridgeMetrics.size;
-    
-    const overallRiskScore = (avgChainRisk * 0.6 + avgBridgeRisk * 0.4);
-    
+    const avgChainRisk =
+      Array.from(chainRisks.values()).reduce((sum, m) => sum + m.riskScore, 0) / chainRisks.size;
+
+    const avgBridgeRisk =
+      Array.from(this.bridgeMetrics.values()).reduce((sum, m) => sum + m.riskScore, 0) /
+      this.bridgeMetrics.size;
+
+    const overallRiskScore = avgChainRisk * 0.6 + avgBridgeRisk * 0.4;
+
     // Generate recommendations
     const recommendations = this.generateRiskRecommendations(chainRisks, overallRiskScore);
-    
+
     return {
       timestamp: Date.now(),
       overallRiskScore,
@@ -530,14 +532,16 @@ export class CrossChainIntelligence extends EventEmitter {
       volatilityRisk: avgChainRisk * 0.5,
       liquidityRisk: avgChainRisk * 0.3,
       correlationRisk: 0.3, // Chains are somewhat correlated
-      technicalRisk: 1 - (Array.from(this.chainStates.values())
-        .reduce((sum, s) => sum + s.health, 0) / this.chainStates.size),
+      technicalRisk:
+        1 -
+        Array.from(this.chainStates.values()).reduce((sum, s) => sum + s.health, 0) /
+          this.chainStates.size,
       slippageRisk: avgBridgeRisk * 0.7,
       mevRisk: avgChainRisk * 0.8,
       recommendations,
     };
   }
-  
+
   /**
    * Calculate risk metrics for a chain
    */
@@ -545,16 +549,16 @@ export class CrossChainIntelligence extends EventEmitter {
     const mevCompetition = conditions.competitionLevel;
     const frontrunProbability = conditions.frontrunRisk;
     const sandwichRisk = conditions.searcherDensity * conditions.competitionLevel;
-    
+
     const congestionRisk = conditions.congestion;
     const rpcReliability = conditions.rpcHealth;
     const reorgRisk = conditions.chainId === 1 ? 0.01 : 0.05; // L1 vs L2
-    
+
     const gasPriceVolatility = conditions.baseFee > 50 ? 0.7 : 0.3;
     const liquidityDepth = Math.min(1, conditions.totalLiquidity / 1000000000);
     const slippageRisk = 1 - liquidityDepth;
-    
-    const riskScore = (
+
+    const riskScore =
       mevCompetition * 0.2 +
       frontrunProbability * 0.15 +
       sandwichRisk * 0.15 +
@@ -562,9 +566,8 @@ export class CrossChainIntelligence extends EventEmitter {
       (1 - rpcReliability) * 0.1 +
       reorgRisk * 0.05 +
       gasPriceVolatility * 0.1 +
-      slippageRisk * 0.1
-    );
-    
+      slippageRisk * 0.1;
+
     return {
       chainId: conditions.chainId,
       chainName: conditions.chainName,
@@ -580,23 +583,23 @@ export class CrossChainIntelligence extends EventEmitter {
       riskScore,
     };
   }
-  
+
   /**
    * Calculate concentration risk
    */
   private calculateConcentrationRisk(perChainExposure: Map<number, number>, total: number): number {
     if (total === 0) return 0;
-    
+
     // Herfindahl index
     let sumSquares = 0;
     for (const exposure of perChainExposure.values()) {
       const share = exposure / total;
       sumSquares += share * share;
     }
-    
+
     return sumSquares;
   }
-  
+
   /**
    * Classify risk level
    */
@@ -606,7 +609,7 @@ export class CrossChainIntelligence extends EventEmitter {
     if (score < 0.7) return 'high';
     return 'critical';
   }
-  
+
   /**
    * Generate risk recommendations
    */
@@ -615,7 +618,7 @@ export class CrossChainIntelligence extends EventEmitter {
     overallRisk: number
   ): RiskRecommendation[] {
     const recommendations: RiskRecommendation[] = [];
-    
+
     // Check overall risk
     if (overallRisk > 0.7) {
       recommendations.push({
@@ -626,7 +629,7 @@ export class CrossChainIntelligence extends EventEmitter {
         suggestedAction: 'Reduce exposure across all chains or halt trading',
       });
     }
-    
+
     // Check individual chains
     for (const [chainId, metrics] of chainRisks.entries()) {
       if (metrics.mevCompetition > 0.7) {
@@ -638,7 +641,7 @@ export class CrossChainIntelligence extends EventEmitter {
           suggestedAction: 'Increase gas bids or avoid complex strategies',
         });
       }
-      
+
       if (metrics.congestionRisk > 0.8) {
         recommendations.push({
           severity: 'warning',
@@ -648,7 +651,7 @@ export class CrossChainIntelligence extends EventEmitter {
           suggestedAction: 'Wait for congestion to decrease or use alternative chains',
         });
       }
-      
+
       if (metrics.rpcReliability < 0.8) {
         recommendations.push({
           severity: 'critical',
@@ -659,17 +662,17 @@ export class CrossChainIntelligence extends EventEmitter {
         });
       }
     }
-    
+
     return recommendations;
   }
-  
+
   /**
    * Get pair key for caching
    */
   private getPairKey(tokenA: string, tokenB: string): string {
     return [tokenA, tokenB].sort().join('-');
   }
-  
+
   /**
    * Get bridge key
    */
@@ -683,21 +686,22 @@ export class CrossChainIntelligence extends EventEmitter {
     };
     return `${chainNames[from]}-${chainNames[to]}`;
   }
-  
+
   /**
    * Get detected patterns
    */
   getDetectedPatterns(): CrossChainArbitragePattern[] {
     return [...this.detectedPatterns];
   }
-  
+
   /**
    * Get statistics
    */
   getStatistics() {
-    const healthyChains = Array.from(this.chainStates.values())
-      .filter(s => s.health > 0.8).length;
-    
+    const healthyChains = Array.from(this.chainStates.values()).filter(
+      (s) => s.health > 0.8
+    ).length;
+
     return {
       enabledChains: this.config.enabledChains.length,
       healthyChains,

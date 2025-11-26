@@ -35,7 +35,7 @@ describe('NeuralBridge', () => {
   describe('send', () => {
     it('should send a message', async () => {
       const message = bridge.createMessage('agent-2', 'greeting', { text: 'Hello' });
-      
+
       await bridge.send(message);
 
       const outgoing = bridge.getOutgoingMessages();
@@ -63,7 +63,7 @@ describe('NeuralBridge', () => {
 
     it('should deliver message to self if destination is self', async () => {
       const message = bridge.createMessage('agent-1', 'self-message', { data: 'test' });
-      
+
       await bridge.send(message);
 
       const incoming = bridge.getIncomingMessages();
@@ -78,7 +78,7 @@ describe('NeuralBridge', () => {
       bridge.receiveMessage(message);
 
       const received = await bridge.receive();
-      
+
       expect(received).toEqual(message);
       expect(bridge.getIncomingMessages()).toHaveLength(0);
     });
@@ -96,7 +96,7 @@ describe('NeuralBridge', () => {
       bridge.receiveMessage(message);
 
       await bridge.receive();
-      
+
       expect(handler).toHaveBeenCalledWith(message);
     });
   });
@@ -152,7 +152,7 @@ describe('NeuralBridge', () => {
     it('should clear both incoming and outgoing queues', async () => {
       const message1 = bridge.createMessage('agent-2', 'test', { data: 'test' });
       const message2 = bridge.createMessage('agent-1', 'test', { data: 'test' });
-      
+
       await bridge.send(message1);
       bridge.receiveMessage(message2);
 
@@ -177,7 +177,7 @@ describe('NeuralBridge', () => {
     it('should not add message if destination does not match', () => {
       const otherBridge = new NeuralBridge('agent-2');
       const message = otherBridge.createMessage('agent-3', 'test', { data: 'test' });
-      
+
       bridge.receiveMessage(message);
 
       expect(bridge.getIncomingMessages()).toHaveLength(0);

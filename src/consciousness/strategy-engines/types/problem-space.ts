@@ -1,6 +1,6 @@
 /**
  * Problem Space Type Definitions
- * 
+ *
  * Core types for modeling multi-dimensional problem spaces,
  * nodes, constraints, and relationships.
  */
@@ -9,9 +9,9 @@
  * Constraint types for problem spaces
  */
 export enum ConstraintType {
-  HARD = 'hard',           // Must be satisfied
-  SOFT = 'soft',           // Should be satisfied
-  PREFERENCE = 'preference' // Nice to have
+  HARD = 'hard', // Must be satisfied
+  SOFT = 'soft', // Should be satisfied
+  PREFERENCE = 'preference', // Nice to have
 }
 
 /**
@@ -44,7 +44,7 @@ export interface Node {
 export interface Transition {
   id: string;
   from: string; // Source node ID
-  to: string;   // Target node ID
+  to: string; // Target node ID
   cost: number;
   time: number;
   risk: number;
@@ -96,7 +96,7 @@ export interface ProblemSpaceAnalysis {
   dimensionalAnalyses: DimensionalAnalysis[];
   clusters: SpatialCluster[];
   connectivity: number; // Graph connectivity metric
-  complexity: number;   // Problem complexity score
-  feasibility: number;  // Feasibility score
+  complexity: number; // Problem complexity score
+  feasibility: number; // Feasibility score
   metadata?: Record<string, any>;
 }

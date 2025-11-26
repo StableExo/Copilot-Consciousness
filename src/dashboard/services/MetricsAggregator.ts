@@ -1,6 +1,6 @@
 /**
  * MetricsAggregator - Centralized metrics collection and aggregation
- * 
+ *
  * Aggregates metrics from GasAnalytics and CrossChainAnalytics modules
  * Calculates derived metrics like Sharpe ratio, ROI, and drawdown
  */
@@ -86,7 +86,7 @@ export class MetricsAggregator {
       uptime,
       latency,
       memoryUsage,
-      errorRate
+      errorRate,
     };
 
     // Store in history
@@ -107,27 +107,25 @@ export class MetricsAggregator {
     const end = timeRange?.end || now;
 
     // Filter metrics within time range
-    const filteredMetrics = this.metricsHistory.filter(
-      m => m.uptime >= start && m.uptime <= end
-    );
+    const filteredMetrics = this.metricsHistory.filter((m) => m.uptime >= start && m.uptime <= end);
 
     return {
-      profitOverTime: filteredMetrics.map(m => ({
+      profitOverTime: filteredMetrics.map((m) => ({
         timestamp: this.startTime + m.uptime,
-        value: parseFloat(m.netProfit) / 1e18 // Convert from wei to ETH
+        value: parseFloat(m.netProfit) / 1e18, // Convert from wei to ETH
       })),
-      gasOverTime: filteredMetrics.map(m => ({
+      gasOverTime: filteredMetrics.map((m) => ({
         timestamp: this.startTime + m.uptime,
-        value: parseFloat(m.averageGasCost) / 1e18
+        value: parseFloat(m.averageGasCost) / 1e18,
       })),
-      volumeOverTime: filteredMetrics.map(m => ({
+      volumeOverTime: filteredMetrics.map((m) => ({
         timestamp: this.startTime + m.uptime,
-        value: m.totalTrades
+        value: m.totalTrades,
       })),
-      successRateOverTime: filteredMetrics.map(m => ({
+      successRateOverTime: filteredMetrics.map((m) => ({
         timestamp: this.startTime + m.uptime,
-        value: m.successRate
-      }))
+        value: m.successRate,
+      })),
     };
   }
 
@@ -177,7 +175,8 @@ export class MetricsAggregator {
     const avgReturn = returns.reduce((sum, r) => sum + r, 0) / returns.length;
 
     // Calculate standard deviation
-    const variance = returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length;
+    const variance =
+      returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length;
     const stdDev = Math.sqrt(variance);
 
     // Sharpe ratio = (avgReturn - riskFreeRate) / stdDev
@@ -200,13 +199,13 @@ export class MetricsAggregator {
 
     for (const metrics of this.metricsHistory) {
       const currentProfit = parseFloat(metrics.netProfit);
-      
+
       if (currentProfit > peak) {
         peak = currentProfit;
       }
 
       const drawdown = peak !== 0 ? ((peak - currentProfit) / peak) * 100 : 0;
-      
+
       if (drawdown > maxDrawdown) {
         maxDrawdown = drawdown;
       }

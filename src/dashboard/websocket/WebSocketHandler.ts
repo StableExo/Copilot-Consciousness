@@ -1,6 +1,6 @@
 /**
  * WebSocketHandler - Manages WebSocket connections for real-time updates
- * 
+ *
  * Provides low-latency streaming of metrics, trades, and alerts
  */
 
@@ -28,10 +28,10 @@ export class WebSocketHandler {
     this.io = new SocketIOServer(httpServer, {
       cors: {
         origin: process.env.CORS_ORIGIN || '*', // Configure in production: comma-separated list or '*'
-        methods: ['GET', 'POST']
+        methods: ['GET', 'POST'],
       },
       pingTimeout: 60000,
-      pingInterval: 25000
+      pingInterval: 25000,
     });
 
     this.metricsAggregator = metricsAggregator;
@@ -57,7 +57,7 @@ export class WebSocketHandler {
       cpuUsage: 0,
       activeConnections: 0,
       requestsPerSecond: 0,
-      errorsPerMinute: 0
+      errorsPerMinute: 0,
     };
   }
 
@@ -67,7 +67,7 @@ export class WebSocketHandler {
   private setupEventHandlers(): void {
     this.io.on('connection', (socket: Socket) => {
       const clientId = socket.id;
-      
+
       console.log(`Client connected: ${clientId}`);
       this.connectedClients.add(clientId);
       this.updatePerformanceMetrics();
@@ -135,7 +135,7 @@ export class WebSocketHandler {
     }
 
     console.log(`Starting WebSocket updates (interval: ${this.updateInterval}ms)`);
-    
+
     this.intervalId = setInterval(async () => {
       await this.broadcastMetrics();
       this.broadcastPerformance();
@@ -158,10 +158,10 @@ export class WebSocketHandler {
    */
   private async broadcastMetrics(): Promise<void> {
     const metrics = await this.metricsAggregator.getCurrentMetrics();
-    
+
     // Check metrics against alert thresholds
     this.alertSystem.checkMetrics(metrics);
-    
+
     this.broadcast('metrics', metrics);
   }
 
@@ -202,7 +202,7 @@ export class WebSocketHandler {
    */
   private updatePerformanceMetrics(): void {
     const memUsage = process.memoryUsage();
-    
+
     this.performanceMetrics = {
       systemUptime: process.uptime() * 1000,
       apiLatency: this.performanceMetrics.apiLatency, // Updated by API routes
@@ -212,7 +212,7 @@ export class WebSocketHandler {
       cpuUsage: process.cpuUsage().system / 1000, // Convert to ms
       activeConnections: this.connectedClients.size,
       requestsPerSecond: this.performanceMetrics.requestsPerSecond, // Updated by API middleware
-      errorsPerMinute: this.performanceMetrics.errorsPerMinute
+      errorsPerMinute: this.performanceMetrics.errorsPerMinute,
     };
   }
 
@@ -250,7 +250,7 @@ export class WebSocketHandler {
    */
   async shutdown(): Promise<void> {
     this.stop();
-    
+
     return new Promise((resolve) => {
       this.io.close(() => {
         console.log('WebSocket server closed');

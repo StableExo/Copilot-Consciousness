@@ -1,6 +1,6 @@
 /**
  * Pattern Type Definitions
- * 
+ *
  * Types for pattern recognition, learning, evolution, and composition
  * in decision-making systems.
  */
@@ -17,7 +17,7 @@ export enum PatternCategory {
   BEHAVIORAL = 'behavioral',
   TEMPORAL = 'temporal',
   SPATIAL = 'spatial',
-  HYBRID = 'hybrid'
+  HYBRID = 'hybrid',
 }
 
 /**
@@ -27,7 +27,7 @@ export enum MatchConfidence {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  VERY_HIGH = 'very_high'
+  VERY_HIGH = 'very_high',
 }
 
 /**
@@ -59,25 +59,25 @@ export interface Pattern {
   name: string;
   category: PatternCategory;
   description: string;
-  
+
   // Pattern matching
   conditions: Condition[];
   requiredConfidence: MatchConfidence;
-  
+
   // Pattern actions
   actions: Action[];
-  
+
   // Learning metrics
   successRate: number;
   timesMatched: number;
   timesSucceeded: number;
   timesFailed: number;
-  
+
   // Evolution tracking
   generation: number;
   parent?: string; // Parent pattern ID
   children?: string[]; // Child pattern IDs
-  
+
   // Metadata
   createdAt: Date;
   lastUpdated: Date;

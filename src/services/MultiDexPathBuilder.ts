@@ -1,9 +1,9 @@
 /**
  * MultiDexPathBuilder - Build Multi-DEX Arbitrage Paths
- * 
+ *
  * Builds optimal arbitrage paths across multiple DEXs (Uniswap V3, Aerodrome, SushiSwap)
  * for both spatial (cross-DEX) and triangular (multi-hop) arbitrage strategies.
- * 
+ *
  * Integrates with:
  * - SpatialArbEngine for cross-DEX price differentials
  * - TriangularArbEngine for multi-hop cycles
@@ -84,7 +84,7 @@ const DEX_TYPE_MAP: Record<string, number> = {
 
 /**
  * MultiDexPathBuilder
- * 
+ *
  * Builds multi-DEX arbitrage paths using spatial and triangular engines.
  * Converts opportunities into executable swap steps for FlashLoanExecutor.
  */
@@ -112,7 +112,7 @@ export class MultiDexPathBuilder {
 
   /**
    * Find arbitrage opportunities from pool data
-   * 
+   *
    * @param pools Available pool states
    * @returns Array of arbitrage opportunities
    */
@@ -137,8 +137,14 @@ export class MultiDexPathBuilder {
     // Find triangular arbitrage opportunities (multi-hop)
     // Use WETH as start token for triangular arb (common base token on Base)
     const WETH_ADDRESS = '0x4200000000000000000000000000000000000006'; // Base WETH
-    const triangularOpportunities = this.triangularEngine.findOpportunities(poolStates, WETH_ADDRESS, 1.0);
-    console.log(`[MultiDexPathBuilder] Found ${triangularOpportunities.length} triangular opportunities`);
+    const triangularOpportunities = this.triangularEngine.findOpportunities(
+      poolStates,
+      WETH_ADDRESS,
+      1.0
+    );
+    console.log(
+      `[MultiDexPathBuilder] Found ${triangularOpportunities.length} triangular opportunities`
+    );
 
     // Combine and return all opportunities
     return [...spatialOpportunities, ...triangularOpportunities];
@@ -146,7 +152,7 @@ export class MultiDexPathBuilder {
 
   /**
    * Build executable path from an arbitrage opportunity
-   * 
+   *
    * @param opportunity Detected arbitrage opportunity
    * @param pools Pool information map
    * @returns Executable arbitrage path
@@ -219,7 +225,7 @@ export class MultiDexPathBuilder {
 
   /**
    * Calculate minimum output amount with slippage protection
-   * 
+   *
    * @param expectedAmount Expected output amount
    * @param slippageBps Slippage in basis points
    * @returns Minimum acceptable output amount
@@ -232,7 +238,7 @@ export class MultiDexPathBuilder {
 
   /**
    * Estimate gas for execution based on path complexity
-   * 
+   *
    * @param numSwaps Number of swap steps
    * @returns Estimated gas
    */

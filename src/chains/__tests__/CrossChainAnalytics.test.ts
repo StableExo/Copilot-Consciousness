@@ -25,7 +25,7 @@ describe('CrossChainAnalytics', () => {
         fee: 0.003,
         gasEstimate: 150000,
         chainId: 1,
-        isBridge: false
+        isBridge: false,
       },
       {
         dexName: 'Wormhole',
@@ -41,9 +41,9 @@ describe('CrossChainAnalytics', () => {
         bridgeInfo: {
           bridge: 'Wormhole',
           toChain: 56,
-          estimatedTime: 900
-        }
-      }
+          estimatedTime: 900,
+        },
+      },
     ],
     startToken: '0xToken1',
     endToken: '0xToken1',
@@ -55,7 +55,7 @@ describe('CrossChainAnalytics', () => {
     bridgeCount: 1,
     totalBridgeFees: BigInt(10 ** 16),
     estimatedTimeSeconds: 920,
-    chains: [1, 56, 1]
+    chains: [1, 56, 1],
   });
 
   const createSuccessResult = (path: CrossChainPath): ExecutionResult => ({
@@ -65,7 +65,7 @@ describe('CrossChainAnalytics', () => {
     gasSpent: BigInt(8 * 10 ** 14),
     executionTime: 950,
     hopsCompleted: 2,
-    txHashes: ['0xTx1', '0xTx2']
+    txHashes: ['0xTx1', '0xTx2'],
   });
 
   const createFailedResult = (path: CrossChainPath): ExecutionResult => ({
@@ -74,16 +74,16 @@ describe('CrossChainAnalytics', () => {
     executionTime: 100,
     hopsCompleted: 1,
     error: 'Bridge timeout',
-    txHashes: ['0xTx1']
+    txHashes: ['0xTx1'],
   });
 
   describe('recordTrade', () => {
     it('should record a successful trade', () => {
       const path = createMockPath();
       const result = createSuccessResult(path);
-      
+
       analytics.recordTrade(path, result);
-      
+
       const summary = analytics.getSummary();
       expect(summary.totalTrades).toBe(1);
       expect(summary.successfulTrades).toBe(1);
@@ -92,9 +92,9 @@ describe('CrossChainAnalytics', () => {
     it('should record a failed trade', () => {
       const path = createMockPath();
       const result = createFailedResult(path);
-      
+
       analytics.recordTrade(path, result);
-      
+
       const summary = analytics.getSummary();
       expect(summary.totalTrades).toBe(1);
       expect(summary.failedTrades).toBe(1);
@@ -103,11 +103,11 @@ describe('CrossChainAnalytics', () => {
     it('should maintain max records limit', () => {
       const limitedAnalytics = new CrossChainAnalytics(5);
       const path = createMockPath();
-      
+
       for (let i = 0; i < 10; i++) {
         limitedAnalytics.recordTrade(path, createSuccessResult(path));
       }
-      
+
       const summary = limitedAnalytics.getSummary();
       expect(summary.totalTrades).toBe(5);
     });
@@ -116,7 +116,7 @@ describe('CrossChainAnalytics', () => {
   describe('getSummary', () => {
     it('should return empty summary initially', () => {
       const summary = analytics.getSummary();
-      
+
       expect(summary.totalTrades).toBe(0);
       expect(summary.successfulTrades).toBe(0);
       expect(summary.failedTrades).toBe(0);
@@ -127,12 +127,12 @@ describe('CrossChainAnalytics', () => {
     it('should calculate correct statistics', () => {
       const path1 = createMockPath();
       const path2 = createMockPath();
-      
+
       analytics.recordTrade(path1, createSuccessResult(path1));
       analytics.recordTrade(path2, createFailedResult(path2));
-      
+
       const summary = analytics.getSummary();
-      
+
       expect(summary.totalTrades).toBe(2);
       expect(summary.successfulTrades).toBe(1);
       expect(summary.failedTrades).toBe(1);
@@ -142,7 +142,7 @@ describe('CrossChainAnalytics', () => {
     it('should identify most profitable chain pair', () => {
       const path = createMockPath();
       analytics.recordTrade(path, createSuccessResult(path));
-      
+
       const summary = analytics.getSummary();
       expect(summary.mostProfitableChainPair).toBeDefined();
     });
@@ -152,7 +152,7 @@ describe('CrossChainAnalytics', () => {
     it('should return stats for recorded chain pair', () => {
       const path = createMockPath();
       analytics.recordTrade(path, createSuccessResult(path));
-      
+
       const stats = analytics.getChainPairStats(1, 56);
       expect(stats).toBeDefined();
       expect(stats?.totalTrades).toBeGreaterThan(0);
@@ -168,7 +168,7 @@ describe('CrossChainAnalytics', () => {
     it('should return stats for used bridge', () => {
       const path = createMockPath();
       analytics.recordTrade(path, createSuccessResult(path));
-      
+
       const stats = analytics.getBridgeStats('Wormhole');
       expect(stats).toBeDefined();
       expect(stats?.totalUses).toBeGreaterThan(0);
@@ -184,7 +184,7 @@ describe('CrossChainAnalytics', () => {
       analytics.recordTrade(path, createSuccessResult(path));
       analytics.recordTrade(path, createSuccessResult(path));
       analytics.recordTrade(path, createFailedResult(path));
-      
+
       const stats = analytics.getBridgeStats('Wormhole');
       expect(stats?.successRate).toBeCloseTo(66.67, 1);
     });
@@ -195,7 +195,7 @@ describe('CrossChainAnalytics', () => {
       const path = createMockPath();
       analytics.recordTrade(path, createSuccessResult(path));
       analytics.recordTrade(path, createSuccessResult(path));
-      
+
       const recent = analytics.getRecentTrades(5);
       expect(recent.length).toBe(2);
     });
@@ -205,7 +205,7 @@ describe('CrossChainAnalytics', () => {
       for (let i = 0; i < 20; i++) {
         analytics.recordTrade(path, createSuccessResult(path));
       }
-      
+
       const recent = analytics.getRecentTrades(5);
       expect(recent.length).toBe(5);
     });
@@ -214,7 +214,7 @@ describe('CrossChainAnalytics', () => {
       const path = createMockPath();
       analytics.recordTrade(path, createSuccessResult(path));
       analytics.recordTrade(path, createSuccessResult(path));
-      
+
       const recent = analytics.getRecentTrades(2);
       expect(recent.length).toBe(2);
       // Most recent should be first
@@ -227,7 +227,7 @@ describe('CrossChainAnalytics', () => {
       const path = createMockPath();
       analytics.recordTrade(path, createSuccessResult(path));
       analytics.recordTrade(path, createFailedResult(path));
-      
+
       const profitable = analytics.getProfitableTrades();
       expect(profitable.length).toBe(1);
       expect(profitable[0].profit).toBeDefined();
@@ -239,7 +239,7 @@ describe('CrossChainAnalytics', () => {
       const path = createMockPath();
       analytics.recordTrade(path, createSuccessResult(path));
       analytics.recordTrade(path, createFailedResult(path));
-      
+
       const failed = analytics.getFailedTrades();
       expect(failed.length).toBe(1);
       expect(failed[0].result.success).toBe(false);
@@ -250,9 +250,9 @@ describe('CrossChainAnalytics', () => {
     it('should calculate ROI for time period', () => {
       const path = createMockPath();
       const now = Date.now();
-      
+
       analytics.recordTrade(path, createSuccessResult(path));
-      
+
       const roi = analytics.calculateROI(now - 1000, now + 1000);
       expect(typeof roi).toBe('number');
     });
@@ -268,7 +268,7 @@ describe('CrossChainAnalytics', () => {
     it('should export data as JSON string', () => {
       const path = createMockPath();
       analytics.recordTrade(path, createSuccessResult(path));
-      
+
       const exported = analytics.exportData();
       expect(typeof exported).toBe('string');
       expect(() => JSON.parse(exported)).not.toThrow();
@@ -279,9 +279,9 @@ describe('CrossChainAnalytics', () => {
     it('should clear all data', () => {
       const path = createMockPath();
       analytics.recordTrade(path, createSuccessResult(path));
-      
+
       analytics.clear();
-      
+
       const summary = analytics.getSummary();
       expect(summary.totalTrades).toBe(0);
     });

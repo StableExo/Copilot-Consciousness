@@ -21,7 +21,7 @@ describe('Integration Tests', () => {
 
     it('should add memories with emotional context', () => {
       const memorySystem = new MemorySystem(defaultConfig.memory);
-      
+
       const emotionalContext: EmotionalContext = {
         primaryEmotion: 'curious',
         intensity: 0.8,
@@ -38,7 +38,7 @@ describe('Integration Tests', () => {
       );
 
       expect(memoryId).toBeDefined();
-      
+
       const memory = memorySystem.getMemory(memoryId);
       expect(memory).toBeDefined();
       expect(memory?.emotionalContext).toBeDefined();
@@ -47,15 +47,11 @@ describe('Integration Tests', () => {
 
     it('should add DEX event memories', () => {
       const memorySystem = new MemorySystem(defaultConfig.memory);
-      
-      const memoryId = memorySystem.addDEXEventMemory(
-        'swap',
-        { amount: 100 },
-        Priority.HIGH
-      );
+
+      const memoryId = memorySystem.addDEXEventMemory('swap', { amount: 100 }, Priority.HIGH);
 
       expect(memoryId).toBeDefined();
-      
+
       const memory = memorySystem.getMemory(memoryId);
       expect(memory).toBeDefined();
       expect(memory?.metadata.category).toBe('dex_event');
@@ -70,7 +66,7 @@ describe('Integration Tests', () => {
 
     it('should integrate memory with emotional context', () => {
       const core = new ConsciousnessCore(defaultConfig.memory);
-      
+
       const emotionalContext: EmotionalContext = {
         primaryEmotion: 'excited',
         intensity: 0.9,
@@ -92,14 +88,14 @@ describe('Integration Tests', () => {
     it('should create DEX registry', () => {
       const registry = new DEXRegistry();
       expect(registry).toBeDefined();
-      
+
       const allDexes = registry.getAllDEXes();
       expect(allDexes.length).toBeGreaterThan(0);
     });
 
     it('should get specific DEX configuration', () => {
       const registry = new DEXRegistry();
-      
+
       const balancer = registry.getDEX('Balancer');
       expect(balancer).toBeDefined();
       expect(balancer?.name).toBe('Balancer');
@@ -120,7 +116,7 @@ describe('Integration Tests', () => {
     it('should integrate DEX events with memory system', () => {
       const memorySystem = new MemorySystem(defaultConfig.memory);
       const memoryHook = new DEXMemoryHookImpl(memorySystem);
-      
+
       const event = {
         id: 'test-event',
         type: DEXEventType.SWAP,
@@ -141,23 +137,23 @@ describe('Integration Tests', () => {
     it('should create and start consciousness system', () => {
       const system = new ConsciousnessSystem(defaultConfig);
       expect(system).toBeDefined();
-      
+
       system.start();
       const status = system.getStatus();
       expect(status).toBeDefined();
       expect(status.isRunning).toBe(true);
-      
+
       system.stop();
     });
 
     it('should access memory system from consciousness system', () => {
       const system = new ConsciousnessSystem(defaultConfig);
       system.start();
-      
+
       const memorySystem = system.getMemorySystem();
       expect(memorySystem).toBeDefined();
       expect(memorySystem).toBeInstanceOf(MemorySystem);
-      
+
       system.stop();
     });
   });

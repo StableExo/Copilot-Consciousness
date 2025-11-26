@@ -1,32 +1,23 @@
 /**
  * Strategy Engines - Main Exports
- * 
+ *
  * Multi-Engine Strategy System for Copilot-Consciousness
- * Provides advanced spatial reasoning, pattern recognition, and 
+ * Provides advanced spatial reasoning, pattern recognition, and
  * multi-path problem-solving capabilities.
  */
 
 // Core Engines
 export { SpatialReasoningEngine } from './spatial-reasoning';
-export type {
-  SpatialReasoningConfig,
-  SpatialReasoningStats
-} from './spatial-reasoning';
+export type { SpatialReasoningConfig, SpatialReasoningStats } from './spatial-reasoning';
 
 export { MultiPathExplorer } from './multi-path-explorer';
-export type {
-  PathExplorerStats
-} from './multi-path-explorer';
+export type { PathExplorerStats } from './multi-path-explorer';
 
 export { OpportunityScorer } from './opportunity-scorer';
-export type {
-  OpportunityScorerStats
-} from './opportunity-scorer';
+export type { OpportunityScorerStats } from './opportunity-scorer';
 
 export { PatternRecognitionEngine } from './pattern-recognition';
-export type {
-  PatternRecognitionStats
-} from './pattern-recognition';
+export type { PatternRecognitionStats } from './pattern-recognition';
 
 // Type Exports
 export type {
@@ -38,7 +29,7 @@ export type {
   ConstraintType,
   DimensionalAnalysis,
   SpatialCluster,
-  ProblemSpaceAnalysis
+  ProblemSpaceAnalysis,
 } from './types/problem-space';
 
 export type {
@@ -51,7 +42,7 @@ export type {
   CyclicPathInfo,
   PathValidationResult,
   RouteSegment,
-  PathComparison
+  PathComparison,
 } from './types/path';
 
 export type {
@@ -65,7 +56,7 @@ export type {
   ValueCalculationParams,
   RiskAdjustmentParams,
   OpportunityComparison,
-  EvaluationCriterion
+  EvaluationCriterion,
 } from './types/opportunity';
 
 export type {
@@ -83,7 +74,7 @@ export type {
   PatternAnalytics,
   PatternContext,
   Condition,
-  Action
+  Action,
 } from './types/pattern';
 
 // Utility Exports
@@ -97,7 +88,7 @@ export {
   cosineDistance,
   normalizeVector,
   minMaxNormalize,
-  standardize
+  standardize,
 } from './utils/distance-calculator';
 export type { DistanceMetric } from './utils/distance-calculator';
 
@@ -109,7 +100,7 @@ export {
   hasPath,
   findShortestPath,
   detectCycle,
-  calculateConnectivity
+  calculateConnectivity,
 } from './utils/graph-builder';
 export type { Graph, GraphEdge } from './utils/graph-builder';
 
@@ -122,9 +113,6 @@ export {
   percentileRank,
   riskAdjustedScore,
   scoreOpportunity,
-  scorePath
+  scorePath,
 } from './utils/scorer';
-export type {
-  ScoringMethod,
-  ScoringCriterion
-} from './utils/scorer';
+export type { ScoringMethod, ScoringCriterion } from './utils/scorer';

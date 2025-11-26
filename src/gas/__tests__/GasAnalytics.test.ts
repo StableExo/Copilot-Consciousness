@@ -22,8 +22,8 @@ describe('GasAnalytics', () => {
           amountIn: BigInt(1000) * BigInt(10 ** 18),
           amountOut: BigInt(1100) * BigInt(10 ** 18),
           fee: 0.003,
-          gasEstimate: 100000
-        }
+          gasEstimate: 100000,
+        },
       ],
       startToken: '0xTokenA',
       endToken: '0xTokenA',
@@ -31,7 +31,7 @@ describe('GasAnalytics', () => {
       totalGasCost: BigInt(150000),
       netProfit: BigInt(450) * BigInt(10 ** 18),
       totalFees: 0.003,
-      slippageImpact: 0.01
+      slippageImpact: 0.01,
     };
   });
 
@@ -43,7 +43,7 @@ describe('GasAnalytics', () => {
         gasCost: BigInt(3) * BigInt(10 ** 15), // 0.003 ETH
         chain: 'mainnet',
         timestamp: Date.now(),
-        success: true
+        success: true,
       };
 
       analytics.recordExecution(execution);
@@ -60,7 +60,7 @@ describe('GasAnalytics', () => {
         chain: 'mainnet',
         timestamp: Date.now(),
         success: false,
-        failureReason: 'Insufficient liquidity'
+        failureReason: 'Insufficient liquidity',
       };
 
       analytics.recordExecution(execution);
@@ -78,7 +78,7 @@ describe('GasAnalytics', () => {
           gasCost: BigInt(3) * BigInt(10 ** 15),
           chain: 'mainnet',
           timestamp: Date.now(),
-          success: true
+          success: true,
         };
         analytics.recordExecution(execution);
       }
@@ -96,7 +96,7 @@ describe('GasAnalytics', () => {
         gasCost: BigInt(3) * BigInt(10 ** 15),
         chain: 'mainnet',
         timestamp: Date.now(),
-        success: true
+        success: true,
       };
 
       analytics.recordExecution(execution);
@@ -116,7 +116,7 @@ describe('GasAnalytics', () => {
         gasCost: BigInt(3) * BigInt(10 ** 15),
         chain: 'mainnet',
         timestamp: Date.now(),
-        success: true
+        success: true,
       };
 
       const failedExecution: ArbitrageExecution = {
@@ -125,7 +125,7 @@ describe('GasAnalytics', () => {
         gasCost: BigInt(1) * BigInt(10 ** 15),
         chain: 'mainnet',
         timestamp: Date.now(),
-        success: false
+        success: false,
       };
 
       analytics.recordExecution(successExecution);
@@ -154,7 +154,7 @@ describe('GasAnalytics', () => {
         gasCost: BigInt(3) * BigInt(10 ** 15),
         chain: 'mainnet',
         timestamp: Date.now(),
-        success: true
+        success: true,
       };
 
       analytics.recordExecution(execution);
@@ -177,7 +177,7 @@ describe('GasAnalytics', () => {
         gasCost: BigInt(3) * BigInt(10 ** 15),
         chain: 'mainnet',
         timestamp: Date.now(),
-        success: true
+        success: true,
       };
 
       analytics.recordExecution(execution);
@@ -195,7 +195,7 @@ describe('GasAnalytics', () => {
         gasCost: BigInt(3) * BigInt(10 ** 15),
         chain: 'mainnet',
         timestamp: Date.now(),
-        success: true
+        success: true,
       };
 
       analytics.recordExecution(execution);
@@ -213,7 +213,7 @@ describe('GasAnalytics', () => {
         gasCost: BigInt(3) * BigInt(10 ** 15),
         chain: 'mainnet',
         timestamp: Date.now(),
-        success: true
+        success: true,
       };
 
       analytics.recordExecution(execution);
@@ -233,7 +233,7 @@ describe('GasAnalytics', () => {
           gasCost: BigInt(3) * BigInt(10 ** 15),
           chain: 'mainnet',
           timestamp: Date.now(),
-          success: true
+          success: true,
         };
         analytics.recordExecution(execution);
       }

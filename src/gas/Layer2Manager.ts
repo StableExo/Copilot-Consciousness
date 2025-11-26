@@ -1,6 +1,6 @@
 /**
  * Layer2Manager - Multi-chain execution support for gas optimization
- * 
+ *
  * Integrates with Arbitrum, Optimism, and Base for cheaper execution
  */
 
@@ -43,7 +43,7 @@ export class Layer2Manager {
     this.providers = new Map();
     this.oracles = new Map();
     this.dexAvailability = new Map();
-    
+
     this.initializeDefaultChains();
     this.initializeDEXAvailability();
   }
@@ -70,7 +70,7 @@ export class Layer2Manager {
         estimatedProfit: path.estimatedProfit,
         gasCost,
         bridgeCost,
-        netProfit
+        netProfit,
       });
     }
 
@@ -109,7 +109,7 @@ export class Layer2Manager {
 
     const gasPrice = await oracle.getCurrentGasPrice('normal');
     const gasUnits = BigInt(path.totalGasCost);
-    
+
     return gasUnits * gasPrice.maxFeePerGas;
   }
 
@@ -118,11 +118,11 @@ export class Layer2Manager {
    */
   registerChain(config: ChainConfig): void {
     this.chains.set(config.name, config);
-    
+
     // Create provider for this chain
     const provider = new JsonRpcProvider(config.rpcUrl);
     this.providers.set(config.name, provider);
-    
+
     // Create oracle for this chain
     const oracle = new GasPriceOracle(config.rpcUrl);
     this.oracles.set(config.name, oracle);
@@ -157,10 +157,7 @@ export class Layer2Manager {
   /**
    * Calculate bridge cost for moving assets to a chain
    */
-  calculateBridgeCost(
-    chain: SupportedChain,
-    amount: bigint
-  ): bigint {
+  calculateBridgeCost(chain: SupportedChain, amount: bigint): bigint {
     const config = this.chains.get(chain);
     if (!config || chain === 'mainnet') {
       return BigInt(0);
@@ -211,12 +208,12 @@ export class Layer2Manager {
     // totalGasCost is gas units, need to get current gas price
     const oracle = this.oracles.get('mainnet');
     let gasCost = BigInt(path.totalGasCost);
-    
+
     if (oracle) {
       const gasPrice = await oracle.getCurrentGasPrice('normal');
       gasCost = BigInt(path.totalGasCost) * gasPrice.maxFeePerGas;
     }
-    
+
     const netProfit = path.estimatedProfit - gasCost;
 
     return {
@@ -224,7 +221,7 @@ export class Layer2Manager {
       estimatedProfit: path.estimatedProfit,
       gasCost,
       bridgeCost: BigInt(0),
-      netProfit
+      netProfit,
     };
   }
 
@@ -238,7 +235,7 @@ export class Layer2Manager {
       rpcUrl: process.env.MAINNET_RPC_URL || 'https://eth.llamarpc.com',
       chainId: 1,
       gasCostMultiplier: 1.0,
-      bridgeCost: BigInt(0)
+      bridgeCost: BigInt(0),
     });
 
     // Arbitrum One (10x cheaper)
@@ -247,7 +244,7 @@ export class Layer2Manager {
       rpcUrl: process.env.ARBITRUM_RPC_URL || 'https://arb1.arbitrum.io/rpc',
       chainId: 42161,
       gasCostMultiplier: 0.1,
-      bridgeCost: BigInt(50) * BigInt(10 ** 18) // 50 tokens estimated bridge cost
+      bridgeCost: BigInt(50) * BigInt(10 ** 18), // 50 tokens estimated bridge cost
     });
 
     // Optimism (10x cheaper)
@@ -256,7 +253,7 @@ export class Layer2Manager {
       rpcUrl: process.env.OPTIMISM_RPC_URL || 'https://mainnet.optimism.io',
       chainId: 10,
       gasCostMultiplier: 0.1,
-      bridgeCost: BigInt(50) * BigInt(10 ** 18)
+      bridgeCost: BigInt(50) * BigInt(10 ** 18),
     });
 
     // Base (10x cheaper)
@@ -265,7 +262,7 @@ export class Layer2Manager {
       rpcUrl: process.env.BASE_RPC_URL || 'https://mainnet.base.org',
       chainId: 8453,
       gasCostMultiplier: 0.1,
-      bridgeCost: BigInt(50) * BigInt(10 ** 18)
+      bridgeCost: BigInt(50) * BigInt(10 ** 18),
     });
   }
 

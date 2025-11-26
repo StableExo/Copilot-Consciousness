@@ -1,16 +1,24 @@
 /**
  * TransactionExecutor.ts - Unified transaction handler
- * 
+ *
  * Integrates all mission components:
  * - Gas Estimator (Mission #1) for cost forecasting
  * - Nonce Manager (Mission #2) for transaction ordering
  * - Parameter Builders (Mission #3) for DEX-specific transactions
  * - Profit Calculator (Mission #4) for opportunity validation
- * 
+ *
  * Supports multi-DEX execution: Uniswap V2/V3, SushiSwap, Curve, Aave, Balancer
  */
 
-import { JsonRpcProvider, TransactionReceipt, TransactionResponse, TransactionRequest, isAddress, Interface, AbiCoder } from 'ethers';
+import {
+  JsonRpcProvider,
+  TransactionReceipt,
+  TransactionResponse,
+  TransactionRequest,
+  isAddress,
+  Interface,
+  AbiCoder,
+} from 'ethers';
 import { logger } from '../utils/logger';
 import { NonceManager } from './NonceManager';
 import { buildTwoHopParams, buildTriangularParams, buildAavePathParams } from './ParamBuilder';
@@ -28,7 +36,7 @@ import {
   UniswapV3TwoHopParams,
   TriangularFlashSwapParams,
   AavePathStep,
-  AaveFlashLoanParams
+  AaveFlashLoanParams,
 } from '../types/ExecutionTypes';
 import { ArbitrageOpportunity, SimulationResult, ArbitrageConfig } from '../types/definitions';
 
@@ -66,14 +74,14 @@ export class TransactionExecutor {
   private confirmations: number;
   private confirmationTimeout: number;
   private titheRecipient: string;
-  
+
   // Statistics
   private stats = {
     totalTransactions: 0,
     successfulTransactions: 0,
     failedTransactions: 0,
     totalGasUsed: BigInt(0),
-    totalProfit: BigInt(0)
+    totalProfit: BigInt(0),
   };
 
   constructor(config: TransactionExecutorConfig) {
@@ -133,12 +141,7 @@ export class TransactionExecutor {
       const gasPrice = await this.getOptimalGasPrice(request.maxGasPrice);
 
       // Step 5: Build the actual transaction
-      const transaction = await this.buildTransaction(
-        request,
-        txParams,
-        gasEstimation,
-        gasPrice
-      );
+      const transaction = await this.buildTransaction(request, txParams, gasEstimation, gasPrice);
 
       // Step 6: Submit transaction using NonceManager (Mission #2)
       logger.info(`[TransactionExecutor] Submitting transaction for ${request.context.id}`);
@@ -150,10 +153,7 @@ export class TransactionExecutor {
       const monitoringResult = await this.monitorTransaction(txResponse);
 
       // Step 8: Calculate actual results
-      const actualProfit = await this.calculateActualProfit(
-        monitoringResult,
-        request.context
-      );
+      const actualProfit = await this.calculateActualProfit(monitoringResult, request.context);
 
       // Update statistics
       if (monitoringResult.status === TransactionStatus.CONFIRMED) {
@@ -172,9 +172,8 @@ export class TransactionExecutor {
         effectiveGasPrice: monitoringResult.effectiveGasPrice,
         actualProfit,
         status: monitoringResult.status,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
-
     } catch (error: unknown) {
       this.stats.failedTransactions++;
       const message = error instanceof Error ? error.message : String(error);
@@ -230,7 +229,7 @@ export class TransactionExecutor {
       const simulationResult: SimulationResult = {
         initialAmount: path.hops[0]?.amountIn || BigInt(0),
         amountOutHop1: path.hops[0]?.amountOut || BigInt(0),
-        finalAmount: path.hops[path.hops.length - 1]?.amountOut || BigInt(0)
+        finalAmount: path.hops[path.hops.length - 1]?.amountOut || BigInt(0),
       };
 
       // Determine opportunity type and build appropriate parameters
@@ -252,9 +251,8 @@ export class TransactionExecutor {
           params: paramResult.params,
           borrowTokenAddress: paramResult.borrowTokenAddress,
           borrowAmount: paramResult.borrowAmount,
-          minAmountOut: paramResult.params.amountOutMinimum2 as bigint
+          minAmountOut: paramResult.params.amountOutMinimum2 as bigint,
         };
-
       } else if (opportunity.type === 'triangular') {
         // Triangular arbitrage
         paramResult = buildTriangularParams(
@@ -271,9 +269,8 @@ export class TransactionExecutor {
           params: paramResult.params,
           borrowTokenAddress: paramResult.borrowTokenAddress,
           borrowAmount: paramResult.borrowAmount,
-          minAmountOut: paramResult.params.amountOutMinimumFinal as bigint
+          minAmountOut: paramResult.params.amountOutMinimumFinal as bigint,
         };
-
       } else if (opportunity.path && opportunity.path.length > 0) {
         // Multi-hop with Aave flash loan
         paramResult = buildAavePathParams(
@@ -291,15 +288,18 @@ export class TransactionExecutor {
           params: paramResult.params,
           borrowTokenAddress: paramResult.borrowTokenAddress,
           borrowAmount: paramResult.borrowAmount,
-          minAmountOut: BigInt(0) // Calculated in params.path
+          minAmountOut: BigInt(0), // Calculated in params.path
         };
       }
 
       logger.error('[TransactionExecutor] Unsupported opportunity structure');
       return null;
-
     } catch (error) {
-      logger.error(`[TransactionExecutor] Failed to build transaction params: ${error instanceof Error ? error.message : String(error)}`);
+      logger.error(
+        `[TransactionExecutor] Failed to build transaction params: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
       return null;
     }
   }
@@ -327,7 +327,7 @@ export class TransactionExecutor {
           totalGasCost: BigInt(0),
           netProfit: BigInt(0),
           profitable: false,
-          reason: validation.reason
+          reason: validation.reason,
         };
       }
 
@@ -337,11 +337,14 @@ export class TransactionExecutor {
         gasPrice: validation.gasPrice || BigInt(0),
         totalGasCost: (validation.estimatedGas || BigInt(0)) * (validation.gasPrice || BigInt(0)),
         netProfit: validation.netProfit || BigInt(0),
-        profitable: true
+        profitable: true,
       };
-
     } catch (error) {
-      logger.error(`[TransactionExecutor] Gas estimation failed: ${error instanceof Error ? error.message : String(error)}`);
+      logger.error(
+        `[TransactionExecutor] Gas estimation failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
       return {
         success: false,
         estimatedGas: BigInt(0),
@@ -349,7 +352,7 @@ export class TransactionExecutor {
         totalGasCost: BigInt(0),
         netProfit: BigInt(0),
         profitable: false,
-        reason: error instanceof Error ? error.message : 'Gas estimation error'
+        reason: error instanceof Error ? error.message : 'Gas estimation error',
       };
     }
   }
@@ -364,14 +367,19 @@ export class TransactionExecutor {
 
       // Clamp to max if provided
       if (maxGasPrice && price > maxGasPrice) {
-        logger.warn(`[TransactionExecutor] Gas price ${price} exceeds max ${maxGasPrice}, using max`);
+        logger.warn(
+          `[TransactionExecutor] Gas price ${price} exceeds max ${maxGasPrice}, using max`
+        );
         return maxGasPrice;
       }
 
       return price;
-
     } catch (error) {
-      logger.error(`[TransactionExecutor] Failed to get gas price: ${error instanceof Error ? error.message : String(error)}`);
+      logger.error(
+        `[TransactionExecutor] Failed to get gas price: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
       // Fallback to a safe default
       return BigInt(50) * BigInt(10 ** 9); // 50 gwei
     }
@@ -388,7 +396,7 @@ export class TransactionExecutor {
   ): Promise<TransactionRequest> {
     // Encode function call
     const iface = new Interface([
-      this.getFunctionSignature(txParams.functionName, txParams.dexType)
+      this.getFunctionSignature(txParams.functionName, txParams.dexType),
     ]);
 
     const data = this.encodeTransaction(iface, txParams);
@@ -401,7 +409,7 @@ export class TransactionExecutor {
       maxFeePerGas: gasPrice,
       maxPriorityFeePerGas: gasPrice / BigInt(10), // 10% of base fee as priority
       value: 0,
-      type: 2 // EIP-1559 transaction
+      type: 2, // EIP-1559 transaction
     };
   }
 
@@ -410,9 +418,12 @@ export class TransactionExecutor {
    */
   private getFunctionSignature(functionName: string, dexType: string): string {
     const signatures: Record<string, string> = {
-      initiateUniswapV3FlashLoan: 'function initiateUniswapV3FlashLoan(address tokenBorrowed, uint256 amountBorrowed, bytes calldata params)',
-      initiateTriangularFlashSwap: 'function initiateTriangularFlashSwap(address tokenBorrowed, uint256 amountBorrowed, bytes calldata params)',
-      initiateAaveFlashLoan: 'function initiateAaveFlashLoan(address[] calldata assets, uint256[] calldata amounts, bytes calldata params)'
+      initiateUniswapV3FlashLoan:
+        'function initiateUniswapV3FlashLoan(address tokenBorrowed, uint256 amountBorrowed, bytes calldata params)',
+      initiateTriangularFlashSwap:
+        'function initiateTriangularFlashSwap(address tokenBorrowed, uint256 amountBorrowed, bytes calldata params)',
+      initiateAaveFlashLoan:
+        'function initiateAaveFlashLoan(address[] calldata assets, uint256[] calldata amounts, bytes calldata params)',
     };
 
     return signatures[functionName] || signatures.initiateUniswapV3FlashLoan;
@@ -421,33 +432,34 @@ export class TransactionExecutor {
   /**
    * Encode transaction data
    */
-  private encodeTransaction(
-    iface: Interface,
-    txParams: MultiDEXTransactionParams
-  ): string {
+  private encodeTransaction(iface: Interface, txParams: MultiDEXTransactionParams): string {
     const fn = txParams.functionName;
 
     if (fn === 'initiateAaveFlashLoan') {
       const p = txParams.params as AaveFlashLoanParams;
 
       return iface.encodeFunctionData(fn, [
-        [txParams.borrowTokenAddress],            // assets
-        [txParams.borrowAmount],                  // amounts
+        [txParams.borrowTokenAddress], // assets
+        [txParams.borrowAmount], // amounts
         AbiCoder.defaultAbiCoder().encode(
-          ['tuple(tuple(address pool,address tokenIn,address tokenOut,uint24 fee,uint256 minOut,uint8 dexType)[] path,address initiator,address titheRecipient)'],
-          [[
-            p.path.map((step: AavePathStep) => [
-              step.pool,
-              step.tokenIn,
-              step.tokenOut,
-              step.fee,
-              step.minOut,
-              step.dexType
-            ]),
-            p.initiator,
-            p.titheRecipient
-          ]]
-        )
+          [
+            'tuple(tuple(address pool,address tokenIn,address tokenOut,uint24 fee,uint256 minOut,uint8 dexType)[] path,address initiator,address titheRecipient)',
+          ],
+          [
+            [
+              p.path.map((step: AavePathStep) => [
+                step.pool,
+                step.tokenIn,
+                step.tokenOut,
+                step.fee,
+                step.minOut,
+                step.dexType,
+              ]),
+              p.initiator,
+              p.titheRecipient,
+            ],
+          ]
+        ),
       ]);
     }
 
@@ -455,7 +467,7 @@ export class TransactionExecutor {
     return iface.encodeFunctionData(fn, [
       txParams.borrowTokenAddress,
       txParams.borrowAmount,
-      encodedParams
+      encodedParams,
     ]);
   }
 
@@ -463,30 +475,38 @@ export class TransactionExecutor {
     if (txParams.functionName === 'initiateUniswapV3FlashLoan') {
       const p = txParams.params as UniswapV3TwoHopParams;
       return AbiCoder.defaultAbiCoder().encode(
-        ['tuple(address tokenIntermediate,uint24 feeA,uint24 feeB,uint256 amountOutMinimum1,uint256 amountOutMinimum2,address titheRecipient)'],
-        [[
-          p.tokenIntermediate,
-          p.feeA,
-          p.feeB,
-          p.amountOutMinimum1,
-          p.amountOutMinimum2,
-          p.titheRecipient
-        ]]
+        [
+          'tuple(address tokenIntermediate,uint24 feeA,uint24 feeB,uint256 amountOutMinimum1,uint256 amountOutMinimum2,address titheRecipient)',
+        ],
+        [
+          [
+            p.tokenIntermediate,
+            p.feeA,
+            p.feeB,
+            p.amountOutMinimum1,
+            p.amountOutMinimum2,
+            p.titheRecipient,
+          ],
+        ]
       );
     } else if (txParams.functionName === 'initiateTriangularFlashSwap') {
       const p = txParams.params as TriangularFlashSwapParams;
       return AbiCoder.defaultAbiCoder().encode(
-        ['tuple(address tokenA,address tokenB,address tokenC,uint24 fee1,uint24 fee2,uint24 fee3,uint256 amountOutMinimumFinal,address titheRecipient)'],
-        [[
-          p.tokenA,
-          p.tokenB,
-          p.tokenC,
-          p.fee1,
-          p.fee2,
-          p.fee3,
-          p.amountOutMinimumFinal,
-          p.titheRecipient
-        ]]
+        [
+          'tuple(address tokenA,address tokenB,address tokenC,uint24 fee1,uint24 fee2,uint24 fee3,uint256 amountOutMinimumFinal,address titheRecipient)',
+        ],
+        [
+          [
+            p.tokenA,
+            p.tokenB,
+            p.tokenC,
+            p.fee1,
+            p.fee2,
+            p.fee3,
+            p.amountOutMinimumFinal,
+            p.titheRecipient,
+          ],
+        ]
       );
     }
 
@@ -505,7 +525,7 @@ export class TransactionExecutor {
       submittedAt: startTime,
       confirmations: 0,
       requiredConfirmations: this.confirmations,
-      status: TransactionStatus.SUBMITTED
+      status: TransactionStatus.SUBMITTED,
     };
 
     try {
@@ -516,12 +536,12 @@ export class TransactionExecutor {
         txResponse.wait(this.confirmations) as Promise<TransactionReceipt>,
         new Promise<TransactionReceipt>((_, reject) =>
           setTimeout(() => reject(new Error('Confirmation timeout')), this.confirmationTimeout)
-        )
+        ),
       ]);
 
       info.confirmedAt = Date.now();
       info.blockNumber = receipt.blockNumber;
-      info.confirmations = await this.provider.getBlockNumber() - receipt.blockNumber + 1;
+      info.confirmations = (await this.provider.getBlockNumber()) - receipt.blockNumber + 1;
       info.gasUsed = receipt.gasUsed;
       info.effectiveGasPrice = receipt.gasPrice || 0n;
 
@@ -532,9 +552,12 @@ export class TransactionExecutor {
         info.status = TransactionStatus.REVERTED;
         logger.error(`[TransactionExecutor] Transaction reverted: ${txResponse.hash}`);
       }
-
     } catch (error) {
-      logger.error(`[TransactionExecutor] Transaction monitoring failed: ${error instanceof Error ? error.message : String(error)}`);
+      logger.error(
+        `[TransactionExecutor] Transaction monitoring failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
       info.status = TransactionStatus.FAILED;
     }
 
@@ -575,10 +598,10 @@ export class TransactionExecutor {
       details === undefined
         ? undefined
         : details instanceof Error
-          ? { name: details.name, message: details.message, stack: details.stack }
-          : typeof details === 'object' && details !== null
-            ? details as Record<string, unknown>
-            : { value: details };
+        ? { name: details.name, message: details.message, stack: details.stack }
+        : typeof details === 'object' && details !== null
+        ? (details as Record<string, unknown>)
+        : { value: details };
 
     return {
       success: false,
@@ -590,8 +613,8 @@ export class TransactionExecutor {
         errorType,
         message,
         recoverable: false,
-        details: normalizedDetails
-      }
+        details: normalizedDetails,
+      },
     };
   }
 
@@ -611,7 +634,7 @@ export class TransactionExecutor {
       successfulTransactions: 0,
       failedTransactions: 0,
       totalGasUsed: BigInt(0),
-      totalProfit: BigInt(0)
+      totalProfit: BigInt(0),
     };
   }
 }

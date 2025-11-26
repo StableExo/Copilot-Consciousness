@@ -60,7 +60,7 @@ class PathfindingService {
       this.rabbitmqConnection = connection;
       const channel = await connection.createChannel();
       this.rabbitmqChannel = channel;
-      
+
       await channel.assertQueue('opportunities', { durable: true });
       await channel.assertQueue('paths', {
         durable: true,
@@ -109,11 +109,9 @@ class PathfindingService {
 
       // Publish paths to execution queue
       for (const path of paths) {
-        this.rabbitmqChannel.sendToQueue(
-          'paths',
-          Buffer.from(JSON.stringify(path)),
-          { persistent: true }
-        );
+        this.rabbitmqChannel.sendToQueue('paths', Buffer.from(JSON.stringify(path)), {
+          persistent: true,
+        });
       }
 
       this.pathsProcessed++;
@@ -153,11 +151,7 @@ class PathfindingService {
 
     // Cache the result
     if (this.redis) {
-      await this.redis.setex(
-        `paths:${opportunity.id}`,
-        60,
-        JSON.stringify(paths)
-      );
+      await this.redis.setex(`paths:${opportunity.id}`, 60, JSON.stringify(paths));
     }
 
     return paths;
@@ -166,7 +160,7 @@ class PathfindingService {
   async stop(): Promise<void> {
     console.log('[Pathfinding] Stopping service...');
     this.isRunning = false;
-    
+
     if (this.rabbitmqChannel) await this.rabbitmqChannel.close();
     if (this.rabbitmqConnection) await this.rabbitmqConnection.close();
     if (this.redis) await this.redis.quit();

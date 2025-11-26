@@ -192,3 +192,44 @@ build/
 
 # Pool data cache
 .pool-cache/
+
+# macOS files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux files
+*~
+.directory
+.Trash-*
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/settings.json
+.idea/workspace.xml
+.idea/tasks.xml
+
+# Private keys and secrets (extra safety)
+*.pem
+*.key
+*.priv
+*-private-key.txt
+wallet.json
+keystore/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Test output
+test-results/
+junit.xml
+.mocha-results/

@@ -31,7 +31,7 @@ export class TwoFactorService {
     const secret = speakeasy.generateSecret({
       name: `${this.config.issuer} (${email})`,
       issuer: this.config.issuer,
-      length: 32
+      length: 32,
     });
 
     const qrCodeUrl = await QRCode.toDataURL(secret.otpauth_url || '');
@@ -40,7 +40,7 @@ export class TwoFactorService {
     return {
       secret: secret.base32,
       qrCodeUrl,
-      backupCodes
+      backupCodes,
     };
   }
 
@@ -52,7 +52,7 @@ export class TwoFactorService {
       secret,
       encoding: 'base32',
       token,
-      window: this.config.window
+      window: this.config.window,
     });
   }
 
@@ -81,10 +81,10 @@ export class TwoFactorService {
   verifyBackupCode(code: string, hashedCodes: string[]): { valid: boolean; codeIndex: number } {
     const hashedInput = this.hashBackupCode(code);
     const index = hashedCodes.indexOf(hashedInput);
-    
+
     return {
       valid: index !== -1,
-      codeIndex: index
+      codeIndex: index,
     };
   }
 
@@ -94,7 +94,7 @@ export class TwoFactorService {
   generateCurrentToken(secret: string): string {
     return speakeasy.totp({
       secret,
-      encoding: 'base32'
+      encoding: 'base32',
     });
   }
 }

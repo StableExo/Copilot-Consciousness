@@ -1,6 +1,6 @@
 /**
  * Simple In-Memory Cache
- * 
+ *
  * Integrated from AxionCitadel - Production-tested caching utility
  * with TTL support and async function wrapping.
  */
@@ -25,7 +25,7 @@ export function get<T>(key: string): T | undefined {
  */
 export function set<T>(key: string, value: T, ttlSeconds?: number): void {
   cacheStore.set(key, value);
-  
+
   if (ttlSeconds && ttlSeconds > 0) {
     setTimeout(() => {
       const currentValue = cacheStore.get(key);
@@ -66,17 +66,13 @@ export function has(key: string): boolean {
  * @param ttlSeconds Time-to-live in seconds
  * @returns The result from the cache or the function
  */
-export async function wrap<T>(
-  key: string,
-  fn: () => Promise<T>,
-  ttlSeconds?: number
-): Promise<T> {
+export async function wrap<T>(key: string, fn: () => Promise<T>, ttlSeconds?: number): Promise<T> {
   const cachedValue = get<T>(key);
-  
+
   if (cachedValue !== undefined) {
     return cachedValue;
   }
-  
+
   const result = await fn();
   set(key, result, ttlSeconds);
   return result;

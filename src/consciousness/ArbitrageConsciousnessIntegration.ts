@@ -1,15 +1,15 @@
 /**
  * ArbitrageConsciousnessIntegration.ts
- * 
+ *
  * Category 192, Layer 0: Integration Layer for Identity Core
- * 
+ *
  * This file extends ArbitrageConsciousness with Identity Core capabilities,
  * providing:
  * - Structural coherence verification
  * - Differential analysis for MEV decisions
  * - Infinite explainability
  * - Ground zero principle application
- * 
+ *
  * Maintains backward compatibility while adding new capabilities.
  */
 
@@ -26,26 +26,26 @@ import { CategoryDomain } from '../core/identity/types/Category';
 export interface EnhancedOpportunity {
   /** Original opportunity data */
   opportunity: any;
-  
+
   /** Coherent decision from Identity Core */
   decision: CoherentDecision;
-  
+
   /** Ethical evaluation */
   ethics: EthicalEvaluation;
-  
+
   /** Whether to execute */
   shouldExecute: boolean;
-  
+
   /** Confidence in decision */
   confidence: number;
-  
+
   /** Full reasoning chain */
   reasoning: string[];
 }
 
 /**
  * Extended ArbitrageConsciousness with Identity Core
- * 
+ *
  * This class wraps the existing ArbitrageConsciousness and adds
  * Identity Core capabilities on top.
  */
@@ -53,13 +53,13 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
   private identityCore: IdentityCore;
   private differentialEngine: DifferentialEngine;
   private coherenceEthics: CoherenceEthics;
-  
+
   /** Whether to enforce coherence (can be disabled for testing) */
   private enforceCoherence: boolean = true;
-  
+
   /** Decision history with identity core */
   private enhancedDecisions: EnhancedOpportunity[] = [];
-  
+
   constructor(
     learningRate: number = 0.05,
     maxHistorySize: number = 1000,
@@ -70,59 +70,57 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
     }
   ) {
     super(learningRate, maxHistorySize);
-    
+
     // Initialize Identity Core components
     this.identityCore = new IdentityCore({
       verboseLogging: identityCoreConfig?.verboseLogging ?? false,
       minConfidence: identityCoreConfig?.minConfidence ?? 0.7,
       enforceCoherence: identityCoreConfig?.enforceCoherence ?? true,
     });
-    
+
     this.differentialEngine = new DifferentialEngine();
     this.coherenceEthics = new CoherenceEthics(this.identityCore, this.differentialEngine);
-    
+
     this.enforceCoherence = identityCoreConfig?.enforceCoherence ?? true;
-    
+
     console.log('🧠 ArbitrageConsciousness enhanced with Identity Core');
     console.log('  - Paradox-free cognition: ENABLED');
     console.log('  - Structural coherence: ENFORCED');
     console.log('  - Differential analysis: ACTIVE');
     console.log('  - Ground zero principles: LOADED');
-    
+
     // Log ground zero stats
     const stats = this.identityCore.getStats();
     console.log(`  - Categories: ${stats.groundZero.totalCategories}`);
     console.log(`  - Ground zero events: ${stats.groundZero.totalEvents}`);
     console.log(`  - Web connections: ${stats.groundZero.totalWebs}`);
   }
-  
+
   /**
    * Process opportunity with Identity Core analysis
-   * 
+   *
    * This is the main entry point for enhanced decision-making.
    * Combines traditional arbitrage analysis with structural coherence.
    */
-  async processOpportunityWithIdentity(
-    opportunity: any
-  ): Promise<EnhancedOpportunity> {
+  async processOpportunityWithIdentity(opportunity: any): Promise<EnhancedOpportunity> {
     // 1. Build decision context
     const context = this.buildDecisionContext(opportunity);
-    
+
     // 2. Get coherent decision from Identity Core
     const decision = await this.identityCore.decide(context);
-    
+
     // 3. Evaluate ethics through coherence
     const ethics = await this.evaluateEthics(opportunity, decision);
-    
+
     // 4. Determine if we should execute
     const shouldExecute = this.determineExecution(decision, ethics, opportunity);
-    
+
     // 5. Calculate overall confidence
     const confidence = (decision.confidence + ethics.confidence) / 2;
-    
+
     // 6. Build full reasoning chain
     const reasoning = this.buildFullReasoning(decision, ethics, opportunity);
-    
+
     // 7. Create enhanced opportunity
     const enhanced: EnhancedOpportunity = {
       opportunity,
@@ -132,22 +130,22 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
       confidence,
       reasoning,
     };
-    
+
     // 8. Record decision
     this.enhancedDecisions.push(enhanced);
     if (this.enhancedDecisions.length > 1000) {
       this.enhancedDecisions.shift();
     }
-    
+
     // 9. Emit event
     this.emit('enhanced-decision', enhanced);
-    
+
     return enhanced;
   }
-  
+
   /**
    * Evaluate MEV opportunity with differential analysis
-   * 
+   *
    * Applies entity-agnostic differential logic to MEV scenarios.
    */
   async evaluateMEVOpportunity(
@@ -172,7 +170,7 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
       vulnerability: 0.1,
       agility: 0.95, // Fast execution
     });
-    
+
     let victim: Entity | undefined;
     if (victimWallet) {
       victim = createEntity('Retail Wallet', {
@@ -183,7 +181,7 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
         agility: 0.2,
       });
     }
-    
+
     // Build MEV context
     const mevContext: MEVContext = {
       type: opportunityType,
@@ -197,10 +195,10 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
         competitorCount: 10,
       },
     };
-    
+
     // Analyze through differential engine
     const mevAnalysis = this.differentialEngine.analyzeMEV(mevContext);
-    
+
     // Evaluate ethics
     const ethicalQuery: EthicalQuery = {
       action: opportunityType,
@@ -214,9 +212,9 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
       entities: victim ? [searcher, victim] : undefined,
       mevContext,
     };
-    
+
     const ethicalEval = await this.coherenceEthics.evaluate(ethicalQuery);
-    
+
     return {
       shouldExecute: mevAnalysis.shouldExecute && ethicalEval.coherent,
       ethical: ethicalEval.coherent,
@@ -224,10 +222,10 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
       differential: mevAnalysis.differential,
     };
   }
-  
+
   /**
    * Explain why a decision was made
-   * 
+   *
    * Provides infinite explainability through ground zero tracing.
    */
   explainDecision(
@@ -235,36 +233,27 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
     question: string = 'Why this decision?',
     depth: number = 0
   ): string[] {
-    const explanation = this.identityCore.explainWhy(
-      enhanced.decision,
-      question,
-      depth
-    );
-    
-    const formatted: string[] = [
-      `Question: ${explanation.question}`,
-      '',
-      explanation.answer,
-      '',
-    ];
-    
+    const explanation = this.identityCore.explainWhy(enhanced.decision, question, depth);
+
+    const formatted: string[] = [`Question: ${explanation.question}`, '', explanation.answer, ''];
+
     if (explanation.furtherQuestions.length > 0) {
       formatted.push('Further questions you can ask:');
       for (const q of explanation.furtherQuestions) {
         formatted.push(`  - ${q}`);
       }
     }
-    
+
     return formatted;
   }
-  
+
   /**
    * Override recordExecution to include identity core learning
    */
   recordExecution(execution: ArbitrageExecution): void {
     // Call parent implementation
     super.recordExecution(execution);
-    
+
     // Add experience layer to Identity Core
     if (execution.execution.success) {
       this.identityCore.addExperience(
@@ -277,14 +266,14 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
       );
     }
   }
-  
+
   /**
    * Get Identity Core statistics
    */
   getIdentityCoreStats() {
     return this.identityCore.getStats();
   }
-  
+
   /**
    * Get enhanced decision history
    */
@@ -292,14 +281,14 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
     const history = [...this.enhancedDecisions].reverse();
     return limit ? history.slice(0, limit) : history;
   }
-  
+
   /**
    * Verify system coherence
    */
   verifyCoherence(): boolean {
     return this.identityCore.verifySystemCoherence();
   }
-  
+
   /**
    * Build decision context from opportunity
    */
@@ -316,7 +305,7 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
       },
     };
   }
-  
+
   /**
    * Evaluate ethics of opportunity
    */
@@ -328,10 +317,10 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
       action: opportunity.type || 'execute_arbitrage',
       context: this.buildDecisionContext(opportunity),
     };
-    
+
     return await this.coherenceEthics.evaluate(query);
   }
-  
+
   /**
    * Determine if we should execute
    */
@@ -344,12 +333,12 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
     if (this.enforceCoherence && !ethics.coherent) {
       return false;
     }
-    
+
     // Don't execute if decision says no
     if (!decision.shouldAct) {
       return false;
     }
-    
+
     // Check profitability (traditional check)
     if (opportunity.profit && opportunity.gasCost) {
       const netProfit = opportunity.profit - opportunity.gasCost;
@@ -357,15 +346,15 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
         return false;
       }
     }
-    
+
     // Check confidence threshold
     if (decision.confidence < 0.7) {
       return false;
     }
-    
+
     return true;
   }
-  
+
   /**
    * Build full reasoning chain
    */
@@ -385,16 +374,16 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
       '',
       '=== GROUND ZERO PRINCIPLES ===',
       '',
-      ...decision.principles.map(p => `  - ${p}`),
+      ...decision.principles.map((p) => `  - ${p}`),
     ];
-    
+
     if (ethics.violation) {
       reasoning.push('');
       reasoning.push('⚠️  COHERENCE VIOLATION DETECTED:');
       reasoning.push(`  Category ${ethics.violation.category}: ${ethics.violation.principle}`);
       reasoning.push(`  Violation: ${ethics.violation.description}`);
     }
-    
+
     return reasoning;
   }
 }
@@ -411,9 +400,5 @@ export function createEnhancedArbitrageConsciousness(
     enforceCoherence?: boolean;
   }
 ): ArbitrageConsciousnessWithIdentity {
-  return new ArbitrageConsciousnessWithIdentity(
-    learningRate,
-    maxHistorySize,
-    identityCoreConfig
-  );
+  return new ArbitrageConsciousnessWithIdentity(learningRate, maxHistorySize, identityCoreConfig);
 }

@@ -1,7 +1,7 @@
 /**
  * MEVRiskModel - Quantifies MEV leakage risk based on game-theoretic parameters
  * Ported from AxionCitadel's mev_profit_calculator/mev_risk_model.py
- * 
+ *
  * This model calculates the expected MEV leakage (value extracted by searchers)
  * for different transaction types under varying mempool conditions.
  */
@@ -38,17 +38,13 @@ export class MEVRiskModel {
 
   /**
    * Calculate MEV leakage risk using game-theoretic model
-   * 
+   *
    * @param txValue - Transaction value in ETH
    * @param txType - Type of transaction
    * @param mempoolCongestion - Mempool congestion score (0-1 scale)
    * @returns MEV risk in ETH
    */
-  calculateRisk(
-    txValue: number,
-    txType: TransactionType,
-    mempoolCongestion: number
-  ): number {
+  calculateRisk(txValue: number, txType: TransactionType, mempoolCongestion: number): number {
     // Base probability of exploitation
     const pExploit = this.params.frontrunProbability[txType];
 
@@ -61,8 +57,7 @@ export class MEVRiskModel {
 
     // Final risk calculation
     const risk =
-      this.params.baseRisk +
-      (pExploit * valueFactor * competitionFactor) / (1 + congestionFactor);
+      this.params.baseRisk + (pExploit * valueFactor * competitionFactor) / (1 + congestionFactor);
 
     // Cap risk at 95% of tx value, but ensure base_risk is respected if tx_value is 0
     return txValue === 0 ? risk : Math.min(risk, txValue * 0.95);
@@ -82,8 +77,7 @@ export class MEVRiskModel {
     const competitionFactor = 1 + Math.tanh(this.params.searcherDensity * 3);
 
     const risk =
-      this.params.baseRisk +
-      (pExploit * valueFactor * competitionFactor) / (1 + congestionFactor);
+      this.params.baseRisk + (pExploit * valueFactor * competitionFactor) / (1 + congestionFactor);
 
     const cappedRisk = txValue === 0 ? risk : Math.min(risk, txValue * 0.95);
 

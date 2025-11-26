@@ -1,9 +1,9 @@
 /**
  * Multi-Path Explorer Engine
- * 
+ *
  * Adapted from AxionCitadel TriangularArbEngine for generalized path finding
  * and route optimization in problem spaces.
- * 
+ *
  * Features:
  * - Multi-hop path discovery from initial to goal state
  * - Route optimization based on multiple criteria
@@ -18,19 +18,10 @@ import {
   PathFindingResult,
   OptimizationCriteria,
   CyclicPathInfo,
-  PathValidationResult
+  PathValidationResult,
 } from './types/path';
-import {
-  Node,
-  Transition,
-  ProblemSpace
-} from './types/problem-space';
-import {
-  buildGraph,
-  Graph,
-  getOutgoingEdges,
-  detectCycle
-} from './utils/graph-builder';
+import { Node, Transition, ProblemSpace } from './types/problem-space';
+import { buildGraph, Graph, getOutgoingEdges, detectCycle } from './utils/graph-builder';
 import { scorePath, ScoringCriterion } from './utils/scorer';
 
 /**
@@ -46,7 +37,7 @@ export interface PathExplorerStats {
 
 /**
  * Multi-Path Explorer Engine
- * 
+ *
  * Finds and optimizes multiple solution paths through problem spaces.
  */
 export class MultiPathExplorer {
@@ -61,7 +52,7 @@ export class MultiPathExplorer {
       explorationStrategy: config.explorationStrategy || 'breadth-first',
       pruningEnabled: config.pruningEnabled !== false,
       cyclicDetection: config.cyclicDetection !== false,
-      optimizationCriteria: config.optimizationCriteria || ['cost', 'time', 'risk']
+      optimizationCriteria: config.optimizationCriteria || ['cost', 'time', 'risk'],
     };
 
     this.stats = {
@@ -69,7 +60,7 @@ export class MultiPathExplorer {
       pathsFound: 0,
       cyclesDetected: 0,
       avgPathLength: 0,
-      avgPathCost: 0
+      avgPathCost: 0,
     };
   }
 
@@ -124,22 +115,18 @@ export class MultiPathExplorer {
 
     // Apply constraints if provided
     if (params.constraints) {
-      paths = paths.filter(path => params.constraints!.every(c => c(path)));
+      paths = paths.filter((path) => params.constraints!.every((c) => c(path)));
     }
 
     // Find optimal path
-    const optimalPath = paths.length > 0 
-      ? this.selectOptimalPath(paths) 
-      : undefined;
+    const optimalPath = paths.length > 0 ? this.selectOptimalPath(paths) : undefined;
 
     const timeMs = Date.now() - startTime;
 
     this.stats.pathsFound += paths.length;
     if (paths.length > 0) {
-      this.stats.avgPathLength = 
-        paths.reduce((sum, p) => sum + p.nodes.length, 0) / paths.length;
-      this.stats.avgPathCost = 
-        paths.reduce((sum, p) => sum + p.totalCost, 0) / paths.length;
+      this.stats.avgPathLength = paths.reduce((sum, p) => sum + p.nodes.length, 0) / paths.length;
+      this.stats.avgPathCost = paths.reduce((sum, p) => sum + p.totalCost, 0) / paths.length;
     }
 
     return {
@@ -150,8 +137,8 @@ export class MultiPathExplorer {
       optimalPath,
       metadata: {
         strategy: this.config.explorationStrategy,
-        timestamp: new Date()
-      }
+        timestamp: new Date(),
+      },
     };
   }
 
@@ -161,7 +148,7 @@ export class MultiPathExplorer {
   private breadthFirstSearch(startId: string, goalId: string): Path[] {
     const paths: Path[] = [];
     const queue: Array<{ nodeId: string; path: string[]; transitions: Transition[] }> = [
-      { nodeId: startId, path: [startId], transitions: [] }
+      { nodeId: startId, path: [startId], transitions: [] },
     ];
 
     while (queue.length > 0 && paths.length < this.config.maxPathsToExplore) {
@@ -193,7 +180,7 @@ export class MultiPathExplorer {
         queue.push({
           nodeId: edge.to,
           path: [...current.path, edge.to],
-          transitions: [...current.transitions, edge.data!]
+          transitions: [...current.transitions, edge.data!],
         });
       }
     }
@@ -208,11 +195,7 @@ export class MultiPathExplorer {
     const paths: Path[] = [];
     const visited = new Set<string>();
 
-    const dfs = (
-      nodeId: string,
-      path: string[],
-      transitions: Transition[]
-    ): void => {
+    const dfs = (nodeId: string, path: string[], transitions: Transition[]): void => {
       if (paths.length >= this.config.maxPathsToExplore) return;
       if (path.length > this.config.maxPathLength) return;
 
@@ -234,11 +217,7 @@ export class MultiPathExplorer {
       const edges = getOutgoingEdges(this.graph!, nodeId);
       for (const edge of edges) {
         if (!this.config.cyclicDetection || !visited.has(edge.to)) {
-          dfs(
-            edge.to,
-            [...path, edge.to],
-            [...transitions, edge.data!]
-          );
+          dfs(edge.to, [...path, edge.to], [...transitions, edge.data!]);
         }
       }
 
@@ -273,7 +252,7 @@ export class MultiPathExplorer {
    * Construct Path object from node IDs and transitions
    */
   private constructPath(nodeIds: string[], transitions: Transition[]): Path {
-    const nodes = nodeIds.map(id => this.graph!.nodes.get(id)!).filter(n => n);
+    const nodes = nodeIds.map((id) => this.graph!.nodes.get(id)!).filter((n) => n);
 
     const totalCost = transitions.reduce((sum, t) => sum + t.cost, 0);
     const totalTime = transitions.reduce((sum, t) => sum + t.time, 0);
@@ -289,8 +268,8 @@ export class MultiPathExplorer {
       score: 0, // Will be calculated later
       status: PathStatus.VALID,
       metadata: {
-        createdAt: new Date()
-      }
+        createdAt: new Date(),
+      },
     };
   }
 
@@ -299,10 +278,10 @@ export class MultiPathExplorer {
    */
   optimizePath(path: Path, criteria: OptimizationCriteria[]): Path {
     // Calculate score based on criteria
-    const scoringCriteria: ScoringCriterion[] = criteria.map(c => ({
+    const scoringCriteria: ScoringCriterion[] = criteria.map((c) => ({
       name: c.criterion,
       weight: c.weight,
-      type: c.type
+      type: c.type,
     }));
 
     const score = scorePath(path, scoringCriteria);
@@ -310,7 +289,7 @@ export class MultiPathExplorer {
     return {
       ...path,
       score,
-      status: score > 0.7 ? PathStatus.OPTIMAL : PathStatus.SUBOPTIMAL
+      status: score > 0.7 ? PathStatus.OPTIMAL : PathStatus.SUBOPTIMAL,
     };
   }
 
@@ -326,15 +305,13 @@ export class MultiPathExplorer {
     const criteria: OptimizationCriteria[] = [
       { criterion: 'cost', weight: 0.33, type: 'minimize' },
       { criterion: 'time', weight: 0.33, type: 'minimize' },
-      { criterion: 'risk', weight: 0.34, type: 'minimize' }
+      { criterion: 'risk', weight: 0.34, type: 'minimize' },
     ];
 
-    const optimizedPaths = paths.map(p => this.optimizePath(p, criteria));
+    const optimizedPaths = paths.map((p) => this.optimizePath(p, criteria));
 
     // Return path with highest score
-    return optimizedPaths.reduce((best, current) =>
-      current.score > best.score ? current : best
-    );
+    return optimizedPaths.reduce((best, current) => (current.score > best.score ? current : best));
   }
 
   /**
@@ -345,12 +322,14 @@ export class MultiPathExplorer {
 
     // Check path length
     if (path.nodes.length > this.config.maxPathLength) {
-      violations.push(`Path length ${path.nodes.length} exceeds maximum ${this.config.maxPathLength}`);
+      violations.push(
+        `Path length ${path.nodes.length} exceeds maximum ${this.config.maxPathLength}`
+      );
     }
 
     // Check for cycles
     if (this.config.cyclicDetection) {
-      const nodeIds = path.nodes.map(n => n.id);
+      const nodeIds = path.nodes.map((n) => n.id);
       const uniqueIds = new Set(nodeIds);
       if (uniqueIds.size !== nodeIds.length) {
         violations.push('Path contains cycles');
@@ -370,7 +349,7 @@ export class MultiPathExplorer {
       status,
       violations,
       score: isValid ? path.score : 0,
-      suggestions: isValid ? [] : ['Consider shorter path', 'Remove cycles']
+      suggestions: isValid ? [] : ['Consider shorter path', 'Remove cycles'],
     };
   }
 
@@ -378,7 +357,7 @@ export class MultiPathExplorer {
    * Detect if a path contains cycles
    */
   detectCycle(path: Path): CyclicPathInfo {
-    const nodeIds = path.nodes.map(n => n.id);
+    const nodeIds = path.nodes.map((n) => n.id);
     const seen = new Map<string, number>();
 
     for (let i = 0; i < nodeIds.length; i++) {
@@ -389,7 +368,7 @@ export class MultiPathExplorer {
           isCyclic: true,
           cycleStart: nodeId,
           cycleNodes: nodeIds.slice(cycleStart, i + 1),
-          cycleLength: i - cycleStart + 1
+          cycleLength: i - cycleStart + 1,
         };
       }
       seen.set(nodeId, i);
@@ -429,7 +408,7 @@ export class MultiPathExplorer {
       pathsFound: 0,
       cyclesDetected: 0,
       avgPathLength: 0,
-      avgPathCost: 0
+      avgPathCost: 0,
     };
   }
 }

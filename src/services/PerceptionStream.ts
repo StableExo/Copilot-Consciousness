@@ -11,39 +11,38 @@ export class PerceptionStream {
   constructor(sensoryMemory: SensoryMemory, temporalFramework: TemporalAwarenessFramework) {
     this.sensoryMemory = sensoryMemory;
     this.temporalFramework = temporalFramework;
-    console.log("PerceptionStream constructed and ready.");
+    console.log('PerceptionStream constructed and ready.');
   }
 
   public initialize() {
-    console.log("Initializing blockchain event listener...");
+    console.log('Initializing blockchain event listener...');
     provider.on('block', this.handleNewBlock.bind(this));
-    console.log("Listener for new blocks is active.");
+    console.log('Listener for new blocks is active.');
   }
 
-// Inside the PerceptionStream class...
+  // Inside the PerceptionStream class...
 
-private async handleNewBlock(blockNumber: number) {
-  try {
-    const block = await provider.getBlock(blockNumber);
-    if (!block) return;
+  private async handleNewBlock(blockNumber: number) {
+    try {
+      const block = await provider.getBlock(blockNumber);
+      if (!block) return;
 
-    // The raw sensory event to be logged.
-    const sensoryEvent = {
-      type: 'NEW_BLOCK',
-      payload: {
-        blockNumber: block.number,
-        timestamp: block.timestamp,
-      }
-    };
+      // The raw sensory event to be logged.
+      const sensoryEvent = {
+        type: 'NEW_BLOCK',
+        payload: {
+          blockNumber: block.number,
+          timestamp: block.timestamp,
+        },
+      };
 
-    // 1. Log the raw perception event in Sensory Memory.
-    this.sensoryMemory.processSensoryInput(sensoryEvent);
+      // 1. Log the raw perception event in Sensory Memory.
+      this.sensoryMemory.processSensoryInput(sensoryEvent);
 
-    // 2. Pass the full block object to the Temporal Framework for memory and analysis.
-    this.temporalFramework.tick(block);
-
-  } catch (error) {
-    console.error(`Error processing block ${blockNumber}:`, error);
+      // 2. Pass the full block object to the Temporal Framework for memory and analysis.
+      this.temporalFramework.tick(block);
+    } catch (error) {
+      console.error(`Error processing block ${blockNumber}:`, error);
+    }
   }
-}
 }

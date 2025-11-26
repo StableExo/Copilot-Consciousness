@@ -69,13 +69,25 @@ describe('MEVAwareProfitCalculator', () => {
 
     it('should have higher MEV risk for front-runnable transactions', () => {
       const arbResult = calculator.calculateProfit(1.0, 0.05, 1.0, TransactionType.ARBITRAGE, 0.5);
-      const frontrunResult = calculator.calculateProfit(1.0, 0.05, 1.0, TransactionType.FRONT_RUNNABLE, 0.5);
+      const frontrunResult = calculator.calculateProfit(
+        1.0,
+        0.05,
+        1.0,
+        TransactionType.FRONT_RUNNABLE,
+        0.5
+      );
       expect(frontrunResult.mevRisk).toBeGreaterThan(arbResult.mevRisk);
     });
 
     it('should have lower MEV risk for liquidity provision', () => {
       const arbResult = calculator.calculateProfit(1.0, 0.05, 1.0, TransactionType.ARBITRAGE, 0.5);
-      const lpResult = calculator.calculateProfit(1.0, 0.05, 1.0, TransactionType.LIQUIDITY_PROVISION, 0.5);
+      const lpResult = calculator.calculateProfit(
+        1.0,
+        0.05,
+        1.0,
+        TransactionType.LIQUIDITY_PROVISION,
+        0.5
+      );
       expect(lpResult.mevRisk).toBeLessThan(arbResult.mevRisk);
     });
 
@@ -131,7 +143,13 @@ describe('MEVAwareProfitCalculator', () => {
 
     it('should calculate negative adjusted profit when MEV risk is high', () => {
       // Create scenario with very high MEV risk
-      const result = calculator.calculateProfit(0.1, 0.08, 0.1, TransactionType.FRONT_RUNNABLE, 0.9);
+      const result = calculator.calculateProfit(
+        0.1,
+        0.08,
+        0.1,
+        TransactionType.FRONT_RUNNABLE,
+        0.9
+      );
       // Gross profit is small (0.02), MEV risk may exceed it
       expect(result.adjustedProfit).toBeLessThan(result.grossProfit);
     });

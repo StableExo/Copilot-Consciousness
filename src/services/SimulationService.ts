@@ -1,9 +1,9 @@
 /**
  * SimulationService - Pre-Send Transaction Simulation
- * 
+ *
  * Adapted from AxionCitadel integration phase 2:
  * Provides pre-send simulation to validate transactions before actual submission.
- * 
+ *
  * Key Features:
  * - Uses contract.callStatic to simulate execution
  * - Validates no revert, positive profit, and gas bounds
@@ -44,7 +44,7 @@ export class SimulationService {
     console.log('[SimulationService] Initialized with config:', {
       requireSimulation: config.requireSimulation,
       maxGasLimit: config.maxGasLimit.toString(),
-      minProfitThresholdEth: config.minProfitThresholdEth
+      minProfitThresholdEth: config.minProfitThresholdEth,
     });
   }
 
@@ -62,7 +62,7 @@ export class SimulationService {
       console.log('[SimulationService] Simulation disabled, skipping');
       return {
         success: true,
-        willRevert: false
+        willRevert: false,
       };
     }
 
@@ -72,13 +72,13 @@ export class SimulationService {
         return {
           success: false,
           willRevert: false,
-          reason: `Expected profit ${params.expectedProfit} ETH below threshold ${this.config.minProfitThresholdEth} ETH`
+          reason: `Expected profit ${params.expectedProfit} ETH below threshold ${this.config.minProfitThresholdEth} ETH`,
         };
       }
 
       // Step 2: Attempt static call simulation
       console.log('[SimulationService] Attempting callStatic simulation...');
-      
+
       let simulationResponse: any;
       try {
         // Use callStatic to simulate the transaction without actually sending it
@@ -88,33 +88,33 @@ export class SimulationService {
         }
 
         // Create timeout promise
-        const timeoutPromise = new Promise((_, reject) => 
+        const timeoutPromise = new Promise((_, reject) =>
           setTimeout(() => reject(new Error('Simulation timeout')), this.config.simulationTimeout)
         );
 
         // Race between simulation and timeout
         simulationResponse = await Promise.race([
           method.staticCall(...params.methodParams),
-          timeoutPromise
+          timeoutPromise,
         ]);
 
         console.log('[SimulationService] Static call succeeded:', simulationResponse);
       } catch (staticCallError: any) {
         console.error('[SimulationService] Static call failed:', staticCallError.message);
-        
+
         // Transaction would revert
         return {
           success: false,
           willRevert: true,
           error: staticCallError.message,
-          reason: `Transaction simulation reverted: ${staticCallError.message}`
+          reason: `Transaction simulation reverted: ${staticCallError.message}`,
         };
       }
 
       // Step 3: Estimate gas for the transaction
       console.log('[SimulationService] Estimating gas...');
       let estimatedGas: bigint;
-      
+
       try {
         const method = params.flashSwapContract[params.methodName];
         estimatedGas = await method.estimateGas(...params.methodParams);
@@ -124,13 +124,15 @@ export class SimulationService {
         // Use provided gas estimate as fallback
         if (params.gasEstimate) {
           estimatedGas = params.gasEstimate;
-          console.log(`[SimulationService] Using provided gas estimate: ${estimatedGas.toString()}`);
+          console.log(
+            `[SimulationService] Using provided gas estimate: ${estimatedGas.toString()}`
+          );
         } else {
           return {
             success: false,
             willRevert: false,
             error: gasError.message,
-            reason: `Gas estimation failed: ${gasError.message}`
+            reason: `Gas estimation failed: ${gasError.message}`,
           };
         }
       }
@@ -141,7 +143,7 @@ export class SimulationService {
           success: false,
           willRevert: false,
           estimatedGas,
-          reason: `Estimated gas ${estimatedGas.toString()} exceeds max limit ${this.config.maxGasLimit.toString()}`
+          reason: `Estimated gas ${estimatedGas.toString()} exceeds max limit ${this.config.maxGasLimit.toString()}`,
         };
       }
 
@@ -153,18 +155,17 @@ export class SimulationService {
       return {
         success: true,
         willRevert: false,
-        estimatedGas
+        estimatedGas,
       };
-
     } catch (error: any) {
       const duration = Date.now() - startTime;
       console.error(`[SimulationService] ✗ Simulation error after ${duration}ms:`, error.message);
-      
+
       return {
         success: false,
         willRevert: false,
         error: error.message,
-        reason: `Simulation error: ${error.message}`
+        reason: `Simulation error: ${error.message}`,
       };
     }
   }

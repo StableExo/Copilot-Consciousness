@@ -1,9 +1,9 @@
 /**
  * Pattern Recognition Engine
- * 
+ *
  * Unified pattern recognition engine that learns from experiences,
  * matches patterns to situations, and evolves strategies over time.
- * 
+ *
  * Features:
  * - Pattern library management
  * - Pattern matching with confidence scoring
@@ -25,7 +25,7 @@ import {
   PatternAnalytics,
   PatternContext,
   Condition,
-  Action
+  Action,
 } from './types/pattern';
 import { Opportunity } from './types/opportunity';
 import { Path } from './types/path';
@@ -43,7 +43,7 @@ export interface PatternRecognitionStats {
 
 /**
  * Pattern Recognition Engine
- * 
+ *
  * Manages pattern library, performs pattern matching, and evolves patterns.
  */
 export class PatternRecognitionEngine {
@@ -51,14 +51,11 @@ export class PatternRecognitionEngine {
   private config: Required<PatternMatchingConfig>;
   private stats: PatternRecognitionStats;
 
-  constructor(
-    initialPatterns: Pattern[] = [],
-    config: Partial<PatternMatchingConfig> = {}
-  ) {
+  constructor(initialPatterns: Pattern[] = [], config: Partial<PatternMatchingConfig> = {}) {
     this.library = {
       patterns: new Map(),
       categories: new Map(),
-      successRates: new Map()
+      successRates: new Map(),
     };
 
     this.config = {
@@ -66,7 +63,7 @@ export class PatternRecognitionEngine {
       maxMatches: config.maxMatches || 10,
       includePartialMatches: config.includePartialMatches !== false,
       weightedScoring: config.weightedScoring !== false,
-      contextWindow: config.contextWindow || 100
+      contextWindow: config.contextWindow || 100,
     };
 
     this.stats = {
@@ -74,11 +71,11 @@ export class PatternRecognitionEngine {
       matchesPerformed: 0,
       successfulMatches: 0,
       patternsEvolved: 0,
-      avgMatchConfidence: 0
+      avgMatchConfidence: 0,
     };
 
     // Add initial patterns
-    initialPatterns.forEach(pattern => this.addPattern(pattern));
+    initialPatterns.forEach((pattern) => this.addPattern(pattern));
   }
 
   /**
@@ -134,9 +131,7 @@ export class PatternRecognitionEngine {
    */
   getPatternsByCategory(category: PatternCategory): Pattern[] {
     const patternIds = this.library.categories.get(category) || [];
-    return patternIds
-      .map(id => this.library.patterns.get(id)!)
-      .filter(p => p);
+    return patternIds.map((id) => this.library.patterns.get(id)!).filter((p) => p);
   }
 
   /**
@@ -147,7 +142,7 @@ export class PatternRecognitionEngine {
 
     for (const pattern of this.library.patterns.values()) {
       const match = this.matchPattern(pattern, context);
-      
+
       if (match && this.meetsConfidenceThreshold(match.confidence)) {
         matches.push(match);
       }
@@ -158,14 +153,14 @@ export class PatternRecognitionEngine {
 
     if (matches.length > 0) {
       const avgConf = this.calculateAverageConfidence(matches);
-      this.stats.avgMatchConfidence = 
+      this.stats.avgMatchConfidence =
         (this.stats.avgMatchConfidence * (this.stats.matchesPerformed - 1) + avgConf) /
         this.stats.matchesPerformed;
     }
 
     // Sort by confidence and limit to maxMatches
-    matches.sort((a, b) => 
-      this.confidenceToNumber(b.confidence) - this.confidenceToNumber(a.confidence)
+    matches.sort(
+      (a, b) => this.confidenceToNumber(b.confidence) - this.confidenceToNumber(a.confidence)
     );
 
     return matches.slice(0, this.config.maxMatches);
@@ -212,7 +207,7 @@ export class PatternRecognitionEngine {
     const engineMinConfidence = this.confidenceToNumber(this.config.minConfidence);
     const patternMinConfidence = this.confidenceToNumber(pattern.requiredConfidence);
     const actualConfidence = this.confidenceToNumber(confidence);
-    
+
     if (actualConfidence < Math.max(engineMinConfidence, patternMinConfidence)) {
       return null;
     }
@@ -224,7 +219,7 @@ export class PatternRecognitionEngine {
       matchedConditions,
       failedConditions,
       context,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
@@ -241,7 +236,7 @@ export class PatternRecognitionEngine {
       const reasoning: string[] = [
         `Pattern '${pattern.name}' matched with ${match.confidence} confidence`,
         `Historical success rate: ${(successRate * 100).toFixed(1)}%`,
-        `${match.matchedConditions.length} conditions satisfied`
+        `${match.matchedConditions.length} conditions satisfied`,
       ];
 
       const risks: string[] = [];
@@ -254,8 +249,8 @@ export class PatternRecognitionEngine {
 
       // Find alternative patterns
       const alternatives = matches
-        .filter(m => m.pattern.id !== pattern.id && m.pattern.category === pattern.category)
-        .map(m => m.pattern)
+        .filter((m) => m.pattern.id !== pattern.id && m.pattern.category === pattern.category)
+        .map((m) => m.pattern)
         .slice(0, 3);
 
       recommendations.push({
@@ -264,7 +259,7 @@ export class PatternRecognitionEngine {
         reasoning,
         expectedOutcome: `Apply ${pattern.actions.length} actions from pattern`,
         risks,
-        alternatives
+        alternatives,
       });
     }
 
@@ -307,7 +302,7 @@ export class PatternRecognitionEngine {
       oldSuccessRate,
       newSuccessRate: pattern.successRate,
       adjustments: improved ? ['Increased success rate'] : ['Decreased success rate'],
-      generation: pattern.generation
+      generation: pattern.generation,
     };
   }
 
@@ -321,7 +316,7 @@ export class PatternRecognitionEngine {
       selectionPressure: config.selectionPressure || 1.5,
       elitismCount: config.elitismCount || 2,
       populationSize: config.populationSize || 20,
-      generations: config.generations || 10
+      generations: config.generations || 10,
     };
 
     // For now, return empty array - full genetic algorithm implementation would be complex
@@ -355,15 +350,15 @@ export class PatternRecognitionEngine {
 
     return {
       id: `composite_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      name: `Composite: ${patterns.map(p => p.name).join(' + ')}`,
+      name: `Composite: ${patterns.map((p) => p.name).join(' + ')}`,
       basePatterns: patterns,
       compositionStrategy: strategy,
       conditions,
       actions,
       metadata: {
         createdAt: new Date(),
-        patternCount: patterns.length
-      }
+        patternCount: patterns.length,
+      },
     };
   }
 
@@ -398,7 +393,7 @@ export class PatternRecognitionEngine {
       successRate,
       avgExecutionTime: 0, // Would track from action executions
       lastUsed: pattern.lastUpdated,
-      trend
+      trend,
     };
   }
 
@@ -406,8 +401,9 @@ export class PatternRecognitionEngine {
    * Check if confidence meets threshold
    */
   private meetsConfidenceThreshold(confidence: MatchConfidence): boolean {
-    return this.confidenceToNumber(confidence) >= 
-           this.confidenceToNumber(this.config.minConfidence);
+    return (
+      this.confidenceToNumber(confidence) >= this.confidenceToNumber(this.config.minConfidence)
+    );
   }
 
   /**
@@ -415,11 +411,16 @@ export class PatternRecognitionEngine {
    */
   private confidenceToNumber(confidence: MatchConfidence): number {
     switch (confidence) {
-      case MatchConfidence.LOW: return 0.25;
-      case MatchConfidence.MEDIUM: return 0.5;
-      case MatchConfidence.HIGH: return 0.75;
-      case MatchConfidence.VERY_HIGH: return 0.9;
-      default: return 0;
+      case MatchConfidence.LOW:
+        return 0.25;
+      case MatchConfidence.MEDIUM:
+        return 0.5;
+      case MatchConfidence.HIGH:
+        return 0.75;
+      case MatchConfidence.VERY_HIGH:
+        return 0.9;
+      default:
+        return 0;
     }
   }
 
@@ -438,8 +439,9 @@ export class PatternRecognitionEngine {
    */
   private calculateAverageConfidence(matches: PatternMatch[]): number {
     if (matches.length === 0) return 0;
-    const sum = matches.reduce((total, match) => 
-      total + this.confidenceToNumber(match.confidence), 0
+    const sum = matches.reduce(
+      (total, match) => total + this.confidenceToNumber(match.confidence),
+      0
     );
     return sum / matches.length;
   }
@@ -456,14 +458,14 @@ export class PatternRecognitionEngine {
    */
   getLibraryInfo(): { totalPatterns: number; byCategory: Record<string, number> } {
     const byCategory: Record<string, number> = {};
-    
+
     for (const [category, patternIds] of this.library.categories) {
       byCategory[category] = patternIds.length;
     }
 
     return {
       totalPatterns: this.library.patterns.size,
-      byCategory
+      byCategory,
     };
   }
 
@@ -476,7 +478,7 @@ export class PatternRecognitionEngine {
       matchesPerformed: 0,
       successfulMatches: 0,
       patternsEvolved: 0,
-      avgMatchConfidence: 0
+      avgMatchConfidence: 0,
     };
   }
 }

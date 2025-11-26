@@ -1,6 +1,6 @@
 /**
  * MEV Module - Main exports
- * 
+ *
  * Provides MEV risk intelligence suite including:
  * - Risk modeling
  * - Real-time sensors

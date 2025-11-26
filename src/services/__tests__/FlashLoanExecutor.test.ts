@@ -1,6 +1,6 @@
 /**
  * FlashLoanExecutor Tests
- * 
+ *
  * Tests for Aave V3 flashloan execution service
  */
 
@@ -107,7 +107,7 @@ describe('FlashLoanExecutor', () => {
         call: jest.fn().mockRejectedValue(new Error('RPC error')),
         estimateGas: jest.fn().mockRejectedValue(new Error('Gas estimation failed')),
       };
-      
+
       const badMockSigner = {
         ...mockSigner,
         provider: badMockProvider,

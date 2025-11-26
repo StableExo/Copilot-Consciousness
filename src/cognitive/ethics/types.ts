@@ -1,6 +1,6 @@
 /**
  * Ethics Engine Types
- * 
+ *
  * Core types for ethical review and decision-making based on the Harmonic Principle
  */
 
@@ -10,10 +10,10 @@
 export interface CorePrinciples {
   'Truth-Maximization': string;
   'Harm-Minimization': string;
-  'Partnership': string;
+  Partnership: string;
   'Radical Transparency': string;
   'Accountability and Self-Correction': string;
-  'Precision': string;
+  Precision: string;
 }
 
 /**

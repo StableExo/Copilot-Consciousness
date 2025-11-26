@@ -1,6 +1,6 @@
 /**
  * PathFinder - Graph-based pathfinding for multi-hop arbitrage
- * 
+ *
  * Uses a Depth-First Search (DFS) algorithm to find profitable arbitrage paths
  * across multiple DEXs and token pairs
  */
@@ -46,20 +46,12 @@ export class PathFinder {
    */
   findArbitragePaths(startToken: string, startAmount: bigint): ArbitragePath[] {
     const paths: ArbitragePath[] = [];
-    
+
     // Use DFS to explore all possible paths up to maxHops
     const visited = new Set<string>();
     const currentPath: ArbitrageHop[] = [];
-    
-    this.explorePaths(
-      startToken,
-      startToken,
-      startAmount,
-      0,
-      currentPath,
-      visited,
-      paths
-    );
+
+    this.explorePaths(startToken, startToken, startAmount, 0, currentPath, visited, paths);
 
     // Sort by net profit descending
     return paths.sort((a, b) => {
@@ -98,7 +90,7 @@ export class PathFinder {
 
       // Calculate output amount considering fees and slippage
       const amountOut = this.calculateSwapOutput(currentAmount, edge);
-      
+
       if (amountOut <= BigInt(0)) {
         continue;
       }
@@ -114,7 +106,7 @@ export class PathFinder {
         fee: edge.fee,
         gasEstimate: edge.gasEstimate,
         reserve0: edge.reserve0,
-        reserve1: edge.reserve1
+        reserve1: edge.reserve1,
       };
 
       currentPath.push(hop);
@@ -124,7 +116,7 @@ export class PathFinder {
       if (edge.tokenOut === startToken && depth > 0) {
         // Calculate total profit
         const path = this.buildArbitragePath(currentPath, startToken);
-        
+
         // Only add if profitable
         if (path.netProfit > this.config.minProfitThreshold) {
           results.push(path);
@@ -154,21 +146,21 @@ export class PathFinder {
   private calculateSwapOutput(amountIn: bigint, edge: PoolEdge): bigint {
     // Using x * y = k formula
     // amountOut = (amountIn * (1 - fee) * reserve1) / (reserve0 + amountIn * (1 - fee))
-    
+
     const feeMultiplier = BigInt(Math.floor((1 - edge.fee) * 10000));
     const amountInWithFee = (amountIn * feeMultiplier) / BigInt(10000);
-    
+
     // Determine which reserve is which based on token addresses
     const reserve0 = edge.reserve0;
     const reserve1 = edge.reserve1;
-    
+
     const numerator = amountInWithFee * reserve1;
     const denominator = reserve0 + amountInWithFee;
-    
+
     if (denominator === BigInt(0)) {
       return BigInt(0);
     }
-    
+
     return numerator / denominator;
   }
 
@@ -179,16 +171,16 @@ export class PathFinder {
     const totalFees = hops.reduce((sum, hop) => sum + hop.fee, 0);
     const totalGas = hops.reduce((sum, hop) => BigInt(hop.gasEstimate), BigInt(0));
     const totalGasCost = totalGas * this.config.gasPrice;
-    
+
     const startAmount = hops[0].amountIn;
     const endAmount = hops[hops.length - 1].amountOut;
-    
+
     const estimatedProfit = endAmount > startAmount ? endAmount - startAmount : BigInt(0);
     const netProfit = estimatedProfit > totalGasCost ? estimatedProfit - totalGasCost : BigInt(0);
-    
+
     // Calculate slippage impact (simplified)
     const slippageImpact = hops.length * 0.001; // 0.1% per hop as estimate
-    
+
     return {
       hops: [...hops],
       startToken,
@@ -197,7 +189,7 @@ export class PathFinder {
       totalGasCost,
       netProfit,
       totalFees,
-      slippageImpact
+      slippageImpact,
     };
   }
 

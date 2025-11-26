@@ -1,6 +1,6 @@
 /**
  * REST API Routes for the Dashboard
- * 
+ *
  * Provides HTTP endpoints for metrics, trades, alerts, and configuration
  */
 
@@ -27,7 +27,7 @@ export function createRoutes(
       status: 'ok',
       timestamp: Date.now(),
       uptime: process.uptime(),
-      connections: wsHandler.getConnectedClientsCount()
+      connections: wsHandler.getConnectedClientsCount(),
     });
   });
 
@@ -41,13 +41,13 @@ export function createRoutes(
       res.json({
         success: true,
         data: metrics,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     } catch (error) {
       console.error('Error fetching metrics:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch metrics'
+        error: 'Failed to fetch metrics',
       });
     }
   });
@@ -60,18 +60,18 @@ export function createRoutes(
     try {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
       const history = metricsAggregator.getMetricsHistory(limit);
-      
+
       res.json({
         success: true,
         data: history,
         count: history.length,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     } catch (error) {
       console.error('Error fetching metrics history:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch metrics history'
+        error: 'Failed to fetch metrics history',
       });
     }
   });
@@ -82,23 +82,26 @@ export function createRoutes(
    */
   router.get('/chart-data', (req: Request, res: Response) => {
     try {
-      const timeRange = req.query.start && req.query.end ? {
-        start: parseInt(req.query.start as string),
-        end: parseInt(req.query.end as string)
-      } : undefined;
+      const timeRange =
+        req.query.start && req.query.end
+          ? {
+              start: parseInt(req.query.start as string),
+              end: parseInt(req.query.end as string),
+            }
+          : undefined;
 
       const chartData = metricsAggregator.getChartData(timeRange);
-      
+
       res.json({
         success: true,
         data: chartData,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     } catch (error) {
       console.error('Error fetching chart data:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch chart data'
+        error: 'Failed to fetch chart data',
       });
     }
   });
@@ -112,18 +115,18 @@ export function createRoutes(
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
       const crossChainAnalytics = metricsAggregator.getCrossChainAnalytics();
       const trades = crossChainAnalytics.getRecentTrades(limit);
-      
+
       res.json({
         success: true,
         data: trades,
         count: trades.length,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     } catch (error) {
       console.error('Error fetching recent trades:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch recent trades'
+        error: 'Failed to fetch recent trades',
       });
     }
   });
@@ -138,7 +141,7 @@ export function createRoutes(
       const metrics = gasAnalytics.getMetrics();
       const bestTimes = gasAnalytics.getBestExecutionTimes();
       const avgByHopCount = gasAnalytics.getAverageGasCostByHopCount();
-      
+
       res.json({
         success: true,
         data: {
@@ -149,24 +152,24 @@ export function createRoutes(
             gasSavingsFromOptimizations: metrics.gasSavingsFromOptimizations.toString(),
             failedTransactionGasWasted: metrics.failedTransactionGasWasted.toString(),
             mostEfficientTimeOfDay: metrics.mostEfficientTimeOfDay,
-            executionSuccessRate: metrics.executionSuccessRate
+            executionSuccessRate: metrics.executionSuccessRate,
           },
-          bestExecutionTimes: bestTimes.map(t => ({
+          bestExecutionTimes: bestTimes.map((t) => ({
             hour: t.hour,
-            avgGasCost: t.avgGasCost.toString()
+            avgGasCost: t.avgGasCost.toString(),
           })),
           averageCostByHopCount: Array.from(avgByHopCount.entries()).map(([hops, cost]) => ({
             hops,
-            cost: cost.toString()
-          }))
+            cost: cost.toString(),
+          })),
         },
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     } catch (error) {
       console.error('Error fetching gas analytics:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch gas analytics'
+        error: 'Failed to fetch gas analytics',
       });
     }
   });
@@ -179,18 +182,18 @@ export function createRoutes(
     try {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
       const alerts = alertSystem.getRecentAlerts(limit);
-      
+
       res.json({
         success: true,
         data: alerts,
         count: alerts.length,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     } catch (error) {
       console.error('Error fetching alerts:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch alerts'
+        error: 'Failed to fetch alerts',
       });
     }
   });
@@ -202,17 +205,17 @@ export function createRoutes(
   router.get('/alerts/stats', (req: Request, res: Response) => {
     try {
       const stats = alertSystem.getAlertStats();
-      
+
       res.json({
         success: true,
         data: stats,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     } catch (error) {
       console.error('Error fetching alert stats:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch alert stats'
+        error: 'Failed to fetch alert stats',
       });
     }
   });
@@ -227,19 +230,19 @@ export function createRoutes(
         type: 'info',
         title: 'Test Alert',
         message: 'This is a test alert from the API',
-        metadata: { source: 'api', timestamp: Date.now() }
+        metadata: { source: 'api', timestamp: Date.now() },
       });
-      
+
       res.json({
         success: true,
         data: alert,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     } catch (error) {
       console.error('Error creating test alert:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to create test alert'
+        error: 'Failed to create test alert',
       });
     }
   });
@@ -251,17 +254,17 @@ export function createRoutes(
   router.get('/performance', (req: Request, res: Response) => {
     try {
       const performance = wsHandler.getPerformanceMetrics();
-      
+
       res.json({
         success: true,
         data: performance,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     } catch (error) {
       console.error('Error fetching performance metrics:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch performance metrics'
+        error: 'Failed to fetch performance metrics',
       });
     }
   });
@@ -274,7 +277,7 @@ export function createRoutes(
     try {
       const crossChainAnalytics = metricsAggregator.getCrossChainAnalytics();
       const summary = crossChainAnalytics.getSummary();
-      
+
       res.json({
         success: true,
         data: {
@@ -287,32 +290,34 @@ export function createRoutes(
           successRate: summary.successRate,
           averageExecutionTime: summary.averageExecutionTime,
           averageBridgeTime: summary.averageBridgeTime,
-          mostProfitableChainPair: summary.mostProfitableChainPair ? {
-            chainA: summary.mostProfitableChainPair.chainA,
-            chainB: summary.mostProfitableChainPair.chainB,
-            totalTrades: summary.mostProfitableChainPair.totalTrades,
-            successfulTrades: summary.mostProfitableChainPair.successfulTrades,
-            totalProfit: summary.mostProfitableChainPair.totalProfit.toString(),
-            averageProfit: summary.mostProfitableChainPair.averageProfit.toString(),
-            averageBridgeTime: summary.mostProfitableChainPair.averageBridgeTime
-          } : null,
-          bridgeStats: summary.bridgeStats.map(bs => ({
+          mostProfitableChainPair: summary.mostProfitableChainPair
+            ? {
+                chainA: summary.mostProfitableChainPair.chainA,
+                chainB: summary.mostProfitableChainPair.chainB,
+                totalTrades: summary.mostProfitableChainPair.totalTrades,
+                successfulTrades: summary.mostProfitableChainPair.successfulTrades,
+                totalProfit: summary.mostProfitableChainPair.totalProfit.toString(),
+                averageProfit: summary.mostProfitableChainPair.averageProfit.toString(),
+                averageBridgeTime: summary.mostProfitableChainPair.averageBridgeTime,
+              }
+            : null,
+          bridgeStats: summary.bridgeStats.map((bs) => ({
             bridgeName: bs.bridgeName,
             totalUses: bs.totalUses,
             successfulBridges: bs.successfulBridges,
             failedBridges: bs.failedBridges,
             successRate: bs.successRate,
             averageTime: bs.averageTime,
-            totalFeesSpent: bs.totalFeesSpent.toString()
-          }))
+            totalFeesSpent: bs.totalFeesSpent.toString(),
+          })),
         },
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     } catch (error) {
       console.error('Error fetching cross-chain summary:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch cross-chain summary'
+        error: 'Failed to fetch cross-chain summary',
       });
     }
   });
@@ -325,25 +330,25 @@ export function createRoutes(
     try {
       const crossChainAnalytics = metricsAggregator.getCrossChainAnalytics();
       const chainPairs = crossChainAnalytics.getAllChainPairStats();
-      
+
       res.json({
         success: true,
-        data: chainPairs.map(cp => ({
+        data: chainPairs.map((cp) => ({
           chainA: cp.chainA,
           chainB: cp.chainB,
           totalTrades: cp.totalTrades,
           successfulTrades: cp.successfulTrades,
           totalProfit: cp.totalProfit.toString(),
           averageProfit: cp.averageProfit.toString(),
-          averageBridgeTime: cp.averageBridgeTime
+          averageBridgeTime: cp.averageBridgeTime,
         })),
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     } catch (error) {
       console.error('Error fetching chain pair stats:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch chain pair stats'
+        error: 'Failed to fetch chain pair stats',
       });
     }
   });

@@ -1,7 +1,7 @@
 /**
  * SearcherDensitySensor - Quantify MEV bot activity density
  * Ported from AxionCitadel's mev_risk_arb/sensors/searcher_density.py
- * 
+ *
  * Calculates a 0-1 density score based on:
  * 1. MEV transaction ratio
  * 2. Sandwich attack indicators (gas price variance)
@@ -49,7 +49,7 @@ export class SearcherDensitySensor {
     // Initialize MEV contract addresses (checksummed)
     const contracts = mevContracts || Object.values(DEFAULT_MEV_CONTRACTS);
     this.mevContracts = new Set();
-    
+
     // Only add valid checksummed addresses
     for (const addr of contracts) {
       try {
@@ -121,9 +121,12 @@ export class SearcherDensitySensor {
 
         for (const txOrHash of block.transactions) {
           // In ethers v6, transactions can be TransactionResponse or string (hash)
-          const tx = typeof txOrHash === 'string' ? await this.provider.getTransaction(txOrHash) : txOrHash as TransactionResponse;
+          const tx =
+            typeof txOrHash === 'string'
+              ? await this.provider.getTransaction(txOrHash)
+              : (txOrHash as TransactionResponse);
           if (!tx) continue;
-          
+
           if (tx.to) {
             try {
               const checksummedTo = getAddress(tx.to);
@@ -163,9 +166,12 @@ export class SearcherDensitySensor {
 
         for (const txOrHash of block.transactions) {
           // In ethers v6, transactions can be TransactionResponse or string (hash)
-          const tx = typeof txOrHash === 'string' ? await this.provider.getTransaction(txOrHash) : txOrHash as TransactionResponse;
+          const tx =
+            typeof txOrHash === 'string'
+              ? await this.provider.getTransaction(txOrHash)
+              : (txOrHash as TransactionResponse);
           if (!tx) continue;
-          
+
           if (tx.gasPrice) {
             gasPrices.push(Number(tx.gasPrice));
           }
@@ -207,10 +213,17 @@ export class SearcherDensitySensor {
 
       const avgGasPrice =
         latestBlock.transactions
-          .map((txOrHash) => typeof txOrHash === 'string' ? null : (txOrHash as TransactionResponse))
+          .map((txOrHash) =>
+            typeof txOrHash === 'string' ? null : (txOrHash as TransactionResponse)
+          )
           .filter((tx): tx is TransactionResponse => tx !== null && tx.gasPrice !== null)
           .reduce((sum, tx) => sum + Number(tx.gasPrice), 0) /
-        Math.max(latestBlock.transactions.filter((txOrHash) => typeof txOrHash !== 'string' && (txOrHash as TransactionResponse).gasPrice).length, 1);
+        Math.max(
+          latestBlock.transactions.filter(
+            (txOrHash) => typeof txOrHash !== 'string' && (txOrHash as TransactionResponse).gasPrice
+          ).length,
+          1
+        );
 
       const highGasThreshold = avgGasPrice * 5; // 5x average
       const botAddresses = new Set<string>();
@@ -226,9 +239,12 @@ export class SearcherDensitySensor {
 
         for (const txOrHash of block.transactions) {
           // In ethers v6, transactions can be TransactionResponse or string (hash)
-          const tx = typeof txOrHash === 'string' ? await this.provider.getTransaction(txOrHash) : txOrHash as TransactionResponse;
+          const tx =
+            typeof txOrHash === 'string'
+              ? await this.provider.getTransaction(txOrHash)
+              : (txOrHash as TransactionResponse);
           if (!tx) continue;
-          
+
           if (tx.from && tx.gasPrice && Number(tx.gasPrice) > highGasThreshold) {
             try {
               const checksummedFrom = getAddress(tx.from);

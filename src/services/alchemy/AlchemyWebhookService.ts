@@ -1,6 +1,6 @@
 /**
  * Alchemy Webhook/Notify Service
- * 
+ *
  * Provides real-time blockchain event monitoring using Alchemy's Notify API.
  * Useful for MEV opportunity detection, address activity monitoring, and
  * transaction confirmation tracking.
@@ -32,26 +32,20 @@ export class AlchemyWebhookService {
   /**
    * Subscribe to address activity via WebSocket
    */
-  async subscribeToAddress(
-    address: string,
-    callback: (event: any) => void
-  ): Promise<void> {
+  async subscribeToAddress(address: string, callback: (event: any) => void): Promise<void> {
     try {
       // Subscribe to all pending transactions
-      this.client.ws.on(
-        'alchemy_pendingTransactions',
-        (tx) => {
-          // Filter for address
-          if (tx.to === address || tx.from === address) {
-            callback({
-              type: 'PENDING_TX',
-              address,
-              transaction: tx,
-              timestamp: Date.now(),
-            });
-          }
+      this.client.ws.on('alchemy_pendingTransactions', (tx) => {
+        // Filter for address
+        if (tx.to === address || tx.from === address) {
+          callback({
+            type: 'PENDING_TX',
+            address,
+            transaction: tx,
+            timestamp: Date.now(),
+          });
         }
-      );
+      });
 
       console.log(`Subscribed to address activity: ${address}`);
     } catch (error) {
@@ -164,10 +158,7 @@ export class AlchemyWebhookService {
   /**
    * Monitor large transactions (potential MEV opportunities)
    */
-  async monitorLargeTransactions(
-    minValueEth: number,
-    callback: (tx: any) => void
-  ): Promise<void> {
+  async monitorLargeTransactions(minValueEth: number, callback: (tx: any) => void): Promise<void> {
     try {
       await this.subscribeToPendingTransactions((tx) => {
         if (tx.value) {

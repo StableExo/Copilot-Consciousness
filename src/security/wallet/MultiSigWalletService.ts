@@ -52,7 +52,7 @@ export class MultiSigWalletService {
     'function getOwners() public view returns (address[])',
     'function execTransaction(address to, uint256 value, bytes calldata data, uint8 operation, uint256 safeTxGas, uint256 baseGas, uint256 gasPrice, address gasToken, address payable refundReceiver, bytes memory signatures) public payable returns (bool)',
     'function approveHash(bytes32 hashToApprove) external',
-    'function nonce() public view returns (uint256)'
+    'function nonce() public view returns (uint256)',
   ];
 
   constructor(config: MultiSigConfig) {
@@ -71,11 +71,7 @@ export class MultiSigWalletService {
     data: string,
     description?: string
   ): Promise<TransactionProposal> {
-    const safe = new ethers.Contract(
-      this.config.safeAddress,
-      this.SAFE_ABI,
-      this.provider
-    );
+    const safe = new ethers.Contract(this.config.safeAddress, this.SAFE_ABI, this.provider);
 
     const nonce = await safe.nonce();
 
@@ -94,7 +90,7 @@ export class MultiSigWalletService {
       signatures: new Map(),
       approvalCount: 0,
       executed: false,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
 
     this.proposals.set(proposal.id, proposal);
@@ -104,10 +100,7 @@ export class MultiSigWalletService {
   /**
    * Sign transaction proposal
    */
-  async signProposal(
-    proposalId: string,
-    signer: ethers.Wallet
-  ): Promise<boolean> {
+  async signProposal(proposalId: string, signer: ethers.Wallet): Promise<boolean> {
     const proposal = this.proposals.get(proposalId);
     if (!proposal) {
       throw new Error('Proposal not found');
@@ -124,7 +117,7 @@ export class MultiSigWalletService {
 
     // Generate transaction hash
     const txHash = await this.getTransactionHash(proposal);
-    
+
     // Sign the hash
     const signature = await signer.signMessage(getBytes(txHash));
 
@@ -152,7 +145,9 @@ export class MultiSigWalletService {
     }
 
     if (proposal.approvalCount < this.config.threshold) {
-      throw new Error(`Insufficient signatures: ${proposal.approvalCount}/${this.config.threshold}`);
+      throw new Error(
+        `Insufficient signatures: ${proposal.approvalCount}/${this.config.threshold}`
+      );
     }
 
     // Check spending limits
@@ -192,17 +187,13 @@ export class MultiSigWalletService {
   /**
    * Set spending limit for token
    */
-  setSpendingLimit(
-    token: string,
-    amount: string,
-    resetPeriod: number
-  ): void {
+  setSpendingLimit(token: string, amount: string, resetPeriod: number): void {
     this.spendingLimits.set(token, {
       token,
       amount,
       resetPeriod,
       spent: '0',
-      lastReset: new Date()
+      lastReset: new Date(),
     });
   }
 
@@ -236,15 +227,11 @@ export class MultiSigWalletService {
    * Get transaction hash for signing
    */
   private async getTransactionHash(proposal: TransactionProposal): Promise<string> {
-    const safe = new ethers.Contract(
-      this.config.safeAddress,
-      this.SAFE_ABI,
-      this.provider
-    );
+    const safe = new ethers.Contract(this.config.safeAddress, this.SAFE_ABI, this.provider);
 
     const domain = {
       verifyingContract: this.config.safeAddress,
-      chainId: this.config.chainId
+      chainId: this.config.chainId,
     };
 
     const types = {
@@ -258,8 +245,8 @@ export class MultiSigWalletService {
         { name: 'gasPrice', type: 'uint256' },
         { name: 'gasToken', type: 'address' },
         { name: 'refundReceiver', type: 'address' },
-        { name: 'nonce', type: 'uint256' }
-      ]
+        { name: 'nonce', type: 'uint256' },
+      ],
     };
 
     const message = {
@@ -272,7 +259,7 @@ export class MultiSigWalletService {
       gasPrice: proposal.gasPrice,
       gasToken: proposal.gasToken,
       refundReceiver: proposal.refundReceiver,
-      nonce: proposal.nonce
+      nonce: proposal.nonce,
     };
 
     return TypedDataEncoder.hash(domain, types, message);
@@ -295,7 +282,7 @@ export class MultiSigWalletService {
    */
   getPendingProposals(): TransactionProposal[] {
     return Array.from(this.proposals.values())
-      .filter(p => !p.executed)
+      .filter((p) => !p.executed)
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
@@ -318,11 +305,7 @@ export class MultiSigWalletService {
    */
   async verifySafeConfig(): Promise<boolean> {
     try {
-      const safe = new ethers.Contract(
-        this.config.safeAddress,
-        this.SAFE_ABI,
-        this.provider
-      );
+      const safe = new ethers.Contract(this.config.safeAddress, this.SAFE_ABI, this.provider);
 
       const threshold = await safe.getThreshold();
       const owners = await safe.getOwners();

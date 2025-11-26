@@ -1,18 +1,18 @@
 /**
  * Warden Bootstrap
- * 
+ *
  * Provides a streamlined bootstrap class for TheWarden that:
  * - Combines initialization from initializer.ts and Phase3Initializer.ts
  * - Encapsulates the startup sequence
  * - Provides clean lifecycle management (start, stop)
- * 
+ *
  * This module consolidates the initialization logic that was previously
  * spread across main.ts to provide a cleaner architecture.
- * 
+ *
  * Usage:
  * ```typescript
  * import { WardenBootstrap } from './core/bootstrap';
- * 
+ *
  * const warden = new WardenBootstrap();
  * await warden.initialize();
  * await warden.start();
@@ -25,18 +25,18 @@ import { EventEmitter } from 'events';
 import { formatEther, parseEther } from 'ethers';
 import { logger } from '../utils/logger';
 import { validateAndLogConfig, ValidatedConfig } from '../utils/configValidator';
-import {
-  initializeComponents,
-  shutdownComponents,
-  InitializedComponents,
-} from './initializer';
+import { initializeComponents, shutdownComponents, InitializedComponents } from './initializer';
 import {
   initializePhase3Components,
   shutdownPhase3Components,
   Phase3Components,
   getPhase3Status,
 } from './Phase3Initializer';
-import { loadPhase3Config, validatePhase3Config, getPhase3ConfigSummary } from '../config/phase3.config';
+import {
+  loadPhase3Config,
+  validatePhase3Config,
+  getPhase3ConfigSummary,
+} from '../config/phase3.config';
 import { ArbitrageConsciousness } from '../consciousness/ArbitrageConsciousness';
 import { CognitiveCoordinator } from '../consciousness/coordination/CognitiveCoordinator';
 import { EmergenceDetector } from '../consciousness/coordination/EmergenceDetector';
@@ -64,7 +64,7 @@ export interface WardenStats {
 
 /**
  * WardenBootstrap - Unified initialization and lifecycle management
- * 
+ *
  * Consolidates all initialization logic into a single class with clear phases:
  * 1. Configuration validation
  * 2. Core component initialization (provider, wallet, orchestrators)
@@ -84,7 +84,7 @@ export class WardenBootstrap extends EventEmitter {
   private scanInterval?: NodeJS.Timeout;
   private isRunning = false;
   private shuttingDown = false;
-  
+
   private stats: WardenStats = {
     startTime: Date.now(),
     cyclesCompleted: 0,
@@ -96,7 +96,7 @@ export class WardenBootstrap extends EventEmitter {
 
   /**
    * Initialize all components
-   * 
+   *
    * This method orchestrates the complete initialization sequence:
    * 1. Validates configuration from environment
    * 2. Initializes core blockchain components
@@ -108,7 +108,7 @@ export class WardenBootstrap extends EventEmitter {
     logger.info('═══════════════════════════════════════════════════════════');
     logger.info('  AEV WARDEN.BOT – BOOTSTRAP INITIALIZING');
     logger.info('═══════════════════════════════════════════════════════════');
-    
+
     try {
       // Phase 1: Configuration Validation
       logger.info('[Bootstrap] Phase 1: Configuration validation...');
@@ -145,7 +145,7 @@ export class WardenBootstrap extends EventEmitter {
       logger.info('═══════════════════════════════════════════════════════════');
       logger.info('[Bootstrap] ✓ All components initialized successfully');
       logger.info('═══════════════════════════════════════════════════════════');
-      
+
       this.emit('initialized');
     } catch (error) {
       logger.error(`[Bootstrap] Initialization failed: ${error}`);
@@ -158,17 +158,17 @@ export class WardenBootstrap extends EventEmitter {
    */
   private async initializePhase3(): Promise<void> {
     const phase3Config = loadPhase3Config();
-    
+
     // Validate Phase 3 configuration
     const validation = validatePhase3Config(phase3Config);
     if (!validation.valid) {
       logger.warn('[Bootstrap] Phase 3 configuration warnings:');
-      validation.errors.forEach(err => logger.warn(`  - ${err}`));
+      validation.errors.forEach((err) => logger.warn(`  - ${err}`));
     }
-    
+
     // Log configuration summary
     logger.info(getPhase3ConfigSummary(phase3Config));
-    
+
     // Initialize Phase 3 components
     this.phase3Components = await initializePhase3Components(
       phase3Config,
@@ -204,7 +204,7 @@ export class WardenBootstrap extends EventEmitter {
     try {
       const gasAnalytics = new GasAnalytics();
       const crossChainAnalytics = new CrossChainAnalytics();
-      
+
       const dashboardConfig: Partial<DashboardConfig> = {
         port: parseInt(process.env.DASHBOARD_PORT || '3000'),
         enableCors: true,
@@ -212,17 +212,17 @@ export class WardenBootstrap extends EventEmitter {
         maxConnections: parseInt(process.env.MAX_CONNECTIONS || '100'),
         alerts: {
           channels: {
-            websocket: true
-          }
-        }
+            websocket: true,
+          },
+        },
       };
-      
+
       this.dashboardServer = new DashboardServer(
         gasAnalytics,
         crossChainAnalytics,
         dashboardConfig
       );
-      
+
       await this.dashboardServer.start();
     } catch (error) {
       logger.warn(`[Bootstrap] Dashboard initialization failed: ${error}`);
@@ -238,7 +238,7 @@ export class WardenBootstrap extends EventEmitter {
       logger.warn('[Bootstrap] Warden is already running');
       return;
     }
-    
+
     if (!this.components || !this.config) {
       throw new Error('[Bootstrap] Components not initialized. Call initialize() first.');
     }
@@ -285,7 +285,7 @@ export class WardenBootstrap extends EventEmitter {
     }
 
     logger.info('[Bootstrap] Running security scan on configuration...');
-    
+
     try {
       const configScan = await this.phase3Components.bloodhoundScanner.scanConfig({
         rpcUrl: this.config.rpcUrl,
@@ -293,16 +293,20 @@ export class WardenBootstrap extends EventEmitter {
         executorAddress: this.config.flashSwapV2Address,
         titheRecipient: this.config.flashSwapV2Owner,
       });
-      
+
       if (configScan.hasSensitiveData) {
-        logger.warn(`[Bootstrap] ⚠️  Found ${configScan.detectedSecrets.length} potential secrets in configuration`);
-        configScan.detectedSecrets.forEach(secret => {
+        logger.warn(
+          `[Bootstrap] ⚠️  Found ${configScan.detectedSecrets.length} potential secrets in configuration`
+        );
+        configScan.detectedSecrets.forEach((secret) => {
           logger.warn(`[Bootstrap]   - ${secret.type}: ${secret.redactedValue}`);
           logger.warn(`[Bootstrap]     Recommendation: ${secret.recommendation}`);
         });
-        
+
         if (configScan.riskLevel === 'critical') {
-          logger.error('[Bootstrap] CRITICAL: Configuration contains secrets that should be moved to environment variables!');
+          logger.error(
+            '[Bootstrap] CRITICAL: Configuration contains secrets that should be moved to environment variables!'
+          );
         }
       } else {
         logger.info('[Bootstrap] ✓ Configuration security scan passed');
@@ -322,7 +326,7 @@ export class WardenBootstrap extends EventEmitter {
       this.stats.cyclesCompleted++;
 
       const tokens = getScanTokens(this.components.config.chainId);
-      
+
       // Log scan details periodically
       if (this.stats.cyclesCompleted === 1 || this.stats.cyclesCompleted % 10 === 0) {
         const networkName = getNetworkName(this.components.config.chainId);
@@ -330,18 +334,23 @@ export class WardenBootstrap extends EventEmitter {
         const dexes = this.components.advancedOrchestrator.getDEXesByNetwork(
           this.components.config.chainId.toString()
         );
-        
+
         logger.info(`[Scan] Cycle ${this.stats.cyclesCompleted} - ${networkName}`);
         logger.info(`[Scan]   Tokens: ${tokens.length} (${Object.keys(chainTokens).join(', ')})`);
-        logger.info(`[Scan]   DEXes: ${dexes.length} (${dexes.map(d => d.name).join(', ')})`);
+        logger.info(`[Scan]   DEXes: ${dexes.length} (${dexes.map((d) => d.name).join(', ')})`);
       }
 
       const startAmount = parseEther('1.0');
-      const paths = await this.components.advancedOrchestrator.findOpportunities(tokens, startAmount);
+      const paths = await this.components.advancedOrchestrator.findOpportunities(
+        tokens,
+        startAmount
+      );
 
       if (paths && paths.length > 0) {
         this.stats.opportunitiesFound += paths.length;
-        logger.info(`[Scan] Found ${paths.length} opportunities in cycle ${this.stats.cyclesCompleted}`);
+        logger.info(
+          `[Scan] Found ${paths.length} opportunities in cycle ${this.stats.cyclesCompleted}`
+        );
 
         // Process opportunities
         await this.processOpportunities(paths);
@@ -459,10 +468,18 @@ export class WardenBootstrap extends EventEmitter {
       if (phase3Status.ai.enabled) {
         logger.info('AI Components: ENABLED');
         if (phase3Status.ai.rlAgent) {
-          logger.info(`  RL Agent: ${phase3Status.ai.rlAgent.episodeCount} episodes, ${phase3Status.ai.rlAgent.totalReward?.toFixed(2) || 0} total reward`);
+          logger.info(
+            `  RL Agent: ${phase3Status.ai.rlAgent.episodeCount} episodes, ${
+              phase3Status.ai.rlAgent.totalReward?.toFixed(2) || 0
+            } total reward`
+          );
         }
         if (phase3Status.ai.nnScorer) {
-          logger.info(`  NN Scorer: ${phase3Status.ai.nnScorer.trainingExamples} examples, ${((phase3Status.ai.nnScorer.accuracy || 0) * 100).toFixed(1)}% accuracy`);
+          logger.info(
+            `  NN Scorer: ${phase3Status.ai.nnScorer.trainingExamples} examples, ${(
+              (phase3Status.ai.nnScorer.accuracy || 0) * 100
+            ).toFixed(1)}% accuracy`
+          );
         }
       }
 

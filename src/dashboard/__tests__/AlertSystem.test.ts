@@ -16,8 +16,8 @@ describe('AlertSystem', () => {
       gasThreshold: 0.1,
       successRateThreshold: 90,
       channels: {
-        websocket: true
-      }
+        websocket: true,
+      },
     };
     alertSystem = new AlertSystem(config);
   });
@@ -27,7 +27,7 @@ describe('AlertSystem', () => {
       const alert = alertSystem.createAlert({
         type: 'info',
         title: 'Test Alert',
-        message: 'This is a test'
+        message: 'This is a test',
       });
 
       expect(alert).toBeDefined();
@@ -47,7 +47,7 @@ describe('AlertSystem', () => {
       alertSystem.createAlert({
         type: 'success',
         title: 'Test Event',
-        message: 'Event test'
+        message: 'Event test',
       });
     });
   });
@@ -60,7 +60,7 @@ describe('AlertSystem', () => {
         failedTrades: 1,
         successRate: 90,
         totalProfit: '100000000000000000', // 0.1 ETH
-        totalLoss: '50000000000000000',   // 0.05 ETH
+        totalLoss: '50000000000000000', // 0.05 ETH
         netProfit: '50000000000000000',
         roi: 5.0,
         sharpeRatio: 1.5,
@@ -70,7 +70,7 @@ describe('AlertSystem', () => {
         uptime: 3600000,
         latency: 10,
         memoryUsage: 100,
-        errorRate: 0.1
+        errorRate: 0.1,
       };
 
       const initialAlerts = alertSystem.getRecentAlerts();
@@ -97,14 +97,14 @@ describe('AlertSystem', () => {
         uptime: 3600000,
         latency: 10,
         memoryUsage: 100,
-        errorRate: 0
+        errorRate: 0,
       };
 
       alertSystem.checkMetrics(metrics);
       const alerts = alertSystem.getRecentAlerts();
 
       expect(alerts.length).toBeGreaterThan(0);
-      const profitAlert = alerts.find(a => a.title.includes('Profit'));
+      const profitAlert = alerts.find((a) => a.title.includes('Profit'));
       expect(profitAlert).toBeDefined();
     });
   });
@@ -114,13 +114,13 @@ describe('AlertSystem', () => {
       alertSystem.createAlert({
         type: 'info',
         title: 'First',
-        message: 'First alert'
+        message: 'First alert',
       });
 
       alertSystem.createAlert({
         type: 'warning',
         title: 'Second',
-        message: 'Second alert'
+        message: 'Second alert',
       });
 
       const alerts = alertSystem.getRecentAlerts(10);
@@ -134,7 +134,7 @@ describe('AlertSystem', () => {
         alertSystem.createAlert({
           type: 'info',
           title: `Alert ${i}`,
-          message: `Message ${i}`
+          message: `Message ${i}`,
         });
       }
 
@@ -148,13 +148,13 @@ describe('AlertSystem', () => {
       alertSystem.createAlert({
         type: 'error',
         title: 'Error Alert',
-        message: 'An error occurred'
+        message: 'An error occurred',
       });
 
       alertSystem.createAlert({
         type: 'info',
         title: 'Info Alert',
-        message: 'Information'
+        message: 'Information',
       });
 
       const errorAlerts = alertSystem.getAlertsByType('error');
@@ -168,13 +168,13 @@ describe('AlertSystem', () => {
       alertSystem.createAlert({
         type: 'error',
         title: 'Error',
-        message: 'Error'
+        message: 'Error',
       });
 
       alertSystem.createAlert({
         type: 'warning',
         title: 'Warning',
-        message: 'Warning'
+        message: 'Warning',
       });
 
       const stats = alertSystem.getAlertStats();
@@ -192,7 +192,7 @@ describe('AlertSystem', () => {
       alertSystem.createAlert({
         type: 'info',
         title: 'Test',
-        message: 'Test'
+        message: 'Test',
       });
 
       expect(alertSystem.getRecentAlerts().length).toBeGreaterThan(0);
@@ -205,7 +205,7 @@ describe('AlertSystem', () => {
   describe('updateConfig', () => {
     it('should update alert configuration', () => {
       alertSystem.updateConfig({
-        profitThreshold: 5.0
+        profitThreshold: 5.0,
       });
 
       // Configuration is updated internally

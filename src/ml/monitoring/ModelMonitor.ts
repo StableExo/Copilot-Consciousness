@@ -1,6 +1,6 @@
 /**
  * ModelMonitor - Production ML system monitoring
- * 
+ *
  * Tracks prediction accuracy, model drift, latency, error rates,
  * and triggers alerts when performance degrades.
  */
@@ -95,11 +95,7 @@ export class ModelMonitor extends EventEmitter {
   /**
    * Record a prediction
    */
-  recordPrediction(
-    prediction: MLPredictions,
-    path: ArbitragePath,
-    latencyMs: number
-  ): void {
+  recordPrediction(prediction: MLPredictions, path: ArbitragePath, latencyMs: number): void {
     const record: PredictionRecord = {
       timestamp: Date.now(),
       prediction,
@@ -119,14 +115,10 @@ export class ModelMonitor extends EventEmitter {
   /**
    * Record actual outcome for a prediction
    */
-  recordOutcome(
-    predictionTimestamp: number,
-    successful: boolean,
-    profit: bigint
-  ): void {
+  recordOutcome(predictionTimestamp: number, successful: boolean, profit: bigint): void {
     // Find matching prediction
     const prediction = this.predictions.find(
-      p => Math.abs(p.timestamp - predictionTimestamp) < 10000 // Within 10 seconds
+      (p) => Math.abs(p.timestamp - predictionTimestamp) < 10000 // Within 10 seconds
     );
 
     if (prediction) {
@@ -221,7 +213,7 @@ export class ModelMonitor extends EventEmitter {
    * Check prediction accuracy
    */
   private checkAccuracy(): void {
-    const predictionsWithActual = this.predictions.filter(p => p.actual !== undefined);
+    const predictionsWithActual = this.predictions.filter((p) => p.actual !== undefined);
 
     if (predictionsWithActual.length < 10) {
       return; // Not enough data
@@ -232,7 +224,7 @@ export class ModelMonitor extends EventEmitter {
     for (const pred of predictionsWithActual) {
       const predictedSuccess = pred.prediction.successProbability > 0.5;
       const actualSuccess = pred.actual!.successful;
-      
+
       if (predictedSuccess === actualSuccess) {
         correct++;
       }
@@ -244,7 +236,9 @@ export class ModelMonitor extends EventEmitter {
       this.createAlert(
         'warning',
         'accuracy_drop',
-        `Model accuracy (${(accuracy * 100).toFixed(1)}%) below threshold (${(this.config.accuracyThreshold * 100).toFixed(1)}%)`,
+        `Model accuracy (${(accuracy * 100).toFixed(1)}%) below threshold (${(
+          this.config.accuracyThreshold * 100
+        ).toFixed(1)}%)`,
         { accuracy, threshold: this.config.accuracyThreshold }
       );
     }
@@ -259,16 +253,19 @@ export class ModelMonitor extends EventEmitter {
     }
 
     const recentPredictions = this.predictions.slice(-100);
-    const avgLatency = recentPredictions.reduce((sum, p) => sum + p.latencyMs, 0) / recentPredictions.length;
-    const p95Latency = recentPredictions
-      .map(p => p.latencyMs)
-      .sort((a, b) => a - b)[Math.floor(recentPredictions.length * 0.95)];
+    const avgLatency =
+      recentPredictions.reduce((sum, p) => sum + p.latencyMs, 0) / recentPredictions.length;
+    const p95Latency = recentPredictions.map((p) => p.latencyMs).sort((a, b) => a - b)[
+      Math.floor(recentPredictions.length * 0.95)
+    ];
 
     if (avgLatency > this.config.latencyThreshold) {
       this.createAlert(
         'warning',
         'latency_high',
-        `Average latency (${avgLatency.toFixed(1)}ms) exceeds threshold (${this.config.latencyThreshold}ms)`,
+        `Average latency (${avgLatency.toFixed(1)}ms) exceeds threshold (${
+          this.config.latencyThreshold
+        }ms)`,
         { avgLatency, p95Latency, threshold: this.config.latencyThreshold }
       );
     }
@@ -282,14 +279,16 @@ export class ModelMonitor extends EventEmitter {
       return;
     }
 
-    const errorCount = this.predictions.filter(p => p.error !== undefined).length;
+    const errorCount = this.predictions.filter((p) => p.error !== undefined).length;
     const errorRate = errorCount / this.predictions.length;
 
     if (errorRate > this.config.errorRateThreshold) {
       this.createAlert(
         'error',
         'latency_high',
-        `Error rate (${(errorRate * 100).toFixed(1)}%) exceeds threshold (${(this.config.errorRateThreshold * 100).toFixed(1)}%)`,
+        `Error rate (${(errorRate * 100).toFixed(1)}%) exceeds threshold (${(
+          this.config.errorRateThreshold * 100
+        ).toFixed(1)}%)`,
         { errorRate, errorCount, totalPredictions: this.predictions.length }
       );
     }
@@ -326,7 +325,7 @@ export class ModelMonitor extends EventEmitter {
    * Record performance metrics
    */
   private recordPerformanceMetrics(): void {
-    const predictionsWithActual = this.predictions.filter(p => p.actual !== undefined);
+    const predictionsWithActual = this.predictions.filter((p) => p.actual !== undefined);
 
     if (predictionsWithActual.length < 10) {
       return;
@@ -349,17 +348,14 @@ export class ModelMonitor extends EventEmitter {
     }
 
     const accuracy = (truePositives + trueNegatives) / predictionsWithActual.length;
-    const precision = truePositives + falsePositives > 0 
-      ? truePositives / (truePositives + falsePositives)
-      : 0;
-    const recall = truePositives + falseNegatives > 0
-      ? truePositives / (truePositives + falseNegatives)
-      : 0;
-    const f1Score = precision + recall > 0
-      ? 2 * (precision * recall) / (precision + recall)
-      : 0;
+    const precision =
+      truePositives + falsePositives > 0 ? truePositives / (truePositives + falsePositives) : 0;
+    const recall =
+      truePositives + falseNegatives > 0 ? truePositives / (truePositives + falseNegatives) : 0;
+    const f1Score = precision + recall > 0 ? (2 * (precision * recall)) / (precision + recall) : 0;
 
-    const avgLatency = this.predictions.slice(-100).reduce((sum, p) => sum + p.latencyMs, 0) / 
+    const avgLatency =
+      this.predictions.slice(-100).reduce((sum, p) => sum + p.latencyMs, 0) /
       Math.min(100, this.predictions.length);
 
     const performance: ModelPerformance = {
@@ -430,10 +426,11 @@ export class ModelMonitor extends EventEmitter {
    */
   getStats() {
     const recentPredictions = this.predictions.slice(-100);
-    const errorCount = recentPredictions.filter(p => p.error !== undefined).length;
-    const avgLatency = recentPredictions.length > 0
-      ? recentPredictions.reduce((sum, p) => sum + p.latencyMs, 0) / recentPredictions.length
-      : 0;
+    const errorCount = recentPredictions.filter((p) => p.error !== undefined).length;
+    const avgLatency =
+      recentPredictions.length > 0
+        ? recentPredictions.reduce((sum, p) => sum + p.latencyMs, 0) / recentPredictions.length
+        : 0;
 
     return {
       isMonitoring: this.isMonitoring,
@@ -464,8 +461,8 @@ export class ModelMonitor extends EventEmitter {
     const issues: string[] = [];
 
     // Check recent alerts
-    const recentAlerts = this.alerts.filter(a => Date.now() - a.timestamp < 3600000); // Last hour
-    const criticalAlerts = recentAlerts.filter(a => a.severity === 'error');
+    const recentAlerts = this.alerts.filter((a) => Date.now() - a.timestamp < 3600000); // Last hour
+    const criticalAlerts = recentAlerts.filter((a) => a.severity === 'error');
 
     if (criticalAlerts.length > 0) {
       issues.push(`${criticalAlerts.length} critical alerts in the last hour`);

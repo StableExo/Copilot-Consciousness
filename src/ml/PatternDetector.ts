@@ -1,6 +1,6 @@
 /**
  * PatternDetector - Detect recurring profitable patterns
- * 
+ *
  * Uses clustering and statistical analysis to identify time-based patterns,
  * chain patterns, sequence patterns, and opportunity clusters.
  */
@@ -47,7 +47,7 @@ export class PatternDetector {
 
     // Keep only recent data (last 30 days)
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-    this.trainingData = this.trainingData.filter(r => r.timestamp > thirtyDaysAgo);
+    this.trainingData = this.trainingData.filter((r) => r.timestamp > thirtyDaysAgo);
   }
 
   /**
@@ -78,7 +78,7 @@ export class PatternDetector {
     }
 
     this.stats.totalPatterns = this.patterns.size;
-    this.stats.activePatterns = detectedPatterns.filter(p => p.confidence > 0.6).length;
+    this.stats.activePatterns = detectedPatterns.filter((p) => p.confidence > 0.6).length;
     this.stats.lastDetectionTime = Date.now();
 
     return detectedPatterns;
@@ -96,7 +96,7 @@ export class PatternDetector {
 
     // Group by hour of day
     const hourlyProfits = new Map<number, { total: number; count: number; profits: number[] }>();
-    
+
     for (const record of this.trainingData) {
       if (!record.outcome.successful) continue;
 
@@ -119,10 +119,12 @@ export class PatternDetector {
       if (data.count < 5) continue; // Need at least 5 samples
 
       const avgProfit = data.total / data.count;
-      const successRate = data.count / this.trainingData.filter(r => {
-        const h = new Date(r.timestamp).getUTCHours();
-        return h === hour;
-      }).length;
+      const successRate =
+        data.count /
+        this.trainingData.filter((r) => {
+          const h = new Date(r.timestamp).getUTCHours();
+          return h === hour;
+        }).length;
 
       if (successRate > 0.7 && avgProfit > 0) {
         patterns.push({
@@ -140,7 +142,7 @@ export class PatternDetector {
 
     // Group by day of week
     const dailyProfits = new Map<number, { total: number; count: number }>();
-    
+
     for (const record of this.trainingData) {
       if (!record.outcome.successful) continue;
 
@@ -162,13 +164,23 @@ export class PatternDetector {
       if (data.count < 10) continue;
 
       const avgProfit = data.total / data.count;
-      const successRate = data.count / this.trainingData.filter(r => {
-        const d = new Date(r.timestamp).getUTCDay();
-        return d === day;
-      }).length;
+      const successRate =
+        data.count /
+        this.trainingData.filter((r) => {
+          const d = new Date(r.timestamp).getUTCDay();
+          return d === day;
+        }).length;
 
       if (successRate > 0.7 && avgProfit > 0) {
-        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayNames = [
+          'Sunday',
+          'Monday',
+          'Tuesday',
+          'Wednesday',
+          'Thursday',
+          'Friday',
+          'Saturday',
+        ];
         patterns.push({
           id: `time-day-${day}`,
           type: 'time',
@@ -212,7 +224,7 @@ export class PatternDetector {
     }
 
     // Extract features for clustering
-    const points: ClusterPoint[] = this.trainingData.map(record => ({
+    const points: ClusterPoint[] = this.trainingData.map((record) => ({
       features: [
         record.path.hops.length,
         record.path.totalFees,
@@ -235,7 +247,7 @@ export class PatternDetector {
       const cluster = clusters[i];
       if (cluster.length < 10) continue;
 
-      const profitable = cluster.filter(p => p.profitable);
+      const profitable = cluster.filter((p) => p.profitable);
       const successRate = profitable.length / cluster.length;
 
       if (successRate > 0.75) {
@@ -245,7 +257,9 @@ export class PatternDetector {
         patterns.push({
           id: `cluster-${i}`,
           type: 'cluster',
-          description: `Cluster ${i}: ${cluster.length} opportunities, ${(successRate * 100).toFixed(1)}% success`,
+          description: `Cluster ${i}: ${cluster.length} opportunities, ${(
+            successRate * 100
+          ).toFixed(1)}% success`,
           confidence: Math.min(successRate, 0.95),
           historicalProfitability: avgProfit,
           conditions: {
@@ -291,7 +305,7 @@ export class PatternDetector {
       }
     }
 
-    return centroid.map(sum => sum / cluster.length);
+    return centroid.map((sum) => sum / cluster.length);
   }
 
   /**
@@ -339,7 +353,7 @@ export class PatternDetector {
     // Check token conditions
     if (conditions.tokens) {
       const pathTokens = new Set([path.startToken, path.endToken]);
-      const hasMatchingToken = conditions.tokens.some(token => pathTokens.has(token));
+      const hasMatchingToken = conditions.tokens.some((token) => pathTokens.has(token));
       if (!hasMatchingToken) {
         return false;
       }
@@ -366,7 +380,7 @@ export class PatternDetector {
    * Get high-confidence patterns
    */
   getHighConfidencePatterns(minConfidence: number = 0.7): Pattern[] {
-    return Array.from(this.patterns.values()).filter(p => p.confidence >= minConfidence);
+    return Array.from(this.patterns.values()).filter((p) => p.confidence >= minConfidence);
   }
 
   /**

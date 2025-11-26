@@ -1,31 +1,31 @@
 /**
  * OptimizedPoolScanner - High-performance pool detection with RPC batching
- * 
+ *
  * Performance improvements over MultiHopDataFetcher:
  * 1. Multicall batching: Combine multiple RPC calls into single requests
  * 2. Parallel V3 fee tier checking: Check all fee tiers simultaneously
  * 3. Optimized caching: Single object with embedded timestamp
  * 4. Reduced provider.getCode() calls: Batch pool existence checks
  * 5. Smart filtering: Skip invalid token pairs early
- * 
+ *
  * Expected performance: 60+ pool scan in under 10 seconds (down from 60+ seconds)
  */
 
-import { Contract, Interface, Provider, ZeroAddress, getCreate2Address, keccak256, solidityPacked } from 'ethers';
+import {
+  Contract,
+  Interface,
+  Provider,
+  ZeroAddress,
+  getCreate2Address,
+  keccak256,
+  solidityPacked,
+} from 'ethers';
 import { DEXRegistry } from '../dex/core/DEXRegistry';
 import { DEXConfig } from '../dex/types';
 import { PoolEdge } from './types';
 import { logger } from '../utils/logger';
-import { 
-  UNISWAP_V3_FEE_TIERS, 
-  V3_LIQUIDITY_SCALE_FACTOR, 
-  isV3StyleProtocol 
-} from './constants';
-import { 
-  MulticallBatcher, 
-  MulticallRequest,
-  batchFetchPoolData 
-} from '../utils/MulticallBatcher';
+import { UNISWAP_V3_FEE_TIERS, V3_LIQUIDITY_SCALE_FACTOR, isV3StyleProtocol } from './constants';
+import { MulticallBatcher, MulticallRequest, batchFetchPoolData } from '../utils/MulticallBatcher';
 
 /**
  * Cached pool data with embedded timestamp
@@ -56,11 +56,7 @@ export class OptimizedPoolScanner {
   private currentChainId?: number;
   private multicallBatcher?: MulticallBatcher;
 
-  constructor(
-    registry: DEXRegistry,
-    provider: Provider,
-    chainId?: number
-  ) {
+  constructor(registry: DEXRegistry, provider: Provider, chainId?: number) {
     this.registry = registry;
     this.provider = provider;
     this.poolCache = new Map();
@@ -82,7 +78,10 @@ export class OptimizedPoolScanner {
       this.multicallBatcher = new MulticallBatcher(this.provider);
       const available = await this.multicallBatcher.isAvailable();
       if (!available) {
-        logger.warn('Multicall3 not available on this network, falling back to individual calls', 'POOLSCAN');
+        logger.warn(
+          'Multicall3 not available on this network, falling back to individual calls',
+          'POOLSCAN'
+        );
         return null;
       }
     }
@@ -102,19 +101,18 @@ export class OptimizedPoolScanner {
     const discoveries: V3PoolDiscovery[] = [];
 
     // Sort tokens for consistent ordering
-    const [tokenA, tokenB] = token0.toLowerCase() < token1.toLowerCase() 
-      ? [token0, token1] 
-      : [token1, token0];
+    const [tokenA, tokenB] =
+      token0.toLowerCase() < token1.toLowerCase() ? [token0, token1] : [token1, token0];
 
     const factoryInterface = new Interface([
-      'function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)'
+      'function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)',
     ]);
 
     if (!batcher) {
       // Fallback: Check fee tiers sequentially
       logger.warn(
         `Multicall3 not available on chain ${this.currentChainId || 'unknown'}. ` +
-        `Falling back to sequential RPC calls (slower performance expected).`,
+          `Falling back to sequential RPC calls (slower performance expected).`,
         'POOLSCAN'
       );
       const factoryContract = new Contract(factory, factoryInterface, this.provider);
@@ -126,7 +124,7 @@ export class OptimizedPoolScanner {
             discoveries.push({
               address: poolAddress,
               fee,
-              exists: code !== '0x'
+              exists: code !== '0x',
             });
           }
         } catch {
@@ -151,7 +149,10 @@ export class OptimizedPoolScanner {
       const result = results[i];
       if (result.success) {
         try {
-          const poolAddress = factoryInterface.decodeFunctionResult('getPool', result.returnData)[0];
+          const poolAddress = factoryInterface.decodeFunctionResult(
+            'getPool',
+            result.returnData
+          )[0];
           if (poolAddress && poolAddress !== ZeroAddress) {
             poolsToCheck.push({ address: poolAddress, fee: UNISWAP_V3_FEE_TIERS[i] });
           }
@@ -163,9 +164,7 @@ export class OptimizedPoolScanner {
 
     // Batch pool existence checks
     if (poolsToCheck.length > 0) {
-      const poolInterface = new Interface([
-        'function token0() external view returns (address)',
-      ]);
+      const poolInterface = new Interface(['function token0() external view returns (address)']);
 
       const existenceCalls: MulticallRequest[] = poolsToCheck.map(({ address }) => ({
         target: address,
@@ -184,7 +183,7 @@ export class OptimizedPoolScanner {
       }
     }
 
-    return discoveries.filter(d => d.exists);
+    return discoveries.filter((d) => d.exists);
   }
 
   /**
@@ -194,29 +193,41 @@ export class OptimizedPoolScanner {
   async buildGraphEdges(tokens: string[]): Promise<PoolEdge[]> {
     const startTime = Date.now();
     const edges: PoolEdge[] = [];
-    
+
     // Get DEXes - filter by current chain if set
     let dexes = this.registry.getAllDEXes();
     if (this.currentChainId !== undefined) {
       const chainIdStr = this.currentChainId.toString();
       dexes = this.registry.getDEXesByNetwork(chainIdStr);
-      logger.debug(`Filtering DEXes for chain ${this.currentChainId}: Found ${dexes.length} DEXes`, 'POOLSCAN');
+      logger.debug(
+        `Filtering DEXes for chain ${this.currentChainId}: Found ${dexes.length} DEXes`,
+        'POOLSCAN'
+      );
     }
-    
+
     if (dexes.length === 0) {
       logger.warn(`No DEXes found for chain ${this.currentChainId}`, 'POOLSCAN');
       return edges;
     }
 
-    logger.info(`Starting optimized pool scan: ${tokens.length} tokens across ${dexes.length} DEXes`, 'POOLSCAN');
-    logger.info(`DEXes to scan: ${dexes.map(d => d.name).join(', ')}`, 'POOLSCAN');
+    logger.info(
+      `Starting optimized pool scan: ${tokens.length} tokens across ${dexes.length} DEXes`,
+      'POOLSCAN'
+    );
+    logger.info(`DEXes to scan: ${dexes.map((d) => d.name).join(', ')}`, 'POOLSCAN');
 
     // Group DEXes by protocol type for optimized processing
-    const v3Dexes = dexes.filter(dex => isV3StyleProtocol(dex.protocol));
-    const v2Dexes = dexes.filter(dex => !isV3StyleProtocol(dex.protocol));
+    const v3Dexes = dexes.filter((dex) => isV3StyleProtocol(dex.protocol));
+    const v2Dexes = dexes.filter((dex) => !isV3StyleProtocol(dex.protocol));
 
-    logger.info(`V3-style DEXes (${v3Dexes.length}): ${v3Dexes.map(d => d.name).join(', ')}`, 'POOLSCAN');
-    logger.info(`V2-style DEXes (${v2Dexes.length}): ${v2Dexes.map(d => d.name).join(', ')}`, 'POOLSCAN');
+    logger.info(
+      `V3-style DEXes (${v3Dexes.length}): ${v3Dexes.map((d) => d.name).join(', ')}`,
+      'POOLSCAN'
+    );
+    logger.info(
+      `V2-style DEXes (${v2Dexes.length}): ${v2Dexes.map((d) => d.name).join(', ')}`,
+      'POOLSCAN'
+    );
 
     let poolsChecked = 0;
     let poolsFound = 0;
@@ -232,7 +243,7 @@ export class OptimizedPoolScanner {
     for (const dex of v3Dexes) {
       logger.info(`Scanning V3 DEX: ${dex.name}`, 'POOLSCAN');
       const dexStat = dexStats.get(dex.name)!;
-      
+
       for (let i = 0; i < tokens.length; i++) {
         for (let j = i + 1; j < tokens.length; j++) {
           const token0 = tokens[i];
@@ -293,22 +304,26 @@ export class OptimizedPoolScanner {
 
               const meetsThreshold = this.meetsLiquidityThreshold(poolData.reserve0, dex, true);
               const threshold = dex.liquidityThreshold / BigInt(V3_LIQUIDITY_SCALE_FACTOR);
-              
+
               if (meetsThreshold) {
                 poolsFound++;
                 dexStat.found++;
                 edges.push(this.createEdge(poolData, dex, token0, token1));
                 edges.push(this.createEdge(poolData, dex, token1, token0));
                 this.updateTokenPairStats(tokenPairStats, pairKey, dex.name);
-                
+
                 logger.debug(
-                  `✓ ${dex.name} ${pairKey}: ACCEPTED - fee=${discovery.fee/10000}% liquidity=${poolData.reserve0} (threshold=${threshold})`,
+                  `✓ ${dex.name} ${pairKey}: ACCEPTED - fee=${discovery.fee / 10000}% liquidity=${
+                    poolData.reserve0
+                  } (threshold=${threshold})`,
                   'POOLSCAN'
                 );
               } else {
                 dexStat.filtered++;
                 logger.debug(
-                  `✗ ${dex.name} ${pairKey}: FILTERED - fee=${discovery.fee/10000}% liquidity=${poolData.reserve0} < threshold=${threshold}`,
+                  `✗ ${dex.name} ${pairKey}: FILTERED - fee=${discovery.fee / 10000}% liquidity=${
+                    poolData.reserve0
+                  } < threshold=${threshold}`,
                   'POOLSCAN'
                 );
               }
@@ -328,35 +343,42 @@ export class OptimizedPoolScanner {
     }
 
     const duration = Date.now() - startTime;
-    
+
     // Summary logging
     logger.info('=== POOL SCAN SUMMARY ===', 'POOLSCAN');
     logger.info(
       `Total: Checked ${poolsChecked} potential pools, found ${poolsFound} valid pools ` +
-      `in ${(duration / 1000).toFixed(2)}s (${((duration / poolsChecked) / 1000).toFixed(3)}s/pool)`,
+        `in ${(duration / 1000).toFixed(2)}s (${(duration / poolsChecked / 1000).toFixed(
+          3
+        )}s/pool)`,
       'POOLSCAN'
     );
-    
+
     // Per-DEX statistics
     logger.info('=== PER-DEX STATISTICS ===', 'POOLSCAN');
     for (const [dexName, stats] of dexStats.entries()) {
       if (stats.checked > 0) {
         logger.info(
           `${dexName}: Checked=${stats.checked}, Found=${stats.found}, Filtered=${stats.filtered} ` +
-          `(${stats.found > 0 ? ((stats.found / stats.checked) * 100).toFixed(1) : '0'}% success rate)`,
+            `(${
+              stats.found > 0 ? ((stats.found / stats.checked) * 100).toFixed(1) : '0'
+            }% success rate)`,
           'POOLSCAN'
         );
       }
     }
-    
+
     // Token pair statistics - showing which pairs have multiple pools
     logger.info('=== TOKEN PAIR STATISTICS ===', 'POOLSCAN');
     const multiPoolPairs = Array.from(tokenPairStats.entries())
       .filter(([_, stats]) => stats.poolsFound > 1)
       .sort((a, b) => b[1].poolsFound - a[1].poolsFound);
-    
+
     if (multiPoolPairs.length > 0) {
-      logger.info(`Found ${multiPoolPairs.length} token pairs with 2+ pools (arbitrage opportunities):`, 'POOLSCAN');
+      logger.info(
+        `Found ${multiPoolPairs.length} token pairs with 2+ pools (arbitrage opportunities):`,
+        'POOLSCAN'
+      );
       for (const [pair, stats] of multiPoolPairs) {
         logger.info(
           `  ${pair}: ${stats.poolsFound} pools on [${stats.dexes.join(', ')}]`,
@@ -364,15 +386,22 @@ export class OptimizedPoolScanner {
         );
       }
     } else {
-      logger.warn('⚠️  NO TOKEN PAIRS WITH MULTIPLE POOLS FOUND - Arbitrage requires 2+ pools per pair', 'POOLSCAN');
+      logger.warn(
+        '⚠️  NO TOKEN PAIRS WITH MULTIPLE POOLS FOUND - Arbitrage requires 2+ pools per pair',
+        'POOLSCAN'
+      );
     }
-    
-    const singlePoolPairs = Array.from(tokenPairStats.entries())
-      .filter(([_, stats]) => stats.poolsFound === 1);
+
+    const singlePoolPairs = Array.from(tokenPairStats.entries()).filter(
+      ([_, stats]) => stats.poolsFound === 1
+    );
     if (singlePoolPairs.length > 0) {
-      logger.info(`${singlePoolPairs.length} token pairs with only 1 pool (not suitable for arbitrage)`, 'POOLSCAN');
+      logger.info(
+        `${singlePoolPairs.length} token pairs with only 1 pool (not suitable for arbitrage)`,
+        'POOLSCAN'
+      );
     }
-    
+
     logger.info('=========================', 'POOLSCAN');
 
     return edges;
@@ -401,7 +430,7 @@ export class OptimizedPoolScanner {
    * Scan V2-style DEX for pools
    */
   private async scanV2Dex(
-    dex: DEXConfig, 
+    dex: DEXConfig,
     tokens: string[],
     dexStats?: Map<string, { checked: number; found: number; filtered: number }>,
     tokenPairStats?: Map<string, { dexes: string[]; poolsFound: number }>
@@ -421,7 +450,7 @@ export class OptimizedPoolScanner {
         if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
           if (dexStat) dexStat.checked++;
           const meetsThreshold = this.meetsLiquidityThreshold(cached.reserve0, dex, false);
-          
+
           if (meetsThreshold) {
             if (dexStat) dexStat.found++;
             edges.push(this.createEdge(cached, dex, token0, token1));
@@ -459,7 +488,7 @@ export class OptimizedPoolScanner {
           this.poolCache.set(cacheKey, poolCacheData);
 
           const meetsThreshold = this.meetsLiquidityThreshold(poolData.reserve0, dex, false);
-          
+
           if (meetsThreshold) {
             if (dexStat) dexStat.found++;
             edges.push(this.createEdge(poolData, dex, token0, token1));
@@ -467,7 +496,7 @@ export class OptimizedPoolScanner {
             if (tokenPairStats) {
               this.updateTokenPairStats(tokenPairStats, pairKey, dex.name);
             }
-            
+
             logger.debug(
               `✓ ${dex.name} ${pairKey}: ACCEPTED - liquidity=${poolData.reserve0} (threshold=${dex.liquidityThreshold})`,
               'POOLSCAN'
@@ -494,7 +523,13 @@ export class OptimizedPoolScanner {
     token0: string,
     token1: string,
     isV3: boolean
-  ): Promise<{ poolAddress: string; token0: string; token1: string; reserve0: bigint; reserve1: bigint } | null> {
+  ): Promise<{
+    poolAddress: string;
+    token0: string;
+    token1: string;
+    reserve0: bigint;
+    reserve1: bigint;
+  } | null> {
     try {
       // Use batch fetch helper
       const batchResults = await batchFetchPoolData(this.provider, [poolAddress], isV3);
@@ -527,19 +562,12 @@ export class OptimizedPoolScanner {
     if (!dex.initCodeHash) return null;
 
     try {
-      const [tokenA, tokenB] = token0.toLowerCase() < token1.toLowerCase() 
-        ? [token0, token1] 
-        : [token1, token0];
+      const [tokenA, tokenB] =
+        token0.toLowerCase() < token1.toLowerCase() ? [token0, token1] : [token1, token0];
 
-      const salt = keccak256(
-        solidityPacked(['address', 'address'], [tokenA, tokenB])
-      );
-      
-      const poolAddress = getCreate2Address(
-        dex.factory,
-        salt,
-        dex.initCodeHash
-      );
+      const salt = keccak256(solidityPacked(['address', 'address'], [tokenA, tokenB]));
+
+      const poolAddress = getCreate2Address(dex.factory, salt, dex.initCodeHash);
 
       // We skip the code check here and let the fetchPoolData handle validation
       return poolAddress;
@@ -551,15 +579,11 @@ export class OptimizedPoolScanner {
   /**
    * Check if reserves meet liquidity threshold
    */
-  private meetsLiquidityThreshold(
-    reserve: bigint,
-    dex: DEXConfig,
-    isV3: boolean
-  ): boolean {
+  private meetsLiquidityThreshold(reserve: bigint, dex: DEXConfig, isV3: boolean): boolean {
     const threshold = isV3
       ? dex.liquidityThreshold / BigInt(V3_LIQUIDITY_SCALE_FACTOR)
       : dex.liquidityThreshold;
-    
+
     return reserve > threshold;
   }
 
@@ -591,12 +615,12 @@ export class OptimizedPoolScanner {
     const fees: Record<string, number> = {
       'Uniswap V3': 0.003,
       'Uniswap V2': 0.003,
-      'SushiSwap': 0.003,
-      'Curve': 0.0004,
-      'Balancer': 0.001,
+      SushiSwap: 0.003,
+      Curve: 0.0004,
+      Balancer: 0.001,
       'Uniswap V3 on Base': 0.003,
       'Aerodrome on Base': 0.003,
-      'BaseSwap': 0.003,
+      BaseSwap: 0.003,
       'Uniswap V2 on Base': 0.003,
       'SushiSwap on Base': 0.003,
       'PancakeSwap V3 on Base': 0.003,
@@ -605,7 +629,7 @@ export class OptimizedPoolScanner {
       'Maverick V2 on Base': 0.003,
       'AlienBase on Base': 0.003,
       'SwapBased on Base': 0.003,
-      'RocketSwap on Base': 0.003
+      'RocketSwap on Base': 0.003,
     };
 
     return fees[dex.name] || 0.003;

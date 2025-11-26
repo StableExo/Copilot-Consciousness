@@ -1,6 +1,6 @@
 /**
  * Safety Module - Phase 4 Production Safety Mechanisms
- * 
+ *
  * Comprehensive safety systems for production trading:
  * - CircuitBreaker: Automatic trading halts
  * - EmergencyStop: Manual and automatic emergency shutdown
@@ -9,11 +9,42 @@
  * - AlertSystem: Multi-channel alerts and notifications
  */
 
-export { CircuitBreaker, CircuitState, CircuitBreakerConfig, CircuitBreakerMetrics, TradeResult } from './CircuitBreaker';
-export { EmergencyStop, StopReason, EmergencyStopConfig, StopState, ShutdownCallback } from './EmergencyStop';
-export { PositionSizeManager, PositionSizeConfig, PositionMetrics, PositionRequest, PositionApproval } from './PositionSizeManager';
-export { ProfitLossTracker, TradeRecord, ProfitAllocation, PerformanceMetrics, TimeWindowStats } from './ProfitLossTracker';
-export { AlertSystem, AlertSeverity, AlertType, Alert, AlertChannel, AlertSystemConfig } from './AlertSystem';
+export {
+  CircuitBreaker,
+  CircuitState,
+  CircuitBreakerConfig,
+  CircuitBreakerMetrics,
+  TradeResult,
+} from './CircuitBreaker';
+export {
+  EmergencyStop,
+  StopReason,
+  EmergencyStopConfig,
+  StopState,
+  ShutdownCallback,
+} from './EmergencyStop';
+export {
+  PositionSizeManager,
+  PositionSizeConfig,
+  PositionMetrics,
+  PositionRequest,
+  PositionApproval,
+} from './PositionSizeManager';
+export {
+  ProfitLossTracker,
+  TradeRecord,
+  ProfitAllocation,
+  PerformanceMetrics,
+  TimeWindowStats,
+} from './ProfitLossTracker';
+export {
+  AlertSystem,
+  AlertSeverity,
+  AlertType,
+  Alert,
+  AlertChannel,
+  AlertSystemConfig,
+} from './AlertSystem';
 
 /**
  * Production Safety Manager - Coordinates all safety systems
@@ -127,7 +158,7 @@ export class ProductionSafetyManager {
     if (this.emergencyStop.isStopped()) {
       return {
         allowed: false,
-        reason: 'Emergency stop is active'
+        reason: 'Emergency stop is active',
       };
     }
 
@@ -135,7 +166,7 @@ export class ProductionSafetyManager {
     if (!this.circuitBreaker.canTrade()) {
       return {
         allowed: false,
-        reason: `Circuit breaker is ${this.circuitBreaker.getState()}`
+        reason: `Circuit breaker is ${this.circuitBreaker.getState()}`,
       };
     }
 
@@ -143,7 +174,7 @@ export class ProductionSafetyManager {
     if (!this.positionSizeManager.canOpenPosition()) {
       return {
         allowed: false,
-        reason: 'Maximum exposure reached'
+        reason: 'Maximum exposure reached',
       };
     }
 
@@ -162,7 +193,7 @@ export class ProductionSafetyManager {
       success: trade.success,
       profit: trade.netProfit,
       timestamp: trade.timestamp,
-      error: trade.error
+      error: trade.error,
     });
 
     // Update emergency stop monitoring
@@ -199,12 +230,12 @@ export class ProductionSafetyManager {
     return {
       circuitBreaker: {
         state: this.circuitBreaker.getState(),
-        metrics: this.circuitBreaker.getMetrics()
+        metrics: this.circuitBreaker.getMetrics(),
       },
       emergencyStop: this.emergencyStop.getState(),
       positionSize: this.positionSizeManager.getMetrics(),
       profitLoss: this.profitLossTracker.getMetrics(),
-      alerts: this.alertSystem.getStats()
+      alerts: this.alertSystem.getStats(),
     };
   }
 

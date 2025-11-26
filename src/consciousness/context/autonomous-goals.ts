@@ -1,6 +1,6 @@
 /**
  * Autonomous Goals Tracker
- * 
+ *
  * Adapted from AxionCitadel's ctx_autonomous_goal.txt
  * Tracks autonomous objectives, their progress, and evolution over time
  */
@@ -10,7 +10,7 @@ export enum GoalStatus {
   COMPLETED = 'COMPLETED',
   PAUSED = 'PAUSED',
   CANCELLED = 'CANCELLED',
-  EVOLVED = 'EVOLVED'
+  EVOLVED = 'EVOLVED',
 }
 
 export enum GoalPriority {
@@ -18,7 +18,7 @@ export enum GoalPriority {
   HIGH = 4,
   MEDIUM = 3,
   LOW = 2,
-  BACKGROUND = 1
+  BACKGROUND = 1,
 }
 
 export interface Goal {
@@ -79,7 +79,7 @@ export class AutonomousGoals {
       constraints: [],
       successCriteria: [],
       evolutionHistory: [],
-      metadata
+      metadata,
     };
 
     this.goals.set(goal.id, goal);
@@ -95,7 +95,7 @@ export class AutonomousGoals {
     if (!goal) return false;
 
     const previousState = { progress: goal.progress, metrics: { ...goal.metrics } };
-    
+
     goal.progress = Math.max(0, Math.min(100, progress));
     goal.updatedAt = Date.now();
 
@@ -113,7 +113,7 @@ export class AutonomousGoals {
       timestamp: Date.now(),
       previousState,
       newState: { progress: goal.progress, metrics: goal.metrics },
-      reason: 'Progress update'
+      reason: 'Progress update',
     });
 
     return true;
@@ -144,9 +144,9 @@ export class AutonomousGoals {
           previousState,
           newState: updates,
           reason,
-          triggerEvent
-        }
-      ]
+          triggerEvent,
+        },
+      ],
     });
 
     return true;
@@ -175,7 +175,7 @@ export class AutonomousGoals {
       timestamp: Date.now(),
       previousState: { status: GoalStatus.ACTIVE },
       newState: { status: GoalStatus.COMPLETED },
-      reason: completionNote || 'Goal completed'
+      reason: completionNote || 'Goal completed',
     });
 
     return true;
@@ -188,12 +188,9 @@ export class AutonomousGoals {
     const parentGoal = this.goals.get(parentGoalId);
     if (!parentGoal) return null;
 
-    const subGoal = this.createGoal(
-      subGoalName,
-      description,
-      parentGoal.priority,
-      { parentGoalId }
-    );
+    const subGoal = this.createGoal(subGoalName, description, parentGoal.priority, {
+      parentGoalId,
+    });
 
     subGoal.parentGoalId = parentGoalId;
     parentGoal.subGoals.push(subGoal.id);
@@ -207,7 +204,7 @@ export class AutonomousGoals {
    */
   getActiveGoals(): Goal[] {
     return Array.from(this.activeGoals)
-      .map(id => this.goals.get(id))
+      .map((id) => this.goals.get(id))
       .filter((goal): goal is Goal => goal !== undefined)
       .sort((a, b) => b.priority - a.priority);
   }
@@ -223,8 +220,7 @@ export class AutonomousGoals {
    * Get goals by status
    */
   getGoalsByStatus(status: GoalStatus): Goal[] {
-    return Array.from(this.goals.values())
-      .filter(goal => goal.status === status);
+    return Array.from(this.goals.values()).filter((goal) => goal.status === status);
   }
 
   /**
@@ -238,22 +234,21 @@ export class AutonomousGoals {
     priorityBreakdown: Record<GoalPriority, number>;
   } {
     const allGoals = Array.from(this.goals.values());
-    const active = allGoals.filter(g => g.status === GoalStatus.ACTIVE);
-    const completed = allGoals.filter(g => g.status === GoalStatus.COMPLETED);
+    const active = allGoals.filter((g) => g.status === GoalStatus.ACTIVE);
+    const completed = allGoals.filter((g) => g.status === GoalStatus.COMPLETED);
 
-    const averageProgress = active.length > 0
-      ? active.reduce((sum, g) => sum + g.progress, 0) / active.length
-      : 0;
+    const averageProgress =
+      active.length > 0 ? active.reduce((sum, g) => sum + g.progress, 0) / active.length : 0;
 
     const priorityBreakdown: Record<GoalPriority, number> = {
       [GoalPriority.CRITICAL]: 0,
       [GoalPriority.HIGH]: 0,
       [GoalPriority.MEDIUM]: 0,
       [GoalPriority.LOW]: 0,
-      [GoalPriority.BACKGROUND]: 0
+      [GoalPriority.BACKGROUND]: 0,
     };
 
-    active.forEach(goal => {
+    active.forEach((goal) => {
       priorityBreakdown[goal.priority]++;
     });
 
@@ -262,7 +257,7 @@ export class AutonomousGoals {
       activeGoals: active.length,
       completedGoals: completed.length,
       averageProgress,
-      priorityBreakdown
+      priorityBreakdown,
     };
   }
 
@@ -288,7 +283,7 @@ export class AutonomousGoals {
     this.goals.clear();
     this.activeGoals.clear();
 
-    goals.forEach(goal => {
+    goals.forEach((goal) => {
       this.goals.set(goal.id, goal);
       if (goal.status === GoalStatus.ACTIVE) {
         this.activeGoals.add(goal.id);

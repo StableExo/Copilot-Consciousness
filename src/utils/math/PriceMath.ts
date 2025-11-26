@@ -1,9 +1,9 @@
 /**
  * Price Math Utilities
- * 
+ *
  * Integrated from AxionCitadel - Production-tested price calculation utilities
  * for Uniswap V2/V3, SushiSwap, and DODO protocols.
- * 
+ *
  * Provides utilities for:
  * - Spot price calculations across different DEX types
  * - Token amount conversions
@@ -64,9 +64,7 @@ export function calculateMinAmountOut(
     slippageToleranceBps < 0 ||
     isNaN(slippageToleranceBps)
   ) {
-    logger.warn(
-      `${logPrefix} Invalid slippageToleranceBps: ${slippageToleranceBps}. Using 0 BPS.`
-    );
+    logger.warn(`${logPrefix} Invalid slippageToleranceBps: ${slippageToleranceBps}. Using 0 BPS.`);
     slippageToleranceBps = 0;
   }
 
@@ -118,13 +116,18 @@ export function calculateV3PriceT0T1Scaled(poolState: PoolState): bigint | null 
     const denominator = Q192 * scale1;
 
     if (denominator === 0n) {
-      logger.error(`${logPrefix} Division by zero: V3 price denominator is zero. Pool: ${poolState.address}`);
+      logger.error(
+        `${logPrefix} Division by zero: V3 price denominator is zero. Pool: ${poolState.address}`
+      );
       return null;
     }
 
     const priceT1PerT0Scaled = numerator / denominator;
     logger.debug(
-      `${logPrefix} V3 Pool ${poolState.address?.substring(0, 6)} | Price (T1/T0 scaled): ${priceT1PerT0Scaled}`
+      `${logPrefix} V3 Pool ${poolState.address?.substring(
+        0,
+        6
+      )} | Price (T1/T0 scaled): ${priceT1PerT0Scaled}`
     );
     return priceT1PerT0Scaled;
   } catch (error: any) {
@@ -177,13 +180,18 @@ export function calculateV2PriceT0T1Scaled(poolState: PoolState): bigint | null 
     const denominator = reserve0 * scale1;
 
     if (denominator === 0n) {
-      logger.error(`${logPrefix} Division by zero: V2 price denominator is zero. Pool: ${poolState.address}`);
+      logger.error(
+        `${logPrefix} Division by zero: V2 price denominator is zero. Pool: ${poolState.address}`
+      );
       return null;
     }
 
     const priceT1PerT0Scaled = numerator / denominator;
     logger.debug(
-      `${logPrefix} V2 Pool ${poolState.address?.substring(0, 6)} | Price (T1/T0 scaled): ${priceT1PerT0Scaled}`
+      `${logPrefix} V2 Pool ${poolState.address?.substring(
+        0,
+        6
+      )} | Price (T1/T0 scaled): ${priceT1PerT0Scaled}`
     );
     return priceT1PerT0Scaled;
   } catch (error: any) {
@@ -235,7 +243,8 @@ export async function convertToNativeWei(
   const isNativeWeth =
     nativeCurrencyToken.symbol === 'WETH' ||
     (nativeCurrencyToken.address &&
-      nativeCurrencyToken.address.toLowerCase() === '0x82af49447d8a07e3bd95bd0d56f35241523fbab1'.toLowerCase());
+      nativeCurrencyToken.address.toLowerCase() ===
+        '0x82af49447d8a07e3bd95bd0d56f35241523fbab1'.toLowerCase());
 
   if (!isNativeWeth) {
     logger.warn(
@@ -260,7 +269,8 @@ export async function convertToNativeWei(
 
   const tokenDecimals = BigInt(tokenObject.decimals);
   const nativeDecimals = BigInt(nativeCurrencyToken.decimals);
-  const numerator = amountWeiBigInt * mockPriceStandardRatioTokenNativeScaled * 10n ** nativeDecimals;
+  const numerator =
+    amountWeiBigInt * mockPriceStandardRatioTokenNativeScaled * 10n ** nativeDecimals;
   const denominator = PRICE_SCALE * 10n ** tokenDecimals;
 
   if (denominator === 0n) {
@@ -271,7 +281,11 @@ export async function convertToNativeWei(
 
   const amountNativeWei = numerator / denominator;
   logger.debug(
-    `${logPrefix} Converted ${formatUnits(amountWeiBigInt, tokenObject.decimals)} ${tokenObject.symbol} to ${formatUnits(amountNativeWei, nativeCurrencyToken.decimals)} ${nativeCurrencyToken.symbol}`
+    `${logPrefix} Converted ${formatUnits(amountWeiBigInt, tokenObject.decimals)} ${
+      tokenObject.symbol
+    } to ${formatUnits(amountNativeWei, nativeCurrencyToken.decimals)} ${
+      nativeCurrencyToken.symbol
+    }`
   );
   return amountNativeWei;
 }

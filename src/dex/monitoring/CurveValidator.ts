@@ -16,7 +16,7 @@ export class CurveValidator extends BaseValidator {
     const errors: string[] = [];
 
     const curve = this.getDEXConfig();
-    
+
     if (!curve) {
       return {
         isHealthy: false,
@@ -29,12 +29,12 @@ export class CurveValidator extends BaseValidator {
 
     // Check Core Components
     const coreStatus = await this.checkCoreComponents(curve, components, errors);
-    
+
     // Check Key Pools
     const poolStatus = await this.checkKeyPools(curve, components, errors);
 
     const isHealthy = coreStatus && poolStatus;
-    
+
     return {
       isHealthy,
       timestamp,
@@ -63,7 +63,7 @@ export class CurveValidator extends BaseValidator {
       );
 
       const poolCount = await registry.pool_count();
-      
+
       components.push({
         name: 'Registry Contract',
         status: 'active',
@@ -84,7 +84,7 @@ export class CurveValidator extends BaseValidator {
 
       for (const pool of keyPools) {
         const isActive = await this.checkPoolHealth(pool.address, provider);
-        
+
         components.push({
           name: `Key Pool: ${pool.name}`,
           status: isActive ? 'active' : 'inactive',
@@ -96,12 +96,12 @@ export class CurveValidator extends BaseValidator {
     } catch (error) {
       const errorMsg = this.handleError(error, 'Error checking Curve core');
       errors.push(errorMsg);
-      
+
       components.push({
         name: 'Core Components',
         status: 'error',
       });
-      
+
       return false;
     }
   }
@@ -139,7 +139,7 @@ export class CurveValidator extends BaseValidator {
 
         try {
           const virtualPrice = await poolContract.get_virtual_price();
-          
+
           components.push({
             name: `Pool: ${pool.name}`,
             status: 'active',
@@ -164,10 +164,7 @@ export class CurveValidator extends BaseValidator {
     }
   }
 
-  private async checkPoolHealth(
-    poolAddress: string,
-    provider: Provider
-  ): Promise<boolean> {
+  private async checkPoolHealth(poolAddress: string, provider: Provider): Promise<boolean> {
     try {
       const pool = new ethers.Contract(
         poolAddress,

@@ -1,7 +1,7 @@
 /**
  * MEVSensorHub - Coordinates MEV sensor readings
  * Ported from AxionCitadel's mev_risk_arb/core/sensor_hub.py
- * 
+ *
  * Periodically updates sensor readings in background thread
  */
 

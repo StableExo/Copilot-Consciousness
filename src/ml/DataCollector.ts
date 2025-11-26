@@ -1,6 +1,6 @@
 /**
  * DataCollector - Comprehensive data collection system for ML
- * 
+ *
  * Captures price feeds, order book depth, transaction history, gas prices,
  * liquidity changes, and market indicators for ML model training.
  */
@@ -56,7 +56,9 @@ export class DataCollector extends EventEmitter {
     }
 
     this.isRunning = true;
-    console.log(`[DataCollector] Starting data collection (interval: ${this.config.dataCollection.interval}ms)`);
+    console.log(
+      `[DataCollector] Starting data collection (interval: ${this.config.dataCollection.interval}ms)`
+    );
 
     // Start periodic collection
     this.collectionInterval = setInterval(
@@ -76,7 +78,7 @@ export class DataCollector extends EventEmitter {
     }
 
     this.isRunning = false;
-    
+
     if (this.collectionInterval) {
       clearInterval(this.collectionInterval);
       this.collectionInterval = undefined;
@@ -92,17 +94,16 @@ export class DataCollector extends EventEmitter {
   private async collectData(): Promise<void> {
     try {
       const timestamp = Date.now();
-      
+
       // This is a placeholder - in production, integrate with:
       // - CrossChainScanner for price feeds
       // - DEX adapters for order book data
       // - Gas oracles for gas prices
       // - WebSocket streams for real-time data
-      
+
       // For now, emit event that data collection occurred
       this.emit('collection', { timestamp });
       this.stats.lastCollectionTime = timestamp;
-      
     } catch (error) {
       this.stats.errors++;
       this.emit('error', error);
@@ -159,7 +160,7 @@ export class DataCollector extends EventEmitter {
    */
   recordGasPrice(chainId: number | string, gasPrice: bigint, timestamp?: number): void {
     const ts = timestamp || Date.now();
-    
+
     this.emit('data', {
       type: 'gas',
       timestamp: ts,
@@ -185,7 +186,6 @@ export class DataCollector extends EventEmitter {
 
       this.stats.storageSize += this.dataBuffer.length;
       this.dataBuffer = [];
-      
     } catch (error) {
       this.stats.errors++;
       console.error('[DataCollector] Flush error:', error);
@@ -204,7 +204,7 @@ export class DataCollector extends EventEmitter {
     // In production, query from TimescaleDB
     // For now, return filtered buffer data
     return this.dataBuffer.filter(
-      point =>
+      (point) =>
         point.chain === chainId &&
         point.tokenAddress === tokenAddress &&
         point.timestamp >= startTime &&
@@ -220,14 +220,16 @@ export class DataCollector extends EventEmitter {
     tokenAddress: string,
     daysBack: number
   ): Promise<number> {
-    console.log(`[DataCollector] Backfilling ${daysBack} days of data for ${tokenAddress} on chain ${chainId}`);
-    
+    console.log(
+      `[DataCollector] Backfilling ${daysBack} days of data for ${tokenAddress} on chain ${chainId}`
+    );
+
     // This would fetch historical data from external sources
     // like The Graph, Dune Analytics, or archive nodes
-    
+
     const endTime = Date.now();
-    const startTime = endTime - (daysBack * 24 * 60 * 60 * 1000);
-    
+    const startTime = endTime - daysBack * 24 * 60 * 60 * 1000;
+
     // Placeholder - in production, fetch and store real data
     this.emit('backfill', {
       chainId,
@@ -273,7 +275,7 @@ export class DataCollector extends EventEmitter {
   async exportData(format: 'csv' | 'json' | 'parquet' = 'json'): Promise<string> {
     // In production, export to S3, TimescaleDB, or other storage
     console.log(`[DataCollector] Exporting data in ${format} format`);
-    
+
     if (format === 'json') {
       return JSON.stringify(this.dataBuffer, (_, value) =>
         typeof value === 'bigint' ? value.toString() : value
@@ -293,15 +295,15 @@ export class DataCollector extends EventEmitter {
     tokenAddress?: string
   ): Promise<PriceDataPoint[]> {
     let data = this.dataBuffer.filter(
-      point => point.timestamp >= startTime && point.timestamp <= endTime
+      (point) => point.timestamp >= startTime && point.timestamp <= endTime
     );
 
     if (chainId !== undefined) {
-      data = data.filter(point => point.chain === chainId);
+      data = data.filter((point) => point.chain === chainId);
     }
 
     if (tokenAddress) {
-      data = data.filter(point => point.tokenAddress === tokenAddress);
+      data = data.filter((point) => point.tokenAddress === tokenAddress);
     }
 
     return data;
@@ -327,7 +329,7 @@ export class DataCollector extends EventEmitter {
    */
   updateConfig(config: Partial<MLConfig>): void {
     this.config = { ...this.config, ...config };
-    
+
     // Restart if running with new config
     if (this.isRunning) {
       this.stop();

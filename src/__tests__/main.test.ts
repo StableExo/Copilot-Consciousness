@@ -22,7 +22,8 @@ describe('Main Runner', () => {
   describe('loadConfig', () => {
     it('should load configuration from environment variables', () => {
       process.env.ETHEREUM_RPC_URL = 'https://eth-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
       process.env.NODE_ENV = 'production';
       process.env.DRY_RUN = 'true';
 
@@ -30,14 +31,17 @@ describe('Main Runner', () => {
 
       expect(config).toBeDefined();
       expect(config.rpcUrl).toBe('https://eth-mainnet.example.com');
-      expect(config.walletPrivateKey).toBe('0x1234567890123456789012345678901234567890123456789012345678901234');
+      expect(config.walletPrivateKey).toBe(
+        '0x1234567890123456789012345678901234567890123456789012345678901234'
+      );
       expect(config.dryRun).toBe(true);
     });
 
     it('should use BASE_RPC_URL if ETHEREUM_RPC_URL is not set', () => {
       delete process.env.ETHEREUM_RPC_URL;
       process.env.BASE_RPC_URL = 'https://base-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
       process.env.NODE_ENV = 'test';
 
       const config = loadConfig();
@@ -46,7 +50,8 @@ describe('Main Runner', () => {
     });
 
     it('should throw error if RPC URL is not provided', () => {
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
       delete process.env.ETHEREUM_RPC_URL;
       delete process.env.BASE_RPC_URL;
 
@@ -62,7 +67,8 @@ describe('Main Runner', () => {
 
     it('should apply default values for optional configuration', () => {
       process.env.ETHEREUM_RPC_URL = 'https://eth-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
       process.env.NODE_ENV = 'test';
       delete process.env.ENABLE_ML_PREDICTIONS;
       delete process.env.ENABLE_CROSS_CHAIN;
@@ -80,7 +86,8 @@ describe('Main Runner', () => {
 
     it('should parse integer values correctly', () => {
       process.env.ETHEREUM_RPC_URL = 'https://eth-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
       process.env.SCAN_INTERVAL = '5000';
       process.env.CONCURRENCY = '20';
       process.env.MAX_GAS_PRICE = '150';
@@ -95,7 +102,8 @@ describe('Main Runner', () => {
 
     it('should parse boolean flags correctly', () => {
       process.env.ETHEREUM_RPC_URL = 'https://eth-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
       process.env.ENABLE_ML_PREDICTIONS = 'true';
       process.env.ENABLE_CROSS_CHAIN = 'true';
       process.env.DRY_RUN = 'false';
@@ -110,7 +118,8 @@ describe('Main Runner', () => {
 
     it('should set dryRun to true in development mode', () => {
       process.env.ETHEREUM_RPC_URL = 'https://eth-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
       process.env.NODE_ENV = 'development';
 
       const config = loadConfig();
@@ -120,7 +129,8 @@ describe('Main Runner', () => {
 
     it('should set dryRun to false in production mode if DRY_RUN is not set', () => {
       process.env.ETHEREUM_RPC_URL = 'https://eth-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
       process.env.NODE_ENV = 'production';
       delete process.env.DRY_RUN;
 
@@ -131,7 +141,8 @@ describe('Main Runner', () => {
 
     it('should handle contract addresses from environment', () => {
       process.env.ETHEREUM_RPC_URL = 'https://eth-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
       process.env.FLASHSWAP_V2_ADDRESS = '0xFlashSwapV2Address';
       process.env.FLASHSWAP_V2_OWNER = '0xOwnerAddress';
       process.env.NODE_ENV = 'test';
@@ -172,7 +183,7 @@ describe('Main Runner', () => {
     it('should initialize with correct configuration', () => {
       const theWarden = new TheWarden(config);
       const stats = theWarden.getStats();
-      
+
       expect(stats.isRunning).toBe(false);
       expect(stats.cyclesCompleted).toBe(0);
       expect(stats.opportunitiesFound).toBe(0);
@@ -182,9 +193,9 @@ describe('Main Runner', () => {
     it('should track statistics correctly', () => {
       const theWarden = new TheWarden(config);
       const stats1 = theWarden.getStats();
-      
+
       expect(stats1.uptime).toBeGreaterThanOrEqual(0);
-      
+
       // Wait a bit and check uptime increased
       setTimeout(() => {
         const stats2 = theWarden.getStats();

@@ -1,6 +1,6 @@
 /**
  * OpportunityTracker - Comprehensive opportunity logging and analysis
- * 
+ *
  * Implements Phase 5.1 from PROFITABLE_EXECUTION_PLAN.md:
  * - Track ALL opportunities (profitable or not) for analysis
  * - Log detailed information for post-execution analysis
@@ -18,32 +18,32 @@ export interface OpportunityLog {
   timestamp: number;
   blockNumber?: number;
   chainId: number;
-  
+
   // Path information
   path: string;
   dexes: string[];
   tokens: string[];
   pools: string[];
-  
+
   // Profit estimation
   estimatedProfit: bigint;
   estimatedProfitUsd?: number;
   estimatedGasCost: bigint;
   netProfit: bigint;
   profitPercentage: number;
-  
+
   // Execution details
   executed: boolean;
   executionResult?: 'success' | 'failed' | 'reverted' | 'timeout';
   actualProfit?: bigint;
   actualGasCost?: bigint;
   txHash?: string;
-  
+
   // Analysis
-  reason?: string;  // Why not executed or why failed
+  reason?: string; // Why not executed or why failed
   competitorTook?: boolean;
   competitorAddress?: string;
-  
+
   // Risk metrics
   slippageEstimate: number;
   liquidityDepth: bigint;
@@ -60,15 +60,15 @@ export interface OpportunityStats {
   failedExecutions: number;
   missedOpportunities: number;
   competitorsTookOpportunities: number;
-  
+
   totalEstimatedProfit: bigint;
   totalActualProfit: bigint;
   totalGasCost: bigint;
-  
+
   avgProfitPercentage: number;
   avgSlippage: number;
   successRate: number;
-  
+
   byDex: Map<string, number>;
   byChain: Map<number, number>;
   byReason: Map<string, number>;
@@ -84,17 +84,14 @@ export class OpportunityTracker {
   private stats: OpportunityStats;
   private enabled: boolean;
 
-  constructor(options?: {
-    logFilePath?: string;
-    maxInMemory?: number;
-    enabled?: boolean;
-  }) {
-    this.logFilePath = options?.logFilePath || path.join(process.cwd(), 'logs', 'opportunities.jsonl');
+  constructor(options?: { logFilePath?: string; maxInMemory?: number; enabled?: boolean }) {
+    this.logFilePath =
+      options?.logFilePath || path.join(process.cwd(), 'logs', 'opportunities.jsonl');
     this.maxInMemory = options?.maxInMemory || 1000;
     this.enabled = options?.enabled ?? true;
-    
+
     this.stats = this.initializeStats();
-    
+
     // Ensure log directory exists
     const logDir = path.dirname(this.logFilePath);
     if (!fs.existsSync(logDir)) {
@@ -166,16 +163,16 @@ export class OpportunityTracker {
   updateOpportunity(id: string, update: Partial<OpportunityLog>): void {
     if (!this.enabled) return;
 
-    const idx = this.opportunities.findIndex(o => o.id === id);
+    const idx = this.opportunities.findIndex((o) => o.id === id);
     if (idx !== -1) {
       const updated = { ...this.opportunities[idx], ...update };
       this.opportunities[idx] = updated;
-      
+
       // Update stats based on new information
       if (update.executed !== undefined || update.executionResult !== undefined) {
         this.recalculateStats();
       }
-      
+
       // Log the update
       this.writeToFile({ ...update, id, _update: true } as OpportunityLog & { _update: boolean });
     }
@@ -249,7 +246,7 @@ export class OpportunityTracker {
    */
   private calculateStatsFromOpportunities(opps: OpportunityLog[]): OpportunityStats {
     const stats = this.initializeStats();
-    
+
     for (const entry of opps) {
       stats.totalOpportunities++;
       stats.totalEstimatedProfit += entry.estimatedProfit;
@@ -324,7 +321,8 @@ export class OpportunityTracker {
     }
 
     if (this.stats.executedOpportunities > 0) {
-      this.stats.successRate = (this.stats.successfulExecutions / this.stats.executedOpportunities) * 100;
+      this.stats.successRate =
+        (this.stats.successfulExecutions / this.stats.executedOpportunities) * 100;
     }
   }
 
@@ -351,7 +349,7 @@ export class OpportunityTracker {
       if (typeof value === 'bigint') {
         result[key] = value.toString();
       } else if (Array.isArray(value)) {
-        result[key] = value.map(v => typeof v === 'bigint' ? v.toString() : v);
+        result[key] = value.map((v) => (typeof v === 'bigint' ? v.toString() : v));
       } else if (value !== null && typeof value === 'object') {
         result[key] = this.serializeForJson(value as Record<string, unknown>);
       } else {
@@ -386,9 +384,13 @@ export class OpportunityTracker {
     minProfit?: bigint;
     since?: number;
   }): OpportunityLog[] {
-    return this.opportunities.filter(opp => {
+    return this.opportunities.filter((opp) => {
       if (filter.executed !== undefined && opp.executed !== filter.executed) return false;
-      if (filter.successful !== undefined && (opp.executionResult === 'success') !== filter.successful) return false;
+      if (
+        filter.successful !== undefined &&
+        (opp.executionResult === 'success') !== filter.successful
+      )
+        return false;
       if (filter.chainId !== undefined && opp.chainId !== filter.chainId) return false;
       if (filter.dex !== undefined && !opp.dexes.includes(filter.dex)) return false;
       if (filter.minProfit !== undefined && opp.estimatedProfit < filter.minProfit) return false;
@@ -400,7 +402,10 @@ export class OpportunityTracker {
   /**
    * Get analysis summary for a time period
    */
-  getAnalysisSummary(startTime?: number, endTime?: number): {
+  getAnalysisSummary(
+    startTime?: number,
+    endTime?: number
+  ): {
     period: { start: number; end: number };
     stats: OpportunityStats;
     topDexes: Array<{ dex: string; count: number }>;
@@ -410,8 +415,8 @@ export class OpportunityTracker {
     const start = startTime || Date.now() - 24 * 60 * 60 * 1000; // Last 24 hours
     const end = endTime || Date.now();
 
-    const filtered = this.opportunities.filter(o => o.timestamp >= start && o.timestamp <= end);
-    
+    const filtered = this.opportunities.filter((o) => o.timestamp >= start && o.timestamp <= end);
+
     // Calculate stats directly from filtered data (more efficient than creating new tracker)
     const periodStats = this.calculateStatsFromOpportunities(filtered);
 
@@ -431,8 +436,11 @@ export class OpportunityTracker {
     const hourMs = 60 * 60 * 1000;
     const profitTrend: Array<{ timestamp: number; profit: bigint }> = [];
     for (let t = start; t < end; t += hourMs) {
-      const hourOpps = filtered.filter(o => o.timestamp >= t && o.timestamp < t + hourMs);
-      const hourProfit = hourOpps.reduce((sum, o) => sum + (o.actualProfit || o.estimatedProfit), BigInt(0));
+      const hourOpps = filtered.filter((o) => o.timestamp >= t && o.timestamp < t + hourMs);
+      const hourProfit = hourOpps.reduce(
+        (sum, o) => sum + (o.actualProfit || o.estimatedProfit),
+        BigInt(0)
+      );
       profitTrend.push({ timestamp: t, profit: hourProfit });
     }
 
@@ -452,7 +460,9 @@ export class OpportunityTracker {
     const data = {
       exportedAt: new Date().toISOString(),
       stats: this.serializeForJson(this.stats as unknown as Record<string, unknown>),
-      opportunities: this.opportunities.map(o => this.serializeForJson(o as unknown as Record<string, unknown>)),
+      opportunities: this.opportunities.map((o) =>
+        this.serializeForJson(o as unknown as Record<string, unknown>)
+      ),
     };
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
   }

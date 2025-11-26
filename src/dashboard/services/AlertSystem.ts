@@ -1,6 +1,6 @@
 /**
  * AlertSystem - Multi-channel notification system
- * 
+ *
  * Supports WebSocket, Email, Telegram, and Discord notifications
  * with configurable thresholds and alert management
  */
@@ -45,8 +45,10 @@ export class AlertSystem extends EventEmitter {
         this.createAlert({
           type: 'success',
           title: 'Profit Threshold Exceeded',
-          message: `Net profit of ${profit.toFixed(4)} ETH exceeds threshold of ${this.config.profitThreshold} ETH`,
-          metadata: { profit, threshold: this.config.profitThreshold }
+          message: `Net profit of ${profit.toFixed(4)} ETH exceeds threshold of ${
+            this.config.profitThreshold
+          } ETH`,
+          metadata: { profit, threshold: this.config.profitThreshold },
         });
       }
     }
@@ -58,8 +60,10 @@ export class AlertSystem extends EventEmitter {
         this.createAlert({
           type: 'warning',
           title: 'Loss Threshold Exceeded',
-          message: `Total loss of ${loss.toFixed(4)} ETH exceeds threshold of ${this.config.lossThreshold} ETH`,
-          metadata: { loss, threshold: this.config.lossThreshold }
+          message: `Total loss of ${loss.toFixed(4)} ETH exceeds threshold of ${
+            this.config.lossThreshold
+          } ETH`,
+          metadata: { loss, threshold: this.config.lossThreshold },
         });
       }
     }
@@ -71,8 +75,10 @@ export class AlertSystem extends EventEmitter {
         this.createAlert({
           type: 'warning',
           title: 'High Gas Costs',
-          message: `Average gas cost of ${gasAvg.toFixed(6)} ETH exceeds threshold of ${this.config.gasThreshold} ETH`,
-          metadata: { gasAvg, threshold: this.config.gasThreshold }
+          message: `Average gas cost of ${gasAvg.toFixed(6)} ETH exceeds threshold of ${
+            this.config.gasThreshold
+          } ETH`,
+          metadata: { gasAvg, threshold: this.config.gasThreshold },
         });
       }
     }
@@ -83,19 +89,25 @@ export class AlertSystem extends EventEmitter {
         this.createAlert({
           type: 'error',
           title: 'Low Success Rate',
-          message: `Success rate of ${metrics.successRate.toFixed(2)}% is below threshold of ${this.config.successRateThreshold}%`,
-          metadata: { successRate: metrics.successRate, threshold: this.config.successRateThreshold }
+          message: `Success rate of ${metrics.successRate.toFixed(2)}% is below threshold of ${
+            this.config.successRateThreshold
+          }%`,
+          metadata: {
+            successRate: metrics.successRate,
+            threshold: this.config.successRateThreshold,
+          },
         });
       }
     }
 
     // Check high error rate
-    if (metrics.errorRate > 0.1) { // More than 10% error rate
+    if (metrics.errorRate > 0.1) {
+      // More than 10% error rate
       this.createAlert({
         type: 'error',
         title: 'High Error Rate Detected',
         message: `Error rate of ${(metrics.errorRate * 100).toFixed(2)}% detected`,
-        metadata: { errorRate: metrics.errorRate }
+        metadata: { errorRate: metrics.errorRate },
       });
     }
   }
@@ -107,7 +119,7 @@ export class AlertSystem extends EventEmitter {
     const alert: Alert = {
       id: uuidv4(),
       timestamp: Date.now(),
-      ...alertData
+      ...alertData,
     };
 
     this.alerts.push(alert);
@@ -155,7 +167,7 @@ export class AlertSystem extends EventEmitter {
     // Email implementation would use nodemailer
     // For now, just log
     console.log(`[Email Alert] ${alert.type.toUpperCase()}: ${alert.title} - ${alert.message}`);
-    
+
     // Actual implementation would be:
     // if (this.emailService) {
     //   await this.emailService.sendMail({
@@ -178,11 +190,11 @@ export class AlertSystem extends EventEmitter {
 
     try {
       const message = `🚨 *${alert.type.toUpperCase()}*: ${alert.title}\n\n${alert.message}`;
-      
+
       await axios.post(`https://api.telegram.org/bot${telegram.botToken}/sendMessage`, {
         chat_id: telegram.chatId,
         text: message,
-        parse_mode: 'Markdown'
+        parse_mode: 'Markdown',
       });
     } catch (error) {
       console.error('Failed to send Telegram alert:', error);
@@ -200,19 +212,23 @@ export class AlertSystem extends EventEmitter {
 
     try {
       const color = this.getDiscordColor(alert.type);
-      
+
       await axios.post(discord.webhookUrl, {
-        embeds: [{
-          title: alert.title,
-          description: alert.message,
-          color: color,
-          timestamp: new Date(alert.timestamp).toISOString(),
-          fields: alert.metadata ? Object.entries(alert.metadata).map(([key, value]) => ({
-            name: key,
-            value: String(value),
-            inline: true
-          })) : []
-        }]
+        embeds: [
+          {
+            title: alert.title,
+            description: alert.message,
+            color: color,
+            timestamp: new Date(alert.timestamp).toISOString(),
+            fields: alert.metadata
+              ? Object.entries(alert.metadata).map(([key, value]) => ({
+                  name: key,
+                  value: String(value),
+                  inline: true,
+                }))
+              : [],
+          },
+        ],
       });
     } catch (error) {
       console.error('Failed to send Discord alert:', error);
@@ -224,10 +240,10 @@ export class AlertSystem extends EventEmitter {
    */
   private getDiscordColor(type: Alert['type']): number {
     const colors = {
-      info: 0x3498db,    // Blue
+      info: 0x3498db, // Blue
       warning: 0xf39c12, // Orange
-      error: 0xe74c3c,   // Red
-      success: 0x2ecc71  // Green
+      error: 0xe74c3c, // Red
+      success: 0x2ecc71, // Green
     };
     return colors[type];
   }
@@ -243,7 +259,7 @@ export class AlertSystem extends EventEmitter {
    * Get alerts by type
    */
   getAlertsByType(type: Alert['type']): Alert[] {
-    return this.alerts.filter(a => a.type === type);
+    return this.alerts.filter((a) => a.type === type);
   }
 
   /**
@@ -262,16 +278,16 @@ export class AlertSystem extends EventEmitter {
     lastHour: number;
   } {
     const oneHourAgo = Date.now() - 60 * 60 * 1000;
-    
+
     return {
       total: this.alerts.length,
       byType: {
-        info: this.alerts.filter(a => a.type === 'info').length,
-        warning: this.alerts.filter(a => a.type === 'warning').length,
-        error: this.alerts.filter(a => a.type === 'error').length,
-        success: this.alerts.filter(a => a.type === 'success').length
+        info: this.alerts.filter((a) => a.type === 'info').length,
+        warning: this.alerts.filter((a) => a.type === 'warning').length,
+        error: this.alerts.filter((a) => a.type === 'error').length,
+        success: this.alerts.filter((a) => a.type === 'success').length,
       },
-      lastHour: this.alerts.filter(a => a.timestamp > oneHourAgo).length
+      lastHour: this.alerts.filter((a) => a.timestamp > oneHourAgo).length,
     };
   }
 }

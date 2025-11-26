@@ -61,7 +61,7 @@ describe('MLOrchestrator', () => {
     it('should enhance path with ML predictions', async () => {
       await orchestrator.initialize();
       const enhanced = await orchestrator.enhanceOpportunity(mockPath);
-      
+
       expect(enhanced).toBeDefined();
       expect(enhanced.mlPredictions).toBeDefined();
       expect(enhanced.mlPredictions?.successProbability).toBeGreaterThanOrEqual(0);
@@ -71,7 +71,7 @@ describe('MLOrchestrator', () => {
     it('should include price forecasts', async () => {
       await orchestrator.initialize();
       const enhanced = await orchestrator.enhanceOpportunity(mockPath);
-      
+
       expect(enhanced.mlPredictions?.priceForecasts).toBeDefined();
       expect(enhanced.mlPredictions?.priceForecasts.length).toBeGreaterThan(0);
     });
@@ -79,7 +79,7 @@ describe('MLOrchestrator', () => {
     it('should include volatility forecast', async () => {
       await orchestrator.initialize();
       const enhanced = await orchestrator.enhanceOpportunity(mockPath);
-      
+
       expect(enhanced.mlPredictions?.volatilityForecast).toBeDefined();
       expect(enhanced.mlPredictions?.volatilityForecast.volatility).toBeGreaterThan(0);
     });
@@ -87,7 +87,7 @@ describe('MLOrchestrator', () => {
     it('should generate recommendation', async () => {
       await orchestrator.initialize();
       const enhanced = await orchestrator.enhanceOpportunity(mockPath);
-      
+
       expect(enhanced.mlPredictions?.recommendation).toBeDefined();
       expect(['EXECUTE', 'SKIP', 'QUEUE']).toContain(enhanced.mlPredictions?.recommendation);
     });
@@ -95,17 +95,17 @@ describe('MLOrchestrator', () => {
     it('should calculate confidence score', async () => {
       await orchestrator.initialize();
       const enhanced = await orchestrator.enhanceOpportunity(mockPath);
-      
+
       expect(enhanced.mlPredictions?.confidence).toBeGreaterThanOrEqual(0);
       expect(enhanced.mlPredictions?.confidence).toBeLessThanOrEqual(1);
     });
 
     it('should use cache for repeated requests', async () => {
       await orchestrator.initialize();
-      
+
       await orchestrator.enhanceOpportunity(mockPath);
       await orchestrator.enhanceOpportunity(mockPath);
-      
+
       const stats = orchestrator.getStats();
       expect(stats.predictionsCount).toBe(2);
       expect(stats.cacheHitRate).toBeGreaterThan(0);
@@ -115,7 +115,7 @@ describe('MLOrchestrator', () => {
   describe('statistics', () => {
     it('should track predictions count', async () => {
       await orchestrator.initialize();
-      
+
       const mockPath: ArbitragePath = {
         hops: [],
         startToken: '0x1',
@@ -136,7 +136,7 @@ describe('MLOrchestrator', () => {
 
     it('should track average latency', async () => {
       await orchestrator.initialize();
-      
+
       const mockPath: ArbitragePath = {
         hops: [],
         startToken: '0x1',
@@ -158,7 +158,7 @@ describe('MLOrchestrator', () => {
   describe('cache management', () => {
     it('should clear cache', async () => {
       await orchestrator.initialize();
-      
+
       const mockPath: ArbitragePath = {
         hops: [],
         startToken: '0x1',

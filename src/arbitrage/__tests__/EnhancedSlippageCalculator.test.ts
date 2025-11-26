@@ -8,7 +8,7 @@ describe('EnhancedSlippageCalculator', () => {
     calculator = new EnhancedSlippageCalculator({
       defaultCurveType: 'constant-product',
       warningThreshold: 1.0,
-      maxSafeImpact: 3.0
+      maxSafeImpact: 3.0,
     });
   });
 
@@ -19,12 +19,7 @@ describe('EnhancedSlippageCalculator', () => {
       const reserveOut = BigInt(10000000);
       const fee = 0.003;
 
-      const impact = calculator.calculatePriceImpact(
-        amountIn,
-        reserveIn,
-        reserveOut,
-        fee
-      );
+      const impact = calculator.calculatePriceImpact(amountIn, reserveIn, reserveOut, fee);
 
       expect(impact.percentage).toBeGreaterThan(0);
       expect(impact.amountOut).toBeGreaterThan(BigInt(0));
@@ -49,18 +44,13 @@ describe('EnhancedSlippageCalculator', () => {
       const reserveOut = BigInt(10000000);
       const fee = 0.003;
 
-      const impact = calculator.calculatePriceImpact(
-        amountIn,
-        reserveIn,
-        reserveOut,
-        fee
-      );
+      const impact = calculator.calculatePriceImpact(amountIn, reserveIn, reserveOut, fee);
 
       // Verify constant product: (reserveIn + amountInWithFee) * (reserveOut - amountOut) ~= k
       const amountInWithFee = (amountIn * BigInt(9970)) / BigInt(10000);
       const k = reserveIn * reserveOut;
       const newK = (reserveIn + amountInWithFee) * (reserveOut - impact.amountOut);
-      
+
       // Allow small rounding difference
       const diff = k > newK ? k - newK : newK - k;
       expect(Number(diff) / Number(k)).toBeLessThan(0.01); // Less than 1% difference
@@ -71,19 +61,9 @@ describe('EnhancedSlippageCalculator', () => {
       const reserveIn = BigInt(10000000);
       const reserveOut = BigInt(10000000);
 
-      const noFeeImpact = calculator.calculatePriceImpact(
-        amountIn,
-        reserveIn,
-        reserveOut,
-        0
-      );
+      const noFeeImpact = calculator.calculatePriceImpact(amountIn, reserveIn, reserveOut, 0);
 
-      const withFeeImpact = calculator.calculatePriceImpact(
-        amountIn,
-        reserveIn,
-        reserveOut,
-        0.003
-      );
+      const withFeeImpact = calculator.calculatePriceImpact(amountIn, reserveIn, reserveOut, 0.003);
 
       expect(withFeeImpact.amountOut).toBeLessThan(noFeeImpact.amountOut);
     });
@@ -102,7 +82,7 @@ describe('EnhancedSlippageCalculator', () => {
           fee: 0.003,
           gasEstimate: 150000,
           reserve0: BigInt(10000000),
-          reserve1: BigInt(10000000)
+          reserve1: BigInt(10000000),
         },
         {
           dexName: 'SushiSwap',
@@ -114,8 +94,8 @@ describe('EnhancedSlippageCalculator', () => {
           fee: 0.003,
           gasEstimate: 150000,
           reserve0: BigInt(10000000),
-          reserve1: BigInt(10000000)
-        }
+          reserve1: BigInt(10000000),
+        },
       ];
 
       const result = calculator.calculatePathSlippage(hops);
@@ -138,8 +118,8 @@ describe('EnhancedSlippageCalculator', () => {
           fee: 0.003,
           gasEstimate: 150000,
           reserve0: BigInt(10000000), // Small pool
-          reserve1: BigInt(10000000)
-        }
+          reserve1: BigInt(10000000),
+        },
       ];
 
       const result = calculator.calculatePathSlippage(hops);
@@ -159,8 +139,8 @@ describe('EnhancedSlippageCalculator', () => {
           fee: 0.003,
           gasEstimate: 150000,
           reserve0: BigInt(10000000), // Large pool
-          reserve1: BigInt(10000000)
-        }
+          reserve1: BigInt(10000000),
+        },
       ];
 
       const result = calculator.calculatePathSlippage(hops);
@@ -242,13 +222,7 @@ describe('EnhancedSlippageCalculator', () => {
       const reserveOut = BigInt(10000000);
       const fee = 0.0004;
 
-      const impact = calculator.calculatePriceImpact(
-        amountIn,
-        reserveIn,
-        reserveOut,
-        fee,
-        '0x123'
-      );
+      const impact = calculator.calculatePriceImpact(amountIn, reserveIn, reserveOut, fee, '0x123');
 
       // Stable swap should have lower slippage
       expect(impact.percentage).toBeLessThan(2.0);
@@ -268,15 +242,15 @@ describe('EnhancedSlippageCalculator', () => {
           fee: 0.003,
           gasEstimate: 150000,
           reserve0: BigInt(10000000),
-          reserve1: BigInt(10000000)
-        }
+          reserve1: BigInt(10000000),
+        },
       ];
 
       const result = calculator.calculatePathSlippage(hops);
       const warnings = calculator.getPathWarnings(result);
 
       expect(warnings.length).toBeGreaterThan(0);
-      expect(warnings.some(w => w.includes('price impact'))).toBe(true);
+      expect(warnings.some((w) => w.includes('price impact'))).toBe(true);
     });
 
     it('should return no warnings for safe paths', () => {
@@ -291,8 +265,8 @@ describe('EnhancedSlippageCalculator', () => {
           fee: 0.003,
           gasEstimate: 150000,
           reserve0: BigInt(10000000),
-          reserve1: BigInt(10000000)
-        }
+          reserve1: BigInt(10000000),
+        },
       ];
 
       const result = calculator.calculatePathSlippage(hops);

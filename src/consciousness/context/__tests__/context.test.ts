@@ -9,12 +9,8 @@ describe('Context Framework', () => {
   describe('AutonomousGoals', () => {
     it('should create and track goals', () => {
       const goals = new AutonomousGoals();
-      
-      const goal = goals.createGoal(
-        'Test Goal',
-        'A test goal for verification',
-        GoalPriority.HIGH
-      );
+
+      const goal = goals.createGoal('Test Goal', 'A test goal for verification', GoalPriority.HIGH);
 
       expect(goal.name).toBe('Test Goal');
       expect(goal.status).toBe(GoalStatus.ACTIVE);
@@ -53,7 +49,7 @@ describe('Context Framework', () => {
   describe('OperationalPlaybook', () => {
     it('should register playbooks', () => {
       const playbook = new OperationalPlaybook();
-      
+
       const entry = playbook.registerPlaybook(
         'Test Procedure',
         OperationType.DECISION,
@@ -66,8 +62,8 @@ describe('Context Framework', () => {
             requiredInputs: ['context'],
             expectedOutputs: ['analysis'],
             validationCriteria: ['complete'],
-            criticalStep: true
-          }
+            criticalStep: true,
+          },
         ]
       );
 
@@ -78,7 +74,7 @@ describe('Context Framework', () => {
 
     it('should make decisions with alternatives', () => {
       const playbook = new OperationalPlaybook();
-      
+
       const entry = playbook.registerPlaybook(
         'Decision Test',
         OperationType.DECISION,
@@ -86,32 +82,28 @@ describe('Context Framework', () => {
         []
       );
 
-      const decision = playbook.makeDecision(
-        entry.id,
-        { situation: 'test' },
-        [
-          {
-            id: 'alt1',
-            name: 'Option 1',
-            description: 'First option',
-            estimatedRisk: 0.2,
-            estimatedReward: 0.8,
-            requiredResources: [],
-            constraints: [],
-            score: 0
-          },
-          {
-            id: 'alt2',
-            name: 'Option 2',
-            description: 'Second option',
-            estimatedRisk: 0.5,
-            estimatedReward: 0.5,
-            requiredResources: [],
-            constraints: [],
-            score: 0
-          }
-        ]
-      );
+      const decision = playbook.makeDecision(entry.id, { situation: 'test' }, [
+        {
+          id: 'alt1',
+          name: 'Option 1',
+          description: 'First option',
+          estimatedRisk: 0.2,
+          estimatedReward: 0.8,
+          requiredResources: [],
+          constraints: [],
+          score: 0,
+        },
+        {
+          id: 'alt2',
+          name: 'Option 2',
+          description: 'Second option',
+          estimatedRisk: 0.5,
+          estimatedReward: 0.5,
+          requiredResources: [],
+          constraints: [],
+          score: 0,
+        },
+      ]);
 
       expect(decision.selectedAlternative).toBe('alt1'); // Lower risk, higher reward
       expect(decision.confidence).toBeGreaterThan(0);

@@ -1,22 +1,22 @@
 /**
  * PriorityFeePredictorMLP - Priority Fee Prediction Neural Network
- * 
+ *
  * Tier S Feature #2: 1-3 block lookahead priority fee prediction
- * 
+ *
  * This module implements a lightweight 3-layer neural network that predicts
  * the optimal priority fee for the next 1-3 blocks based on recent history.
- * 
+ *
  * Architecture:
  * - Input layer: 15 historical priority fees (last 15 blocks)
  * - Hidden layer 1: 8 neurons with ReLU activation
  * - Hidden layer 2: 4 neurons with ReLU activation
  * - Output layer: 3 neurons (predictions for next 1, 2, 3 blocks)
- * 
+ *
  * Training:
  * - Online learning every 50-100 blocks
  * - Trains on prediction vs actual priority fee deltas
  * - Uses Adam optimizer equivalent (momentum + adaptive learning)
- * 
+ *
  * Integration: Used by TransactionManager to bid exactly 1-2 wei above predicted
  */
 
@@ -29,10 +29,10 @@ export interface PriorityFeeData {
 }
 
 export interface PriorityFeePrediction {
-  nextBlock: bigint;      // +1 block
-  nextNextBlock: bigint;  // +2 blocks
-  thirdBlock: bigint;     // +3 blocks
-  confidence: number;     // 0.0 to 1.0
+  nextBlock: bigint; // +1 block
+  nextNextBlock: bigint; // +2 blocks
+  thirdBlock: bigint; // +3 blocks
+  confidence: number; // 0.0 to 1.0
 }
 
 export interface PredictorConfig {
@@ -64,7 +64,7 @@ const DEFAULT_CONFIG: PredictorConfig = {
  */
 class Matrix {
   static multiply(a: number[][], b: number[]): number[] {
-    return a.map(row => row.reduce((sum, val, i) => sum + val * b[i], 0));
+    return a.map((row) => row.reduce((sum, val, i) => sum + val * b[i], 0));
   }
 
   static add(a: number[], b: number[]): number[] {
@@ -72,11 +72,11 @@ class Matrix {
   }
 
   static relu(x: number[]): number[] {
-    return x.map(val => Math.max(0, val));
+    return x.map((val) => Math.max(0, val));
   }
 
   static scale(x: number[], factor: number): number[] {
-    return x.map(val => val * factor);
+    return x.map((val) => val * factor);
   }
 }
 
@@ -86,7 +86,7 @@ class Matrix {
 export class PriorityFeePredictorMLP extends EventEmitter {
   private config: PredictorConfig;
   private history: PriorityFeeData[] = [];
-  
+
   // Network weights
   private weightsInputHidden1: number[][] = [];
   private biasHidden1: number[] = [];
@@ -94,7 +94,7 @@ export class PriorityFeePredictorMLP extends EventEmitter {
   private biasHidden2: number[] = [];
   private weightsHidden2Output: number[][] = [];
   private biasOutput: number[] = [];
-  
+
   // Momentum terms for training
   private velocityInputHidden1: number[][] = [];
   private velocityBiasHidden1: number[] = [];
@@ -102,11 +102,11 @@ export class PriorityFeePredictorMLP extends EventEmitter {
   private velocityBiasHidden2: number[] = [];
   private velocityHidden2Output: number[][] = [];
   private velocityBiasOutput: number[] = [];
-  
+
   // Training data
   private trainingExamples: Array<{ input: number[]; target: number[] }> = [];
   private blocksSinceTraining = 0;
-  
+
   // Normalization parameters
   private featureMean = 0;
   private featureStd = 1;
@@ -168,9 +168,9 @@ export class PriorityFeePredictorMLP extends EventEmitter {
    */
   addObservation(blockNumber: number, priorityFee: bigint, timestamp: number): void {
     const data: PriorityFeeData = { blockNumber, priorityFee, timestamp };
-    
+
     this.history.push(data);
-    
+
     // Maintain window size + extra for training
     const maxHistory = this.config.inputWindowSize + 100;
     if (this.history.length > maxHistory) {
@@ -195,7 +195,7 @@ export class PriorityFeePredictorMLP extends EventEmitter {
    */
   private prepareTrainingExample(): void {
     const inputSize = this.config.inputWindowSize;
-    
+
     // Skip if not enough data
     if (this.history.length < inputSize + 3) {
       return;
@@ -204,7 +204,7 @@ export class PriorityFeePredictorMLP extends EventEmitter {
     // Get input features (15 historical fees)
     const inputStart = this.history.length - inputSize - 3;
     const inputData = this.history.slice(inputStart, inputStart + inputSize);
-    const input = inputData.map(d => Number(d.priorityFee));
+    const input = inputData.map((d) => Number(d.priorityFee));
 
     // Get targets (next 3 blocks after input window)
     const target1 = Number(this.history[inputStart + inputSize].priorityFee);
@@ -251,30 +251,32 @@ export class PriorityFeePredictorMLP extends EventEmitter {
   private updateNormalization(): void {
     if (this.trainingExamples.length === 0) return;
 
-    const allValues = this.trainingExamples.flatMap(e => e.input);
+    const allValues = this.trainingExamples.flatMap((e) => e.input);
     this.featureMean = allValues.reduce((a, b) => a + b, 0) / allValues.length;
-    
-    const variance = allValues.reduce((sum, val) => sum + Math.pow(val - this.featureMean, 2), 0) / allValues.length;
+
+    const variance =
+      allValues.reduce((sum, val) => sum + Math.pow(val - this.featureMean, 2), 0) /
+      allValues.length;
     // Use small epsilon if variance is zero to avoid division by zero
     this.featureStd = Math.sqrt(variance) || 1e-8;
   }
 
   /**
    * Train on a single example using backpropagation
-   * 
+   *
    * NOTE: This is a simplified implementation for lightweight operation.
    * Full backpropagation would propagate gradients through all hidden layers.
    * For production with more demanding accuracy requirements, consider:
    * - Full gradient computation through hidden layers
    * - Using a proper ML library (TensorFlow.js, ONNX.js)
    * - More sophisticated optimization (Adam, RMSprop)
-   * 
+   *
    * Current implementation updates output layer only, which is sufficient
    * for basic pattern learning with limited computational overhead.
    */
   private trainSingleExample(input: number[], target: number[]): void {
     // Normalize input
-    const normalizedInput = input.map(x => (x - this.featureMean) / this.featureStd);
+    const normalizedInput = input.map((x) => (x - this.featureMean) / this.featureStd);
 
     // Forward pass
     const hidden1 = Matrix.relu(
@@ -286,7 +288,7 @@ export class PriorityFeePredictorMLP extends EventEmitter {
     const output = Matrix.add(Matrix.multiply(this.weightsHidden2Output, hidden2), this.biasOutput);
 
     // Normalize target
-    const normalizedTarget = target.map(x => (x - this.featureMean) / this.featureStd);
+    const normalizedTarget = target.map((x) => (x - this.featureMean) / this.featureStd);
 
     // Calculate loss (MSE)
     const error = output.map((val, i) => val - normalizedTarget[i]);
@@ -302,8 +304,7 @@ export class PriorityFeePredictorMLP extends EventEmitter {
         this.weightsHidden2Output[i][j] += this.velocityHidden2Output[i][j];
       }
       this.velocityBiasOutput[i] =
-        this.config.momentum * this.velocityBiasOutput[i] -
-        this.config.learningRate * error[i];
+        this.config.momentum * this.velocityBiasOutput[i] - this.config.learningRate * error[i];
       this.biasOutput[i] += this.velocityBiasOutput[i];
     }
   }
@@ -322,8 +323,8 @@ export class PriorityFeePredictorMLP extends EventEmitter {
       return null;
     }
 
-    const input = recentHistory.map(d => Number(d.priorityFee));
-    const normalizedInput = input.map(x => (x - this.featureMean) / this.featureStd);
+    const input = recentHistory.map((d) => Number(d.priorityFee));
+    const normalizedInput = input.map((x) => (x - this.featureMean) / this.featureStd);
 
     // Forward pass
     const hidden1 = Matrix.relu(
@@ -335,7 +336,7 @@ export class PriorityFeePredictorMLP extends EventEmitter {
     const output = Matrix.add(Matrix.multiply(this.weightsHidden2Output, hidden2), this.biasOutput);
 
     // Denormalize output
-    const predictions = output.map(x => x * this.featureStd + this.featureMean);
+    const predictions = output.map((x) => x * this.featureStd + this.featureMean);
 
     // Calculate confidence based on recent prediction accuracy
     const confidence = this.calculateConfidence();
@@ -359,7 +360,7 @@ export class PriorityFeePredictorMLP extends EventEmitter {
 
     // More training data = higher confidence (up to a point)
     const dataConfidence = Math.min(this.trainingExamples.length / 100, 0.8);
-    
+
     return dataConfidence;
   }
 

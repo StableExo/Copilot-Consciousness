@@ -1,6 +1,6 @@
 /**
  * GasPriceOracle - Real-time gas price tracking system
- * 
+ *
  * Fetches gas prices from multiple sources with EIP-1559 support
  * Now supports multi-chain gas price tracking
  */
@@ -9,12 +9,12 @@ import axios from 'axios';
 import { JsonRpcProvider } from 'ethers';
 
 export interface GasPrice {
-  gasPrice: bigint;           // Legacy gas price (for non-EIP-1559)
-  maxFeePerGas: bigint;       // EIP-1559: max total fee willing to pay
+  gasPrice: bigint; // Legacy gas price (for non-EIP-1559)
+  maxFeePerGas: bigint; // EIP-1559: max total fee willing to pay
   maxPriorityFeePerGas: bigint; // EIP-1559: tip to miner
-  baseFee: bigint;            // EIP-1559: current base fee
+  baseFee: bigint; // EIP-1559: current base fee
   timestamp: number;
-  chainId?: number | string;  // Chain identifier
+  chainId?: number | string; // Chain identifier
 }
 
 export type GasPriceTier = 'instant' | 'fast' | 'normal' | 'slow';
@@ -44,7 +44,7 @@ export class GasPriceOracle {
     this.fallbackGasPrice = fallbackGasPrice;
     this.cache = {
       prices: [],
-      lastUpdate: 0
+      lastUpdate: 0,
     };
   }
 
@@ -81,7 +81,7 @@ export class GasPriceOracle {
   async getCurrentGasPrice(tier: GasPriceTier = 'fast'): Promise<GasPrice> {
     // Use cached data if recent (within last 30 seconds)
     const now = Date.now();
-    if (this.cache.prices.length > 0 && (now - this.cache.lastUpdate) < 30000) {
+    if (this.cache.prices.length > 0 && now - this.cache.lastUpdate < 30000) {
       return this.selectTierFromCache(tier);
     }
 
@@ -101,18 +101,20 @@ export class GasPriceOracle {
 
       // Get recommended priority fee
       const feeData = await this.provider.getFeeData();
-      const priorityFee = feeData.maxPriorityFeePerGas ? BigInt(feeData.maxPriorityFeePerGas.toString()) : BigInt(2) * BigInt(10 ** 9); // 2 gwei default
+      const priorityFee = feeData.maxPriorityFeePerGas
+        ? BigInt(feeData.maxPriorityFeePerGas.toString())
+        : BigInt(2) * BigInt(10 ** 9); // 2 gwei default
 
       return {
         baseFee,
-        priorityFee
+        priorityFee,
       };
     } catch (error) {
       console.error('Error fetching EIP-1559 fees:', error);
       // Return fallback values
       return {
         baseFee: BigInt(30) * BigInt(10 ** 9), // 30 gwei
-        priorityFee: BigInt(2) * BigInt(10 ** 9) // 2 gwei
+        priorityFee: BigInt(2) * BigInt(10 ** 9), // 2 gwei
       };
     }
   }
@@ -133,14 +135,14 @@ export class GasPriceOracle {
     // Simple trend analysis
     const older = recentPrices.slice(0, Math.floor(recentPrices.length / 2));
     const newer = recentPrices.slice(Math.floor(recentPrices.length / 2));
-    
+
     const olderAvg = older.reduce((acc, p) => acc + p.baseFee, BigInt(0)) / BigInt(older.length);
     const newerAvg = newer.reduce((acc, p) => acc + p.baseFee, BigInt(0)) / BigInt(newer.length);
 
     // If gas is trending up, add a buffer
     if (newerAvg > olderAvg) {
       const trend = newerAvg - olderAvg;
-      return avg + (trend * BigInt(blocksAhead) / BigInt(5));
+      return avg + (trend * BigInt(blocksAhead)) / BigInt(5);
     }
 
     return avg;
@@ -167,7 +169,7 @@ export class GasPriceOracle {
   clearCache(): void {
     this.cache = {
       prices: [],
-      lastUpdate: 0
+      lastUpdate: 0,
     };
   }
 
@@ -175,10 +177,7 @@ export class GasPriceOracle {
    * Fetch gas price from multiple sources and cache
    */
   private async fetchAndCacheGasPrice(): Promise<void> {
-    const sources = [
-      this.fetchFromNode.bind(this),
-      this.fetchFromEtherscan.bind(this)
-    ];
+    const sources = [this.fetchFromNode.bind(this), this.fetchFromEtherscan.bind(this)];
 
     let gasPrice: GasPrice | null = null;
 
@@ -216,8 +215,12 @@ export class GasPriceOracle {
     const block = await this.provider.getBlock('latest');
 
     const baseFee = block?.baseFeePerGas ? BigInt(block.baseFeePerGas.toString()) : BigInt(0);
-    const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ? BigInt(feeData.maxPriorityFeePerGas.toString()) : BigInt(2) * BigInt(10 ** 9);
-    const maxFeePerGas = feeData.maxFeePerGas ? BigInt(feeData.maxFeePerGas.toString()) : (baseFee * BigInt(2) + maxPriorityFeePerGas);
+    const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas
+      ? BigInt(feeData.maxPriorityFeePerGas.toString())
+      : BigInt(2) * BigInt(10 ** 9);
+    const maxFeePerGas = feeData.maxFeePerGas
+      ? BigInt(feeData.maxFeePerGas.toString())
+      : baseFee * BigInt(2) + maxPriorityFeePerGas;
     const gasPrice = feeData.gasPrice ? BigInt(feeData.gasPrice.toString()) : maxFeePerGas;
 
     return {
@@ -225,7 +228,7 @@ export class GasPriceOracle {
       maxFeePerGas,
       maxPriorityFeePerGas,
       baseFee,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -242,14 +245,14 @@ export class GasPriceOracle {
         params: {
           module: 'gastracker',
           action: 'gasoracle',
-          apikey: this.etherscanApiKey
+          apikey: this.etherscanApiKey,
         },
-        timeout: 5000
+        timeout: 5000,
       });
 
       if (response.data.status === '1' && response.data.result) {
         const result = response.data.result;
-        
+
         // Etherscan returns prices in gwei
         const baseFee = BigInt(Math.floor(parseFloat(result.suggestBaseFee) * 1e9));
         const priorityFee = BigInt(Math.floor(parseFloat(result.FastGasPrice) * 1e9)) - baseFee;
@@ -261,7 +264,7 @@ export class GasPriceOracle {
           maxFeePerGas,
           maxPriorityFeePerGas: priorityFee > BigInt(0) ? priorityFee : BigInt(2) * BigInt(10 ** 9),
           baseFee,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         };
       }
     } catch (error) {
@@ -274,14 +277,14 @@ export class GasPriceOracle {
   // Chain-specific gas price multipliers (relative to Ethereum)
   // Updated with realistic market conditions (as of 2025)
   private static readonly CHAIN_GAS_MULTIPLIERS: Record<number | string, number> = {
-    1: 1.0,           // Ethereum - baseline
-    56: 0.015,        // BSC - much cheaper (~3-5 gwei typical)
-    137: 0.02,        // Polygon - cheaper (~50-200 gwei but much cheaper in USD)
-    43114: 0.05,      // Avalanche - cheaper
-    42161: 0.001,     // Arbitrum - extremely cheap L2 (~0.01-0.1 gwei)
-    10: 0.001,        // Optimism - extremely cheap L2 (~0.01-0.1 gwei)
-    8453: 0.0005,     // Base - extremely cheap L2 (~0.001-0.05 gwei, often <$0.01 per tx)
-    'mainnet-beta': 0.00001 // Solana - extremely cheap
+    1: 1.0, // Ethereum - baseline
+    56: 0.015, // BSC - much cheaper (~3-5 gwei typical)
+    137: 0.02, // Polygon - cheaper (~50-200 gwei but much cheaper in USD)
+    43114: 0.05, // Avalanche - cheaper
+    42161: 0.001, // Arbitrum - extremely cheap L2 (~0.01-0.1 gwei)
+    10: 0.001, // Optimism - extremely cheap L2 (~0.01-0.1 gwei)
+    8453: 0.0005, // Base - extremely cheap L2 (~0.001-0.05 gwei, often <$0.01 per tx)
+    'mainnet-beta': 0.00001, // Solana - extremely cheap
   };
 
   /**
@@ -289,7 +292,7 @@ export class GasPriceOracle {
    */
   private createFallbackGasPrice(chainId?: number | string): GasPrice {
     let fallbackPrice = this.fallbackGasPrice;
-    
+
     // Adjust for specific chains if provided
     if (chainId) {
       const multiplier = GasPriceOracle.CHAIN_GAS_MULTIPLIERS[chainId] || 1.0;
@@ -305,7 +308,7 @@ export class GasPriceOracle {
       maxPriorityFeePerGas: priorityFee,
       baseFee: fallbackPrice,
       timestamp: Date.now(),
-      chainId
+      chainId,
     };
   }
 
@@ -321,20 +324,20 @@ export class GasPriceOracle {
 
     // Calculate multipliers for different tiers
     const multipliers: Record<GasPriceTier, number> = {
-      instant: 1.3,  // 90th percentile - 30% above base
-      fast: 1.15,    // 75th percentile - 15% above base
-      normal: 1.0,   // 50th percentile - at base
-      slow: 0.85     // 25th percentile - 15% below base
+      instant: 1.3, // 90th percentile - 30% above base
+      fast: 1.15, // 75th percentile - 15% above base
+      normal: 1.0, // 50th percentile - at base
+      slow: 0.85, // 25th percentile - 15% below base
     };
 
     const multiplier = multipliers[tier];
-    
+
     return {
       gasPrice: this.applyMultiplier(latest.gasPrice, multiplier),
       maxFeePerGas: this.applyMultiplier(latest.maxFeePerGas, multiplier),
       maxPriorityFeePerGas: this.applyMultiplier(latest.maxPriorityFeePerGas, multiplier),
       baseFee: latest.baseFee,
-      timestamp: latest.timestamp
+      timestamp: latest.timestamp,
     };
   }
 
@@ -347,7 +350,7 @@ export class GasPriceOracle {
 
   /**
    * Get gas price for a specific chain
-   * 
+   *
    * Estimates gas price for different chains based on chain characteristics
    */
   async getChainGasPrice(chainId: number | string): Promise<GasPrice> {
@@ -363,17 +366,19 @@ export class GasPriceOracle {
       maxPriorityFeePerGas: this.applyMultiplier(basePrice.maxPriorityFeePerGas, multiplier),
       baseFee: this.applyMultiplier(basePrice.baseFee, multiplier),
       timestamp: Date.now(),
-      chainId
+      chainId,
     };
   }
 
   /**
    * Get gas prices for multiple chains in parallel
    */
-  async getMultiChainGasPrices(chainIds: (number | string)[]): Promise<Map<number | string, GasPrice>> {
+  async getMultiChainGasPrices(
+    chainIds: (number | string)[]
+  ): Promise<Map<number | string, GasPrice>> {
     const pricesMap = new Map<number | string, GasPrice>();
-    
-    const pricePromises = chainIds.map(async chainId => {
+
+    const pricePromises = chainIds.map(async (chainId) => {
       try {
         const price = await this.getChainGasPrice(chainId);
         return [chainId, price] as [number | string, GasPrice];
@@ -393,13 +398,13 @@ export class GasPriceOracle {
 
   /**
    * Estimate total gas cost for cross-chain path
-   * 
+   *
    * Calculates total gas cost across multiple chains
    */
   async estimateCrossChainGasCost(
     hops: Array<{ chainId: number | string; gasEstimate: number }>
   ): Promise<bigint> {
-    const chainIds = [...new Set(hops.map(h => h.chainId))];
+    const chainIds = [...new Set(hops.map((h) => h.chainId))];
     const gasPrices = await this.getMultiChainGasPrices(chainIds);
 
     let totalCost = BigInt(0);

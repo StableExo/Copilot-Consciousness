@@ -1,9 +1,9 @@
 /**
  * Opportunity Scorer & Ranker
- * 
+ *
  * Adapted from AxionCitadel ArbitrageOpportunity for generalized opportunity
  * evaluation, scoring, and ranking.
- * 
+ *
  * Features:
  * - Multi-criteria evaluation with configurable weights
  * - Value calculation considering costs and risks
@@ -19,7 +19,7 @@ import {
   OpportunityScoringConfig,
   ValueCalculationParams,
   RiskAdjustmentParams,
-  OpportunityComparison
+  OpportunityComparison,
 } from './types/opportunity';
 import {
   scoreOpportunity,
@@ -27,7 +27,7 @@ import {
   rankByScore,
   riskAdjustedScore,
   ScoringCriterion,
-  ScoringMethod
+  ScoringMethod,
 } from './utils/scorer';
 
 /**
@@ -43,7 +43,7 @@ export interface OpportunityScorerStats {
 
 /**
  * Opportunity Scorer & Ranker Engine
- * 
+ *
  * Evaluates and ranks opportunities based on multiple criteria.
  */
 export class OpportunityScorer {
@@ -57,11 +57,11 @@ export class OpportunityScorer {
         cost: { weight: 0.2, type: 'minimize' },
         risk: { weight: 0.25, type: 'minimize' },
         time: { weight: 0.15, type: 'minimize' },
-        complexity: { weight: 0.1, type: 'minimize' }
+        complexity: { weight: 0.1, type: 'minimize' },
       },
       scoringMethod: config.scoringMethod || 'weighted-sum',
       normalization: config.normalization !== false,
-      riskAdjustment: config.riskAdjustment !== false
+      riskAdjustment: config.riskAdjustment !== false,
     };
 
     this.stats = {
@@ -69,7 +69,7 @@ export class OpportunityScorer {
       opportunitiesRanked: 0,
       avgScore: 0,
       highestScore: 0,
-      lowestScore: Infinity
+      lowestScore: Infinity,
     };
   }
 
@@ -97,7 +97,7 @@ export class OpportunityScorer {
     return {
       ...opportunity,
       score: finalScore,
-      status: OpportunityStatus.EVALUATED
+      status: OpportunityStatus.EVALUATED,
     };
   }
 
@@ -105,7 +105,7 @@ export class OpportunityScorer {
    * Score multiple opportunities
    */
   scoreOpportunities(opportunities: Opportunity[]): Opportunity[] {
-    return opportunities.map(opp => this.scoreOpportunity(opp));
+    return opportunities.map((opp) => this.scoreOpportunity(opp));
   }
 
   /**
@@ -116,14 +116,14 @@ export class OpportunityScorer {
     const scored = this.scoreOpportunities(opportunities);
 
     // Rank by score
-    const ranked = rankByScore(scored, opp => opp.score);
+    const ranked = rankByScore(scored, (opp) => opp.score);
 
     // Update with rank information
     const result = ranked.map(({ item, rank, score }) => ({
       ...item,
       rank,
       score,
-      status: OpportunityStatus.EVALUATED
+      status: OpportunityStatus.EVALUATED,
     }));
 
     this.stats.opportunitiesRanked += result.length;
@@ -142,8 +142,9 @@ export class OpportunityScorer {
 
     // Calculate scores for each criterion
     for (const criterion of criteria) {
-      const value = opportunity.criteria[criterion.name] || 
-                    this.getOpportunityValue(opportunity, criterion.name);
+      const value =
+        opportunity.criteria[criterion.name] ||
+        this.getOpportunityValue(opportunity, criterion.name);
       criteriaScores[criterion.name] = value;
     }
 
@@ -164,7 +165,7 @@ export class OpportunityScorer {
       const normalized = normalizedScores[criterion.name];
       const weighted = normalized * criterion.weight;
       weightedScores[criterion.name] = weighted;
-      
+
       // Apply type (maximize/minimize)
       if (criterion.type === 'minimize') {
         totalScore -= weighted;
@@ -178,7 +179,7 @@ export class OpportunityScorer {
       criteriaScores,
       normalizedScores,
       weightedScores,
-      totalScore: Math.max(0, totalScore)
+      totalScore: Math.max(0, totalScore),
     };
   }
 
@@ -189,7 +190,7 @@ export class OpportunityScorer {
     const criteria = this.prepareCriteria();
 
     // Prepare alternatives (opportunities as records)
-    const alternatives = opportunities.map(opp => {
+    const alternatives = opportunities.map((opp) => {
       const record: Record<string, number> = {};
       for (const criterion of criteria) {
         record[criterion.name] = this.getOpportunityValue(opp, criterion.name);
@@ -204,7 +205,7 @@ export class OpportunityScorer {
     const rankedOpps = opportunities.map((opp, index) => ({
       ...opp,
       score: scores[index],
-      status: OpportunityStatus.EVALUATED
+      status: OpportunityStatus.EVALUATED,
     }));
 
     // Sort by score descending
@@ -220,13 +221,13 @@ export class OpportunityScorer {
     return {
       opportunities: rankedOpps,
       method: 'topsis',
-      criteria: criteria.map(c => c.name),
+      criteria: criteria.map((c) => c.name),
       scores,
       normalized: true,
       metadata: {
         timestamp: new Date(),
-        totalOpportunities: opportunities.length
-      }
+        totalOpportunities: opportunities.length,
+      },
     };
   }
 
@@ -246,11 +247,14 @@ export class OpportunityScorer {
     const totalCosts = Object.values(costs).reduce((sum, cost) => sum + cost, 0);
 
     // Calculate risk-adjusted value
-    const avgRisk = Object.values(risks).reduce((sum, risk) => sum + risk, 0) / Object.values(risks).length;
+    const avgRisk =
+      Object.values(risks).reduce((sum, risk) => sum + risk, 0) / Object.values(risks).length;
     const riskAdjustment = 1 - avgRisk;
 
     // Calculate time value adjustment (discount future value)
-    const avgTime = Object.values(timeFactors).reduce((sum, time) => sum + time, 0) / Object.values(timeFactors).length;
+    const avgTime =
+      Object.values(timeFactors).reduce((sum, time) => sum + time, 0) /
+      Object.values(timeFactors).length;
     const discountRate = params.discountRate || 0.1;
     const timeAdjustment = 1 / (1 + discountRate * avgTime);
 
@@ -301,7 +305,7 @@ export class OpportunityScorer {
       value: opp1.value - opp2.value,
       cost: opp1.cost - opp2.cost,
       risk: opp1.risk - opp2.risk,
-      complexity: opp1.complexity - opp2.complexity
+      complexity: opp1.complexity - opp2.complexity,
     };
 
     const reasoning: string[] = [];
@@ -327,7 +331,7 @@ export class OpportunityScorer {
       opportunities: [scored1, scored2],
       winner,
       differentials,
-      reasoning
+      reasoning,
     };
   }
 
@@ -338,7 +342,7 @@ export class OpportunityScorer {
     return Object.entries(this.config.criteria).map(([name, config]) => ({
       name,
       weight: config.weight,
-      type: config.type
+      type: config.type,
     }));
   }
 
@@ -357,7 +361,7 @@ export class OpportunityScorer {
       cost: 'cost',
       risk: 'risk',
       time: 'timeToRealize',
-      complexity: 'complexity'
+      complexity: 'complexity',
     };
 
     const property = mapping[criterion];
@@ -374,7 +378,7 @@ export class OpportunityScorer {
   private updateScoreStats(score: number): void {
     this.stats.highestScore = Math.max(this.stats.highestScore, score);
     this.stats.lowestScore = Math.min(this.stats.lowestScore, score);
-    
+
     // Update average
     const total = this.stats.avgScore * (this.stats.opportunitiesScored - 1) + score;
     this.stats.avgScore = total / this.stats.opportunitiesScored;
@@ -396,7 +400,7 @@ export class OpportunityScorer {
       opportunitiesRanked: 0,
       avgScore: 0,
       highestScore: 0,
-      lowestScore: Infinity
+      lowestScore: Infinity,
     };
   }
 }

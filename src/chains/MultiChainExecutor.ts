@@ -1,6 +1,6 @@
 /**
  * MultiChainExecutor - Execute cross-chain arbitrage paths
- * 
+ *
  * Coordinates swaps and bridges across multiple chains with error handling
  * and emergency recovery
  */
@@ -63,11 +63,11 @@ export class MultiChainExecutor {
       // Execute each hop in sequence
       for (let i = 0; i < path.hops.length; i++) {
         const hop = path.hops[i];
-        
+
         const step: ExecutionStep = {
           hop,
           status: 'pending',
-          timestamp: Date.now()
+          timestamp: Date.now(),
         };
         steps.push(step);
 
@@ -80,7 +80,7 @@ export class MultiChainExecutor {
             step.txHash = bridgeResult.txHash;
             txHashes.push(bridgeResult.txHash);
             currentAmount = bridgeResult.amountOut;
-            
+
             // Wait for bridge completion with timeout
             const bridgeCompleted = await this.waitForBridge(
               bridgeResult.txHash,
@@ -111,7 +111,7 @@ export class MultiChainExecutor {
         } catch (error) {
           step.status = 'failed';
           step.error = error instanceof Error ? error.message : String(error);
-          
+
           // Attempt recovery if enabled
           if (this.config.enableEmergencyRecovery) {
             await this.attemptRecovery(path, i, currentAmount);
@@ -131,11 +131,11 @@ export class MultiChainExecutor {
         actualProfit,
         executionTime,
         hopsCompleted: path.hops.length,
-        txHashes
+        txHashes,
       };
     } catch (error) {
       const executionTime = Date.now() - startTime;
-      const completedHops = steps.filter(s => s.status === 'completed').length;
+      const completedHops = steps.filter((s) => s.status === 'completed').length;
 
       return {
         success: false,
@@ -143,7 +143,7 @@ export class MultiChainExecutor {
         executionTime,
         hopsCompleted: completedHops,
         error: error instanceof Error ? error.message : String(error),
-        txHashes
+        txHashes,
       };
     } finally {
       this.activeExecutions.delete(executionId);
@@ -155,15 +155,13 @@ export class MultiChainExecutor {
    */
   async executeMultiplePaths(paths: CrossChainPath[]): Promise<ExecutionResult[]> {
     const results: ExecutionResult[] = [];
-    
+
     // Execute in batches respecting concurrency limit
     const batchSize = this.config.maxConcurrentPaths;
-    
+
     for (let i = 0; i < paths.length; i += batchSize) {
       const batch = paths.slice(i, i + batchSize);
-      const batchResults = await Promise.allSettled(
-        batch.map(path => this.executePath(path))
-      );
+      const batchResults = await Promise.allSettled(batch.map((path) => this.executePath(path)));
 
       for (const result of batchResults) {
         if (result.status === 'fulfilled') {
@@ -176,7 +174,7 @@ export class MultiChainExecutor {
             executionTime: 0,
             hopsCompleted: 0,
             error: result.reason instanceof Error ? result.reason.message : String(result.reason),
-            txHashes: []
+            txHashes: [],
           });
         }
       }
@@ -208,32 +206,31 @@ export class MultiChainExecutor {
     }
 
     const transaction = await this.bridgeManager.executeBridge(route);
-    
+
     return {
       txHash: transaction.txHash,
-      amountOut: amount - route.estimatedFee
+      amountOut: amount - route.estimatedFee,
     };
   }
 
   /**
    * Execute a swap hop
    */
-  private async executeSwapHop(
-    hop: CrossChainHop
-  ): Promise<{ txHash: string; amountOut: bigint }> {
+  private async executeSwapHop(hop: CrossChainHop): Promise<{ txHash: string; amountOut: bigint }> {
     const adapter = this.adapters.get(hop.chainId);
-    
+
     if (!adapter) {
       throw new Error(`Adapter not found for chain ${hop.chainId}`);
     }
 
     const deadline = Math.floor(Date.now() / 1000) + 1200; // 20 minutes
-    const minAmountOut = hop.amountOut * BigInt(100 - Math.floor(this.config.slippageTolerance * 100)) / BigInt(100);
+    const minAmountOut =
+      (hop.amountOut * BigInt(100 - Math.floor(this.config.slippageTolerance * 100))) / BigInt(100);
 
     // Note: In production, recipient should be provided via constructor or configuration
     // Using zero address here would result in token loss - this is a placeholder
     const recipientAddress = '0x0000000000000000000000000000000000000000';
-    
+
     const txHash = await adapter.executeSwap(
       {
         tokenIn: hop.tokenIn,
@@ -241,14 +238,14 @@ export class MultiChainExecutor {
         amountIn: hop.amountIn,
         minAmountOut,
         deadline,
-        recipient: recipientAddress
+        recipient: recipientAddress,
       },
       hop.poolAddress
     );
 
     return {
       txHash,
-      amountOut: hop.amountOut
+      amountOut: hop.amountOut,
     };
   }
 
@@ -273,12 +270,12 @@ export class MultiChainExecutor {
     currentAmount: bigint
   ): Promise<void> {
     console.log(`Attempting recovery after hop ${failedHopIndex}`);
-    
+
     // Recovery strategies:
     // 1. Try to return funds to original chain
     // 2. Convert to stablecoin on current chain
     // 3. Wait and retry
-    
+
     // Simplified recovery - just log for now
     console.log(`Recovery needed: ${currentAmount} stuck after ${failedHopIndex} hops`);
   }
@@ -288,7 +285,7 @@ export class MultiChainExecutor {
    */
   async executeWithRetry(path: CrossChainPath): Promise<ExecutionResult> {
     let lastError: Error | undefined;
-    
+
     for (let attempt = 0; attempt < this.config.retryAttempts; attempt++) {
       try {
         const result = await this.executePath(path);
@@ -303,7 +300,7 @@ export class MultiChainExecutor {
       if (attempt < this.config.retryAttempts - 1) {
         // Exponential backoff: 2^attempt * 1000ms
         const delay = Math.pow(2, attempt) * 1000;
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
 
@@ -314,7 +311,7 @@ export class MultiChainExecutor {
       executionTime: 0,
       hopsCompleted: 0,
       error: lastError?.message || 'All retry attempts failed',
-      txHashes: []
+      txHashes: [],
     };
   }
 
@@ -345,7 +342,7 @@ export class MultiChainExecutor {
       activeExecutions: this.activeExecutions.size,
       maxConcurrentPaths: this.config.maxConcurrentPaths,
       retryAttempts: this.config.retryAttempts,
-      recoveryEnabled: this.config.enableEmergencyRecovery
+      recoveryEnabled: this.config.enableEmergencyRecovery,
     };
   }
 }

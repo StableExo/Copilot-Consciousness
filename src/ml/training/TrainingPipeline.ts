@@ -1,6 +1,6 @@
 /**
  * TrainingPipeline - Automated model training and management
- * 
+ *
  * Handles scheduled retraining, incremental learning, performance monitoring,
  * A/B testing, versioning, and automated deployment of ML models.
  */
@@ -130,7 +130,7 @@ export class TrainingPipeline extends EventEmitter {
    */
   async trainModel(modelType: string): Promise<TrainingJob> {
     const jobId = `${modelType}-${Date.now()}`;
-    
+
     const job: TrainingJob = {
       id: jobId,
       modelType: modelType as any,
@@ -156,7 +156,7 @@ export class TrainingPipeline extends EventEmitter {
 
       // Train based on model type
       let metrics: Record<string, number> = {};
-      
+
       switch (modelType) {
         case 'lstm':
           metrics = await this.trainLSTM();
@@ -175,7 +175,7 @@ export class TrainingPipeline extends EventEmitter {
       job.status = 'completed';
       job.endTime = Date.now();
       job.metrics = metrics;
-      
+
       console.log(`[TrainingPipeline] ${modelType} training completed:`, metrics);
       this.emit('job_completed', job);
 
@@ -187,7 +187,7 @@ export class TrainingPipeline extends EventEmitter {
       job.status = 'failed';
       job.endTime = Date.now();
       job.error = error instanceof Error ? error.message : String(error);
-      
+
       console.error(`[TrainingPipeline] Training failed for ${modelType}:`, error);
       this.emit('job_failed', job);
 
@@ -264,10 +264,7 @@ export class TrainingPipeline extends EventEmitter {
   /**
    * Evaluate model performance and decide whether to deploy
    */
-  private async evaluateModel(
-    modelType: string,
-    metrics: Record<string, number>
-  ): Promise<void> {
+  private async evaluateModel(modelType: string, metrics: Record<string, number>): Promise<void> {
     const accuracy = metrics.accuracy || metrics.forecast_accuracy || 0;
 
     // Check if model meets minimum threshold
@@ -275,19 +272,21 @@ export class TrainingPipeline extends EventEmitter {
       this.emitAlert(
         'warning',
         'accuracy_drop',
-        `${modelType} accuracy (${accuracy.toFixed(3)}) below threshold (${this.trainingConfig.performanceThreshold.accuracy})`
+        `${modelType} accuracy (${accuracy.toFixed(3)}) below threshold (${
+          this.trainingConfig.performanceThreshold.accuracy
+        })`
       );
       return;
     }
 
     console.log(`[TrainingPipeline] ${modelType} model evaluation passed`);
-    
+
     // In production, this would:
     // 1. Compare with current production model
     // 2. Run A/B test if needed
     // 3. Deploy new model if better
     // 4. Update model metadata
-    
+
     this.emit('model_deployed', {
       modelType,
       metrics,
@@ -352,11 +351,7 @@ export class TrainingPipeline extends EventEmitter {
   /**
    * Emit model alert
    */
-  private emitAlert(
-    severity: 'info' | 'warning' | 'error',
-    type: string,
-    message: string
-  ): void {
+  private emitAlert(severity: 'info' | 'warning' | 'error', type: string, message: string): void {
     const alert: ModelAlert = {
       severity,
       type: type as any,
@@ -383,14 +378,14 @@ export class TrainingPipeline extends EventEmitter {
    */
   getStats() {
     const jobs = Array.from(this.trainingJobs.values());
-    
+
     return {
       isRunning: this.isRunning,
       trainingDataCount: this.trainingData.length,
       totalJobs: jobs.length,
-      completedJobs: jobs.filter(j => j.status === 'completed').length,
-      failedJobs: jobs.filter(j => j.status === 'failed').length,
-      runningJobs: jobs.filter(j => j.status === 'running').length,
+      completedJobs: jobs.filter((j) => j.status === 'completed').length,
+      failedJobs: jobs.filter((j) => j.status === 'failed').length,
+      runningJobs: jobs.filter((j) => j.status === 'running').length,
       scheduledModels: Array.from(this.retrainIntervals.keys()),
     };
   }

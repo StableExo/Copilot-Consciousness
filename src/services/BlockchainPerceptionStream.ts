@@ -8,7 +8,11 @@ export class BlockchainPerceptionStream {
   private memorySystem: MemorySystem;
   private temporalAwareness: TemporalAwareness;
 
-  constructor(rpcProvider: RPCProvider, memorySystem: MemorySystem, temporalAwareness: TemporalAwareness) {
+  constructor(
+    rpcProvider: RPCProvider,
+    memorySystem: MemorySystem,
+    temporalAwareness: TemporalAwareness
+  ) {
     this.rpcProvider = rpcProvider;
     this.memorySystem = memorySystem;
     this.temporalAwareness = temporalAwareness;
@@ -18,7 +22,7 @@ export class BlockchainPerceptionStream {
     this.rpcProvider.getProvider().on('block', async (blockNumber) => {
       const block = await this.rpcProvider.getProvider().getBlock(blockNumber);
       if (!block) return;
-      
+
       const logData = {
         eventType: 'NEW_BLOCK',
         blockNumber: block.number,
@@ -37,7 +41,7 @@ export class BlockchainPerceptionStream {
 
   private pollPriceData(blockNumber: number) {
     // TODO: Implement Chainlink price polling
-    const price = 2500.50; // mock price
+    const price = 2500.5; // mock price
     const logData = {
       eventType: 'PRICE_UPDATE',
       pair: 'ETH/USD',

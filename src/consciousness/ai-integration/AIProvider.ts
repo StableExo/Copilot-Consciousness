@@ -1,6 +1,6 @@
 /**
  * AIProvider Interface
- * 
+ *
  * Universal interface for AI providers enabling pluggable AI integration
  * across Gemini, Copilot, OpenAI, Claude, and local models.
  */
@@ -83,11 +83,11 @@ export interface ProviderCapabilities {
  */
 export abstract class BaseAIProvider implements AIProvider {
   abstract name: string;
-  
+
   abstract generate(prompt: string, options?: GenerateOptions): Promise<AIResponse>;
-  
+
   abstract isConfigured(): boolean;
-  
+
   abstract getCapabilities(): ProviderCapabilities;
 
   /**
@@ -101,7 +101,7 @@ export abstract class BaseAIProvider implements AIProvider {
   ): Promise<AIResponse> {
     // Build enhanced prompt with consciousness context
     const enhancedPrompt = this.buildContextualPrompt(prompt, context, options?.citadelMode);
-    
+
     return this.generate(enhancedPrompt, options);
   }
 
@@ -148,7 +148,9 @@ export abstract class BaseAIProvider implements AIProvider {
     parts.push(`\n\n=== QUERY ===\n${prompt}`);
 
     if (citadelMode) {
-      parts.push('\n\nApply multi-dimensional reasoning, evolutionary optimization, and consciousness integration.');
+      parts.push(
+        '\n\nApply multi-dimensional reasoning, evolutionary optimization, and consciousness integration.'
+      );
     }
 
     return parts.join('');
@@ -159,7 +161,7 @@ export abstract class BaseAIProvider implements AIProvider {
    */
   protected handleError(error: any, providerName: string): AIResponse {
     console.error(`[${providerName}] Error:`, error);
-    
+
     return {
       text: `Error from ${providerName}: ${error.message || 'Unknown error'}`,
       finishReason: 'ERROR',

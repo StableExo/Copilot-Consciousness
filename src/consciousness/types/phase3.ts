@@ -1,6 +1,6 @@
 /**
  * Phase 3: Consciousness Deepening - Extended Types
- * 
+ *
  * Enhanced types for episodic memory, adversarial pattern recognition,
  * and self-reflection capabilities.
  */
@@ -30,7 +30,7 @@ export interface ArbitrageExecution {
 
 /**
  * Arbitrage Episode - Episodic Memory Representation
- * 
+ *
  * Captures complete context of an arbitrage opportunity evaluation and execution
  * for long-term memory and pattern learning.
  */
@@ -39,7 +39,7 @@ export interface ArbitrageEpisode {
   episodeId: string;
   timestamp: number;
   cycleNumber: number;
-  
+
   // Market state at decision time
   marketState: {
     timestamp: number;
@@ -50,7 +50,7 @@ export interface ArbitrageEpisode {
     blockNumber: number;
     volatility: number;
   };
-  
+
   // Opportunity assessment
   opportunity: {
     profit: number;
@@ -61,7 +61,7 @@ export interface ArbitrageEpisode {
     complexity: number;
     liquidityDepth: number;
   };
-  
+
   // MEV context
   mevContext: {
     mevRisk: number;
@@ -70,7 +70,7 @@ export interface ArbitrageEpisode {
     competitorCount: number;
     recentMEVLoss: number;
   };
-  
+
   // Decision made
   decision: {
     executed: boolean;
@@ -79,7 +79,7 @@ export interface ArbitrageEpisode {
     riskScore: number;
     confidenceScore: number;
   };
-  
+
   // Execution outcome (if executed)
   outcome?: {
     success: boolean;
@@ -90,7 +90,7 @@ export interface ArbitrageEpisode {
     slippage?: number;
     executionTime?: number;
   };
-  
+
   // Lessons learned
   lessons?: {
     predictionAccuracy: number;
@@ -101,24 +101,24 @@ export interface ArbitrageEpisode {
 
 /**
  * Adversarial Pattern
- * 
+ *
  * Represents detected patterns in adversarial MEV behavior
  */
 export interface AdversarialPattern {
   patternId: string;
   detectedAt: number;
-  
+
   // Pattern characteristics
   type: 'frontrun' | 'sandwich' | 'backrun' | 'liquidation_competition' | 'multi_bot_coordination';
   description: string;
   confidence: number;
-  
+
   // Frequency and timing
   occurrences: number;
   firstSeen: number;
   lastSeen: number;
   timeOfDayDistribution: Map<number, number>; // hour -> count
-  
+
   // Adversary characteristics
   adversaries: {
     addresses: string[];
@@ -127,7 +127,7 @@ export interface AdversarialPattern {
     successRate: number;
     avgProfitPerTx: number;
   };
-  
+
   // Our experience with this pattern
   ourExperience: {
     encounterCount: number;
@@ -135,7 +135,7 @@ export interface AdversarialPattern {
     successfulCounterCount: number;
     avgLossPerEncounter: number;
   };
-  
+
   // Counter-strategy
   counterStrategy?: {
     description: string;
@@ -146,18 +146,18 @@ export interface AdversarialPattern {
 
 /**
  * Strategic Reflection
- * 
+ *
  * Self-reflection on strategic decisions and performance
  */
 export interface StrategyReflection {
   reflectionId: string;
   timestamp: number;
-  
+
   // Time period analyzed
   periodStart: number;
   periodEnd: number;
   executionCount: number;
-  
+
   // Performance metrics
   performance: {
     totalProfit: number;
@@ -168,7 +168,7 @@ export interface StrategyReflection {
     avgGasEfficiency: number;
     mevLossRate: number;
   };
-  
+
   // Decision quality analysis
   decisionQuality: {
     falsePositives: number; // Should have executed but didn't
@@ -179,7 +179,7 @@ export interface StrategyReflection {
     precision: number;
     recall: number;
   };
-  
+
   // Strategic insights
   insights: {
     mostProfitableConditions: string[];
@@ -188,7 +188,7 @@ export interface StrategyReflection {
     optimalProfitThreshold: number;
     bestTimeWindows: string[];
   };
-  
+
   // Recommendations for improvement
   recommendations: {
     parameterAdjustments: Map<string, number>;
@@ -196,7 +196,7 @@ export interface StrategyReflection {
     riskManagementTips: string[];
     confidence: number;
   };
-  
+
   // Meta-learning insights
   learningProgress: {
     improvementTrend: 'improving' | 'stable' | 'declining';
@@ -208,13 +208,13 @@ export interface StrategyReflection {
 
 /**
  * Consciousness State Snapshot
- * 
+ *
  * Complete snapshot of consciousness state for persistence and analysis
  */
 export interface ConsciousnessSnapshot {
   timestamp: number;
   version: string;
-  
+
   // Memory statistics
   memoryStats: {
     episodeCount: number;
@@ -224,7 +224,7 @@ export interface ConsciousnessSnapshot {
     oldestEpisode: number;
     newestEpisode: number;
   };
-  
+
   // Current state
   currentState: {
     learningRate: number;
@@ -233,7 +233,7 @@ export interface ConsciousnessSnapshot {
     ethicalThreshold: number;
     confidence: number;
   };
-  
+
   // Key insights
   keyInsights: {
     topPatterns: string[];
@@ -241,7 +241,7 @@ export interface ConsciousnessSnapshot {
     bestStrategies: string[];
     worstConditions: string[];
   };
-  
+
   // Performance summary
   performanceSummary: {
     totalExecutions: number;

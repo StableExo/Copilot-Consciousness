@@ -3,17 +3,17 @@ import { JsonRpcProvider } from 'ethers';
 import { Connection } from '@solana/web3.js';
 
 const getAccountInfoMock = jest.fn().mockResolvedValue({
-    executable: true,
+  executable: true,
 });
 
 jest.mock('@solana/web3.js', () => {
-    const originalWeb3 = jest.requireActual('@solana/web3.js');
-    return {
-        ...originalWeb3,
-        Connection: jest.fn().mockImplementation(() => ({
-            getAccountInfo: getAccountInfoMock,
-        })),
-    };
+  const originalWeb3 = jest.requireActual('@solana/web3.js');
+  return {
+    ...originalWeb3,
+    Connection: jest.fn().mockImplementation(() => ({
+      getAccountInfo: getAccountInfoMock,
+    })),
+  };
 });
 
 describe('DEXRegistry', () => {
@@ -23,7 +23,7 @@ describe('DEXRegistry', () => {
   beforeEach(() => {
     getCodeMock = jest.fn().mockResolvedValue('0x123');
     const mockProvider = {
-        getCode: getCodeMock,
+      getCode: getCodeMock,
     };
     // In ethers v6, JsonRpcProvider is exported directly, so we mock the whole module
     jest.spyOn(JsonRpcProvider.prototype, 'getCode').mockImplementation(getCodeMock);
@@ -71,8 +71,8 @@ describe('DEXRegistry', () => {
   it('should return the correct DEXes for Base network (8453)', () => {
     const baseDEXes = registry.getDEXesByNetwork('8453');
     expect(baseDEXes.length).toBe(16); // Updated: Base network has 16 DEXes
-    
-    const dexNames = baseDEXes.map(d => d.name);
+
+    const dexNames = baseDEXes.map((d) => d.name);
     expect(dexNames).toContain('Uniswap V3 on Base');
     expect(dexNames).toContain('Aerodrome on Base');
     expect(dexNames).toContain('BaseSwap');
@@ -82,7 +82,7 @@ describe('DEXRegistry', () => {
     expect(dexNames).toContain('Curve on Base');
     expect(dexNames).toContain('KyberSwap on Base');
     expect(dexNames).toContain('1inch on Base');
-    
+
     // Verify high-priority DEXes come first
     expect(baseDEXes[0].name).toBe('Uniswap V3 on Base');
     expect(baseDEXes[0].priority).toBe(1);
@@ -95,8 +95,8 @@ describe('DEXRegistry', () => {
   it('should return the correct DEXes for Optimism network (10)', () => {
     const optimismDEXes = registry.getDEXesByNetwork('10');
     expect(optimismDEXes.length).toBe(10); // Top 10 Optimism DEXes
-    
-    const dexNames = optimismDEXes.map(d => d.name);
+
+    const dexNames = optimismDEXes.map((d) => d.name);
     expect(dexNames).toContain('Velodrome V2 on Optimism');
     expect(dexNames).toContain('Uniswap V3 on Optimism');
     expect(dexNames).toContain('Synthetix on Optimism');
@@ -107,7 +107,7 @@ describe('DEXRegistry', () => {
     expect(dexNames).toContain('1inch V5 on Optimism');
     expect(dexNames).toContain('KyberSwap V3 on Optimism');
     expect(dexNames).toContain('DODO V3 on Optimism');
-    
+
     // Verify high-priority DEXes come first (by volume)
     expect(optimismDEXes[0].name).toBe('Velodrome V2 on Optimism');
     expect(optimismDEXes[0].priority).toBe(1);

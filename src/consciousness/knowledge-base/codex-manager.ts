@@ -1,6 +1,6 @@
 /**
  * Codex Manager
- * 
+ *
  * Adapted from AxionCitadel's codex_manager.py and bloodhound.py
  * Manages knowledge base with dynamic indexing and semantic organization
  */
@@ -46,7 +46,7 @@ export class CodexManager {
       entries: new Map(),
       categories: new Map(),
       tags: new Map(),
-      contentIndex: new Map()
+      contentIndex: new Map(),
     };
   }
 
@@ -61,7 +61,7 @@ export class CodexManager {
     importance: number = 0.5
   ): KnowledgeEntry {
     const id = this.generateId('knowledge');
-    
+
     const entry: KnowledgeEntry = {
       id,
       title,
@@ -73,7 +73,7 @@ export class CodexManager {
       createdAt: Date.now(),
       updatedAt: Date.now(),
       accessCount: 0,
-      metadata: {}
+      metadata: {},
     };
 
     this.indexEntry(entry);
@@ -98,7 +98,7 @@ export class CodexManager {
     // Apply updates
     Object.assign(entry, {
       ...updates,
-      updatedAt: Date.now()
+      updatedAt: Date.now(),
     });
 
     // Re-index
@@ -116,7 +116,7 @@ export class CodexManager {
     if (entry) {
       entry.accessCount++;
       entry.lastAccessed = Date.now();
-      
+
       // Increase importance with usage
       entry.importance = Math.min(1, entry.importance + 0.001);
     }
@@ -126,18 +126,21 @@ export class CodexManager {
   /**
    * Search knowledge base
    */
-  search(query: string, options: {
-    category?: string;
-    tags?: string[];
-    limit?: number;
-    minImportance?: number;
-  } = {}): SearchResult[] {
+  search(
+    query: string,
+    options: {
+      category?: string;
+      tags?: string[];
+      limit?: number;
+      minImportance?: number;
+    } = {}
+  ): SearchResult[] {
     const queryTerms = this.tokenize(query);
     const results: SearchResult[] = [];
 
     // Get candidate entries
     let candidates: Set<string> = new Set();
-    
+
     if (options.category) {
       candidates = this.index.categories.get(options.category) || new Set();
     } else {
@@ -147,17 +150,17 @@ export class CodexManager {
     // Filter by tags if specified
     if (options.tags && options.tags.length > 0) {
       const tagMatches = new Set<string>();
-      options.tags.forEach(tag => {
+      options.tags.forEach((tag) => {
         const tagEntries = this.index.tags.get(tag.toLowerCase());
         if (tagEntries) {
-          tagEntries.forEach(id => tagMatches.add(id));
+          tagEntries.forEach((id) => tagMatches.add(id));
         }
       });
-      candidates = new Set([...candidates].filter(id => tagMatches.has(id)));
+      candidates = new Set([...candidates].filter((id) => tagMatches.has(id)));
     }
 
     // Score each candidate
-    candidates.forEach(id => {
+    candidates.forEach((id) => {
       const entry = this.index.entries.get(id);
       if (!entry) return;
 
@@ -204,7 +207,7 @@ export class CodexManager {
   getByCategory(category: string): KnowledgeEntry[] {
     const ids = this.index.categories.get(category) || new Set();
     return Array.from(ids)
-      .map(id => this.index.entries.get(id))
+      .map((id) => this.index.entries.get(id))
       .filter((entry): entry is KnowledgeEntry => entry !== undefined);
   }
 
@@ -214,7 +217,7 @@ export class CodexManager {
   getByTag(tag: string): KnowledgeEntry[] {
     const ids = this.index.tags.get(tag.toLowerCase()) || new Set();
     return Array.from(ids)
-      .map(id => this.index.entries.get(id))
+      .map((id) => this.index.entries.get(id))
       .filter((entry): entry is KnowledgeEntry => entry !== undefined);
   }
 
@@ -228,14 +231,14 @@ export class CodexManager {
     const related = new Map<string, number>(); // entry ID -> relevance score
 
     // Add direct references
-    entry.references.forEach(refId => {
+    entry.references.forEach((refId) => {
       related.set(refId, 1.0);
     });
 
     // Add entries with shared tags
-    entry.tags.forEach(tag => {
+    entry.tags.forEach((tag) => {
       const tagEntries = this.index.tags.get(tag.toLowerCase()) || new Set();
-      tagEntries.forEach(id => {
+      tagEntries.forEach((id) => {
         if (id !== entryId) {
           related.set(id, (related.get(id) || 0) + 0.5);
         }
@@ -244,7 +247,7 @@ export class CodexManager {
 
     // Add entries in same category
     const categoryEntries = this.index.categories.get(entry.category) || new Set();
-    categoryEntries.forEach(id => {
+    categoryEntries.forEach((id) => {
       if (id !== entryId) {
         related.set(id, (related.get(id) || 0) + 0.3);
       }
@@ -275,15 +278,9 @@ export class CodexManager {
       totalEntries: entries.length,
       totalCategories: this.index.categories.size,
       totalTags: this.index.tags.size,
-      mostAccessed: entries
-        .sort((a, b) => b.accessCount - a.accessCount)
-        .slice(0, 10),
-      mostImportant: entries
-        .sort((a, b) => b.importance - a.importance)
-        .slice(0, 10),
-      recentlyUpdated: entries
-        .sort((a, b) => b.updatedAt - a.updatedAt)
-        .slice(0, 10)
+      mostAccessed: entries.sort((a, b) => b.accessCount - a.accessCount).slice(0, 10),
+      mostImportant: entries.sort((a, b) => b.importance - a.importance).slice(0, 10),
+      recentlyUpdated: entries.sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 10),
     };
   }
 
@@ -310,7 +307,7 @@ export class CodexManager {
     this.index.tags.clear();
     this.index.contentIndex.clear();
 
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
       this.indexEntry(entry);
     });
   }
@@ -326,7 +323,7 @@ export class CodexManager {
     this.index.categories.get(entry.category)!.add(entry.id);
 
     // Index by tags
-    entry.tags.forEach(tag => {
+    entry.tags.forEach((tag) => {
       const normalizedTag = tag.toLowerCase();
       if (!this.index.tags.has(normalizedTag)) {
         this.index.tags.set(normalizedTag, new Set());
@@ -336,7 +333,7 @@ export class CodexManager {
 
     // Index content words
     const words = this.tokenize(entry.title + ' ' + entry.content);
-    words.forEach(word => {
+    words.forEach((word) => {
       if (!this.index.contentIndex.has(word)) {
         this.index.contentIndex.set(word, new Set());
       }
@@ -352,7 +349,7 @@ export class CodexManager {
     }
 
     // Remove from tag indexes
-    entry.tags.forEach(tag => {
+    entry.tags.forEach((tag) => {
       const tagSet = this.index.tags.get(tag.toLowerCase());
       if (tagSet) {
         tagSet.delete(entry.id);
@@ -361,7 +358,7 @@ export class CodexManager {
 
     // Remove from content index
     const words = this.tokenize(entry.title + ' ' + entry.content);
-    words.forEach(word => {
+    words.forEach((word) => {
       const wordSet = this.index.contentIndex.get(word);
       if (wordSet) {
         wordSet.delete(entry.id);
@@ -374,7 +371,7 @@ export class CodexManager {
 
     // Title matches (high weight)
     const titleTerms = this.tokenize(entry.title);
-    queryTerms.forEach(term => {
+    queryTerms.forEach((term) => {
       if (titleTerms.includes(term)) {
         score += 10;
       }
@@ -382,34 +379,32 @@ export class CodexManager {
 
     // Content matches (medium weight)
     const contentTerms = this.tokenize(entry.content);
-    queryTerms.forEach(term => {
+    queryTerms.forEach((term) => {
       if (contentTerms.includes(term)) {
         score += 5;
       }
     });
 
     // Tag matches (medium-high weight)
-    const normalizedTags = entry.tags.map(t => t.toLowerCase());
-    queryTerms.forEach(term => {
+    const normalizedTags = entry.tags.map((t) => t.toLowerCase());
+    queryTerms.forEach((term) => {
       if (normalizedTags.includes(term)) {
         score += 7;
       }
     });
 
     // Boost by importance
-    score *= (1 + entry.importance);
+    score *= 1 + entry.importance;
 
     // Boost by access count (popular entries)
-    score *= (1 + Math.log1p(entry.accessCount) * 0.1);
+    score *= 1 + Math.log1p(entry.accessCount) * 0.1;
 
     return score;
   }
 
   private getMatchedTerms(entry: KnowledgeEntry, queryTerms: string[]): string[] {
-    const allTerms = this.tokenize(
-      entry.title + ' ' + entry.content + ' ' + entry.tags.join(' ')
-    );
-    return queryTerms.filter(term => allTerms.includes(term));
+    const allTerms = this.tokenize(entry.title + ' ' + entry.content + ' ' + entry.tags.join(' '));
+    return queryTerms.filter((term) => allTerms.includes(term));
   }
 
   private tokenize(text: string): string[] {
@@ -417,11 +412,11 @@ export class CodexManager {
       .toLowerCase()
       .replace(/[^a-z0-9\s]/g, ' ')
       .split(/\s+/)
-      .filter(word => word.length > 2); // Ignore very short words
+      .filter((word) => word.length > 2); // Ignore very short words
   }
 
   private notifyUpdate(entry: KnowledgeEntry): void {
-    this.updateCallbacks.forEach(callback => {
+    this.updateCallbacks.forEach((callback) => {
       try {
         callback(entry);
       } catch (error) {

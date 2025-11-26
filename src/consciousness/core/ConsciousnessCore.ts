@@ -1,6 +1,6 @@
 /**
  * ConsciousnessCore.ts
- * 
+ *
  * Core consciousness framework integrating memory system and emotional states
  */
 

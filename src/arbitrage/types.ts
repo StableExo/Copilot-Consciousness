@@ -1,6 +1,6 @@
 /**
  * Arbitrage Types
- * 
+ *
  * Types and interfaces for multi-hop arbitrage functionality
  */
 
@@ -114,22 +114,22 @@ export interface TokenPrice {
  * Detailed profit breakdown with all cost components
  */
 export interface DetailedProfitBreakdown {
-  initialAmount: bigint;          // Starting amount
-  finalAmount: bigint;            // Final amount after all swaps
-  grossProfit: bigint;            // finalAmount - initialAmount
-  flashLoanFee: bigint;           // Flash loan fee in borrow token
-  swapFees: bigint;               // Total DEX swap fees
-  totalFees: bigint;              // flashLoanFee + swapFees
-  gasCostWei: bigint;             // Gas cost in wei (smallest ETH unit)
-  gasCostInToken: bigint;         // Gas cost in borrow token denomination
-  gasCostInETH: bigint;           // Gas cost in wei (same as gasCostWei)
-  netProfit: bigint;              // After all costs (grossProfit - totalFees - gasCostInToken)
-  netProfitNative: bigint;        // Net profit in native currency (ETH/WETH)
-  netProfitUSD: bigint;           // Net profit in USD (18 decimals)
-  profitPercentage: number;       // Percentage gain
-  roi: number;                    // Return on investment percentage
-  meetsThreshold: boolean;        // Whether profit meets threshold
-  profitable: boolean;            // Whether netProfit > 0
+  initialAmount: bigint; // Starting amount
+  finalAmount: bigint; // Final amount after all swaps
+  grossProfit: bigint; // finalAmount - initialAmount
+  flashLoanFee: bigint; // Flash loan fee in borrow token
+  swapFees: bigint; // Total DEX swap fees
+  totalFees: bigint; // flashLoanFee + swapFees
+  gasCostWei: bigint; // Gas cost in wei (smallest ETH unit)
+  gasCostInToken: bigint; // Gas cost in borrow token denomination
+  gasCostInETH: bigint; // Gas cost in wei (same as gasCostWei)
+  netProfit: bigint; // After all costs (grossProfit - totalFees - gasCostInToken)
+  netProfitNative: bigint; // Net profit in native currency (ETH/WETH)
+  netProfitUSD: bigint; // Net profit in USD (18 decimals)
+  profitPercentage: number; // Percentage gain
+  roi: number; // Return on investment percentage
+  meetsThreshold: boolean; // Whether profit meets threshold
+  profitable: boolean; // Whether netProfit > 0
 }
 
 /**
@@ -148,7 +148,7 @@ export interface PriceOracle {
    * Get price of token in USD
    */
   getTokenPriceUSD(tokenAddress: string): Promise<bigint>;
-  
+
   /**
    * Convert amount from one token to another
    */
@@ -159,12 +159,12 @@ export interface PriceOracle {
     fromDecimals: number,
     toDecimals: number
   ): Promise<bigint>;
-  
+
   /**
    * Get ETH price in USD
    */
   getETHPriceUSD(): Promise<bigint>;
-  
+
   /**
    * Update token price (for testing/manual updates)
    */

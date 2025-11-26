@@ -1,6 +1,6 @@
 /**
  * EVMAdapter - Adapter for EVM-compatible chains
- * 
+ *
  * Supports Ethereum, BSC, Polygon, Avalanche, Arbitrum, Optimism, Base
  */
 
@@ -12,13 +12,13 @@ const ERC20_ABI = [
   'function balanceOf(address owner) view returns (uint256)',
   'function decimals() view returns (uint8)',
   'function symbol() view returns (string)',
-  'function approve(address spender, uint256 amount) returns (bool)'
+  'function approve(address spender, uint256 amount) returns (bool)',
 ];
 
 // Minimal Uniswap V2 Router ABI
 const UNISWAP_V2_ROUTER_ABI = [
   'function getAmountsOut(uint amountIn, address[] memory path) view returns (uint[] memory amounts)',
-  'function swapExactTokensForTokens(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) returns (uint[] memory amounts)'
+  'function swapExactTokensForTokens(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) returns (uint[] memory amounts)',
 ];
 
 export class EVMAdapter extends ChainAdapter {
@@ -27,11 +27,7 @@ export class EVMAdapter extends ChainAdapter {
   private provider: JsonRpcProvider;
   private signer?: Signer;
 
-  constructor(
-    chainId: number,
-    provider: JsonRpcProvider,
-    signer?: Signer
-  ) {
+  constructor(chainId: number, provider: JsonRpcProvider, signer?: Signer) {
     super();
     this.chainId = chainId;
     this.provider = provider;
@@ -41,32 +37,31 @@ export class EVMAdapter extends ChainAdapter {
   /**
    * Get token balance for an address
    */
-  async getTokenBalance(
-    tokenAddress: string,
-    walletAddress: string
-  ): Promise<TokenBalance> {
+  async getTokenBalance(tokenAddress: string, walletAddress: string): Promise<TokenBalance> {
     try {
       // Special handling for native token (ETH, BNB, etc.)
-      if (tokenAddress === ZeroAddress || 
-          tokenAddress.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+      if (
+        tokenAddress === ZeroAddress ||
+        tokenAddress.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
+      ) {
         const balance = await this.provider.getBalance(walletAddress);
         return {
           token: tokenAddress,
           balance: BigInt(balance.toString()),
-          decimals: 18
+          decimals: 18,
         };
       }
 
       const tokenContract = new Contract(tokenAddress, ERC20_ABI, this.provider);
       const [balance, decimals] = await Promise.all([
         tokenContract.balanceOf(walletAddress),
-        tokenContract.decimals()
+        tokenContract.decimals(),
       ]);
 
       return {
         token: tokenAddress,
         balance: BigInt(balance.toString()),
-        decimals
+        decimals,
       };
     } catch (error) {
       throw new Error(`Failed to get token balance: ${error}`);
@@ -85,15 +80,17 @@ export class EVMAdapter extends ChainAdapter {
     try {
       const router = new Contract(dexAddress, UNISWAP_V2_ROUTER_ABI, this.provider);
       const path = [tokenIn, tokenOut];
-      
+
       // Estimate gas for the swap
-      const gasEstimate = await (router as any).swapExactTokensForTokens.estimateGas(
-        amountIn.toString(),
-        0, // Min amount out (0 for estimation)
-        path,
-        ZeroAddress, // Recipient
-        Math.floor(Date.now() / 1000) + 3600 // 1 hour deadline
-      ).catch(() => BigInt(150000)); // Default fallback
+      const gasEstimate = await (router as any).swapExactTokensForTokens
+        .estimateGas(
+          amountIn.toString(),
+          0, // Min amount out (0 for estimation)
+          path,
+          ZeroAddress, // Recipient
+          Math.floor(Date.now() / 1000) + 3600 // 1 hour deadline
+        )
+        .catch(() => BigInt(150000)); // Default fallback
 
       return Number(gasEstimate);
     } catch (error) {
@@ -105,10 +102,7 @@ export class EVMAdapter extends ChainAdapter {
   /**
    * Execute a swap on this chain
    */
-  async executeSwap(
-    params: SwapParams,
-    dexAddress: string
-  ): Promise<string> {
+  async executeSwap(params: SwapParams, dexAddress: string): Promise<string> {
     if (!this.signer) {
       throw new Error('Signer not configured for swap execution');
     }
@@ -149,7 +143,7 @@ export class EVMAdapter extends ChainAdapter {
       token: tokenAddress,
       priceUSD: 0,
       timestamp: Date.now(),
-      source: `chain-${this.chainId}`
+      source: `chain-${this.chainId}`,
     };
   }
 
@@ -183,7 +177,7 @@ export class EVMAdapter extends ChainAdapter {
         gasEstimate,
         gasCost,
         priceImpact,
-        route: path
+        route: path,
       };
     } catch (error) {
       throw new Error(`Swap estimation failed: ${error}`);
@@ -205,9 +199,9 @@ export class EVMAdapter extends ChainAdapter {
     try {
       const receipt = await Promise.race([
         this.provider.waitForTransaction(txHash, 1),
-        new Promise<null>((_, reject) => 
+        new Promise<null>((_, reject) =>
           setTimeout(() => reject(new Error('Transaction timeout')), timeout)
-        )
+        ),
       ]);
 
       return receipt !== null && receipt.status === 1;

@@ -1,6 +1,6 @@
 /**
  * Checkpoint Manager
- * 
+ *
  * Manages cognitive state checkpoints for transactional reasoning.
  * Enables snapshot and restore of the AI's cognitive state.
  */
@@ -105,13 +105,11 @@ export class CheckpointManager {
    * Deep clone memory entries to avoid reference issues
    */
   private deepCloneMemories(memories: MemoryEntry[]): MemoryEntry[] {
-    return memories.map(memory => ({
+    return memories.map((memory) => ({
       ...memory,
       content: this.deepCloneObject(memory.content),
       associations: [...memory.associations],
-      emotionalContext: memory.emotionalContext
-        ? { ...memory.emotionalContext }
-        : undefined,
+      emotionalContext: memory.emotionalContext ? { ...memory.emotionalContext } : undefined,
       metadata: { ...memory.metadata },
     }));
   }
@@ -125,7 +123,7 @@ export class CheckpointManager {
     }
 
     if (Array.isArray(obj)) {
-      return obj.map(item => this.deepCloneObject(item));
+      return obj.map((item) => this.deepCloneObject(item));
     }
 
     if (obj instanceof Map) {
@@ -138,7 +136,7 @@ export class CheckpointManager {
 
     if (obj instanceof Set) {
       const clonedSet = new Set();
-      obj.forEach(value => {
+      obj.forEach((value) => {
         clonedSet.add(this.deepCloneObject(value));
       });
       return clonedSet;

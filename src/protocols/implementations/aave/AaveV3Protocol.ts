@@ -1,6 +1,6 @@
 /**
  * Aave V3 Protocol Implementation
- * 
+ *
  * Implements the IProtocol interface for Aave V3 flash loans
  */
 
@@ -15,11 +15,7 @@ import {
 } from '../../base/IProtocol';
 
 export class AaveV3Protocol extends BaseProtocol {
-  constructor(
-    provider: Provider,
-    chainId: number,
-    signer?: ethers.Signer
-  ) {
+  constructor(provider: Provider, chainId: number, signer?: ethers.Signer) {
     const metadata: ProtocolMetadata = {
       name: 'Aave V3',
       type: 'lending',

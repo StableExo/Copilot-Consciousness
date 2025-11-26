@@ -1,6 +1,6 @@
 /**
  * AI/RL Integration Tests
- * 
+ *
  * Tests for AI component integration in BaseArbitrageRunner
  */
 
@@ -312,23 +312,23 @@ function createMockFeatures(): OpportunityFeatures {
     netProfit: 0.08,
     profitMargin: 0.8,
     roi: 0.75,
-    
+
     totalLiquidity: 1000000,
     liquidityRatio: 1.2,
     poolDepth: 500000,
-    
+
     mevRisk: 0.3,
     competitionLevel: 0.4,
     blockCongestion: 0.5,
-    
+
     hopCount: 2,
     pathComplexity: 2.5,
     gasEstimate: 300000,
-    
+
     volatility: 0.05,
     priceImpact: 0.001,
     timeOfDay: 0.5,
-    
+
     similarPathSuccessRate: 0.7,
     avgHistoricalProfit: 0.06,
   };

@@ -1,9 +1,9 @@
 /**
  * Triangular Arbitrage Engine - 3-Token Cycle Detection
- * 
+ *
  * Extracted from AxionCitadel - Operation First Light validated
  * Source: https://github.com/metalxalloy/AxionCitadel
- * 
+ *
  * 3-token cycle arbitrage detection (A → B → C → A) with multi-hop path
  * construction, amount propagation, and pair map optimization.
  */
@@ -23,10 +23,10 @@ import { PoolState } from './SpatialArbEngine';
 export interface TriangularArbEngineConfig {
   /** Minimum profit margin in basis points (default 50 = 0.5%) */
   minProfitBps?: number;
-  
+
   /** Maximum number of hops in path (default 3) */
   maxHops?: number;
-  
+
   /** Supported DEX protocols */
   supportedProtocols?: string[];
 }
@@ -50,7 +50,7 @@ type CycleElement = [string, string, PoolState];
 
 /**
  * Triangular Arbitrage Engine
- * 
+ *
  * Features:
  * - Multi-hop path construction with amount propagation
  * - Profit margin calculation in BIPS
@@ -61,10 +61,10 @@ export class TriangularArbEngine {
   private minProfitBps: number;
   private maxHops: number;
   private supportedProtocols: string[];
-  
+
   // Pair map for O(1) lookups: token_pair -> list of pools
   private pairMap: Map<string, PoolState[]>;
-  
+
   private stats: {
     cyclesAnalyzed: number;
     opportunitiesFound: number;
@@ -73,7 +73,7 @@ export class TriangularArbEngine {
   };
 
   constructor(config: TriangularArbEngineConfig = {}) {
-    this.minProfitBps = config.minProfitBps ?? 50;  // 0.5% minimum profit
+    this.minProfitBps = config.minProfitBps ?? 50; // 0.5% minimum profit
     this.maxHops = config.maxHops ?? 3;
     this.supportedProtocols = config.supportedProtocols ?? [
       'uniswap_v2',
@@ -93,7 +93,7 @@ export class TriangularArbEngine {
 
     console.log(
       `TriangularArbEngine initialized: minProfit=${this.minProfitBps}bps, ` +
-      `maxHops=${this.maxHops}`
+        `maxHops=${this.maxHops}`
     );
   }
 
@@ -147,7 +147,7 @@ export class TriangularArbEngine {
     // Evaluate each cycle for profitability
     for (const cycle of cycles) {
       const opp = this.evaluateCycle(cycle, inputAmount);
-      
+
       if (opp && opp.profitBps >= this.minProfitBps) {
         opportunities.push(opp);
         this.stats.totalProfitPotential += opp.grossProfit;
@@ -157,9 +157,10 @@ export class TriangularArbEngine {
     }
 
     this.stats.opportunitiesFound += opportunities.length;
-    
+
     if (opportunities.length > 0) {
-      const avgLength = opportunities.reduce((sum, o) => sum + o.path.length, 0) / opportunities.length;
+      const avgLength =
+        opportunities.reduce((sum, o) => sum + o.path.length, 0) / opportunities.length;
       this.stats.avgCycleLength = avgLength;
     }
 
@@ -173,11 +174,7 @@ export class TriangularArbEngine {
   private findCycles(startToken: string, maxDepth: number): CycleElement[][] {
     const cycles: CycleElement[][] = [];
 
-    const dfs = (
-      currentToken: string,
-      path: CycleElement[],
-      visited: Set<string>
-    ): void => {
+    const dfs = (currentToken: string, path: CycleElement[], visited: Set<string>): void => {
       if (path.length > maxDepth) {
         return;
       }
@@ -198,7 +195,7 @@ export class TriangularArbEngine {
 
       for (const nextToken of connectedTokens) {
         if (nextToken === startToken && path.length < 2) {
-          continue;  // Need at least 2 hops before returning to start
+          continue; // Need at least 2 hops before returning to start
         }
 
         // Get pools for this pair
@@ -245,10 +242,7 @@ export class TriangularArbEngine {
   /**
    * Evaluate a cycle for profitability with amount propagation
    */
-  private evaluateCycle(
-    cycle: CycleElement[],
-    inputAmount: number
-  ): ArbitrageOpportunity | null {
+  private evaluateCycle(cycle: CycleElement[], inputAmount: number): ArbitrageOpportunity | null {
     if (cycle.length === 0) {
       return null;
     }
@@ -266,7 +260,7 @@ export class TriangularArbEngine {
       const reserveOut = pool.token0 === tokenIn ? pool.reserve1 : pool.reserve0;
 
       // Apply fee
-      const amountInWithFee = currentAmount * (10000 - feeBps) / 10000;
+      const amountInWithFee = (currentAmount * (10000 - feeBps)) / 10000;
 
       // Calculate output using x * y = k
       const numerator = amountInWithFee * reserveOut;
@@ -322,10 +316,10 @@ export class TriangularArbEngine {
       arbType: ArbitrageType.TRIANGULAR,
       path,
       inputAmount,
-      requiresFlashLoan: true,  // Triangular arb typically needs flash loan
+      requiresFlashLoan: true, // Triangular arb typically needs flash loan
       flashLoanAmount: inputAmount,
       flashLoanToken: tokenAddresses[0],
-      estimatedGas: 150000 * path.length,  // Estimate per swap
+      estimatedGas: 150000 * path.length, // Estimate per swap
       metadata: {
         cycleLength: path.length,
         tokensInCycle: tokenAddresses,
@@ -366,7 +360,7 @@ export class TriangularArbEngine {
 
     console.log(
       `Found ${uniqueOpportunities.length} unique triangular opportunities ` +
-      `from ${allTokens.size} tokens`
+        `from ${allTokens.size} tokens`
     );
 
     return uniqueOpportunities;
@@ -375,9 +369,7 @@ export class TriangularArbEngine {
   /**
    * Remove duplicate opportunities (same pools, different order)
    */
-  private deduplicateOpportunities(
-    opportunities: ArbitrageOpportunity[]
-  ): ArbitrageOpportunity[] {
+  private deduplicateOpportunities(opportunities: ArbitrageOpportunity[]): ArbitrageOpportunity[] {
     const seenSignatures = new Set<string>();
     const unique: ArbitrageOpportunity[] = [];
 

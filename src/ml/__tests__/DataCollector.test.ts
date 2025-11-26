@@ -47,7 +47,7 @@ describe('DataCollector', () => {
       };
 
       collector.recordPrice(dataPoint);
-      
+
       const stats = collector.getStats();
       expect(stats.dataPointsCollected).toBe(1);
       expect(stats.activeChains.has(1)).toBe(true);
@@ -120,12 +120,7 @@ describe('DataCollector', () => {
 
       collector.recordPrice(dataPoint);
 
-      const historical = await collector.getHistoricalData(
-        1,
-        '0xToken1',
-        now - 1000,
-        now + 1000
-      );
+      const historical = await collector.getHistoricalData(1, '0xToken1', now - 1000, now + 1000);
 
       expect(historical.length).toBe(1);
       expect(historical[0]).toEqual(dataPoint);
@@ -133,7 +128,7 @@ describe('DataCollector', () => {
 
     it('should filter by time range', async () => {
       const now = Date.now();
-      
+
       collector.recordPrice({
         timestamp: now - 10000,
         chain: 1,
@@ -152,12 +147,7 @@ describe('DataCollector', () => {
         liquidity: 51000,
       });
 
-      const historical = await collector.getHistoricalData(
-        1,
-        '0xToken1',
-        now - 5000,
-        now + 1000
-      );
+      const historical = await collector.getHistoricalData(1, '0xToken1', now - 5000, now + 1000);
 
       expect(historical.length).toBe(1);
       expect(historical[0].price).toBe(101);
@@ -187,10 +177,10 @@ describe('DataCollector', () => {
 
     it('should track errors', () => {
       collector.start();
-      
+
       const initialStats = collector.getStats();
       const initialErrors = initialStats.errors;
-      
+
       // Errors would be tracked during collection failures
       expect(initialErrors).toBe(0);
     });
@@ -236,7 +226,7 @@ describe('DataCollector', () => {
 
     it('should unsubscribe from stream', () => {
       let eventCount = 0;
-      
+
       const unsubscribe = collector.subscribeToStream(() => {
         eventCount++;
       });

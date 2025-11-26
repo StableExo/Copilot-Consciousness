@@ -10,13 +10,8 @@ describe('Risk Modeling', () => {
   describe('RiskAssessor', () => {
     it('should register risk factors', () => {
       const assessor = new RiskAssessor();
-      
-      const factor = assessor.registerFactor(
-        'System Load',
-        RiskCategory.OPERATIONAL,
-        0.8,
-        0.7
-      );
+
+      const factor = assessor.registerFactor('System Load', RiskCategory.OPERATIONAL, 0.8, 0.7);
 
       expect(factor.name).toBe('System Load');
       expect(factor.category).toBe(RiskCategory.OPERATIONAL);
@@ -34,13 +29,13 @@ describe('Risk Modeling', () => {
 
     it('should perform risk assessment', () => {
       const assessor = new RiskAssessor();
-      
+
       const loadFactor = assessor.registerFactor('Load', RiskCategory.OPERATIONAL, 0.8);
       const errorsFactor = assessor.registerFactor('Errors', RiskCategory.TECHNICAL, 0.9);
 
       const assessment = assessor.assess('system-1', 'system', {
         [loadFactor.id]: 0.6,
-        [errorsFactor.id]: 0.3
+        [errorsFactor.id]: 0.3,
       });
 
       expect(assessment.targetId).toBe('system-1');
@@ -66,7 +61,7 @@ describe('Risk Modeling', () => {
   describe('RiskCalibrator', () => {
     it('should record calibration data', () => {
       const calibrator = new RiskCalibrator({ minDataPoints: 5 });
-      
+
       calibrator.recordDataPoint(0.7, 0.6, 'SUCCESS', {});
       calibrator.recordDataPoint(0.8, 0.75, 'SUCCESS', {});
 
@@ -76,7 +71,7 @@ describe('Risk Modeling', () => {
 
     it('should calculate calibration metrics', () => {
       const calibrator = new RiskCalibrator({ minDataPoints: 3 });
-      
+
       // Add sufficient data points
       for (let i = 0; i < 5; i++) {
         calibrator.recordDataPoint(0.5, 0.48, 'SUCCESS', {});
@@ -89,7 +84,7 @@ describe('Risk Modeling', () => {
 
     it('should track bias in predictions', () => {
       const calibrator = new RiskCalibrator({ minDataPoints: 3 });
-      
+
       // Consistent over-prediction
       calibrator.recordDataPoint(0.3, 0.6, 'PARTIAL', {});
       calibrator.recordDataPoint(0.4, 0.7, 'PARTIAL', {});
@@ -103,7 +98,7 @@ describe('Risk Modeling', () => {
   describe('ThresholdManager', () => {
     it('should define thresholds', () => {
       const manager = new ThresholdManager();
-      
+
       const threshold = manager.defineThreshold(
         'High Load',
         'system.load',
@@ -119,7 +114,7 @@ describe('Risk Modeling', () => {
 
     it('should detect threshold violations', () => {
       const manager = new ThresholdManager();
-      
+
       manager.defineThreshold('Test', 'metric1', 0.5, 'GREATER_THAN');
 
       const violations = manager.checkThresholds('metric1', 0.7);
@@ -129,7 +124,7 @@ describe('Risk Modeling', () => {
 
     it('should not trigger during cooldown', () => {
       const manager = new ThresholdManager();
-      
+
       const threshold = manager.defineThreshold(
         'Test',
         'metric1',
@@ -150,10 +145,10 @@ describe('Risk Modeling', () => {
 
     it('should acknowledge violations', () => {
       const manager = new ThresholdManager();
-      
+
       manager.defineThreshold('Test', 'metric1', 0.5);
       const violations = manager.checkThresholds('metric1', 0.7);
-      
+
       const acknowledged = manager.acknowledgeViolation(violations[0].id, 'admin');
       expect(acknowledged).toBe(true);
 

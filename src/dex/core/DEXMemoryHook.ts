@@ -49,8 +49,8 @@ export class DEXMemoryHookImpl implements DEXMemoryHook {
 
     // Filter and map to DEX events
     return memories
-      .filter(memory => this.isDEXEventMemory(memory, filter))
-      .map(memory => this.extractDEXEvent(memory));
+      .filter((memory) => this.isDEXEventMemory(memory, filter))
+      .map((memory) => this.extractDEXEvent(memory));
   }
 
   /**

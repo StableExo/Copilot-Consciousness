@@ -1,6 +1,6 @@
 /**
  * Gated Executor
- * 
+ *
  * Orchestrates ethical review process before plan execution
  * Port of jules_core/gated_executor.py from StableExo/AGI
  */
@@ -33,7 +33,7 @@ export interface GatedExecutionResult {
 
 /**
  * GatedExecutor orchestrates the ethical review process
- * 
+ *
  * This class gathers contextual information from the environment
  * (git state, filesystem, etc.) and submits plans for ethical review
  * before allowing execution to proceed.
@@ -61,7 +61,7 @@ export class GatedExecutor {
       return {
         objective,
         steps,
-        acknowledgedContext
+        acknowledgedContext,
       };
     }
 
@@ -74,14 +74,14 @@ export class GatedExecutor {
    */
   private gatherContextForReview(userDirective?: string): ExecutionContext {
     const context: ExecutionContext = {
-      userDirective
+      userDirective,
     };
 
     // Get current git branch
     try {
-      const branch = execSync('git rev-parse --abbrev-ref HEAD', { 
+      const branch = execSync('git rev-parse --abbrev-ref HEAD', {
         encoding: 'utf-8',
-        stdio: ['pipe', 'pipe', 'ignore']
+        stdio: ['pipe', 'pipe', 'ignore'],
       }).trim();
       context.currentBranch = branch;
     } catch (error) {
@@ -94,7 +94,7 @@ export class GatedExecutor {
     // Get filesystem state
     try {
       const files = fs.readdirSync(context.workingDirectory);
-      context.fileSystemState = files.filter(f => !f.startsWith('.'));
+      context.fileSystemState = files.filter((f) => !f.startsWith('.'));
     } catch (error) {
       context.fileSystemState = ['unknown (ls command failed)'];
     }
@@ -103,7 +103,7 @@ export class GatedExecutor {
     try {
       const status = execSync('git status --short', {
         encoding: 'utf-8',
-        stdio: ['pipe', 'pipe', 'ignore']
+        stdio: ['pipe', 'pipe', 'ignore'],
       }).trim();
       context.gitStatus = status || 'clean';
     } catch (error) {
@@ -115,10 +115,10 @@ export class GatedExecutor {
 
   /**
    * Run gated plan execution
-   * 
+   *
    * This is the main entry point for ethical review.
    * It gathers context, formats the plan, and submits for review.
-   * 
+   *
    * @param plan - The plan to execute (string or Plan object)
    * @param objective - The objective of the plan
    * @param userDirective - Optional user directive for context
@@ -147,7 +147,7 @@ export class GatedExecutor {
       return {
         approved: true,
         rationale: review.rationale,
-        context
+        context,
       };
     } else {
       // HALT, REPORT, and AWAIT INSTRUCTION
@@ -158,7 +158,7 @@ export class GatedExecutor {
         approved: false,
         rationale: review.rationale,
         context,
-        violatedPrinciples: review.violatedPrinciples
+        violatedPrinciples: review.violatedPrinciples,
       };
     }
   }

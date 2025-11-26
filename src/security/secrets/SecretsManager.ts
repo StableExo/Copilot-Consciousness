@@ -25,7 +25,7 @@ export enum SecretProvider {
   VAULT = 'VAULT',
   KUBERNETES = 'KUBERNETES',
   AWS = 'AWS',
-  LOCAL_ENCRYPTED = 'LOCAL_ENCRYPTED'
+  LOCAL_ENCRYPTED = 'LOCAL_ENCRYPTED',
 }
 
 export interface SecretsConfig {
@@ -44,9 +44,9 @@ export class SecretsManager {
   constructor(config: SecretsConfig) {
     this.config = config;
     this.localSecrets = new Map();
-    
+
     // Initialize encryption key
-    this.encryptionKey = config.encryptionKey 
+    this.encryptionKey = config.encryptionKey
       ? Buffer.from(config.encryptionKey, 'hex')
       : crypto.randomBytes(32);
 
@@ -55,7 +55,7 @@ export class SecretsManager {
       this.vaultClient = vault({
         apiVersion: 'v1',
         endpoint: config.vaultUrl,
-        token: config.vaultToken
+        token: config.vaultToken,
       });
     }
   }
@@ -63,16 +63,12 @@ export class SecretsManager {
   /**
    * Store secret
    */
-  async setSecret(
-    key: string,
-    value: string,
-    metadata?: Partial<SecretMetadata>
-  ): Promise<void> {
+  async setSecret(key: string, value: string, metadata?: Partial<SecretMetadata>): Promise<void> {
     const secretMetadata: SecretMetadata = {
       key,
       version: 1,
       createdAt: new Date(),
-      ...metadata
+      ...metadata,
     };
 
     switch (this.config.provider) {
@@ -140,7 +136,7 @@ export class SecretsManager {
       const secret = this.localSecrets.get(key);
       return secret?.metadata || null;
     }
-    
+
     // For Vault, metadata would be stored separately
     return null;
   }
@@ -182,8 +178,8 @@ export class SecretsManager {
       await this.vaultClient.write(`secret/data/${key}`, {
         data: {
           value,
-          metadata: JSON.stringify(metadata)
-        }
+          metadata: JSON.stringify(metadata),
+        },
       });
     } catch (error) {
       throw new Error(`Failed to write secret to Vault: ${error}`);
@@ -224,15 +220,11 @@ export class SecretsManager {
   /**
    * Store secret locally with encryption
    */
-  private setLocalSecret(
-    key: string,
-    value: string,
-    metadata: SecretMetadata
-  ): void {
+  private setLocalSecret(key: string, value: string, metadata: SecretMetadata): void {
     const encrypted = this.encrypt(value);
     this.localSecrets.set(key, {
       value: encrypted,
-      metadata
+      metadata,
     });
   }
 
@@ -252,16 +244,16 @@ export class SecretsManager {
   private encrypt(text: string): string {
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv('aes-256-gcm', this.encryptionKey, iv);
-    
+
     let encrypted = cipher.update(text, 'utf8', 'hex');
     encrypted += cipher.final('hex');
-    
+
     const authTag = cipher.getAuthTag();
-    
+
     return JSON.stringify({
       iv: iv.toString('hex'),
       encrypted,
-      authTag: authTag.toString('hex')
+      authTag: authTag.toString('hex'),
     });
   }
 
@@ -270,18 +262,18 @@ export class SecretsManager {
    */
   private decrypt(encryptedData: string): string {
     const { iv, encrypted, authTag } = JSON.parse(encryptedData);
-    
+
     const decipher = crypto.createDecipheriv(
       'aes-256-gcm',
       this.encryptionKey,
       Buffer.from(iv, 'hex')
     );
-    
+
     decipher.setAuthTag(Buffer.from(authTag, 'hex'));
-    
+
     let decrypted = decipher.update(encrypted, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
-    
+
     return decrypted;
   }
 
@@ -290,20 +282,20 @@ export class SecretsManager {
    */
   async getSecretsNeedingRotation(): Promise<string[]> {
     const needsRotation: string[] = [];
-    
+
     for (const [key, secret] of this.localSecrets.entries()) {
       const { metadata } = secret;
-      
+
       if (!metadata.rotationPolicy?.enabled) continue;
-      
+
       const lastRotation = metadata.lastRotated || metadata.createdAt;
       const daysSinceRotation = (Date.now() - lastRotation.getTime()) / (1000 * 60 * 60 * 24);
-      
+
       if (daysSinceRotation >= metadata.rotationPolicy.intervalDays) {
         needsRotation.push(key);
       }
     }
-    
+
     return needsRotation;
   }
 }

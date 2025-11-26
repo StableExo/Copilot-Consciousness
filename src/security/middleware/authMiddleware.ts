@@ -39,11 +39,7 @@ export class SecurityMiddleware {
   /**
    * JWT Authentication Middleware
    */
-  authenticateJWT = async (
-    req: AuthRequest,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  authenticateJWT = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       const authHeader = req.headers.authorization;
 
@@ -59,7 +55,7 @@ export class SecurityMiddleware {
         userId: payload.userId,
         username: payload.username,
         role: payload.role,
-        sessionId: payload.sessionId
+        sessionId: payload.sessionId,
       };
 
       next();
@@ -70,7 +66,7 @@ export class SecurityMiddleware {
         { reason: 'Invalid JWT token', error: String(error) },
         {
           ip: req.ip,
-          userAgent: req.headers['user-agent']
+          userAgent: req.headers['user-agent'],
         }
       );
 
@@ -103,7 +99,7 @@ export class SecurityMiddleware {
           { reason: 'Invalid API key' },
           {
             ip: req.ip,
-            userAgent: req.headers['user-agent']
+            userAgent: req.headers['user-agent'],
           }
         );
 
@@ -114,7 +110,7 @@ export class SecurityMiddleware {
       req.apiKey = {
         id: validKey.id,
         userId: validKey.userId,
-        scopes: validKey.scopes
+        scopes: validKey.scopes,
       };
 
       next();
@@ -127,21 +123,13 @@ export class SecurityMiddleware {
    * Permission Check Middleware
    */
   requirePermission = (resource: string, action: string) => {
-    return async (
-      req: AuthRequest,
-      res: Response,
-      next: NextFunction
-    ): Promise<void> => {
+    return async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
       if (!req.user) {
         res.status(401).json({ error: 'Authentication required' });
         return;
       }
 
-      const hasPermission = this.rbacService.hasPermission(
-        req.user.role as any,
-        resource,
-        action
-      );
+      const hasPermission = this.rbacService.hasPermission(req.user.role as any, resource, action);
 
       if (!hasPermission) {
         this.auditLogger.log(
@@ -150,12 +138,12 @@ export class SecurityMiddleware {
           {
             reason: 'Insufficient permissions',
             resource,
-            action
+            action,
           },
           {
             userId: req.user.userId,
             username: req.user.username,
-            ip: req.ip
+            ip: req.ip,
           }
         );
 
@@ -171,11 +159,7 @@ export class SecurityMiddleware {
    * Rate Limiting Middleware
    */
   rateLimit = (scope: string) => {
-    return async (
-      req: AuthRequest,
-      res: Response,
-      next: NextFunction
-    ): Promise<void> => {
+    return async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
       const identifier = req.user?.userId || req.apiKey?.userId || req.ip || 'unknown';
 
       try {
@@ -203,13 +187,13 @@ export class SecurityMiddleware {
             { scope, identifier },
             {
               userId: req.user?.userId,
-              ip: req.ip
+              ip: req.ip,
             }
           );
 
           res.status(429).json({
             error: 'Rate limit exceeded',
-            retryAfter: result.retryAfter
+            retryAfter: result.retryAfter,
           });
           return;
         }
@@ -225,11 +209,7 @@ export class SecurityMiddleware {
   /**
    * IP Whitelist Middleware
    */
-  checkIPWhitelist = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  checkIPWhitelist = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const ip = req.ip || 'unknown';
     const result = this.ipWhitelistService.checkIP(ip);
 
@@ -251,11 +231,7 @@ export class SecurityMiddleware {
   /**
    * Intrusion Detection Middleware
    */
-  detectIntrusions = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  detectIntrusions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const threats = await this.idsService.analyzeRequest({
         ip: req.ip || 'unknown',
@@ -263,7 +239,7 @@ export class SecurityMiddleware {
         path: req.path,
         query: req.query as Record<string, any>,
         body: req.body,
-        headers: req.headers as Record<string, string>
+        headers: req.headers as Record<string, string>,
       });
 
       if (threats.length > 0) {
@@ -274,16 +250,16 @@ export class SecurityMiddleware {
             {
               threatType: threat.type,
               threatLevel: threat.level,
-              details: threat.details
+              details: threat.details,
             },
             {
               userId: (req as AuthRequest).user?.userId,
-              ip: req.ip
+              ip: req.ip,
             }
           );
         }
 
-        if (threats.some(t => t.blocked)) {
+        if (threats.some((t) => t.blocked)) {
           res.status(403).json({ error: 'Security threat detected' });
           return;
         }

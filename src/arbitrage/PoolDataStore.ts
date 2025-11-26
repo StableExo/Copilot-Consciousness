@@ -1,6 +1,6 @@
 /**
  * PoolDataStore - Persistent storage for pool data
- * 
+ *
  * Manages caching and persistence of pool data to disk to avoid
  * repeated RPC calls for the same pools across restarts.
  */
@@ -15,8 +15,8 @@ export interface SerializedPoolEdge {
   dexName: string;
   tokenIn: string;
   tokenOut: string;
-  reserve0: string;  // Serialized as string
-  reserve1: string;  // Serialized as string
+  reserve0: string; // Serialized as string
+  reserve1: string; // Serialized as string
   fee: number;
   gasEstimate: number;
 }
@@ -32,7 +32,7 @@ interface InMemoryCache {
   version: string;
   chainId: number;
   timestamp: number;
-  pools: PoolEdge[];  // Uses BigInt
+  pools: PoolEdge[]; // Uses BigInt
 }
 
 export interface PoolDataStoreConfig {
@@ -91,28 +91,45 @@ export class PoolDataStore {
 
       // Check if cache is still valid
       if (!this.isCacheValid(cache)) {
-        logger.info(`Pool cache for chain ${chainId} is stale (age: ${Math.floor((Date.now() - cache.timestamp) / 60000)}m)`, 'POOL_STORE');
+        logger.info(
+          `Pool cache for chain ${chainId} is stale (age: ${Math.floor(
+            (Date.now() - cache.timestamp) / 60000
+          )}m)`,
+          'POOL_STORE'
+        );
         return null;
       }
 
       // Reconstruct BigInt values from serialized data
-      const pools = cache.pools.map(pool => ({
+      const pools = cache.pools.map((pool) => ({
         ...pool,
-        reserve0: typeof pool.reserve0 === 'string' ? BigInt(pool.reserve0) : BigInt(String(pool.reserve0)),
-        reserve1: typeof pool.reserve1 === 'string' ? BigInt(pool.reserve1) : BigInt(String(pool.reserve1)),
+        reserve0:
+          typeof pool.reserve0 === 'string' ? BigInt(pool.reserve0) : BigInt(String(pool.reserve0)),
+        reserve1:
+          typeof pool.reserve1 === 'string' ? BigInt(pool.reserve1) : BigInt(String(pool.reserve1)),
       }));
 
       // Store in memory cache
       const reconstructedCache = { ...cache, pools };
       this.memoryCache.set(chainId, reconstructedCache);
 
-      logger.info(`Loaded ${pools.length} pools from cache for chain ${chainId} (age: ${Math.floor((Date.now() - cache.timestamp) / 60000)}m)`, 'POOL_STORE');
+      logger.info(
+        `Loaded ${pools.length} pools from cache for chain ${chainId} (age: ${Math.floor(
+          (Date.now() - cache.timestamp) / 60000
+        )}m)`,
+        'POOL_STORE'
+      );
       return pools;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
         logger.debug(`No pool cache found for chain ${chainId}`, 'POOL_STORE');
       } else {
-        logger.warn(`Failed to load pool cache for chain ${chainId}: ${error instanceof Error ? error.message : String(error)}`, 'POOL_STORE');
+        logger.warn(
+          `Failed to load pool cache for chain ${chainId}: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+          'POOL_STORE'
+        );
       }
       return null;
     }
@@ -127,7 +144,7 @@ export class PoolDataStore {
       await fs.mkdir(this.config.cacheDir, { recursive: true });
 
       // Serialize pool data (convert BigInt to string for JSON)
-      const serializedPools: SerializedPoolEdge[] = pools.map(pool => ({
+      const serializedPools: SerializedPoolEdge[] = pools.map((pool) => ({
         poolAddress: pool.poolAddress,
         dexName: pool.dexName,
         tokenIn: pool.tokenIn,
@@ -159,7 +176,12 @@ export class PoolDataStore {
 
       logger.info(`Saved ${pools.length} pools to cache for chain ${chainId}`, 'POOL_STORE');
     } catch (error) {
-      logger.error(`Failed to save pool cache for chain ${chainId}: ${error instanceof Error ? error.message : String(error)}`, 'POOL_STORE');
+      logger.error(
+        `Failed to save pool cache for chain ${chainId}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        'POOL_STORE'
+      );
       throw error;
     }
   }
@@ -179,7 +201,12 @@ export class PoolDataStore {
       logger.info(`Cleared pool cache for chain ${chainId}`, 'POOL_STORE');
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
-        logger.warn(`Failed to clear pool cache for chain ${chainId}: ${error instanceof Error ? error.message : String(error)}`, 'POOL_STORE');
+        logger.warn(
+          `Failed to clear pool cache for chain ${chainId}: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+          'POOL_STORE'
+        );
       }
     }
   }
@@ -203,7 +230,10 @@ export class PoolDataStore {
       logger.info('Cleared all pool caches', 'POOL_STORE');
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
-        logger.warn(`Failed to clear all caches: ${error instanceof Error ? error.message : String(error)}`, 'POOL_STORE');
+        logger.warn(
+          `Failed to clear all caches: ${error instanceof Error ? error.message : String(error)}`,
+          'POOL_STORE'
+        );
       }
     }
   }
@@ -211,12 +241,14 @@ export class PoolDataStore {
   /**
    * Get cache statistics
    */
-  async getCacheStats(): Promise<{
-    chainId: number;
-    poolCount: number;
-    ageMinutes: number;
-    isValid: boolean;
-  }[]> {
+  async getCacheStats(): Promise<
+    {
+      chainId: number;
+      poolCount: number;
+      ageMinutes: number;
+      isValid: boolean;
+    }[]
+  > {
     const stats: {
       chainId: number;
       poolCount: number;
@@ -226,7 +258,7 @@ export class PoolDataStore {
 
     try {
       const files = await fs.readdir(this.config.cacheDir);
-      
+
       for (const file of files) {
         if (file.startsWith('pools-') && file.endsWith('.json')) {
           const filePath = path.join(this.config.cacheDir, file);
@@ -245,7 +277,10 @@ export class PoolDataStore {
         }
       }
     } catch (error) {
-      logger.warn(`Failed to get cache stats: ${error instanceof Error ? error.message : String(error)}`, 'POOL_STORE');
+      logger.warn(
+        `Failed to get cache stats: ${error instanceof Error ? error.message : String(error)}`,
+        'POOL_STORE'
+      );
     }
 
     return stats;

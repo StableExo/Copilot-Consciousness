@@ -1,9 +1,9 @@
 /**
  * Transaction Manager for Executing Complex Transactions
- * 
+ *
  * Extracted from AxionCitadel - Operation First Light validated
  * Source: https://github.com/metalxalloy/AxionCitadel
- * 
+ *
  * Features:
  * - Automatic nonce tracking and synchronization
  * - Transaction retry with exponential backoff
@@ -14,7 +14,14 @@
  * - Gas spike protection
  */
 
-import { Provider, formatUnits, getAddress, TransactionRequest, TransactionReceipt, TransactionResponse } from 'ethers';
+import {
+  Provider,
+  formatUnits,
+  getAddress,
+  TransactionRequest,
+  TransactionReceipt,
+  TransactionResponse,
+} from 'ethers';
 import { Mutex } from 'async-mutex';
 import { logger } from '../utils/logger';
 import { NonceManager } from './NonceManager';
@@ -114,24 +121,24 @@ export interface GasSpikeConfig {
  */
 const DEFAULT_RETRY_CONFIG: RetryConfig = {
   maxRetries: 3,
-  initialDelay: 2000,  // 2 seconds
-  maxDelay: 30000,     // 30 seconds
+  initialDelay: 2000, // 2 seconds
+  maxDelay: 30000, // 30 seconds
   backoffMultiplier: 2,
-  gasPriceIncrement: 1.1,  // 10% increase
+  gasPriceIncrement: 1.1, // 10% increase
 };
 
 /**
  * Default gas spike configuration
  */
 const DEFAULT_GAS_SPIKE_CONFIG: GasSpikeConfig = {
-  maxGasPrice: 500,  // 500 Gwei
-  spikeThreshold: 50,  // 50% increase
-  checkWindow: 60000,  // 1 minute
+  maxGasPrice: 500, // 500 Gwei
+  spikeThreshold: 50, // 50% increase
+  checkWindow: 60000, // 1 minute
 };
 
 /**
  * TransactionManager - Production-tested transaction management
- * 
+ *
  * Key features from AxionCitadel:
  * - Nonce management with automatic synchronization
  * - Retry logic with exponential backoff
@@ -144,20 +151,20 @@ export class TransactionManager {
   private nonceManager: NonceManager;
   private retryConfig: RetryConfig;
   private gasSpikeConfig: GasSpikeConfig;
-  
+
   // Transaction registry for tracking
   private transactionRegistry: Map<string, TransactionMetadata>;
-  
+
   // Gas price history for spike detection
   private gasPriceHistory: Array<{ timestamp: number; gasPrice: bigint }>;
-  
+
   // Nonce management with mutex for thread-safety
   private nonceMutex = new Mutex();
   private nonceCache: Map<string, number> = new Map();
-  
+
   // Gas history for spike detection
   private gasHistory: bigint[] = [];
-  
+
   // Statistics
   private stats = {
     totalTransactions: 0,
@@ -189,8 +196,8 @@ export class TransactionManager {
    * Get nonce with mutex for thread-safe handling
    */
   async getNonce(address?: string): Promise<number> {
-    const addr = address || await this.nonceManager.getAddress();
-    
+    const addr = address || (await this.nonceManager.getAddress());
+
     return this.nonceMutex.runExclusive(async () => {
       if (this.nonceCache.has(addr)) {
         const nonce = this.nonceCache.get(addr)!;
@@ -218,16 +225,13 @@ export class TransactionManager {
   /**
    * Confirm transaction with proper timeout handling
    */
-  async confirmTransaction(
-    txHash: string,
-    timeout: number = 60000
-  ): Promise<TransactionReceipt> {
+  async confirmTransaction(txHash: string, timeout: number = 60000): Promise<TransactionReceipt> {
     const startTime = Date.now();
 
     while (Date.now() - startTime < timeout) {
       try {
         const receipt = await this.provider.getTransactionReceipt(txHash);
-        
+
         if (receipt) {
           if (receipt.status === 1) {
             return receipt;
@@ -240,8 +244,8 @@ export class TransactionManager {
           throw error;
         }
       }
-      
-      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
     throw new Error(`Transaction confirmation timeout after ${timeout}ms: ${txHash}`);
@@ -273,9 +277,12 @@ export class TransactionManager {
       const threshold = average * 2n;
 
       return currentGasPrice > threshold;
-
     } catch (error) {
-      logger.warn(`[TransactionManager] Gas spike check failed: ${error instanceof Error ? error.message : String(error)}`);
+      logger.warn(
+        `[TransactionManager] Gas spike check failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
       return false;
     }
   }
@@ -289,14 +296,14 @@ export class TransactionManager {
     options: TransactionOptions = {}
   ): Promise<TransactionResult> {
     const txId = this.generateTransactionId();
-    
+
     // Initialize metadata
     const metadata: TransactionMetadata = {
       id: txId,
       state: TransactionState.PENDING,
       attempts: 0,
     };
-    
+
     this.transactionRegistry.set(txId, metadata);
     this.stats.totalTransactions++;
 
@@ -311,13 +318,7 @@ export class TransactionManager {
 
       // Execute with retry logic
       const retryConfig = { ...this.retryConfig, ...options.retryConfig };
-      const result = await this.executeWithRetry(
-        to,
-        data,
-        options,
-        metadata,
-        retryConfig
-      );
+      const result = await this.executeWithRetry(to, data, options, metadata, retryConfig);
 
       if (result.success) {
         this.stats.successfulTransactions++;
@@ -329,7 +330,11 @@ export class TransactionManager {
 
       return result;
     } catch (error) {
-      logger.error(`[TransactionManager] Transaction ${txId} failed: ${error instanceof Error ? error.message : String(error)}`);
+      logger.error(
+        `[TransactionManager] Transaction ${txId} failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
       this.stats.failedTransactions++;
       metadata.state = TransactionState.FAILED;
       metadata.error = error instanceof Error ? error.message : String(error);
@@ -360,7 +365,9 @@ export class TransactionManager {
 
       try {
         logger.info(
-          `[TransactionManager] Attempt ${attempt + 1}/${retryConfig.maxRetries + 1} for ${metadata.id}`
+          `[TransactionManager] Attempt ${attempt + 1}/${retryConfig.maxRetries + 1} for ${
+            metadata.id
+          }`
         );
 
         // Build transaction
@@ -373,9 +380,13 @@ export class TransactionManager {
 
         // Set gas price (increase on retries)
         if (attempt > 0 && currentGasPrice) {
-          currentGasPrice = (currentGasPrice * BigInt(Math.floor(retryConfig.gasPriceIncrement * 100))) / 100n;
+          currentGasPrice =
+            (currentGasPrice * BigInt(Math.floor(retryConfig.gasPriceIncrement * 100))) / 100n;
           logger.info(
-            `[TransactionManager] Increasing gas price to ${formatUnits(currentGasPrice, 'gwei')} Gwei`
+            `[TransactionManager] Increasing gas price to ${formatUnits(
+              currentGasPrice,
+              'gwei'
+            )} Gwei`
           );
         }
 
@@ -395,7 +406,7 @@ export class TransactionManager {
         // Send transaction
         metadata.state = TransactionState.SUBMITTED;
         metadata.submittedAt = new Date();
-        
+
         const response = await this.nonceManager.sendTransaction(tx);
         metadata.hash = response.hash;
         metadata.nonce = response.nonce;
@@ -404,10 +415,7 @@ export class TransactionManager {
         logger.info(`[TransactionManager] Transaction submitted: ${response.hash}`);
 
         // Wait for confirmation
-        const receipt = await this.waitForConfirmation(
-          response.hash,
-          options.deadline
-        );
+        const receipt = await this.waitForConfirmation(response.hash, options.deadline);
 
         if (receipt.status === 1) {
           metadata.state = TransactionState.CONFIRMED;
@@ -430,9 +438,7 @@ export class TransactionManager {
         }
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
-        logger.warn(
-          `[TransactionManager] Attempt ${attempt + 1} failed: ${lastError.message}`
-        );
+        logger.warn(`[TransactionManager] Attempt ${attempt + 1} failed: ${lastError.message}`);
 
         // Check if this is a nonce error - NonceManager should handle this
         const isNonceError = this.isNonceError(lastError);
@@ -480,7 +486,7 @@ export class TransactionManager {
     confirmations: number = 1
   ): Promise<TransactionReceipt> {
     const timeout = deadline ? deadline - Date.now() : 120000; // Default 2 minutes
-    
+
     try {
       const receipt = await Promise.race([
         this.provider.waitForTransaction(txHash, confirmations),
@@ -493,7 +499,11 @@ export class TransactionManager {
 
       return receipt;
     } catch (error) {
-      logger.error(`[TransactionManager] Confirmation failed for ${txHash}: ${error instanceof Error ? error.message : String(error)}`);
+      logger.error(
+        `[TransactionManager] Confirmation failed for ${txHash}: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
       throw error;
     }
   }
@@ -505,11 +515,11 @@ export class TransactionManager {
     try {
       const feeData = await this.provider.getFeeData();
       const gasPrice = feeData.gasPrice || feeData.maxFeePerGas;
-      
+
       if (!gasPrice) {
         return { safe: true };
       }
-      
+
       const gasPriceGwei = parseFloat(formatUnits(gasPrice, 'gwei'));
 
       // Update history
@@ -520,9 +530,7 @@ export class TransactionManager {
 
       // Clean old entries
       const cutoffTime = Date.now() - this.gasSpikeConfig.checkWindow;
-      this.gasPriceHistory = this.gasPriceHistory.filter(
-        entry => entry.timestamp > cutoffTime
-      );
+      this.gasPriceHistory = this.gasPriceHistory.filter((entry) => entry.timestamp > cutoffTime);
 
       // Check absolute maximum
       if (gasPriceGwei > this.gasSpikeConfig.maxGasPrice) {
@@ -548,8 +556,12 @@ export class TransactionManager {
 
       return { safe: true };
     } catch (error) {
-      logger.warn(`[TransactionManager] Gas spike check failed: ${error instanceof Error ? error.message : String(error)}`);
-      return { safe: true };  // Allow transaction on check failure
+      logger.warn(
+        `[TransactionManager] Gas spike check failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+      return { safe: true }; // Allow transaction on check failure
     }
   }
 
@@ -582,10 +594,7 @@ export class TransactionManager {
   /**
    * Replace stuck transaction with higher gas price
    */
-  async replaceTransaction(
-    txId: string,
-    newGasPrice: bigint
-  ): Promise<TransactionResult> {
+  async replaceTransaction(txId: string, newGasPrice: bigint): Promise<TransactionResult> {
     const metadata = this.transactionRegistry.get(txId);
     if (!metadata) {
       throw new Error(`Transaction ${txId} not found in registry`);
@@ -606,21 +615,21 @@ export class TransactionManager {
 
       // Check if transaction is already mined
       if (originalTx.blockNumber) {
-        logger.info(`[TransactionManager] Transaction ${metadata.hash} already mined, returning original hash`);
+        logger.info(
+          `[TransactionManager] Transaction ${metadata.hash} already mined, returning original hash`
+        );
         return {
           success: true,
           txHash: metadata.hash,
-          metadata
+          metadata,
         };
       }
 
       // Calculate minimum replacement gas price (10% higher)
       const originalGasPrice = originalTx.gasPrice || originalTx.maxFeePerGas || 0n;
-      const minReplacementGas = originalGasPrice * 110n / 100n;
-      
-      const replacementGasPrice = newGasPrice > minReplacementGas
-        ? newGasPrice
-        : minReplacementGas;
+      const minReplacementGas = (originalGasPrice * 110n) / 100n;
+
+      const replacementGasPrice = newGasPrice > minReplacementGas ? newGasPrice : minReplacementGas;
 
       // Build replacement transaction with same nonce but higher gas
       const replacementTx: TransactionRequest = {
@@ -642,7 +651,7 @@ export class TransactionManager {
 
       // Send replacement
       const response = await this.nonceManager.sendTransaction(replacementTx);
-      
+
       logger.info(`[TransactionManager] Replacement transaction submitted: ${response.hash}`);
 
       // Update metadata
@@ -670,7 +679,11 @@ export class TransactionManager {
         throw new Error('Replacement transaction reverted');
       }
     } catch (error) {
-      logger.error(`[TransactionManager] Transaction replacement failed: ${error instanceof Error ? error.message : String(error)}`);
+      logger.error(
+        `[TransactionManager] Transaction replacement failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
       metadata.state = TransactionState.FAILED;
       metadata.error = error instanceof Error ? error.message : String(error);
 
@@ -695,12 +708,14 @@ export class TransactionManager {
   getStatistics() {
     return {
       ...this.stats,
-      successRate: this.stats.totalTransactions > 0
-        ? (this.stats.successfulTransactions / this.stats.totalTransactions) * 100
-        : 0,
-      retryRate: this.stats.totalTransactions > 0
-        ? (this.stats.retriedTransactions / this.stats.totalTransactions) * 100
-        : 0,
+      successRate:
+        this.stats.totalTransactions > 0
+          ? (this.stats.successfulTransactions / this.stats.totalTransactions) * 100
+          : 0,
+      retryRate:
+        this.stats.totalTransactions > 0
+          ? (this.stats.retriedTransactions / this.stats.totalTransactions) * 100
+          : 0,
     };
   }
 
@@ -715,7 +730,7 @@ export class TransactionManager {
    * Sleep utility
    */
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**

@@ -1,6 +1,6 @@
 /**
  * InferenceServer - High-performance ML inference system
- * 
+ *
  * Provides fast, batched predictions with caching, GPU acceleration support,
  * and graceful degradation for real-time arbitrage decisions.
  */
@@ -72,7 +72,7 @@ export class InferenceServer extends EventEmitter {
       await this.warmUp();
 
       this.isRunning = true;
-      
+
       // Start batch processing
       this.startBatchProcessing();
 
@@ -94,10 +94,10 @@ export class InferenceServer extends EventEmitter {
     }
 
     this.isRunning = false;
-    
+
     // Wait for queue to drain
     while (this.requestQueue.length > 0) {
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
     console.log('[InferenceServer] Inference server stopped');
@@ -118,7 +118,7 @@ export class InferenceServer extends EventEmitter {
     // 5. Verify models are loaded correctly
 
     // Simulate loading time
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     console.log('[InferenceServer] Models loaded successfully');
   }
@@ -189,7 +189,7 @@ export class InferenceServer extends EventEmitter {
     // Check cache
     const cacheKey = this.getCacheKey(path);
     const cached = this.cache.get(cacheKey);
-    
+
     if (cached && Date.now() - cached.timestamp < this.config.inference.cacheTTL) {
       this.updateStats(Date.now() - startTime, true, false);
       return {
@@ -224,7 +224,7 @@ export class InferenceServer extends EventEmitter {
    */
   private startBatchProcessing(): void {
     const processInterval = 50; // Process every 50ms
-    
+
     const timer = setInterval(() => {
       if (this.requestQueue.length > 0 && !this.processingBatch) {
         this.processBatch();
@@ -245,18 +245,15 @@ export class InferenceServer extends EventEmitter {
     this.processingBatch = true;
 
     try {
-      const batchSize = Math.min(
-        this.config.inference.batchSize,
-        this.requestQueue.length
-      );
-      
+      const batchSize = Math.min(this.config.inference.batchSize, this.requestQueue.length);
+
       const batch = this.requestQueue.splice(0, batchSize);
-      
+
       // Process batch in parallel
       const results = await Promise.allSettled(
-        batch.map(async item => {
+        batch.map(async (item) => {
           const startTime = Date.now();
-          
+
           try {
             const predictions = await this.predictInternal(
               item.request.path,
@@ -310,7 +307,7 @@ export class InferenceServer extends EventEmitter {
     // 4. Combine predictions
 
     // Simulate inference time
-    await new Promise(resolve => setTimeout(resolve, 5));
+    await new Promise((resolve) => setTimeout(resolve, 5));
 
     const latency = Date.now() - startTime;
 
@@ -350,7 +347,7 @@ export class InferenceServer extends EventEmitter {
    */
   private getCacheKey(path: ArbitragePath): string {
     const tokenKey = `${path.startToken}-${path.endToken}`;
-    const hopsKey = path.hops.map(h => h.poolAddress).join('-');
+    const hopsKey = path.hops.map((h) => h.poolAddress).join('-');
     return `${tokenKey}-${hopsKey}`;
   }
 
@@ -437,10 +434,9 @@ export class InferenceServer extends EventEmitter {
     details: Record<string, any>;
   } {
     const queueSize = this.getQueueSize();
-    const errorRate = this.stats.totalRequests > 0 
-      ? this.stats.errorCount / this.stats.totalRequests 
-      : 0;
-    
+    const errorRate =
+      this.stats.totalRequests > 0 ? this.stats.errorCount / this.stats.totalRequests : 0;
+
     let status: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
 
     if (errorRate > 0.1 || this.stats.avgLatencyMs > this.config.inference.maxLatencyMs * 2) {

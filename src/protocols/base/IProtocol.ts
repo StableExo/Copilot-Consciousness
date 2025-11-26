@@ -1,10 +1,9 @@
 /**
  * IProtocol - Protocol Interface
- * 
+ *
  * Base interface for all protocol implementations.
  * Defines the contract that all DEX protocol adapters must follow.
  */
-
 
 export interface SwapParams {
   tokenIn: string;

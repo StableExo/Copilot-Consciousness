@@ -16,7 +16,7 @@ export class BalancerValidator extends BaseValidator {
     const errors: string[] = [];
 
     const balancer = this.getDEXConfig();
-    
+
     if (!balancer) {
       return {
         isHealthy: false,
@@ -29,12 +29,12 @@ export class BalancerValidator extends BaseValidator {
 
     // Check Core Components
     const coreStatus = await this.checkCoreComponents(balancer, components, errors);
-    
+
     // Check Weighted Pools
     const poolStatus = await this.checkWeightedPools(balancer, components, errors);
 
     const isHealthy = coreStatus && poolStatus;
-    
+
     return {
       isHealthy,
       timestamp,
@@ -63,7 +63,7 @@ export class BalancerValidator extends BaseValidator {
       );
 
       const feesCollector = await vault.getProtocolFeesCollector();
-      
+
       components.push({
         name: 'Vault Contract',
         status: 'active',
@@ -78,7 +78,7 @@ export class BalancerValidator extends BaseValidator {
           provider
         );
         const wethAddress = await wethMethod.WETH();
-        
+
         components.push({
           name: 'WETH Integration',
           status: 'active',
@@ -94,7 +94,7 @@ export class BalancerValidator extends BaseValidator {
       // Check weighted pool factory
       const factoryCode = await provider.getCode(balancer.factory);
       const isFactoryActive = factoryCode !== '0x';
-      
+
       components.push({
         name: 'Weighted Pool Factory',
         status: isFactoryActive ? 'active' : 'inactive',
@@ -104,12 +104,12 @@ export class BalancerValidator extends BaseValidator {
     } catch (error) {
       const errorMsg = this.handleError(error, 'Error checking Balancer core');
       errors.push(errorMsg);
-      
+
       components.push({
         name: 'Core Components',
         status: 'error',
       });
-      
+
       return false;
     }
   }
@@ -147,7 +147,7 @@ export class BalancerValidator extends BaseValidator {
         try {
           const [poolAddress] = await vault.getPool(pool.poolId);
           const [tokens] = await vault.getPoolTokens(pool.poolId);
-          
+
           components.push({
             name: `Pool: ${pool.name}`,
             status: 'active',

@@ -65,24 +65,9 @@ describe('Strategic Knowledge Loop', () => {
     });
 
     it('should track success rate', async () => {
-      await knowledgeLoop.logOperation(
-        'test_op',
-        {},
-        'Test 1',
-        'success'
-      );
-      await knowledgeLoop.logOperation(
-        'test_op',
-        {},
-        'Test 2',
-        'success'
-      );
-      await knowledgeLoop.logOperation(
-        'test_op',
-        {},
-        'Test 3',
-        'failure'
-      );
+      await knowledgeLoop.logOperation('test_op', {}, 'Test 1', 'success');
+      await knowledgeLoop.logOperation('test_op', {}, 'Test 2', 'success');
+      await knowledgeLoop.logOperation('test_op', {}, 'Test 3', 'failure');
 
       const stats = await knowledgeLoop.getStatistics();
       expect(stats.totalOperations).toBe(3);
@@ -92,13 +77,7 @@ describe('Strategic Knowledge Loop', () => {
 
   describe('Calibration Parameters', () => {
     it('should register calibration parameter', () => {
-      knowledgeLoop.registerCalibrationParam(
-        'slippage_tolerance',
-        0.005,
-        0.001,
-        0.05,
-        0.001
-      );
+      knowledgeLoop.registerCalibrationParam('slippage_tolerance', 0.005, 0.001, 0.05, 0.001);
 
       const components = knowledgeLoop.getComponents();
       const value = components.calibrationEngine.getParam('slippage_tolerance');
@@ -157,13 +136,7 @@ describe('Strategic Knowledge Loop', () => {
     });
 
     it('should update strategy performance', () => {
-      knowledgeLoop.registerStrategy(
-        'test_strategy',
-        'Test Strategy',
-        'Test',
-        {},
-        {}
-      );
+      knowledgeLoop.registerStrategy('test_strategy', 'Test Strategy', 'Test', {}, {});
 
       const components = knowledgeLoop.getComponents();
       let strategy = components.adaptiveStrategies.getStrategy('test_strategy');
@@ -239,13 +212,7 @@ describe('Strategic Knowledge Loop', () => {
   describe('Integration - Complete Workflow', () => {
     it('should execute complete learning workflow', async () => {
       // 1. Register calibration parameters
-      knowledgeLoop.registerCalibrationParam(
-        'gas_price_multiplier',
-        1.2,
-        1.0,
-        2.0,
-        0.1
-      );
+      knowledgeLoop.registerCalibrationParam('gas_price_multiplier', 1.2, 1.0, 2.0, 0.1);
 
       // 2. Register strategies
       knowledgeLoop.registerStrategy(

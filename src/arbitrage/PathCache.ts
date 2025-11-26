@@ -1,6 +1,6 @@
 /**
  * PathCache - LRU cache for profitable arbitrage paths
- * 
+ *
  * Stores frequently profitable path templates and provides
  * incremental updates when pool reserves change
  */
@@ -62,7 +62,7 @@ export class PathCache {
       enabled: config.enabled !== false,
       maxEntries: config.maxEntries || 1000,
       ttl: config.ttl || 300, // 5 minutes default
-      minProfitabilityScore: config.minProfitabilityScore || 0.3
+      minProfitabilityScore: config.minProfitabilityScore || 0.3,
     };
     this.cache = new Map();
     this.templateIndex = new Map();
@@ -73,7 +73,7 @@ export class PathCache {
       hitRate: 0,
       size: 0,
       evictions: 0,
-      invalidations: 0
+      invalidations: 0,
     };
   }
 
@@ -97,18 +97,12 @@ export class PathCache {
       existing.path = path;
       existing.lastAccessed = now;
       existing.hitCount++;
-      
+
       if (profitable) {
         existing.lastProfitable = now;
-        existing.profitabilityScore = Math.min(
-          existing.profitabilityScore + 0.1,
-          1.0
-        );
+        existing.profitabilityScore = Math.min(existing.profitabilityScore + 0.1, 1.0);
       } else {
-        existing.profitabilityScore = Math.max(
-          existing.profitabilityScore - 0.05,
-          0
-        );
+        existing.profitabilityScore = Math.max(existing.profitabilityScore - 0.05, 0);
       }
     } else {
       // Add new entry
@@ -118,7 +112,7 @@ export class PathCache {
         lastProfitable: profitable ? now : 0,
         profitabilityScore: profitable ? 0.5 : 0.3,
         hitCount: 1,
-        lastAccessed: now
+        lastAccessed: now,
       };
 
       // Check if we need to evict
@@ -127,7 +121,7 @@ export class PathCache {
       }
 
       this.cache.set(pathHash, entry);
-      
+
       // Update template index
       if (!this.templateIndex.has(template.hash)) {
         this.templateIndex.set(template.hash, new Set());
@@ -156,7 +150,7 @@ export class PathCache {
     }
 
     const entry = this.cache.get(pathHash);
-    
+
     if (!entry) {
       this.stats.misses++;
       this.updateStats();
@@ -166,7 +160,7 @@ export class PathCache {
     // Check if expired
     const now = Date.now();
     const age = (now - entry.lastProfitable) / 1000;
-    
+
     if (age > this.config.ttl) {
       this.cache.delete(pathHash);
       this.stats.invalidations++;
@@ -188,7 +182,7 @@ export class PathCache {
 
     this.stats.hits++;
     this.updateStats();
-    
+
     return entry.path;
   }
 
@@ -202,7 +196,7 @@ export class PathCache {
 
     const templateHash = this.hashTokenSequence(tokens);
     const pathHashes = this.templateIndex.get(templateHash);
-    
+
     if (!pathHashes) {
       return [];
     }
@@ -227,7 +221,7 @@ export class PathCache {
     }
 
     const pathHashes = this.poolToPaths.get(poolAddress);
-    
+
     if (!pathHashes) {
       return [];
     }
@@ -252,7 +246,7 @@ export class PathCache {
     }
 
     const pathHashes = this.poolToPaths.get(poolAddress);
-    
+
     if (!pathHashes) {
       return 0;
     }
@@ -267,7 +261,7 @@ export class PathCache {
 
     this.poolToPaths.delete(poolAddress);
     this.updateStats();
-    
+
     return invalidated;
   }
 
@@ -293,7 +287,7 @@ export class PathCache {
       })
       .slice(0, limit);
 
-    return entries.map(e => e.path);
+    return entries.map((e) => e.path);
   }
 
   /**
@@ -316,7 +310,7 @@ export class PathCache {
       hitRate: 0,
       size: 0,
       evictions: 0,
-      invalidations: 0
+      invalidations: 0,
     };
   }
 
@@ -325,7 +319,7 @@ export class PathCache {
    */
   updateConfig(config: Partial<CacheConfig>): void {
     this.config = { ...this.config, ...config };
-    
+
     // If cache was disabled, clear it
     if (!this.config.enabled) {
       this.clear();
@@ -338,22 +332,20 @@ export class PathCache {
    * Hash a path for cache key
    */
   private hashPath(path: ArbitragePath): string {
-    return path.hops
-      .map(hop => `${hop.poolAddress}:${hop.tokenIn}:${hop.tokenOut}`)
-      .join('|');
+    return path.hops.map((hop) => `${hop.poolAddress}:${hop.tokenIn}:${hop.tokenOut}`).join('|');
   }
 
   /**
    * Extract template from path (token sequence)
    */
   private extractTemplate(path: ArbitragePath): PathTemplate {
-    const tokens = path.hops.map(hop => hop.tokenIn);
+    const tokens = path.hops.map((hop) => hop.tokenIn);
     tokens.push(path.hops[path.hops.length - 1].tokenOut);
-    
+
     return {
       tokens,
       poolCount: path.hops.length,
-      hash: this.hashTokenSequence(tokens)
+      hash: this.hashTokenSequence(tokens),
     };
   }
 
@@ -369,7 +361,7 @@ export class PathCache {
    */
   private evictLRU(): void {
     let oldestEntry: { hash: string; time: number } | null = null;
-    
+
     for (const [hash, entry] of this.cache.entries()) {
       if (!oldestEntry || entry.lastAccessed < oldestEntry.time) {
         oldestEntry = { hash, time: entry.lastAccessed };
@@ -378,7 +370,7 @@ export class PathCache {
 
     if (oldestEntry) {
       const entry = this.cache.get(oldestEntry.hash);
-      
+
       // Remove from template index
       if (entry) {
         const templatePaths = this.templateIndex.get(entry.template);

@@ -1,6 +1,6 @@
 /**
  * Historical Analyzer
- * 
+ *
  * Analyzes historical data to extract insights and trends
  */
 
@@ -51,18 +51,14 @@ export class HistoricalAnalyzer {
   /**
    * Add a historical record
    */
-  addRecord(
-    eventType: string,
-    data: Record<string, unknown>,
-    outcome?: unknown
-  ): HistoricalRecord {
+  addRecord(eventType: string, data: Record<string, unknown>, outcome?: unknown): HistoricalRecord {
     const record: HistoricalRecord = {
       id: this.generateId('record'),
       timestamp: Date.now(),
       eventType,
       data,
       outcome,
-      metadata: {}
+      metadata: {},
     };
 
     this.records.push(record);
@@ -78,18 +74,15 @@ export class HistoricalAnalyzer {
   /**
    * Analyze trends in a specific metric
    */
-  analyzeTrend(
-    metric: string,
-    timeRange?: { start: number; end: number }
-  ): Trend | null {
+  analyzeTrend(metric: string, timeRange?: { start: number; end: number }): Trend | null {
     const timeSeries = this.getTimeSeries(metric, timeRange);
-    
+
     if (timeSeries.dataPoints.length < 2) {
       return null;
     }
 
-    const values = timeSeries.dataPoints.map(dp => dp.value);
-    const timestamps = timeSeries.dataPoints.map(dp => dp.timestamp);
+    const values = timeSeries.dataPoints.map((dp) => dp.value);
+    const timestamps = timeSeries.dataPoints.map((dp) => dp.timestamp);
 
     // Calculate linear regression
     const { slope, confidence } = this.linearRegression(timestamps, values);
@@ -113,35 +106,32 @@ export class HistoricalAnalyzer {
       confidence,
       startTime: timestamps[0],
       endTime: timestamps[timestamps.length - 1],
-      dataPoints: timeSeries.dataPoints.length
+      dataPoints: timeSeries.dataPoints.length,
     };
   }
 
   /**
    * Get time series data for a metric
    */
-  getTimeSeries(
-    metric: string,
-    timeRange?: { start: number; end: number }
-  ): TimeSeriesData {
+  getTimeSeries(metric: string, timeRange?: { start: number; end: number }): TimeSeriesData {
     let filteredRecords = this.records;
 
     if (timeRange) {
       filteredRecords = this.records.filter(
-        r => r.timestamp >= timeRange.start && r.timestamp <= timeRange.end
+        (r) => r.timestamp >= timeRange.start && r.timestamp <= timeRange.end
       );
     }
 
     const dataPoints = filteredRecords
-      .filter(r => typeof r.data[metric] === 'number')
-      .map(r => ({
+      .filter((r) => typeof r.data[metric] === 'number')
+      .map((r) => ({
         timestamp: r.timestamp,
-        value: r.data[metric] as number
+        value: r.data[metric] as number,
       }));
 
     return {
       metric,
-      dataPoints
+      dataPoints,
     };
   }
 
@@ -150,7 +140,7 @@ export class HistoricalAnalyzer {
    */
   detectAnomalies(metric: string, sensitivity: number = 2.0): Insight[] {
     const timeSeries = this.getTimeSeries(metric);
-    const values = timeSeries.dataPoints.map(dp => dp.value);
+    const values = timeSeries.dataPoints.map((dp) => dp.value);
 
     if (values.length < 10) return [];
 
@@ -164,21 +154,23 @@ export class HistoricalAnalyzer {
 
     timeSeries.dataPoints.forEach((dp, index) => {
       const deviation = Math.abs(dp.value - mean);
-      
+
       if (deviation > threshold) {
         const insight: Insight = {
           id: this.generateId('insight'),
           type: 'ANOMALY',
-          description: `Anomaly detected in ${metric}: value ${dp.value} deviates by ${deviation.toFixed(2)} from mean ${mean.toFixed(2)}`,
+          description: `Anomaly detected in ${metric}: value ${
+            dp.value
+          } deviates by ${deviation.toFixed(2)} from mean ${mean.toFixed(2)}`,
           significance: Math.min(1, deviation / (threshold * 2)),
           evidence: [
             `Value: ${dp.value}`,
             `Mean: ${mean.toFixed(2)}`,
             `Std Dev: ${stdDev.toFixed(2)}`,
-            `Deviation: ${deviation.toFixed(2)} (${(deviation / stdDev).toFixed(2)}σ)`
+            `Deviation: ${deviation.toFixed(2)} (${(deviation / stdDev).toFixed(2)}σ)`,
           ],
           timestamp: dp.timestamp,
-          metadata: { metric, value: dp.value, mean, stdDev }
+          metadata: { metric, value: dp.value, mean, stdDev },
         };
 
         anomalies.push(insight);
@@ -202,20 +194,16 @@ export class HistoricalAnalyzer {
     percentChange: number;
     significant: boolean;
   } {
-    const data1 = this.getTimeSeries(metric, period1).dataPoints.map(dp => dp.value);
-    const data2 = this.getTimeSeries(metric, period2).dataPoints.map(dp => dp.value);
+    const data1 = this.getTimeSeries(metric, period1).dataPoints.map((dp) => dp.value);
+    const data2 = this.getTimeSeries(metric, period2).dataPoints.map((dp) => dp.value);
 
     const stats1 = this.calculateStats(data1);
     const stats2 = this.calculateStats(data2);
 
-    const percentChange = stats1.mean !== 0
-      ? ((stats2.mean - stats1.mean) / stats1.mean) * 100
-      : 0;
+    const percentChange = stats1.mean !== 0 ? ((stats2.mean - stats1.mean) / stats1.mean) * 100 : 0;
 
     // Simple significance test (t-test approximation)
-    const pooledStdDev = Math.sqrt(
-      (stats1.stdDev ** 2 + stats2.stdDev ** 2) / 2
-    );
+    const pooledStdDev = Math.sqrt((stats1.stdDev ** 2 + stats2.stdDev ** 2) / 2);
     const tStat = Math.abs(stats2.mean - stats1.mean) / pooledStdDev;
     const significant = tStat > 2.0; // Rough threshold
 
@@ -223,7 +211,7 @@ export class HistoricalAnalyzer {
       period1Stats: stats1,
       period2Stats: stats2,
       percentChange,
-      significant
+      significant,
     };
   }
 
@@ -234,11 +222,11 @@ export class HistoricalAnalyzer {
     eventType: string,
     timeRange?: { start: number; end: number }
   ): HistoricalRecord[] {
-    let records = this.records.filter(r => r.eventType === eventType);
+    let records = this.records.filter((r) => r.eventType === eventType);
 
     if (timeRange) {
       records = records.filter(
-        r => r.timestamp >= timeRange.start && r.timestamp <= timeRange.end
+        (r) => r.timestamp >= timeRange.start && r.timestamp <= timeRange.end
       );
     }
 
@@ -252,12 +240,10 @@ export class HistoricalAnalyzer {
     let insights = Array.from(this.insights.values());
 
     if (type) {
-      insights = insights.filter(i => i.type === type);
+      insights = insights.filter((i) => i.type === type);
     }
 
-    return insights
-      .sort((a, b) => b.significance - a.significance)
-      .slice(0, limit);
+    return insights.sort((a, b) => b.significance - a.significance).slice(0, limit);
   }
 
   /**
@@ -270,23 +256,24 @@ export class HistoricalAnalyzer {
     totalInsights: number;
     insightsByType: Record<string, number>;
   } {
-    const eventTypes = Array.from(new Set(this.records.map(r => r.eventType)));
-    
-    const timeRange = this.records.length > 0
-      ? {
-          start: this.records[0].timestamp,
-          end: this.records[this.records.length - 1].timestamp
-        }
-      : null;
+    const eventTypes = Array.from(new Set(this.records.map((r) => r.eventType)));
+
+    const timeRange =
+      this.records.length > 0
+        ? {
+            start: this.records[0].timestamp,
+            end: this.records[this.records.length - 1].timestamp,
+          }
+        : null;
 
     const insightsByType: Record<string, number> = {
       TREND: 0,
       ANOMALY: 0,
       PATTERN: 0,
-      CORRELATION: 0
+      CORRELATION: 0,
     };
 
-    this.insights.forEach(insight => {
+    this.insights.forEach((insight) => {
       insightsByType[insight.type]++;
     });
 
@@ -295,7 +282,7 @@ export class HistoricalAnalyzer {
       eventTypes,
       timeRange,
       totalInsights: this.insights.size,
-      insightsByType
+      insightsByType,
     };
   }
 
@@ -308,20 +295,17 @@ export class HistoricalAnalyzer {
   } {
     return {
       records: [...this.records],
-      insights: Array.from(this.insights.values())
+      insights: Array.from(this.insights.values()),
     };
   }
 
   /**
    * Import historical data
    */
-  import(data: {
-    records: HistoricalRecord[];
-    insights: Insight[];
-  }): void {
+  import(data: { records: HistoricalRecord[]; insights: Insight[] }): void {
     this.records = [...data.records];
     this.insights.clear();
-    data.insights.forEach(insight => {
+    data.insights.forEach((insight) => {
       this.insights.set(insight.id, insight);
     });
   }
@@ -337,11 +321,12 @@ export class HistoricalAnalyzer {
     }
 
     const mean = values.reduce((a, b) => a + b, 0) / values.length;
-    
+
     const sorted = [...values].sort((a, b) => a - b);
-    const median = sorted.length % 2 === 0
-      ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
-      : sorted[Math.floor(sorted.length / 2)];
+    const median =
+      sorted.length % 2 === 0
+        ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
+        : sorted[Math.floor(sorted.length / 2)];
 
     const stdDev = Math.sqrt(
       values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length
@@ -350,7 +335,10 @@ export class HistoricalAnalyzer {
     return { mean, median, stdDev, count: values.length };
   }
 
-  private linearRegression(x: number[], y: number[]): {
+  private linearRegression(
+    x: number[],
+    y: number[]
+  ): {
     slope: number;
     intercept: number;
     confidence: number;
@@ -371,12 +359,12 @@ export class HistoricalAnalyzer {
       (sum, yi, i) => sum + Math.pow(yi - (slope * x[i] + intercept), 2),
       0
     );
-    const rSquared = 1 - (ssResidual / ssTotal);
+    const rSquared = 1 - ssResidual / ssTotal;
 
     return {
       slope,
       intercept,
-      confidence: Math.max(0, Math.min(1, rSquared))
+      confidence: Math.max(0, Math.min(1, rSquared)),
     };
   }
 

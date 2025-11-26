@@ -1,6 +1,6 @@
 /**
  * Cognitive Development Module
- * 
+ *
  * Provides cognitive capabilities including:
  * - Learning cycles and knowledge acquisition
  * - Reasoning and problem-solving

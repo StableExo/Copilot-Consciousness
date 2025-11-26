@@ -1,12 +1,12 @@
 /**
  * Phase 3 Initializer
- * 
+ *
  * Responsible for initializing and wiring Phase 3 components:
  * - AI learning agents (RL, NN, Evolution)
  * - Cross-chain intelligence
  * - Enhanced security components
  * - Consciousness deepening features
- * 
+ *
  * See docs/PHASE3_ROADMAP.md for component details
  */
 
@@ -38,15 +38,15 @@ export interface Phase3Components {
   rlAgent?: StrategyRLAgent;
   nnScorer?: OpportunityNNScorer;
   evolutionEngine?: StrategyEvolutionEngine;
-  
+
   // Cross-Chain
   crossChainIntelligence?: CrossChainIntelligence;
-  
+
   // Security
   bloodhoundScanner?: BloodhoundScanner;
   threatResponseEngine?: ThreatResponseEngine;
   securityPatternLearner?: SecurityPatternLearner;
-  
+
   // Status flags
   aiEnabled: boolean;
   crossChainEnabled: boolean;
@@ -61,18 +61,18 @@ export async function initializePhase3Components(
   baseStrategy?: ArbitrageConfig
 ): Promise<Phase3Components> {
   logger.info('[Phase3] Initializing Phase 3 components...');
-  
+
   const components: Phase3Components = {
     aiEnabled: false,
     crossChainEnabled: false,
     securityEnabled: false,
   };
-  
+
   try {
     // Initialize AI Components
     if (config.ai.rlAgent.enabled || config.ai.nnScorer.enabled || config.ai.evolution.enabled) {
       logger.info('[Phase3] Initializing AI components...');
-      
+
       // Initialize RL Agent
       if (config.ai.rlAgent.enabled) {
         try {
@@ -90,7 +90,7 @@ export async function initializePhase3Components(
           logger.error(`[Phase3] Failed to initialize RL Agent: ${error}`);
         }
       }
-      
+
       // Initialize NN Scorer
       if (config.ai.nnScorer.enabled) {
         try {
@@ -106,7 +106,7 @@ export async function initializePhase3Components(
           logger.error(`[Phase3] Failed to initialize NN Scorer: ${error}`);
         }
       }
-      
+
       // Initialize Evolution Engine
       if (config.ai.evolution.enabled) {
         try {
@@ -119,7 +119,7 @@ export async function initializePhase3Components(
             executionTimeout: 60000,
             priorityFeeStrategy: 'moderate' as const,
           };
-          
+
           components.evolutionEngine = new StrategyEvolutionEngine(strategyParams, {
             populationSize: config.ai.evolution.populationSize,
             generationSize: config.ai.evolution.generationSize,
@@ -134,15 +134,15 @@ export async function initializePhase3Components(
           logger.error(`[Phase3] Failed to initialize Evolution Engine: ${error}`);
         }
       }
-      
+
       components.aiEnabled = true;
       logger.info('[Phase3] AI components initialization complete');
     }
-    
+
     // Initialize Cross-Chain Intelligence
     if (config.crossChain.enabled) {
       logger.info('[Phase3] Initializing Cross-Chain Intelligence...');
-      
+
       try {
         components.crossChainIntelligence = new CrossChainIntelligence({
           enabledChains: config.crossChain.enabledChains,
@@ -150,35 +150,41 @@ export async function initializePhase3Components(
           minPriceDivergence: config.crossChain.minPriceDivergence,
           maxBridgingTime: config.crossChain.maxBridgingTime,
         });
-        
+
         // Start monitoring
         components.crossChainIntelligence.start();
-        
+
         // Set up event listeners
         components.crossChainIntelligence.on('patternsDetected', ({ patterns }) => {
           logger.info(`[Phase3] Cross-chain patterns detected: ${patterns.length}`);
           for (const pattern of patterns) {
             if (pattern.estimatedProfit > config.crossChain.minCrossChainProfit) {
-              logger.info(`[Phase3] Cross-chain opportunity: ${pattern.type}, profit: ${pattern.estimatedProfit} ETH`);
+              logger.info(
+                `[Phase3] Cross-chain opportunity: ${pattern.type}, profit: ${pattern.estimatedProfit} ETH`
+              );
             }
           }
         });
-        
+
         components.crossChainIntelligence.on('riskAlert', ({ message, severity }) => {
           logger.warn(`[Phase3] Cross-chain risk alert [${severity}]: ${message}`);
         });
-        
+
         components.crossChainEnabled = true;
         logger.info('[Phase3] ✓ Cross-Chain Intelligence initialized and started');
       } catch (error) {
         logger.error(`[Phase3] Failed to initialize Cross-Chain Intelligence: ${error}`);
       }
     }
-    
+
     // Initialize Security Components
-    if (config.security.bloodhound.enabled || config.security.threatResponse.enabled || config.security.patternLearner.enabled) {
+    if (
+      config.security.bloodhound.enabled ||
+      config.security.threatResponse.enabled ||
+      config.security.patternLearner.enabled
+    ) {
       logger.info('[Phase3] Initializing Security components...');
-      
+
       // Initialize Bloodhound Scanner
       if (config.security.bloodhound.enabled) {
         try {
@@ -193,7 +199,7 @@ export async function initializePhase3Components(
           logger.error(`[Phase3] Failed to initialize Bloodhound Scanner: ${error}`);
         }
       }
-      
+
       // Initialize Threat Response Engine
       if (config.security.threatResponse.enabled) {
         try {
@@ -202,22 +208,22 @@ export async function initializePhase3Components(
             responseDelay: config.security.threatResponse.responseDelay,
             requireOperatorApproval: config.security.threatResponse.requireOperatorApproval,
           });
-          
+
           // Set up event listeners
           components.threatResponseEngine.on('actionExecuted', (action: any) => {
             logger.info(`[Phase3] Security action executed: ${action.type} - ${action.reason}`);
           });
-          
+
           components.threatResponseEngine.on('actionQueued', (action: any) => {
             logger.info(`[Phase3] Security action queued (requires approval): ${action.type}`);
           });
-          
+
           logger.info('[Phase3] ✓ ThreatResponseEngine initialized');
         } catch (error) {
           logger.error(`[Phase3] Failed to initialize Threat Response Engine: ${error}`);
         }
       }
-      
+
       // Initialize Security Pattern Learner
       if (config.security.patternLearner.enabled) {
         try {
@@ -231,27 +237,28 @@ export async function initializePhase3Components(
           logger.error(`[Phase3] Failed to initialize Security Pattern Learner: ${error}`);
         }
       }
-      
+
       components.securityEnabled = true;
       logger.info('[Phase3] Security components initialization complete');
     }
-    
+
     // Log initialization summary
     const enabledComponents = [];
     if (components.aiEnabled) enabledComponents.push('AI');
     if (components.crossChainEnabled) enabledComponents.push('Cross-Chain');
     if (components.securityEnabled) enabledComponents.push('Security');
-    
+
     if (enabledComponents.length > 0) {
-      logger.info(`[Phase3] ✓ Phase 3 initialization complete. Enabled: ${enabledComponents.join(', ')}`);
+      logger.info(
+        `[Phase3] ✓ Phase 3 initialization complete. Enabled: ${enabledComponents.join(', ')}`
+      );
     } else {
       logger.info('[Phase3] Phase 3 components not enabled');
     }
-    
   } catch (error) {
     logger.error(`[Phase3] Error during initialization: ${error}`);
   }
-  
+
   return components;
 }
 
@@ -260,30 +267,34 @@ export async function initializePhase3Components(
  */
 export async function shutdownPhase3Components(components: Phase3Components): Promise<void> {
   logger.info('[Phase3] Shutting down Phase 3 components...');
-  
+
   try {
     // Stop cross-chain monitoring
     if (components.crossChainIntelligence) {
       components.crossChainIntelligence.stop();
       logger.info('[Phase3] ✓ Cross-Chain Intelligence stopped');
     }
-    
+
     // Save AI model states (if needed)
     if (components.rlAgent) {
       const stats = components.rlAgent.getStatistics();
-      logger.info(`[Phase3] RL Agent final stats: ${stats.episodeCount} episodes, ${stats.totalReward.toFixed(2)} total reward`);
+      logger.info(
+        `[Phase3] RL Agent final stats: ${stats.episodeCount} episodes, ${stats.totalReward.toFixed(
+          2
+        )} total reward`
+      );
     }
-    
+
     if (components.nnScorer) {
       logger.info('[Phase3] NN Scorer statistics saved');
     }
-    
+
     // Save security patterns
     if (components.securityPatternLearner) {
       const patterns = components.securityPatternLearner.getPatterns();
       logger.info(`[Phase3] Security patterns learned: ${patterns.length}`);
     }
-    
+
     logger.info('[Phase3] ✓ Phase 3 components shutdown complete');
   } catch (error) {
     logger.error(`[Phase3] Error during shutdown: ${error}`);

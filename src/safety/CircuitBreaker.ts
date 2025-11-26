@@ -1,13 +1,13 @@
 /**
  * CircuitBreaker - Automatic trading halt mechanism
- * 
+ *
  * Monitors system health and trading performance, automatically halting
  * trading when dangerous conditions are detected:
  * - Consecutive failures exceed threshold
  * - Loss rate exceeds acceptable limit
  * - System health degrades
  * - Manual trigger activated
- * 
+ *
  * Follows the Circuit Breaker pattern: CLOSED -> OPEN -> HALF_OPEN -> CLOSED
  */
 
@@ -15,31 +15,31 @@ import { EventEmitter } from 'events';
 import { logger } from '../utils/logger';
 
 export enum CircuitState {
-  CLOSED = 'CLOSED',     // Normal operation, trades allowed
-  OPEN = 'OPEN',         // Circuit tripped, no trades allowed
-  HALF_OPEN = 'HALF_OPEN' // Testing if system recovered
+  CLOSED = 'CLOSED', // Normal operation, trades allowed
+  OPEN = 'OPEN', // Circuit tripped, no trades allowed
+  HALF_OPEN = 'HALF_OPEN', // Testing if system recovered
 }
 
 export interface CircuitBreakerConfig {
   // Failure thresholds
-  failureThreshold: number;           // Number of consecutive failures before opening
-  failureRateThreshold: number;       // Failure rate (0-1) threshold over time window
-  
+  failureThreshold: number; // Number of consecutive failures before opening
+  failureRateThreshold: number; // Failure rate (0-1) threshold over time window
+
   // Loss thresholds
-  maxConsecutiveLosses: number;       // Max consecutive losing trades
-  maxLossAmount: bigint;              // Max total loss before opening (wei)
-  maxLossPercentage: number;          // Max loss as percentage of capital (0-100)
-  
+  maxConsecutiveLosses: number; // Max consecutive losing trades
+  maxLossAmount: bigint; // Max total loss before opening (wei)
+  maxLossPercentage: number; // Max loss as percentage of capital (0-100)
+
   // Timing
-  timeWindow: number;                 // Time window for failure rate calculation (ms)
-  cooldownPeriod: number;             // Time to wait before attempting recovery (ms)
-  halfOpenTimeout: number;            // Time in half-open before auto-closing (ms)
-  
+  timeWindow: number; // Time window for failure rate calculation (ms)
+  cooldownPeriod: number; // Time to wait before attempting recovery (ms)
+  halfOpenTimeout: number; // Time in half-open before auto-closing (ms)
+
   // Recovery
-  successThresholdToClose: number;    // Successful trades needed in half-open to close
-  
+  successThresholdToClose: number; // Successful trades needed in half-open to close
+
   // System health
-  minHealthScore: number;             // Minimum health score (0-1) to allow trading
+  minHealthScore: number; // Minimum health score (0-1) to allow trading
 }
 
 export interface CircuitBreakerMetrics {
@@ -73,7 +73,7 @@ export interface TradeResult {
 export class CircuitBreaker extends EventEmitter {
   private state: CircuitState = CircuitState.CLOSED;
   private config: CircuitBreakerConfig;
-  
+
   // Metrics tracking
   private metrics: CircuitBreakerMetrics = {
     state: CircuitState.CLOSED,
@@ -90,22 +90,22 @@ export class CircuitBreaker extends EventEmitter {
     lastSuccessTime: 0,
     openedAt: 0,
     openCount: 0,
-    timeInOpen: 0
+    timeInOpen: 0,
   };
-  
+
   // Trade history for failure rate calculation
   private tradeHistory: TradeResult[] = [];
-  
+
   // Timers
   private cooldownTimer?: NodeJS.Timeout;
   private halfOpenTimer?: NodeJS.Timeout;
-  
+
   // State for half-open recovery
   private halfOpenSuccesses: number = 0;
 
   constructor(config?: Partial<CircuitBreakerConfig>) {
     super();
-    
+
     this.config = {
       failureThreshold: config?.failureThreshold ?? 5,
       failureRateThreshold: config?.failureRateThreshold ?? 0.5,
@@ -116,9 +116,9 @@ export class CircuitBreaker extends EventEmitter {
       cooldownPeriod: config?.cooldownPeriod ?? 60000, // 1 minute
       halfOpenTimeout: config?.halfOpenTimeout ?? 30000, // 30 seconds
       successThresholdToClose: config?.successThresholdToClose ?? 2,
-      minHealthScore: config?.minHealthScore ?? 0.7
+      minHealthScore: config?.minHealthScore ?? 0.7,
     };
-    
+
     logger.info('[CircuitBreaker] Initialized', 'SAFETY');
   }
 
@@ -145,8 +145,10 @@ export class CircuitBreaker extends EventEmitter {
       state: this.state,
       failureRate: this.calculateFailureRate(),
       netProfit: this.metrics.totalProfit - this.metrics.totalLoss,
-      timeInOpen: this.state === CircuitState.OPEN ? 
-        Date.now() - this.metrics.openedAt : this.metrics.timeInOpen
+      timeInOpen:
+        this.state === CircuitState.OPEN
+          ? Date.now() - this.metrics.openedAt
+          : this.metrics.timeInOpen,
     };
   }
 
@@ -155,17 +157,17 @@ export class CircuitBreaker extends EventEmitter {
    */
   recordTrade(result: TradeResult): void {
     this.metrics.totalAttempts++;
-    
+
     // Add to history
     this.tradeHistory.push(result);
     this.cleanupOldHistory();
-    
+
     if (result.success) {
       this.handleSuccess(result);
     } else {
       this.handleFailure(result);
     }
-    
+
     // Check if circuit should open
     this.checkThresholds();
   }
@@ -177,7 +179,7 @@ export class CircuitBreaker extends EventEmitter {
     this.metrics.successfulAttempts++;
     this.metrics.consecutiveFailures = 0;
     this.metrics.lastSuccessTime = result.timestamp;
-    
+
     if (result.profit > BigInt(0)) {
       this.metrics.totalProfit += result.profit;
       this.metrics.consecutiveLosses = 0;
@@ -187,7 +189,7 @@ export class CircuitBreaker extends EventEmitter {
       this.metrics.consecutiveLosses++;
       logger.debug(`[CircuitBreaker] Loss recorded: ${result.profit}`, 'SAFETY');
     }
-    
+
     // Handle half-open state
     if (this.state === CircuitState.HALF_OPEN) {
       this.halfOpenSuccesses++;
@@ -195,7 +197,7 @@ export class CircuitBreaker extends EventEmitter {
         `[CircuitBreaker] Success in HALF_OPEN (${this.halfOpenSuccesses}/${this.config.successThresholdToClose})`,
         'SAFETY'
       );
-      
+
       if (this.halfOpenSuccesses >= this.config.successThresholdToClose) {
         this.closeCircuit('Recovery threshold reached');
       }
@@ -209,12 +211,12 @@ export class CircuitBreaker extends EventEmitter {
     this.metrics.failedAttempts++;
     this.metrics.consecutiveFailures++;
     this.metrics.lastFailureTime = result.timestamp;
-    
+
     logger.warn(
       `[CircuitBreaker] Trade failure recorded (consecutive: ${this.metrics.consecutiveFailures})`,
       'SAFETY'
     );
-    
+
     // Reset half-open successes on failure
     if (this.state === CircuitState.HALF_OPEN) {
       this.halfOpenSuccesses = 0;
@@ -230,26 +232,26 @@ export class CircuitBreaker extends EventEmitter {
     if (this.state === CircuitState.OPEN) {
       return; // Already open
     }
-    
+
     // Check consecutive failures
     if (this.metrics.consecutiveFailures >= this.config.failureThreshold) {
       this.openCircuit(`Consecutive failures: ${this.metrics.consecutiveFailures}`);
       return;
     }
-    
+
     // Check failure rate
     const failureRate = this.calculateFailureRate();
     if (failureRate >= this.config.failureRateThreshold) {
       this.openCircuit(`High failure rate: ${(failureRate * 100).toFixed(1)}%`);
       return;
     }
-    
+
     // Check consecutive losses
     if (this.metrics.consecutiveLosses >= this.config.maxConsecutiveLosses) {
       this.openCircuit(`Consecutive losses: ${this.metrics.consecutiveLosses}`);
       return;
     }
-    
+
     // Check total loss amount
     const netLoss = this.metrics.totalLoss - this.metrics.totalProfit;
     if (netLoss > this.config.maxLossAmount) {
@@ -265,8 +267,8 @@ export class CircuitBreaker extends EventEmitter {
     if (this.tradeHistory.length === 0) {
       return 0;
     }
-    
-    const failures = this.tradeHistory.filter(t => !t.success).length;
+
+    const failures = this.tradeHistory.filter((t) => !t.success).length;
     return failures / this.tradeHistory.length;
   }
 
@@ -275,7 +277,7 @@ export class CircuitBreaker extends EventEmitter {
    */
   private cleanupOldHistory(): void {
     const cutoff = Date.now() - this.config.timeWindow;
-    this.tradeHistory = this.tradeHistory.filter(t => t.timestamp > cutoff);
+    this.tradeHistory = this.tradeHistory.filter((t) => t.timestamp > cutoff);
   }
 
   /**
@@ -285,27 +287,27 @@ export class CircuitBreaker extends EventEmitter {
     if (this.state === CircuitState.OPEN) {
       return;
     }
-    
+
     const previousState = this.state;
     this.state = CircuitState.OPEN;
     this.metrics.openedAt = Date.now();
     this.metrics.openCount++;
-    
+
     logger.error(`[CircuitBreaker] Circuit OPENED: ${reason}`, 'SAFETY');
-    
+
     // Clear any existing timers
     this.clearTimers();
-    
+
     // Start cooldown period
     this.cooldownTimer = setTimeout(() => {
       this.enterHalfOpen();
     }, this.config.cooldownPeriod);
-    
+
     // Emit event
     this.emit('circuit-opened', {
       reason,
       metrics: this.getMetrics(),
-      previousState
+      previousState,
     });
   }
 
@@ -316,13 +318,13 @@ export class CircuitBreaker extends EventEmitter {
     if (this.state !== CircuitState.OPEN) {
       return;
     }
-    
+
     this.state = CircuitState.HALF_OPEN;
     this.halfOpenSuccesses = 0;
     this.metrics.timeInOpen += Date.now() - this.metrics.openedAt;
-    
+
     logger.info('[CircuitBreaker] Entering HALF_OPEN state for recovery test', 'SAFETY');
-    
+
     // Set timeout for half-open state
     this.halfOpenTimer = setTimeout(() => {
       if (this.state === CircuitState.HALF_OPEN) {
@@ -330,10 +332,10 @@ export class CircuitBreaker extends EventEmitter {
         this.openCircuit('Half-open timeout without sufficient successes');
       }
     }, this.config.halfOpenTimeout);
-    
+
     // Emit event
     this.emit('half-open', {
-      metrics: this.getMetrics()
+      metrics: this.getMetrics(),
     });
   }
 
@@ -344,30 +346,30 @@ export class CircuitBreaker extends EventEmitter {
     if (this.state === CircuitState.CLOSED) {
       return;
     }
-    
+
     const previousState = this.state;
     this.state = CircuitState.CLOSED;
-    
+
     // Update time in open if we were open
     if (previousState === CircuitState.OPEN) {
       this.metrics.timeInOpen += Date.now() - this.metrics.openedAt;
     }
-    
+
     // Reset consecutive counters
     this.metrics.consecutiveFailures = 0;
     this.metrics.consecutiveLosses = 0;
     this.halfOpenSuccesses = 0;
-    
+
     logger.info(`[CircuitBreaker] Circuit CLOSED: ${reason}`, 'SAFETY');
-    
+
     // Clear timers
     this.clearTimers();
-    
+
     // Emit event
     this.emit('circuit-closed', {
       reason,
       metrics: this.getMetrics(),
-      previousState
+      previousState,
     });
   }
 
@@ -401,7 +403,7 @@ export class CircuitBreaker extends EventEmitter {
    */
   resetMetrics(): void {
     logger.info('[CircuitBreaker] Resetting metrics', 'SAFETY');
-    
+
     this.metrics = {
       state: this.state,
       totalAttempts: 0,
@@ -417,9 +419,9 @@ export class CircuitBreaker extends EventEmitter {
       lastSuccessTime: 0,
       openedAt: this.state === CircuitState.OPEN ? Date.now() : 0,
       openCount: 0,
-      timeInOpen: 0
+      timeInOpen: 0,
     };
-    
+
     this.tradeHistory = [];
   }
 

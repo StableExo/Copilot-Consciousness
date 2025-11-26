@@ -1,6 +1,6 @@
 /**
  * ML Types and Interfaces
- * 
+ *
  * Core type definitions for the machine learning system
  */
 
@@ -29,35 +29,35 @@ export interface MarketFeatures {
   priceMomentum30s: number;
   priceMomentum1m: number;
   priceMomentum5m: number;
-  
+
   // Volume features
   volumeMA: number;
   volumeRatio: number;
   vwap: number;
-  
+
   // Liquidity features
   liquidityDepth: number;
   liquidityRatio: number;
   bidAskSpread: number;
   spreadTrend: number;
-  
+
   // Gas features
   gasPricePercentile: number;
   gasTrend: number;
-  
+
   // Volatility features
   volatility: number;
   atr: number;
-  
+
   // Time features
   hourOfDay: number;
   dayOfWeek: number;
-  
+
   // MEV features (from AxionCitadel integration)
   mempoolCongestion?: number;
   searcherDensity?: number;
   mevRiskScore?: number;
-  
+
   // Cross-chain features
   priceCorrelation?: number;
 }

@@ -1,6 +1,6 @@
 /**
  * TransactionBuilder - Intelligent transaction construction with gas optimization
- * 
+ *
  * Automatically selects EIP-1559 vs legacy, estimates gas, and simulates transactions
  * Now integrated with AdvancedGasEstimator for pre-execution validation
  */
@@ -44,7 +44,7 @@ export class TransactionBuilder {
   private advancedEstimator?: AdvancedGasEstimator;
 
   constructor(
-    provider: JsonRpcProvider, 
+    provider: JsonRpcProvider,
     oracle: GasPriceOracle,
     advancedEstimator?: AdvancedGasEstimator
   ) {
@@ -63,23 +63,23 @@ export class TransactionBuilder {
   ): Promise<Transaction> {
     // Select gas tier based on strategy
     const gasTier = this.strategyToTier(strategy);
-    
+
     // Get gas price
     const gasPrice = await this.oracle.getCurrentGasPrice(gasTier);
-    
+
     // Check if network supports EIP-1559
     const supportsEIP1559 = await this.checkEIP1559Support();
-    
+
     // Estimate gas limit
     const gasLimit = await this.estimateGasLimit(path, options);
-    
+
     // Build transaction object
     const tx: Transaction = {
       to: path.hops[0].poolAddress, // First hop destination
       data: '0x', // Will be populated with actual swap data
       value: options.value || BigInt(0),
       gasLimit,
-      nonce: options.nonce
+      nonce: options.nonce,
     };
 
     // Add gas pricing based on EIP-1559 support
@@ -99,7 +99,7 @@ export class TransactionBuilder {
   async estimateGasCost(path: ArbitragePath): Promise<bigint> {
     const gasPrice = await this.oracle.getCurrentGasPrice('normal');
     const gasLimit = BigInt(path.totalGasCost);
-    
+
     return gasLimit * gasPrice.maxFeePerGas;
   }
 
@@ -114,19 +114,19 @@ export class TransactionBuilder {
         data: tx.data,
         value: tx.value,
         from: from || ZeroAddress,
-        gasLimit: tx.gasLimit
+        gasLimit: tx.gasLimit,
       });
 
       // If we got here, the call succeeded
       return {
         success: true,
         gasUsed: tx.gasLimit, // Actual gas would be measured on-chain
-        returnData: result
+        returnData: result,
       };
     } catch (error: any) {
       // Parse revert reason if available
       let errorMessage = 'Unknown error';
-      
+
       if (error.data) {
         try {
           errorMessage = toUtf8String(error.data);
@@ -140,7 +140,7 @@ export class TransactionBuilder {
       return {
         success: false,
         gasUsed: BigInt(0),
-        error: errorMessage
+        error: errorMessage,
       };
     }
   }
@@ -168,7 +168,8 @@ export class TransactionBuilder {
     );
 
     const maxPriorityFeePerGas = txs.reduce(
-      (max, tx) => (tx.maxPriorityFeePerGas && tx.maxPriorityFeePerGas > max ? tx.maxPriorityFeePerGas : max),
+      (max, tx) =>
+        tx.maxPriorityFeePerGas && tx.maxPriorityFeePerGas > max ? tx.maxPriorityFeePerGas : max,
       BigInt(0)
     );
 
@@ -180,7 +181,7 @@ export class TransactionBuilder {
       gasLimit: totalGasLimit,
       maxFeePerGas: maxFeePerGas > BigInt(0) ? maxFeePerGas : undefined,
       maxPriorityFeePerGas: maxPriorityFeePerGas > BigInt(0) ? maxPriorityFeePerGas : undefined,
-      gasPrice: txs[0].gasPrice
+      gasPrice: txs[0].gasPrice,
     };
   }
 
@@ -197,8 +198,8 @@ export class TransactionBuilder {
 
     if (attempt > 1) {
       // Increase gas price by 10% for each retry
-      const multiplier = BigInt(100 + (10 * (attempt - 1))) * BigInt(100) / BigInt(10000);
-      
+      const multiplier = (BigInt(100 + 10 * (attempt - 1)) * BigInt(100)) / BigInt(10000);
+
       if (tx.maxFeePerGas) {
         tx.maxFeePerGas = (tx.maxFeePerGas * multiplier) / BigInt(100);
       }
@@ -223,10 +224,10 @@ export class TransactionBuilder {
     try {
       // Use totalGasCost from path as baseline
       const baseGas = BigInt(path.totalGasCost);
-      
+
       // Apply buffer
       const gasWithBuffer = (baseGas * BigInt(Math.floor(this.gasBuffer * 1000))) / BigInt(1000);
-      
+
       return gasWithBuffer;
     } catch (error) {
       console.error('Error estimating gas:', error);
@@ -254,7 +255,7 @@ export class TransactionBuilder {
     const mapping: Record<GasStrategy, GasPriceTier> = {
       aggressive: 'instant',
       normal: 'fast',
-      economical: 'normal'
+      economical: 'normal',
     };
     return mapping[strategy];
   }
@@ -301,7 +302,7 @@ export class TransactionBuilder {
       estimatedGas: BigInt(path.totalGasCost),
       gasPrice: gasPrice.maxFeePerGas,
       netProfit,
-      warnings: []
+      warnings: [],
     };
   }
 

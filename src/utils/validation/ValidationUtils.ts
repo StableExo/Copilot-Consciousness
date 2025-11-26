@@ -1,6 +1,6 @@
 /**
  * Validation Utilities
- * 
+ *
  * Integrated from AxionCitadel - Production-tested validation utilities
  * for addresses, RPC URLs, and data parsing.
  */
@@ -17,7 +17,7 @@ export function validateAndNormalizeAddress(
   isRequired: boolean = false
 ): string | null {
   const addressString = String(rawAddress || '').trim();
-  
+
   if (!addressString) {
     if (isRequired) {
       const errorMsg = `[ValidationUtils] CRITICAL: Required address ${contextName} is missing or empty.`;
@@ -29,7 +29,7 @@ export function validateAndNormalizeAddress(
 
   try {
     const cleanAddress = addressString.replace(/^['"]+|['"]+$/g, '');
-    
+
     if (!isAddress(cleanAddress)) {
       const errorMsg = `[ValidationUtils] ${contextName}: Invalid address format "${cleanAddress}".`;
       if (isRequired) {
@@ -62,9 +62,9 @@ export function validatePrivateKey(
   const keyString = String(rawKey || '')
     .trim()
     .replace(/^0x/, '');
-    
+
   const valid = /^[a-fA-F0-9]{64}$/.test(keyString);
-  
+
   if (!valid && keyString) {
     logger.warn(
       `[ValidationUtils PK] Invalid PK format for ${contextName}. It should be a 64-character hex string.`
@@ -77,12 +77,9 @@ export function validatePrivateKey(
 /**
  * Validates and parses RPC URLs from a comma-separated string
  */
-export function validateRpcUrls(
-  rawUrls: string | undefined | null,
-  contextName: string
-): string[] {
+export function validateRpcUrls(rawUrls: string | undefined | null, contextName: string): string[] {
   const urlsString = String(rawUrls || '').trim();
-  
+
   if (!urlsString) {
     const errorMsg = `[ValidationUtils] CRITICAL ${contextName}: RPC URL(s) string is empty.`;
     logger.error(errorMsg);
@@ -94,12 +91,10 @@ export function validateRpcUrls(
     .map((url) => url.trim())
     .filter((url) => {
       if (!url) return false;
-      
+
       const isValidFormat = /^(https?|wss?):\/\/.+/i.test(url);
       if (!isValidFormat) {
-        logger.warn(
-          `[ValidationUtils] ${contextName}: Invalid URL format skipped: "${url}"`
-        );
+        logger.warn(`[ValidationUtils] ${contextName}: Invalid URL format skipped: "${url}"`);
         return false;
       }
       return true;
@@ -147,11 +142,7 @@ export function safeParseInt(
   contextName: string,
   defaultValue: number = 0
 ): number {
-  if (
-    valueStr === undefined ||
-    valueStr === null ||
-    String(valueStr).trim() === ''
-  ) {
+  if (valueStr === undefined || valueStr === null || String(valueStr).trim() === '') {
     return defaultValue;
   }
 

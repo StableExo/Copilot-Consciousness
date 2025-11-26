@@ -1,6 +1,6 @@
 /**
  * Scorer Utility
- * 
+ *
  * Provides scoring and ranking functions for multi-criteria decision making.
  */
 
@@ -10,11 +10,7 @@ import { Path } from '../types/path';
 /**
  * Scoring method type
  */
-export type ScoringMethod = 
-  | 'weighted-sum'
-  | 'weighted-product'
-  | 'topsis'
-  | 'promethee';
+export type ScoringMethod = 'weighted-sum' | 'weighted-product' | 'topsis' | 'promethee';
 
 /**
  * Criterion for scoring
@@ -28,17 +24,14 @@ export interface ScoringCriterion {
 /**
  * Calculate weighted sum score
  */
-export function weightedSum(
-  values: Record<string, number>,
-  criteria: ScoringCriterion[]
-): number {
+export function weightedSum(values: Record<string, number>, criteria: ScoringCriterion[]): number {
   let positiveScore = 0;
   let negativeScore = 0;
-  
+
   for (const criterion of criteria) {
     const value = values[criterion.name] || 0;
     const weightedValue = value * criterion.weight;
-    
+
     if (criterion.type === 'minimize') {
       // For minimize criteria, lower values are better
       // Invert and normalize to positive contribution
@@ -47,7 +40,7 @@ export function weightedSum(
       positiveScore += weightedValue;
     }
   }
-  
+
   // Return normalized score (positive contributions minus normalized negative)
   // Use a normalization factor to keep scores in reasonable range
   const score = positiveScore / (1 + negativeScore / 100);
@@ -62,30 +55,27 @@ export function weightedProduct(
   criteria: ScoringCriterion[]
 ): number {
   let score = 1;
-  
+
   for (const criterion of criteria) {
     const value = values[criterion.name] || 1;
     const normalizedValue = criterion.type === 'minimize' ? 1 / value : value;
     score *= Math.pow(normalizedValue, criterion.weight);
   }
-  
+
   return score;
 }
 
 /**
  * Normalize values using min-max normalization
  */
-export function normalizeValues(
-  allValues: Record<string, number>[],
-  criterion: string
-): number[] {
-  const values = allValues.map(v => v[criterion] || 0);
+export function normalizeValues(allValues: Record<string, number>[], criterion: string): number[] {
+  const values = allValues.map((v) => v[criterion] || 0);
   const min = Math.min(...values);
   const max = Math.max(...values);
-  
+
   if (min === max) return values.map(() => 0.5);
-  
-  return values.map(v => (v - min) / (max - min));
+
+  return values.map((v) => (v - min) / (max - min));
 }
 
 /**
@@ -98,22 +88,20 @@ export function topsis(
   // Normalize decision matrix
   const normalized: number[][] = [];
   for (const criterion of criteria) {
-    const values = alternatives.map(alt => alt[criterion.name] || 0);
+    const values = alternatives.map((alt) => alt[criterion.name] || 0);
     const sumSquares = values.reduce((sum, v) => sum + v * v, 0);
     const norm = Math.sqrt(sumSquares);
-    
-    normalized.push(norm === 0 ? values : values.map(v => v / norm));
+
+    normalized.push(norm === 0 ? values : values.map((v) => v / norm));
   }
-  
+
   // Calculate weighted normalized matrix
-  const weighted: number[][] = normalized.map((col, i) => 
-    col.map(v => v * criteria[i].weight)
-  );
-  
+  const weighted: number[][] = normalized.map((col, i) => col.map((v) => v * criteria[i].weight));
+
   // Determine ideal and negative-ideal solutions
   const ideal: number[] = [];
   const negativeIdeal: number[] = [];
-  
+
   for (let i = 0; i < criteria.length; i++) {
     const values = weighted[i];
     if (criteria[i].type === 'maximize') {
@@ -124,27 +112,27 @@ export function topsis(
       negativeIdeal.push(Math.max(...values));
     }
   }
-  
+
   // Calculate separation measures
   const scores: number[] = [];
   for (let alt = 0; alt < alternatives.length; alt++) {
     let distIdeal = 0;
     let distNegIdeal = 0;
-    
+
     for (let crit = 0; crit < criteria.length; crit++) {
       const value = weighted[crit][alt];
       distIdeal += Math.pow(value - ideal[crit], 2);
       distNegIdeal += Math.pow(value - negativeIdeal[crit], 2);
     }
-    
+
     distIdeal = Math.sqrt(distIdeal);
     distNegIdeal = Math.sqrt(distNegIdeal);
-    
+
     // Calculate relative closeness to ideal solution
     const score = distNegIdeal / (distIdeal + distNegIdeal);
     scores.push(isNaN(score) ? 0 : score);
   }
-  
+
   return scores;
 }
 
@@ -155,20 +143,20 @@ export function rankByScore<T>(
   items: T[],
   getScore: (item: T) => number
 ): Array<{ item: T; rank: number; score: number }> {
-  const itemsWithScores = items.map(item => ({
+  const itemsWithScores = items.map((item) => ({
     item,
-    score: getScore(item)
+    score: getScore(item),
   }));
-  
+
   // Sort by score descending
   itemsWithScores.sort((a, b) => b.score - a.score);
-  
+
   // Assign ranks (handle ties)
   const ranked = itemsWithScores.map((item, index) => ({
     ...item,
-    rank: index + 1
+    rank: index + 1,
   }));
-  
+
   return ranked;
 }
 
@@ -177,11 +165,11 @@ export function rankByScore<T>(
  */
 export function percentileRank(value: number, allValues: number[]): number {
   const sorted = [...allValues].sort((a, b) => a - b);
-  const index = sorted.findIndex(v => v >= value);
-  
+  const index = sorted.findIndex((v) => v >= value);
+
   if (index === -1) return 100;
   if (index === 0) return 0;
-  
+
   return (index / sorted.length) * 100;
 }
 
@@ -207,7 +195,7 @@ export function scoreOpportunity(
   method: ScoringMethod = 'weighted-sum'
 ): number {
   const values = opportunity.criteria;
-  
+
   switch (method) {
     case 'weighted-sum':
       return weightedSum(values, criteria);
@@ -229,9 +217,9 @@ export function scorePath(
   const values: Record<string, number> = {
     cost: path.totalCost,
     time: path.totalTime,
-    risk: path.totalRisk
+    risk: path.totalRisk,
   };
-  
+
   switch (method) {
     case 'weighted-sum':
       return weightedSum(values, criteria);

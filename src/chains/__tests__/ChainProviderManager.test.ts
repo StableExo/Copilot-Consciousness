@@ -18,7 +18,7 @@ describe('ChainProviderManager', () => {
         rpcUrls: ['https://eth.llamarpc.com'],
         nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
         blockTime: 12,
-        enabled: true
+        enabled: true,
       },
       {
         chainId: 56,
@@ -27,7 +27,7 @@ describe('ChainProviderManager', () => {
         rpcUrls: ['https://bsc-dataseed1.binance.org'],
         nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
         blockTime: 3,
-        enabled: true
+        enabled: true,
       },
       {
         chainId: 'mainnet-beta',
@@ -36,8 +36,8 @@ describe('ChainProviderManager', () => {
         rpcUrls: ['https://api.mainnet-beta.solana.com'],
         nativeCurrency: { name: 'SOL', symbol: 'SOL', decimals: 9 },
         blockTime: 0.4,
-        enabled: true
-      }
+        enabled: true,
+      },
     ];
 
     manager = new ChainProviderManager(testChainConfigs, 60000, 3);
@@ -53,13 +53,10 @@ describe('ChainProviderManager', () => {
     });
 
     it('should skip disabled chains', () => {
-      const configs = [
-        { ...testChainConfigs[0], enabled: false },
-        testChainConfigs[1]
-      ];
+      const configs = [{ ...testChainConfigs[0], enabled: false }, testChainConfigs[1]];
       const m = new ChainProviderManager(configs);
       const activeChains = m.getAllActiveChains();
-      
+
       // Should only have BSC (chainId 56)
       expect(activeChains).not.toContain(1);
       m.stopHealthMonitoring();
@@ -142,8 +139,8 @@ describe('ChainProviderManager', () => {
       const summary = manager.getChainsSummary();
       expect(Array.isArray(summary)).toBe(true);
       expect(summary.length).toBeGreaterThan(0);
-      
-      const ethSummary = summary.find(s => s.chainId === 1);
+
+      const ethSummary = summary.find((s) => s.chainId === 1);
       expect(ethSummary).toBeDefined();
       expect(ethSummary?.name).toBe('Ethereum');
     });

@@ -1,6 +1,6 @@
 /**
  * SystemHealthMonitor.ts - Real-time system health monitoring
- * 
+ *
  * Features:
  * - Component health status tracking
  * - Performance metrics collection
@@ -19,7 +19,7 @@ import {
   SystemAlert,
   AnomalyDetectionResult,
   PerformanceMetrics,
-  ExecutionEventType
+  ExecutionEventType,
 } from '../types/ExecutionTypes';
 
 /**
@@ -35,13 +35,13 @@ export interface MonitoredComponent {
  * Health Check Configuration
  */
 export interface HealthCheckConfig {
-  interval: number;              // Check interval in ms
-  timeout: number;               // Health check timeout
-  errorThreshold: number;        // Error rate threshold (0-1)
-  degradedThreshold: number;     // Response time threshold for degraded state
-  criticalThreshold: number;     // Response time threshold for critical state
+  interval: number; // Check interval in ms
+  timeout: number; // Health check timeout
+  errorThreshold: number; // Error rate threshold (0-1)
+  degradedThreshold: number; // Response time threshold for degraded state
+  criticalThreshold: number; // Response time threshold for critical state
   anomalyDetectionWindow: number; // Time window for anomaly detection
-  alertRetentionTime: number;    // How long to keep alerts
+  alertRetentionTime: number; // How long to keep alerts
 }
 
 /**
@@ -55,7 +55,7 @@ export class SystemHealthMonitor extends EventEmitter {
   private monitoringInterval?: NodeJS.Timeout;
   private startTime: number = Date.now();
   private isRunning: boolean = false;
-  
+
   // Performance tracking
   private performanceHistory: PerformanceMetrics[] = [];
   private executionStats = {
@@ -63,20 +63,20 @@ export class SystemHealthMonitor extends EventEmitter {
     successful: 0,
     failed: 0,
     totalProfit: BigInt(0),
-    totalGasCost: BigInt(0)
+    totalGasCost: BigInt(0),
   };
 
   constructor(config?: Partial<HealthCheckConfig>) {
     super();
-    
+
     this.config = {
-      interval: config?.interval || 30000,              // 30 seconds
-      timeout: config?.timeout || 5000,                 // 5 seconds
-      errorThreshold: config?.errorThreshold || 0.1,    // 10% error rate
-      degradedThreshold: config?.degradedThreshold || 2000,  // 2 seconds
-      criticalThreshold: config?.criticalThreshold || 5000,  // 5 seconds
+      interval: config?.interval || 30000, // 30 seconds
+      timeout: config?.timeout || 5000, // 5 seconds
+      errorThreshold: config?.errorThreshold || 0.1, // 10% error rate
+      degradedThreshold: config?.degradedThreshold || 2000, // 2 seconds
+      criticalThreshold: config?.criticalThreshold || 5000, // 5 seconds
       anomalyDetectionWindow: config?.anomalyDetectionWindow || 300000, // 5 minutes
-      alertRetentionTime: config?.alertRetentionTime || 86400000 // 24 hours
+      alertRetentionTime: config?.alertRetentionTime || 86400000, // 24 hours
     };
   }
 
@@ -85,7 +85,7 @@ export class SystemHealthMonitor extends EventEmitter {
    */
   registerComponent(component: MonitoredComponent): void {
     this.components.set(component.name, component);
-    
+
     // Initialize metrics
     this.componentMetrics.set(component.name, {
       componentName: component.name,
@@ -96,9 +96,9 @@ export class SystemHealthMonitor extends EventEmitter {
       successRate: 1,
       avgResponseTime: 0,
       metrics: {},
-      issues: []
+      issues: [],
     });
-    
+
     logger.info(`[SystemHealthMonitor] Registered component: ${component.name}`);
   }
 
@@ -122,18 +122,26 @@ export class SystemHealthMonitor extends EventEmitter {
 
     this.isRunning = true;
     this.startTime = Date.now();
-    
+
     logger.info('[SystemHealthMonitor] Starting health monitoring');
-    
+
     // Initial health check
-    this.performHealthCheck().catch(error => {
-      logger.error(`[SystemHealthMonitor] Initial health check failed: ${error instanceof Error ? error.message : String(error)}`);
+    this.performHealthCheck().catch((error) => {
+      logger.error(
+        `[SystemHealthMonitor] Initial health check failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
     });
-    
+
     // Schedule periodic checks
     this.monitoringInterval = setInterval(() => {
-      this.performHealthCheck().catch(error => {
-        logger.error(`[SystemHealthMonitor] Health check failed: ${error instanceof Error ? error.message : String(error)}`);
+      this.performHealthCheck().catch((error) => {
+        logger.error(
+          `[SystemHealthMonitor] Health check failed: ${
+            error instanceof Error ? error.message : String(error)
+          }`
+        );
       });
     }, this.config.interval);
   }
@@ -147,12 +155,12 @@ export class SystemHealthMonitor extends EventEmitter {
     }
 
     this.isRunning = false;
-    
+
     if (this.monitoringInterval) {
       clearInterval(this.monitoringInterval);
       this.monitoringInterval = undefined;
     }
-    
+
     logger.info('[SystemHealthMonitor] Stopped health monitoring');
   }
 
@@ -161,28 +169,28 @@ export class SystemHealthMonitor extends EventEmitter {
    */
   private async performHealthCheck(): Promise<void> {
     logger.debug('[SystemHealthMonitor] Performing health check');
-    
-    const checkPromises = Array.from(this.components.entries()).map(
-      ([name, component]) => this.checkComponentHealth(name, component)
+
+    const checkPromises = Array.from(this.components.entries()).map(([name, component]) =>
+      this.checkComponentHealth(name, component)
     );
-    
+
     await Promise.allSettled(checkPromises);
-    
+
     // Detect anomalies
     const anomalies = await this.detectAnomalies();
     if (anomalies.length > 0) {
       this.handleAnomalies(anomalies);
     }
-    
+
     // Clean up old alerts
     this.cleanupAlerts();
-    
+
     // Generate health report
     const report = this.generateHealthReport();
-    
+
     // Emit health check event
     this.emit('health-check', report);
-    
+
     // Check for critical conditions
     if (report.overallStatus === HealthStatus.CRITICAL) {
       this.emit('critical-health', report);
@@ -193,13 +201,10 @@ export class SystemHealthMonitor extends EventEmitter {
   /**
    * Check health of a single component
    */
-  private async checkComponentHealth(
-    name: string,
-    component: MonitoredComponent
-  ): Promise<void> {
+  private async checkComponentHealth(name: string, component: MonitoredComponent): Promise<void> {
     const startTime = Date.now();
     const metrics = this.componentMetrics.get(name);
-    
+
     if (!metrics) {
       return;
     }
@@ -210,49 +215,56 @@ export class SystemHealthMonitor extends EventEmitter {
         component.checkHealth(),
         new Promise<HealthStatus>((_, reject) =>
           setTimeout(() => reject(new Error('Health check timeout')), this.config.timeout)
-        )
+        ),
       ]);
 
       const responseTime = Date.now() - startTime;
-      
+
       // Update metrics
       metrics.status = status;
       metrics.lastCheck = Date.now();
-      metrics.avgResponseTime = (metrics.avgResponseTime * 0.8) + (responseTime * 0.2); // EMA
+      metrics.avgResponseTime = metrics.avgResponseTime * 0.8 + responseTime * 0.2; // EMA
       metrics.uptime = Date.now() - this.startTime;
-      
+
       // Get component-specific metrics if available
       if (component.getMetrics) {
         try {
           const customMetrics = await component.getMetrics();
           metrics.metrics = customMetrics;
         } catch (error) {
-          logger.error(`[SystemHealthMonitor] Failed to get metrics for ${name}: ${error instanceof Error ? error.message : String(error)}`);
+          logger.error(
+            `[SystemHealthMonitor] Failed to get metrics for ${name}: ${
+              error instanceof Error ? error.message : String(error)
+            }`
+          );
         }
       }
-      
+
       // Clear issues if healthy
       if (status === HealthStatus.HEALTHY) {
         metrics.issues = [];
       }
-      
+
       // Add issues based on response time
       if (responseTime > this.config.criticalThreshold) {
         metrics.issues.push(`Response time (${responseTime}ms) exceeds critical threshold`);
       } else if (responseTime > this.config.degradedThreshold) {
         metrics.issues.push(`Response time (${responseTime}ms) exceeds degraded threshold`);
       }
-      
     } catch (error) {
-      logger.error(`[SystemHealthMonitor] Health check failed for ${name}: ${error instanceof Error ? error.message : String(error)}`);
-      
+      logger.error(
+        `[SystemHealthMonitor] Health check failed for ${name}: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+
       // Update error metrics
       metrics.status = HealthStatus.UNHEALTHY;
       metrics.lastCheck = Date.now();
       metrics.errorRate = Math.min(1, metrics.errorRate + 0.1);
       metrics.successRate = Math.max(0, 1 - metrics.errorRate);
       metrics.issues.push(error instanceof Error ? error.message : 'Health check failed');
-      
+
       // Create alert for unhealthy component
       this.createAlert('ERROR', name, `Component health check failed: ${error}`);
     }
@@ -263,7 +275,7 @@ export class SystemHealthMonitor extends EventEmitter {
    */
   private async detectAnomalies(): Promise<AnomalyDetectionResult[]> {
     const anomalies: AnomalyDetectionResult[] = [];
-    
+
     // Check each component for anomalies
     for (const [name, metrics] of this.componentMetrics.entries()) {
       // High error rate anomaly
@@ -272,32 +284,36 @@ export class SystemHealthMonitor extends EventEmitter {
           detected: true,
           anomalyType: 'HIGH_ERROR_RATE',
           severity: metrics.errorRate > 0.5 ? 'CRITICAL' : 'HIGH',
-          description: `Component ${name} has error rate of ${(metrics.errorRate * 100).toFixed(2)}%`,
+          description: `Component ${name} has error rate of ${(metrics.errorRate * 100).toFixed(
+            2
+          )}%`,
           affectedComponent: name,
           suggestedAction: 'Investigate component failures and consider recovery actions',
-          metrics: { errorRate: metrics.errorRate }
+          metrics: { errorRate: metrics.errorRate },
         });
       }
-      
+
       // High response time anomaly
       if (metrics.avgResponseTime > this.config.criticalThreshold) {
         anomalies.push({
           detected: true,
           anomalyType: 'HIGH_RESPONSE_TIME',
           severity: 'HIGH',
-          description: `Component ${name} has average response time of ${metrics.avgResponseTime.toFixed(2)}ms`,
+          description: `Component ${name} has average response time of ${metrics.avgResponseTime.toFixed(
+            2
+          )}ms`,
           affectedComponent: name,
           suggestedAction: 'Check component performance and system resources',
-          metrics: { avgResponseTime: metrics.avgResponseTime }
+          metrics: { avgResponseTime: metrics.avgResponseTime },
         });
       }
     }
-    
+
     // Check performance trends
     if (this.performanceHistory.length >= 5) {
       const recent = this.performanceHistory.slice(-5);
       const avgSuccessRate = recent.reduce((sum, p) => sum + p.successRate, 0) / recent.length;
-      
+
       if (avgSuccessRate < 0.5) {
         anomalies.push({
           detected: true,
@@ -306,11 +322,11 @@ export class SystemHealthMonitor extends EventEmitter {
           description: `System success rate dropped to ${(avgSuccessRate * 100).toFixed(2)}%`,
           affectedComponent: 'System',
           suggestedAction: 'Investigate system-wide issues and consider emergency shutdown',
-          metrics: { successRate: avgSuccessRate }
+          metrics: { successRate: avgSuccessRate },
         });
       }
     }
-    
+
     return anomalies;
   }
 
@@ -320,7 +336,7 @@ export class SystemHealthMonitor extends EventEmitter {
   private handleAnomalies(anomalies: AnomalyDetectionResult[]): void {
     for (const anomaly of anomalies) {
       logger.warn(`[SystemHealthMonitor] Anomaly detected: ${anomaly.description}`);
-      
+
       // Create alert
       this.createAlert(
         anomaly.severity === 'CRITICAL' ? 'CRITICAL' : 'WARNING',
@@ -328,10 +344,10 @@ export class SystemHealthMonitor extends EventEmitter {
         anomaly.description,
         { ...anomaly }
       );
-      
+
       // Emit anomaly event
       this.emit('anomaly-detected', anomaly);
-      
+
       // Emit event type for integration
       this.emit(ExecutionEventType.ANOMALY_DETECTED, anomaly);
     }
@@ -342,10 +358,10 @@ export class SystemHealthMonitor extends EventEmitter {
    */
   generateHealthReport(): SystemHealthReport {
     const components = Array.from(this.componentMetrics.values());
-    
+
     // Determine overall status
     let overallStatus = HealthStatus.HEALTHY;
-    
+
     for (const component of components) {
       if (component.status === HealthStatus.CRITICAL) {
         overallStatus = HealthStatus.CRITICAL;
@@ -353,11 +369,14 @@ export class SystemHealthMonitor extends EventEmitter {
       }
       if (component.status === HealthStatus.UNHEALTHY) {
         overallStatus = HealthStatus.UNHEALTHY;
-      } else if (component.status === HealthStatus.DEGRADED && overallStatus === HealthStatus.HEALTHY) {
+      } else if (
+        component.status === HealthStatus.DEGRADED &&
+        overallStatus === HealthStatus.HEALTHY
+      ) {
         overallStatus = HealthStatus.DEGRADED;
       }
     }
-    
+
     return {
       timestamp: Date.now(),
       overallStatus,
@@ -368,7 +387,7 @@ export class SystemHealthMonitor extends EventEmitter {
       failedExecutions: this.executionStats.failed,
       totalProfit: this.executionStats.totalProfit,
       totalGasCost: this.executionStats.totalGasCost,
-      alerts: this.alerts.filter(a => !a.acknowledged)
+      alerts: this.alerts.filter((a) => !a.acknowledged),
     };
   }
 
@@ -388,13 +407,13 @@ export class SystemHealthMonitor extends EventEmitter {
       message,
       timestamp: Date.now(),
       acknowledged: false,
-      metadata
+      metadata,
     };
-    
+
     this.alerts.push(alert);
-    
+
     logger.info(`[SystemHealthMonitor] Alert created: [${severity}] ${component}: ${message}`);
-    
+
     // Emit alert event
     this.emit('alert', alert);
   }
@@ -403,7 +422,7 @@ export class SystemHealthMonitor extends EventEmitter {
    * Acknowledge an alert
    */
   acknowledgeAlert(alertId: string): boolean {
-    const alert = this.alerts.find(a => a.id === alertId);
+    const alert = this.alerts.find((a) => a.id === alertId);
     if (alert) {
       alert.acknowledged = true;
       logger.info(`[SystemHealthMonitor] Alert acknowledged: ${alertId}`);
@@ -417,7 +436,7 @@ export class SystemHealthMonitor extends EventEmitter {
    */
   private cleanupAlerts(): void {
     const cutoff = Date.now() - this.config.alertRetentionTime;
-    this.alerts = this.alerts.filter(a => a.timestamp > cutoff);
+    this.alerts = this.alerts.filter((a) => a.timestamp > cutoff);
   }
 
   /**
@@ -425,16 +444,16 @@ export class SystemHealthMonitor extends EventEmitter {
    */
   updateExecutionStats(success: boolean, profit: bigint, gasCost: bigint): void {
     this.executionStats.total++;
-    
+
     if (success) {
       this.executionStats.successful++;
       this.executionStats.totalProfit += profit;
     } else {
       this.executionStats.failed++;
     }
-    
+
     this.executionStats.totalGasCost += gasCost;
-    
+
     // Update performance history
     const metrics: PerformanceMetrics = {
       avgExecutionTime: 0, // Would be tracked separately
@@ -446,11 +465,14 @@ export class SystemHealthMonitor extends EventEmitter {
       totalProfit: this.executionStats.totalProfit,
       totalGasCost: this.executionStats.totalGasCost,
       netProfit: this.executionStats.totalProfit - this.executionStats.totalGasCost,
-      roi: Number((this.executionStats.totalProfit * BigInt(100)) / (this.executionStats.totalGasCost || BigInt(1)))
+      roi: Number(
+        (this.executionStats.totalProfit * BigInt(100)) /
+          (this.executionStats.totalGasCost || BigInt(1))
+      ),
     };
-    
+
     this.performanceHistory.push(metrics);
-    
+
     // Keep only recent history (last 100 entries)
     if (this.performanceHistory.length > 100) {
       this.performanceHistory.shift();
@@ -476,7 +498,7 @@ export class SystemHealthMonitor extends EventEmitter {
    */
   getAlerts(unacknowledgedOnly: boolean = false): SystemAlert[] {
     if (unacknowledgedOnly) {
-      return this.alerts.filter(a => !a.acknowledged);
+      return this.alerts.filter((a) => !a.acknowledged);
     }
     return [...this.alerts];
   }
@@ -506,7 +528,9 @@ export class SystemHealthMonitor extends EventEmitter {
    */
   isHealthy(): boolean {
     const report = this.generateHealthReport();
-    return report.overallStatus === HealthStatus.HEALTHY || 
-           report.overallStatus === HealthStatus.DEGRADED;
+    return (
+      report.overallStatus === HealthStatus.HEALTHY ||
+      report.overallStatus === HealthStatus.DEGRADED
+    );
   }
 }

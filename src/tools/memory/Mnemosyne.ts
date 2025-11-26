@@ -1,6 +1,6 @@
 /**
  * Mnemosyne - Semantic Memory Search
- * 
+ *
  * Port of tools/mnemosyne.py from StableExo/AGI
  * Provides semantic search capabilities over the Memory Core
  */
@@ -17,10 +17,11 @@ class SimpleSimilarity {
    * Calculate word frequency vector
    */
   private static getWordVector(text: string): Map<string, number> {
-    const words = text.toLowerCase()
+    const words = text
+      .toLowerCase()
       .replace(/[^\w\s]/g, ' ')
       .split(/\s+/)
-      .filter(w => w.length > 2); // Filter short words
+      .filter((w) => w.length > 2); // Filter short words
 
     const vector = new Map<string, number>();
     for (const word of words) {
@@ -88,14 +89,14 @@ export class Mnemosyne {
         plan: [],
         actions: [],
         keyLearnings: [],
-        artifactsChanged: []
+        artifactsChanged: [],
       };
 
       let currentSection = '';
-      
+
       for (const line of lines) {
         const trimmed = line.trim();
-        
+
         if (trimmed.startsWith('**Timestamp:**')) {
           entry.timestamp = trimmed.replace('**Timestamp:**', '').trim();
         } else if (trimmed === '## Objective') {
@@ -143,31 +144,29 @@ export class Mnemosyne {
       ...entry.plan,
       ...entry.actions,
       ...entry.keyLearnings,
-      entry.outcome || ''
+      entry.outcome || '',
     ].join(' ');
   }
 
   /**
    * Search memories semantically
-   * 
+   *
    * @param query - The search query (natural language)
    * @param options - Search options
    * @returns Array of search results sorted by relevance
    */
   search(query: string, options: MemorySearchOptions = {}): MemorySearchResult[] {
-    const {
-      limit = 5,
-      minScore = 0.1
-    } = options;
+    const { limit = 5, minScore = 0.1 } = options;
 
     if (!fs.existsSync(this.memoryDir)) {
       console.log('[MNEMOSYNE] Memory directory does not exist');
       return [];
     }
 
-    const files = fs.readdirSync(this.memoryDir)
-      .filter(file => file.endsWith('.md'))
-      .map(file => path.join(this.memoryDir, file));
+    const files = fs
+      .readdirSync(this.memoryDir)
+      .filter((file) => file.endsWith('.md'))
+      .map((file) => path.join(this.memoryDir, file));
 
     const results: MemorySearchResult[] = [];
 
@@ -182,7 +181,7 @@ export class Mnemosyne {
         results.push({
           entry,
           score,
-          filePath: filepath
+          filePath: filepath,
         });
       }
     }
@@ -210,12 +209,13 @@ export class Mnemosyne {
       return [];
     }
 
-    const files = fs.readdirSync(this.memoryDir)
-      .filter(file => file.endsWith('.md'))
-      .map(file => path.join(this.memoryDir, file));
+    const files = fs
+      .readdirSync(this.memoryDir)
+      .filter((file) => file.endsWith('.md'))
+      .map((file) => path.join(this.memoryDir, file));
 
     return files
-      .map(filepath => this.parseMemoryFile(filepath))
+      .map((filepath) => this.parseMemoryFile(filepath))
       .filter((entry): entry is MemoryEntry => entry !== null);
   }
 }

@@ -1,6 +1,6 @@
 /**
  * ChainAdapter - Base interface for chain-specific adapters
- * 
+ *
  * Defines standard interface for interacting with different blockchains
  */
 
@@ -41,10 +41,7 @@ export abstract class ChainAdapter {
   /**
    * Get token balance for an address
    */
-  abstract getTokenBalance(
-    tokenAddress: string,
-    walletAddress: string
-  ): Promise<TokenBalance>;
+  abstract getTokenBalance(tokenAddress: string, walletAddress: string): Promise<TokenBalance>;
 
   /**
    * Estimate gas cost for a swap
@@ -59,10 +56,7 @@ export abstract class ChainAdapter {
   /**
    * Execute a swap on this chain
    */
-  abstract executeSwap(
-    params: SwapParams,
-    dexAddress: string
-  ): Promise<string>; // Returns transaction hash
+  abstract executeSwap(params: SwapParams, dexAddress: string): Promise<string>; // Returns transaction hash
 
   /**
    * Get current token price
@@ -73,7 +67,7 @@ export abstract class ChainAdapter {
    * Get multiple token prices in parallel
    */
   async getTokenPrices(tokenAddresses: string[]): Promise<TokenPrice[]> {
-    const pricePromises = tokenAddresses.map(addr => this.getTokenPrice(addr));
+    const pricePromises = tokenAddresses.map((addr) => this.getTokenPrice(addr));
     return Promise.all(pricePromises);
   }
 

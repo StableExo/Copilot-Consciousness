@@ -1,11 +1,15 @@
 /**
  * MultiDexPathBuilder Tests
- * 
+ *
  * Tests for multi-DEX arbitrage path building service
  */
 
 import { MultiDexPathBuilder, PoolInfo } from '../MultiDexPathBuilder';
-import { ArbitrageOpportunity, ArbitrageType, OpportunityStatus } from '../../arbitrage/models/ArbitrageOpportunity';
+import {
+  ArbitrageOpportunity,
+  ArbitrageType,
+  OpportunityStatus,
+} from '../../arbitrage/models/ArbitrageOpportunity';
 import { ethers } from 'ethers';
 
 describe('MultiDexPathBuilder', () => {

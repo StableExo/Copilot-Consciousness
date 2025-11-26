@@ -18,6 +18,7 @@
     "dev:kill": "kill $(lsof -t -i:3000)",
     "build": "tsc",
     "build:watch": "tsc --watch",
+    "build:clean": "rm -rf dist && npm run build",
     "test": "jest",
     "test:unit": "jest tests/unit",
     "test:integration": "jest tests/integration",
@@ -35,8 +36,10 @@
     "test:pools": "ts-node scripts/test-pool-detection.ts",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
+    "lint:all": "eslint . --ext .ts --ignore-path .gitignore",
     "format": "prettier --write \"src/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\"",
+    "format:all": "prettier --write \"**/*.{ts,js,json,md}\" --ignore-path .gitignore",
     "validate-env": "ts-node scripts/validate-env.ts",
     "validate-mainnet": "node scripts/validate-mainnet-config.js",
     "verify-key": "node scripts/verify-private-key.js",
@@ -44,6 +47,8 @@
     "compare-env": "ts-node scripts/compare-env-files.ts",
     "mainnet": "npm run validate-mainnet && npm run build && npm start",
     "check": "npm run lint && npm run format:check && npm run build && npm test",
+    "check:all": "npm run lint:all && npm run format:check && npm run build && npm run test:ci",
+    "clean": "rm -rf dist coverage .eslintcache",
     "compile": "hardhat compile",
     "deploy": "hardhat run scripts/deploy-executor-v3.ts",
     "deploy:testnet": "hardhat run scripts/deploy-executor-v3.ts --network goerli",
@@ -57,7 +62,8 @@
     "contract:abi": "ts-node scripts/etherscan-api.ts getabi",
     "audit:slither": "slither . --fail-medium",
     "audit:slither:report": "slither . --print human-summary",
-    "audit:prod": "npm audit --omit=dev --audit-level=high"
+    "audit:prod": "npm audit --omit=dev --audit-level=high",
+    "audit:deps": "npm outdated || true"
   },
   "dependencies": {
     "@aave/core-v3": "1.19.3",

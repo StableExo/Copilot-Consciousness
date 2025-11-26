@@ -1,13 +1,13 @@
-import { 
-  SystemConfig, 
-  EventType, 
-  Priority, 
-  ProcessInputResult, 
-  ThinkingResult, 
-  CosmicProblemResult, 
-  ReflectionResult, 
-  MaintenanceResult, 
-  StatusResult 
+import {
+  SystemConfig,
+  EventType,
+  Priority,
+  ProcessInputResult,
+  ThinkingResult,
+  CosmicProblemResult,
+  ReflectionResult,
+  MaintenanceResult,
+  StatusResult,
 } from './types';
 import { MemorySystem } from './consciousness/memory';
 import { TemporalAwareness } from './temporal';
@@ -81,7 +81,10 @@ export class ConsciousnessSystem {
   /**
    * Process external input through all consciousness layers
    */
-  async processInput(input: unknown, metadata: Record<string, unknown> = {}): Promise<ProcessInputResult> {
+  async processInput(
+    input: unknown,
+    metadata: Record<string, unknown> = {}
+  ): Promise<ProcessInputResult> {
     if (!this.isRunning) {
       throw new Error('Consciousness system is not running');
     }
@@ -93,22 +96,21 @@ export class ConsciousnessSystem {
     const sensoryMemoryId = this.memory.addSensoryMemory(input, { eventId, ...metadata });
 
     // Move to working memory for processing
-    const workingMemoryId = this.memory.addWorkingMemory(
-      input,
-      Priority.HIGH,
-      { sensoryMemoryId, eventId, ...metadata }
-    );
+    const workingMemoryId = this.memory.addWorkingMemory(input, Priority.HIGH, {
+      sensoryMemoryId,
+      eventId,
+      ...metadata,
+    });
 
     // Cognitive processing
     const learningResult = await this.cognitive.learn(input, metadata);
 
     // Store learning result in memory
     if (learningResult.success) {
-      const learningMemoryId = this.memory.addShortTermMemory(
-        learningResult,
-        Priority.MEDIUM,
-        { type: 'learning_result', eventId }
-      );
+      const learningMemoryId = this.memory.addShortTermMemory(learningResult, Priority.MEDIUM, {
+        type: 'learning_result',
+        eventId,
+      });
 
       // Associate memories
       this.memory.associateMemories(workingMemoryId, learningMemoryId);
@@ -132,10 +134,10 @@ export class ConsciousnessSystem {
     }
 
     // Record thinking event
-    const eventId = this.temporal.recordEvent(
-      EventType.INTERNAL_REFLECTION,
-      { problem, useGemini }
-    );
+    const eventId = this.temporal.recordEvent(EventType.INTERNAL_REFLECTION, {
+      problem,
+      useGemini,
+    });
 
     // Perform reasoning
     const reasoningResult = await this.cognitive.reason(problem, { eventId });

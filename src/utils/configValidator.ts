@@ -1,6 +1,6 @@
 /**
  * Configuration Validator
- * 
+ *
  * Validates environment variables and returns a typed configuration object.
  * Throws descriptive errors for missing or invalid values.
  */
@@ -67,7 +67,7 @@ function requireEnv(name: string): string {
   if (!value || value.trim() === '') {
     throw new ConfigValidationError(
       `Missing required environment variable: ${name}\n` +
-      `Please set ${name} in your .env file or environment.`
+        `Please set ${name} in your .env file or environment.`
     );
   }
   return value;
@@ -90,8 +90,7 @@ function parseIntEnv(name: string, defaultValue: number): number {
   const parsed = parseInt(value, 10);
   if (isNaN(parsed)) {
     throw new ConfigValidationError(
-      `Invalid integer value for ${name}: "${value}"\n` +
-      `Expected a valid integer number.`
+      `Invalid integer value for ${name}: "${value}"\n` + `Expected a valid integer number.`
     );
   }
   return parsed;
@@ -107,8 +106,7 @@ function parseFloatEnv(name: string, defaultValue: number): number {
   const parsed = parseFloat(value);
   if (isNaN(parsed)) {
     throw new ConfigValidationError(
-      `Invalid float value for ${name}: "${value}"\n` +
-      `Expected a valid decimal number.`
+      `Invalid float value for ${name}: "${value}"\n` + `Expected a valid decimal number.`
     );
   }
   return parsed;
@@ -126,7 +124,7 @@ function parseBigIntEnv(name: string, defaultValue: bigint): bigint {
   } catch (error) {
     throw new ConfigValidationError(
       `Invalid bigint value for ${name}: "${value}"\n` +
-      `Expected a valid integer that can be converted to BigInt.`
+        `Expected a valid integer that can be converted to BigInt.`
     );
   }
 }
@@ -137,7 +135,7 @@ function parseBigIntEnv(name: string, defaultValue: bigint): bigint {
 function parseBoolEnv(name: string, defaultValue: boolean): boolean {
   const value = process.env[name];
   if (!value) return defaultValue;
-  
+
   const normalized = value.toLowerCase();
   if (normalized === 'true' || normalized === '1' || normalized === 'yes') {
     return true;
@@ -145,10 +143,10 @@ function parseBoolEnv(name: string, defaultValue: boolean): boolean {
   if (normalized === 'false' || normalized === '0' || normalized === 'no') {
     return false;
   }
-  
+
   throw new ConfigValidationError(
     `Invalid boolean value for ${name}: "${value}"\n` +
-    `Expected one of: true, false, 1, 0, yes, no`
+      `Expected one of: true, false, 1, 0, yes, no`
   );
 }
 
@@ -156,10 +154,15 @@ function parseBoolEnv(name: string, defaultValue: boolean): boolean {
  * Validate RPC URL format
  */
 function validateRpcUrl(url: string): void {
-  if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('ws://') && !url.startsWith('wss://')) {
+  if (
+    !url.startsWith('http://') &&
+    !url.startsWith('https://') &&
+    !url.startsWith('ws://') &&
+    !url.startsWith('wss://')
+  ) {
     throw new ConfigValidationError(
       `Invalid RPC URL format: "${url}"\n` +
-      `RPC URL must start with http://, https://, ws://, or wss://`
+        `RPC URL must start with http://, https://, ws://, or wss://`
     );
   }
 
@@ -167,8 +170,7 @@ function validateRpcUrl(url: string): void {
     new URL(url);
   } catch (error) {
     throw new ConfigValidationError(
-      `Invalid RPC URL: "${url}"\n` +
-      `URL is not properly formatted.`
+      `Invalid RPC URL: "${url}"\n` + `URL is not properly formatted.`
     );
   }
 }
@@ -184,8 +186,8 @@ function validatePrivateKey(key: string): void {
   if (cleanKey.length !== 64) {
     throw new ConfigValidationError(
       `Invalid private key format: key must be 64 hexadecimal characters (32 bytes)\n` +
-      `Current length: ${cleanKey.length} characters\n` +
-      `Private key should be in format: 0x followed by 64 hex characters`
+        `Current length: ${cleanKey.length} characters\n` +
+        `Private key should be in format: 0x followed by 64 hex characters`
     );
   }
 
@@ -193,7 +195,7 @@ function validatePrivateKey(key: string): void {
   if (!/^[0-9a-fA-F]{64}$/.test(cleanKey)) {
     throw new ConfigValidationError(
       `Invalid private key format: key contains non-hexadecimal characters\n` +
-      `Private key must only contain characters 0-9 and a-f`
+        `Private key must only contain characters 0-9 and a-f`
     );
   }
 
@@ -203,7 +205,7 @@ function validatePrivateKey(key: string): void {
   } catch (error) {
     throw new ConfigValidationError(
       `Invalid private key: unable to create wallet\n` +
-      `Error: ${error instanceof Error ? error.message : String(error)}`
+        `Error: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 }
@@ -215,7 +217,7 @@ function validateAddress(address: string, name: string): void {
   if (!isAddress(address)) {
     throw new ConfigValidationError(
       `Invalid Ethereum address for ${name}: "${address}"\n` +
-      `Address must be a valid Ethereum address (0x followed by 40 hex characters)`
+        `Address must be a valid Ethereum address (0x followed by 40 hex characters)`
     );
   }
 }
@@ -237,11 +239,11 @@ export function validateConfig(): ValidatedConfig {
     } else {
       throw new ConfigValidationError(
         'Missing required RPC URL configuration.\n' +
-        'Please set one of the following in your .env file:\n' +
-        '  - BASE_RPC_URL (for Base network)\n' +
-        '  - ETHEREUM_RPC_URL (for Ethereum mainnet)\n' +
-        '\n' +
-        'Example: BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR-API-KEY'
+          'Please set one of the following in your .env file:\n' +
+          '  - BASE_RPC_URL (for Base network)\n' +
+          '  - ETHEREUM_RPC_URL (for Ethereum mainnet)\n' +
+          '\n' +
+          'Example: BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR-API-KEY'
       );
     }
 
@@ -280,9 +282,7 @@ export function validateConfig(): ValidatedConfig {
 
     const maxSlippage = parseFloatEnv('MAX_SLIPPAGE', 0.005);
     if (maxSlippage < 0 || maxSlippage > 1) {
-      throw new ConfigValidationError(
-        `MAX_SLIPPAGE must be between 0 and 1 (got ${maxSlippage})`
-      );
+      throw new ConfigValidationError(`MAX_SLIPPAGE must be between 0 and 1 (got ${maxSlippage})`);
     }
 
     const maxSlippagePercent = parseFloatEnv('MAX_SLIPPAGE_PERCENT', 1.0);
@@ -373,12 +373,11 @@ export function validateConfig(): ValidatedConfig {
     };
 
     return config;
-
   } catch (error) {
     if (error instanceof ConfigValidationError) {
       throw error;
     }
-    
+
     throw new ConfigValidationError(
       `Unexpected error during configuration validation: ${
         error instanceof Error ? error.message : String(error)

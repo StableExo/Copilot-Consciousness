@@ -6,7 +6,7 @@ export enum UserRole {
   ADMIN = 'ADMIN',
   OPERATOR = 'OPERATOR',
   VIEWER = 'VIEWER',
-  BOT = 'BOT'
+  BOT = 'BOT',
 }
 
 export interface User {
@@ -55,23 +55,21 @@ export interface RolePermissions {
 }
 
 export const DEFAULT_PERMISSIONS: RolePermissions = {
-  [UserRole.ADMIN]: [
-    { resource: '*', actions: ['*'] }
-  ],
+  [UserRole.ADMIN]: [{ resource: '*', actions: ['*'] }],
   [UserRole.OPERATOR]: [
     { resource: 'arbitrage', actions: ['read', 'execute', 'cancel'] },
     { resource: 'wallet', actions: ['read', 'sign'] },
     { resource: 'configuration', actions: ['read', 'update'] },
-    { resource: 'monitoring', actions: ['read'] }
+    { resource: 'monitoring', actions: ['read'] },
   ],
   [UserRole.VIEWER]: [
     { resource: 'arbitrage', actions: ['read'] },
     { resource: 'wallet', actions: ['read'] },
     { resource: 'configuration', actions: ['read'] },
-    { resource: 'monitoring', actions: ['read'] }
+    { resource: 'monitoring', actions: ['read'] },
   ],
   [UserRole.BOT]: [
     { resource: 'arbitrage', actions: ['read', 'execute'] },
-    { resource: 'market-data', actions: ['read'] }
-  ]
+    { resource: 'market-data', actions: ['read'] },
+  ],
 };

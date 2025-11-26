@@ -1,15 +1,11 @@
 /**
  * Opportunity Scorer Tests
- * 
+ *
  * Comprehensive test suite for the Opportunity Scorer & Ranker
  */
 
 import { OpportunityScorer } from '../opportunity-scorer';
-import {
-  Opportunity,
-  OpportunityType,
-  OpportunityStatus
-} from '../types/opportunity';
+import { Opportunity, OpportunityType, OpportunityStatus } from '../types/opportunity';
 
 describe('OpportunityScorer', () => {
   let scorer: OpportunityScorer;
@@ -32,8 +28,8 @@ describe('OpportunityScorer', () => {
         normalization: false,
         criteria: {
           value: { weight: 0.5, type: 'maximize' },
-          risk: { weight: 0.5, type: 'minimize' }
-        }
+          risk: { weight: 0.5, type: 'minimize' },
+        },
       });
       expect(customScorer).toBeDefined();
     });
@@ -64,8 +60,8 @@ describe('OpportunityScorer', () => {
           cost: 20,
           risk: 0.2,
           time: 10,
-          complexity: 5
-        }
+          complexity: 5,
+        },
       };
 
       const scored = scorer.scoreOpportunity(opportunity);
@@ -90,8 +86,8 @@ describe('OpportunityScorer', () => {
           cost: 10,
           risk: 0.1,
           time: 5,
-          complexity: 3
-        }
+          complexity: 3,
+        },
       };
 
       const initialStats = scorer.getStats();
@@ -114,7 +110,7 @@ describe('OpportunityScorer', () => {
         complexity: 1,
         timeToRealize: 1,
         score: 0,
-        criteria: { value: 1000, cost: 10, risk: 0.01 }
+        criteria: { value: 1000, cost: 10, risk: 0.01 },
       };
 
       const lowValue: Opportunity = {
@@ -128,7 +124,7 @@ describe('OpportunityScorer', () => {
         complexity: 10,
         timeToRealize: 100,
         score: 0,
-        criteria: { value: 10, cost: 100, risk: 0.9 }
+        criteria: { value: 10, cost: 100, risk: 0.9 },
       };
 
       scorer.scoreOpportunity(highValue);
@@ -158,8 +154,8 @@ describe('OpportunityScorer', () => {
             cost: 20,
             risk: 0.2,
             time: 10,
-            complexity: 5
-          }
+            complexity: 5,
+          },
         },
         {
           id: 'opp_2',
@@ -177,14 +173,14 @@ describe('OpportunityScorer', () => {
             cost: 15,
             risk: 0.1,
             time: 5,
-            complexity: 3
-          }
-        }
+            complexity: 3,
+          },
+        },
       ];
 
       const scored = scorer.scoreOpportunities(opportunities);
       expect(scored.length).toBe(2);
-      scored.forEach(opp => {
+      scored.forEach((opp) => {
         expect(opp.score).toBeGreaterThan(0);
       });
     });
@@ -204,7 +200,7 @@ describe('OpportunityScorer', () => {
           complexity: 5,
           timeToRealize: 10,
           score: 0,
-          criteria: {}
+          criteria: {},
         },
         {
           id: 'opp_2',
@@ -217,13 +213,13 @@ describe('OpportunityScorer', () => {
           complexity: 2,
           timeToRealize: 5,
           score: 0,
-          criteria: {}
-        }
+          criteria: {},
+        },
       ];
 
       const ranked = scorer.rankOpportunities(opportunities);
       expect(ranked.length).toBe(2);
-      
+
       // Higher ranked should have higher score
       expect(ranked[0].rank).toBe(1);
       expect(ranked[1].rank).toBe(2);
@@ -243,8 +239,8 @@ describe('OpportunityScorer', () => {
           complexity: 5,
           timeToRealize: 10,
           score: 0,
-          criteria: {}
-        }
+          criteria: {},
+        },
       ];
 
       const initialStats = scorer.getStats();
@@ -273,8 +269,8 @@ describe('OpportunityScorer', () => {
           cost: 30,
           risk: 0.3,
           time: 8,
-          complexity: 5
-        }
+          complexity: 5,
+        },
       };
 
       const evaluation = scorer.multiCriteriaEvaluation(opportunity);
@@ -301,8 +297,8 @@ describe('OpportunityScorer', () => {
         criteria: {
           value: 100,
           cost: 10,
-          risk: 0.1
-        }
+          risk: 0.1,
+        },
       };
 
       const evaluation = scorer.multiCriteriaEvaluation(opportunity);
@@ -326,7 +322,7 @@ describe('OpportunityScorer', () => {
           complexity: 5,
           timeToRealize: 10,
           score: 0,
-          criteria: { value: 100, cost: 50, risk: 0.3 }
+          criteria: { value: 100, cost: 50, risk: 0.3 },
         },
         {
           id: 'opp_2',
@@ -339,8 +335,8 @@ describe('OpportunityScorer', () => {
           complexity: 3,
           timeToRealize: 5,
           score: 0,
-          criteria: { value: 80, cost: 20, risk: 0.1 }
-        }
+          criteria: { value: 80, cost: 20, risk: 0.1 },
+        },
       ];
 
       const ranking = scorer.rankWithTOPSIS(opportunities);
@@ -364,7 +360,7 @@ describe('OpportunityScorer', () => {
           complexity: 5,
           timeToRealize: 10,
           score: 0,
-          criteria: {}
+          criteria: {},
         },
         {
           id: 'opp_2',
@@ -377,13 +373,13 @@ describe('OpportunityScorer', () => {
           complexity: 2,
           timeToRealize: 3,
           score: 0,
-          criteria: {}
-        }
+          criteria: {},
+        },
       ];
 
       const ranking = scorer.rankWithTOPSIS(opportunities);
-      
-      ranking.opportunities.forEach(opp => {
+
+      ranking.opportunities.forEach((opp) => {
         expect(opp.rank).toBeDefined();
         expect(opp.rank).toBeGreaterThan(0);
       });
@@ -403,7 +399,7 @@ describe('OpportunityScorer', () => {
         complexity: 5,
         timeToRealize: 10,
         score: 0,
-        criteria: {}
+        criteria: {},
       };
 
       const expectedValue = scorer.calculateExpectedValue(opportunity);
@@ -422,7 +418,7 @@ describe('OpportunityScorer', () => {
         complexity: 5,
         timeToRealize: 10,
         score: 0,
-        criteria: {}
+        criteria: {},
       };
 
       const highRisk: Opportunity = {
@@ -436,7 +432,7 @@ describe('OpportunityScorer', () => {
         complexity: 5,
         timeToRealize: 10,
         score: 0,
-        criteria: {}
+        criteria: {},
       };
 
       const evLowRisk = scorer.calculateExpectedValue(lowRisk);
@@ -458,7 +454,7 @@ describe('OpportunityScorer', () => {
         complexity: 1,
         timeToRealize: 1,
         score: 0,
-        criteria: {}
+        criteria: {},
       };
 
       const delayed: Opportunity = {
@@ -472,7 +468,7 @@ describe('OpportunityScorer', () => {
         complexity: 1,
         timeToRealize: 100,
         score: 0,
-        criteria: {}
+        criteria: {},
       };
 
       const evImmediate = scorer.calculateExpectedValue(immediate);
@@ -496,7 +492,7 @@ describe('OpportunityScorer', () => {
         complexity: 5,
         timeToRealize: 5,
         score: 0,
-        criteria: {}
+        criteria: {},
       };
 
       const riskAdjustedValue = scorer.calculateRiskAdjustedValue(opportunity);
@@ -516,7 +512,7 @@ describe('OpportunityScorer', () => {
         complexity: 5,
         timeToRealize: 5,
         score: 0,
-        criteria: {}
+        criteria: {},
       };
 
       const highRisk: Opportunity = {
@@ -530,7 +526,7 @@ describe('OpportunityScorer', () => {
         complexity: 5,
         timeToRealize: 5,
         score: 0,
-        criteria: {}
+        criteria: {},
       };
 
       const ravLowRisk = scorer.calculateRiskAdjustedValue(lowRisk);
@@ -553,7 +549,7 @@ describe('OpportunityScorer', () => {
         complexity: 5,
         timeToRealize: 10,
         score: 0,
-        criteria: {}
+        criteria: {},
       };
 
       const opp2: Opportunity = {
@@ -567,7 +563,7 @@ describe('OpportunityScorer', () => {
         complexity: 3,
         timeToRealize: 5,
         score: 0,
-        criteria: {}
+        criteria: {},
       };
 
       const comparison = scorer.compareOpportunities(opp1, opp2);
@@ -595,8 +591,8 @@ describe('OpportunityScorer', () => {
           cost: 10,
           risk: 0.05,
           time: 1,
-          complexity: 1
-        }
+          complexity: 1,
+        },
       };
 
       const worse: Opportunity = {
@@ -615,8 +611,8 @@ describe('OpportunityScorer', () => {
           cost: 50,
           risk: 0.8,
           time: 100,
-          complexity: 10
-        }
+          complexity: 10,
+        },
       };
 
       const comparison = scorer.compareOpportunities(better, worse);
@@ -635,7 +631,7 @@ describe('OpportunityScorer', () => {
         complexity: 5,
         timeToRealize: 10,
         score: 0,
-        criteria: {}
+        criteria: {},
       };
 
       const opp2: Opportunity = {
@@ -649,7 +645,7 @@ describe('OpportunityScorer', () => {
         complexity: 6,
         timeToRealize: 12,
         score: 0,
-        criteria: {}
+        criteria: {},
       };
 
       const comparison = scorer.compareOpportunities(opp1, opp2);
@@ -676,8 +672,8 @@ describe('OpportunityScorer', () => {
           cost: 20,
           risk: 0.2,
           time: 10,
-          complexity: 5
-        }
+          complexity: 5,
+        },
       };
 
       const initialStats = scorer.getStats();
@@ -705,8 +701,8 @@ describe('OpportunityScorer', () => {
             cost: 20,
             risk: 0.1,
             time: 5,
-            complexity: 2
-          }
+            complexity: 2,
+          },
         },
         {
           id: 'opp_2',
@@ -724,9 +720,9 @@ describe('OpportunityScorer', () => {
             cost: 30,
             risk: 0.5,
             time: 20,
-            complexity: 8
-          }
-        }
+            complexity: 8,
+          },
+        },
       ];
 
       scorer.scoreOpportunities(opportunities);

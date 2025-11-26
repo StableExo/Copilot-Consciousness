@@ -1,11 +1,11 @@
 /**
  * Private RPC Manager
- * 
+ *
  * Manages private transaction submission through various MEV-friendly relays:
  * - Flashbots Protect RPC (https://docs.flashbots.net/flashbots-protect/overview)
  * - MEV-Share (https://docs.flashbots.net/flashbots-mev-share/overview)
  * - Builder-specific endpoints
- * 
+ *
  * Key Features:
  * - Multi-relay support with automatic fallback
  * - Bundle construction and submission
@@ -66,7 +66,7 @@ export class PrivateRPCManager {
   ) {
     this.provider = provider;
     this.signer = signer;
-    
+
     // Initialize default configuration
     this.config = {
       relays: config.relays || [],
@@ -80,7 +80,7 @@ export class PrivateRPCManager {
     this.stats = new Map();
 
     // Initialize relays from config
-    this.config.relays.forEach(relay => {
+    this.config.relays.forEach((relay) => {
       if (relay.enabled) {
         this.relays.set(relay.type, relay);
         this.initializeStats(relay.type);
@@ -130,7 +130,7 @@ export class PrivateRPCManager {
     if (stats) {
       stats.totalSubmissions++;
       stats.lastSubmission = new Date();
-      
+
       if (success) {
         stats.successfulInclusions++;
       } else {
@@ -158,7 +158,7 @@ export class PrivateRPCManager {
 
     if (relaysToTry.length === 0) {
       logger.warn('[PrivateRPCManager] No relays available');
-      
+
       if (options.allowPublicFallback) {
         return this.submitToPublicMempool(transaction);
       }
@@ -175,14 +175,9 @@ export class PrivateRPCManager {
     // Try each relay in order of priority
     for (const relay of relaysToTry) {
       relaysTried++;
-      
+
       try {
-        const result = await this.submitToRelay(
-          relay,
-          transaction,
-          options,
-          startTime
-        );
+        const result = await this.submitToRelay(relay, transaction, options, startTime);
 
         if (result.success) {
           result.metadata = {
@@ -196,9 +191,7 @@ export class PrivateRPCManager {
         lastError = result.error;
       } catch (error) {
         lastError = error instanceof Error ? error.message : String(error);
-        logger.warn(
-          `[PrivateRPCManager] Failed to submit via ${relay.type}: ${lastError}`
-        );
+        logger.warn(`[PrivateRPCManager] Failed to submit via ${relay.type}: ${lastError}`);
       }
 
       // Don't try other relays if fast mode is disabled
@@ -230,17 +223,14 @@ export class PrivateRPCManager {
     preferredRelay?: PrivateRelayType
   ): PrivateRelayConfig[] {
     const availableRelays = Array.from(this.relays.values())
-      .filter(r => r.enabled)
+      .filter((r) => r.enabled)
       .sort((a, b) => b.priority - a.priority);
 
     // If a specific relay is preferred, try it first
     if (preferredRelay) {
-      const preferred = availableRelays.find(r => r.type === preferredRelay);
+      const preferred = availableRelays.find((r) => r.type === preferredRelay);
       if (preferred) {
-        return [
-          preferred,
-          ...availableRelays.filter(r => r.type !== preferredRelay),
-        ];
+        return [preferred, ...availableRelays.filter((r) => r.type !== preferredRelay)];
       }
     }
 
@@ -248,21 +238,18 @@ export class PrivateRPCManager {
     switch (privacyLevel) {
       case PrivacyLevel.MAXIMUM:
         // Use builder RPCs only
-        return availableRelays.filter(r => r.type === PrivateRelayType.BUILDER_RPC);
-      
+        return availableRelays.filter((r) => r.type === PrivateRelayType.BUILDER_RPC);
+
       case PrivacyLevel.ENHANCED:
         // Prefer MEV-Share
         return availableRelays.filter(
-          r => r.type === PrivateRelayType.MEV_SHARE || 
-               r.type === PrivateRelayType.BUILDER_RPC
+          (r) => r.type === PrivateRelayType.MEV_SHARE || r.type === PrivateRelayType.BUILDER_RPC
         );
-      
+
       case PrivacyLevel.BASIC:
         // Use Flashbots Protect
-        return availableRelays.filter(
-          r => r.type === PrivateRelayType.FLASHBOTS_PROTECT
-        );
-      
+        return availableRelays.filter((r) => r.type === PrivateRelayType.FLASHBOTS_PROTECT);
+
       case PrivacyLevel.NONE:
       default:
         return [];
@@ -293,15 +280,15 @@ export class PrivateRPCManager {
         case PrivateRelayType.FLASHBOTS_PROTECT:
           result = await this.submitToFlashbotsProtect(relay, transaction, options);
           break;
-        
+
         case PrivateRelayType.MEV_SHARE:
           result = await this.submitToMEVShare(relay, transaction, options);
           break;
-        
+
         case PrivateRelayType.BUILDER_RPC:
           result = await this.submitToBuilderRPC(relay, transaction);
           break;
-        
+
         default:
           throw new Error(`Unsupported relay type: ${relay.type}`);
       }
@@ -309,8 +296,8 @@ export class PrivateRPCManager {
       if (result.success && stats) {
         stats.successfulInclusions++;
         const inclusionTime = Date.now() - startTime;
-        stats.avgInclusionTime = 
-          (stats.avgInclusionTime * (stats.successfulInclusions - 1) + inclusionTime) / 
+        stats.avgInclusionTime =
+          (stats.avgInclusionTime * (stats.successfulInclusions - 1) + inclusionTime) /
           stats.successfulInclusions;
       } else if (stats) {
         stats.failedSubmissions++;
@@ -336,10 +323,10 @@ export class PrivateRPCManager {
     try {
       // Create a provider connected to Flashbots RPC
       const flashbotsProvider = new JsonRpcProvider(relay.endpoint);
-      
+
       // Sign the transaction
       const signedTx = await this.signer.signTransaction(transaction);
-      
+
       // Submit directly to Flashbots Protect RPC
       // Flashbots Protect automatically creates a bundle
       const response = await flashbotsProvider.broadcastTransaction(signedTx);
@@ -393,7 +380,7 @@ export class PrivateRPCManager {
   ): Promise<PrivateTransactionResult> {
     try {
       const signedTx = await this.signer.signTransaction(transaction);
-      
+
       // Prepare MEV-Share bundle
       const currentBlock = await this.provider.getBlockNumber();
       const targetBlock = currentBlock + 1;
@@ -407,9 +394,7 @@ export class PrivateRPCManager {
             version: 'v0.1',
             inclusion: {
               block: targetBlock,
-              maxBlock: options.maxBlockWait 
-                ? targetBlock + options.maxBlockWait 
-                : targetBlock + 5,
+              maxBlock: options.maxBlockWait ? targetBlock + options.maxBlockWait : targetBlock + 5,
             },
             body: [
               {
@@ -461,9 +446,7 @@ export class PrivateRPCManager {
       const signedTx = await this.signer.signTransaction(transaction);
       const response = await builderProvider.broadcastTransaction(signedTx);
 
-      logger.info(
-        `[PrivateRPCManager] Transaction submitted to builder RPC: ${response.hash}`
-      );
+      logger.info(`[PrivateRPCManager] Transaction submitted to builder RPC: ${response.hash}`);
 
       return {
         success: true,
@@ -493,9 +476,7 @@ export class PrivateRPCManager {
       const signedTx = await this.signer.signTransaction(transaction);
       const response = await this.provider.broadcastTransaction(signedTx);
 
-      logger.warn(
-        `[PrivateRPCManager] Transaction submitted to public mempool: ${response.hash}`
-      );
+      logger.warn(`[PrivateRPCManager] Transaction submitted to public mempool: ${response.hash}`);
 
       return {
         success: true,
@@ -542,7 +523,8 @@ export class PrivateRPCManager {
     bundle: FlashbotsBundle,
     relay?: PrivateRelayConfig
   ): Promise<PrivateTransactionResult> {
-    const flashbotsRelay = relay || 
+    const flashbotsRelay =
+      relay ||
       this.relays.get(PrivateRelayType.FLASHBOTS_PROTECT) ||
       this.relays.get(PrivateRelayType.MEV_SHARE);
 
@@ -609,19 +591,19 @@ export class PrivateRPCManager {
     try {
       const provider = new JsonRpcProvider(relay.endpoint);
       await provider.getBlockNumber();
-      
+
       const stats = this.stats.get(type);
       if (stats) {
         stats.isAvailable = true;
       }
-      
+
       return true;
     } catch (error) {
       const stats = this.stats.get(type);
       if (stats) {
         stats.isAvailable = false;
       }
-      
+
       logger.warn(`[PrivateRPCManager] Relay ${type} health check failed`);
       return false;
     }
@@ -632,8 +614,8 @@ export class PrivateRPCManager {
    */
   async checkAllRelaysHealth(): Promise<Map<PrivateRelayType, boolean>> {
     const results = new Map<PrivateRelayType, boolean>();
-    
-    const checks = Array.from(this.relays.keys()).map(async type => {
+
+    const checks = Array.from(this.relays.keys()).map(async (type) => {
       const isHealthy = await this.checkRelayHealth(type);
       results.set(type, isHealthy);
     });
@@ -650,7 +632,7 @@ export class PrivateRPCManager {
     bundle: FlashbotsBundle,
     stateBlockNumber?: number
   ): Promise<BundleSimulationResult> {
-    const flashbotsRelay = 
+    const flashbotsRelay =
       this.relays.get(PrivateRelayType.FLASHBOTS_PROTECT) ||
       this.relays.get(PrivateRelayType.MEV_SHARE);
 
@@ -669,15 +651,13 @@ export class PrivateRPCManager {
 
     try {
       const provider = new JsonRpcProvider(flashbotsRelay.endpoint);
-      
+
       const payload = {
         txs: bundle.signedTransactions,
-        blockNumber: stateBlockNumber 
+        blockNumber: stateBlockNumber
           ? `0x${stateBlockNumber.toString(16)}`
           : `0x${bundle.targetBlockNumber.toString(16)}`,
-        stateBlockNumber: stateBlockNumber 
-          ? `0x${stateBlockNumber.toString(16)}`
-          : 'latest',
+        stateBlockNumber: stateBlockNumber ? `0x${stateBlockNumber.toString(16)}` : 'latest',
         timestamp: bundle.minTimestamp || Math.floor(Date.now() / 1000),
       };
 
@@ -723,7 +703,7 @@ export class PrivateRPCManager {
    * Only works if bundle hasn't been included yet
    */
   async cancelBundle(bundleHash: string): Promise<boolean> {
-    const flashbotsRelay = 
+    const flashbotsRelay =
       this.relays.get(PrivateRelayType.FLASHBOTS_PROTECT) ||
       this.relays.get(PrivateRelayType.MEV_SHARE);
 
@@ -756,7 +736,7 @@ export class PrivateRPCManager {
    * Checks if bundle was included and in which block
    */
   async getBundleStatus(bundleHash: string): Promise<BundleStatus | null> {
-    const flashbotsRelay = 
+    const flashbotsRelay =
       this.relays.get(PrivateRelayType.FLASHBOTS_PROTECT) ||
       this.relays.get(PrivateRelayType.MEV_SHARE);
 
@@ -806,11 +786,11 @@ export class PrivateRPCManager {
     }
 
     // Check if any transaction reverted
-    const hasRevert = simulation.results?.some(tx => tx.revert);
+    const hasRevert = simulation.results?.some((tx) => tx.revert);
     if (hasRevert) {
       const revertReasons = simulation.results
-        ?.filter(tx => tx.revert)
-        .map(tx => tx.revertReason)
+        ?.filter((tx) => tx.revert)
+        .map((tx) => tx.revertReason)
         .join(', ');
       return {
         success: false,
@@ -847,22 +827,18 @@ export class PrivateRPCManager {
     const startBlock = await this.provider.getBlockNumber();
     const endBlock = startBlock + maxBlocks;
 
-    logger.info(
-      `[PrivateRPCManager] Waiting for bundle ${bundleHash} (max ${maxBlocks} blocks)`
-    );
+    logger.info(`[PrivateRPCManager] Waiting for bundle ${bundleHash} (max ${maxBlocks} blocks)`);
 
-    while (await this.provider.getBlockNumber() < endBlock) {
+    while ((await this.provider.getBlockNumber()) < endBlock) {
       const status = await this.getBundleStatus(bundleHash);
-      
+
       if (status?.isIncluded) {
-        logger.info(
-          `[PrivateRPCManager] Bundle included in block ${status.blockNumber}`
-        );
+        logger.info(`[PrivateRPCManager] Bundle included in block ${status.blockNumber}`);
         return status;
       }
 
       // Wait before polling again
-      await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
+      await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
     }
 
     logger.warn(`[PrivateRPCManager] Bundle not included after ${maxBlocks} blocks`);
@@ -872,7 +848,7 @@ export class PrivateRPCManager {
   /**
    * Send a single private transaction using eth_sendPrivateTransaction
    * This is simpler than bundles for single transaction privacy
-   * 
+   *
    * @see https://docs.flashbots.net/flashbots-protect/additional-documentation/eth-sendPrivateTransaction
    */
   async sendPrivateTransaction(
@@ -908,11 +884,11 @@ export class PrivateRPCManager {
 
       if (options?.fast || options?.preferences) {
         params.preferences = {};
-        
+
         if (options.fast) {
           params.preferences.fast = true;
         }
-        
+
         if (options.preferences?.privacy) {
           params.preferences.privacy = options.preferences.privacy;
         }
@@ -937,7 +913,7 @@ export class PrivateRPCManager {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       logger.error(`[PrivateRPCManager] Private transaction failed: ${message}`);
-      
+
       const relay = this.relays.get(PrivateRelayType.FLASHBOTS_PROTECT);
       if (relay) {
         this.updateStats(relay.type, false);
@@ -953,7 +929,7 @@ export class PrivateRPCManager {
   /**
    * Cancel a private transaction using eth_cancelPrivateTransaction
    * Only works for transactions submitted via eth_sendPrivateTransaction
-   * 
+   *
    * @see https://docs.flashbots.net/flashbots-protect/additional-documentation/eth-sendPrivateTransaction
    */
   async cancelPrivateTransaction(txHash: string): Promise<boolean> {
@@ -964,9 +940,7 @@ export class PrivateRPCManager {
       }
 
       const flashbotsProvider = new JsonRpcProvider(relay.endpoint);
-      const result = await flashbotsProvider.send('eth_cancelPrivateTransaction', [
-        { txHash },
-      ]);
+      const result = await flashbotsProvider.send('eth_cancelPrivateTransaction', [{ txHash }]);
 
       logger.info(`[PrivateRPCManager] Private transaction cancelled: ${txHash}`);
 
@@ -985,21 +959,21 @@ export class PrivateRPCManager {
 
   /**
    * Get transaction status from Flashbots Protect Status API
-   * 
+   *
    * @see https://docs.flashbots.net/flashbots-protect/additional-documentation/status-api
    */
   async getTransactionStatus(txHash: string): Promise<any> {
     try {
       const statusUrl = `https://protect.flashbots.net/tx/${txHash}`;
-      
+
       // Use fetch or axios if available, otherwise return null
       // This is a placeholder for the actual HTTP request
       logger.info(`[PrivateRPCManager] Check transaction status at: ${statusUrl}`);
-      
+
       // In a real implementation, you would do:
       // const response = await fetch(statusUrl);
       // return await response.json();
-      
+
       return {
         message: 'Status API integration requires HTTP client',
         statusUrl,
@@ -1013,7 +987,7 @@ export class PrivateRPCManager {
 
   /**
    * Create bundle with replacement UUID for cancellation/replacement
-   * 
+   *
    * @see https://docs.flashbots.net/flashbots-auction/advanced/rpc-endpoint
    */
   async submitFlashbotsBundleWithReplacement(
@@ -1038,9 +1012,7 @@ export class PrivateRPCManager {
       const flashbotsProvider = new JsonRpcProvider(relay.endpoint);
       const data = await flashbotsProvider.send('eth_sendBundle', [payload]);
 
-      logger.info(
-        `[PrivateRPCManager] Bundle submitted with replacement UUID: ${replacementUuid}`
-      );
+      logger.info(`[PrivateRPCManager] Bundle submitted with replacement UUID: ${replacementUuid}`);
 
       this.updateStats(relay.type, true);
 
@@ -1055,7 +1027,7 @@ export class PrivateRPCManager {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       logger.error(`[PrivateRPCManager] Bundle submission with UUID failed: ${message}`);
-      
+
       const relay = this.relays.get(PrivateRelayType.FLASHBOTS_PROTECT);
       if (relay) {
         this.updateStats(relay.type, false);
@@ -1184,7 +1156,7 @@ export class PrivateRPCManager {
 
     logger.info(`[BundleCache] Created bundle cache with ID: ${bundleId}`);
     logger.info(`[BundleCache] RPC URL: ${rpcUrl}`);
-    
+
     if (options.fakeFunds) {
       logger.info(`[BundleCache] Fake funds mode enabled - balance queries will return 100 ETH`);
     }
@@ -1212,10 +1184,10 @@ export class PrivateRPCManager {
     try {
       // Create a provider connected to the bundle cache RPC
       const bundleProvider = new JsonRpcProvider(rpcUrl);
-      
+
       // Send the signed transaction to the bundle cache
       const tx = await bundleProvider.broadcastTransaction(signedTx);
-      
+
       logger.info(`[BundleCache] Added transaction ${tx.hash} to bundle ${bundleId}`);
 
       // Get current bundle info to count transactions
@@ -1228,7 +1200,10 @@ export class PrivateRPCManager {
         success: true,
       };
     } catch (error: any) {
-      logger.error(`[BundleCache] Failed to add transaction to bundle ${bundleId}:`, error?.message || error);
+      logger.error(
+        `[BundleCache] Failed to add transaction to bundle ${bundleId}:`,
+        error?.message || error
+      );
       throw error;
     }
   }
@@ -1248,17 +1223,21 @@ export class PrivateRPCManager {
       // Use native fetch or polyfill
       const fetchImpl = (global as any).fetch;
       if (!fetchImpl) {
-        throw new Error('fetch is not available. Please ensure you are running in an environment with fetch support or use a polyfill.');
+        throw new Error(
+          'fetch is not available. Please ensure you are running in an environment with fetch support or use a polyfill.'
+        );
       }
       const response = await fetchImpl(url);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
-      
-      logger.info(`[BundleCache] Retrieved bundle ${bundleId} with ${data.rawTxs?.length || 0} transactions`);
+
+      logger.info(
+        `[BundleCache] Retrieved bundle ${bundleId} with ${data.rawTxs?.length || 0} transactions`
+      );
 
       return {
         bundleId: data.bundleId || bundleId,
@@ -1278,14 +1257,11 @@ export class PrivateRPCManager {
    * @param targetBlock - Target block number for inclusion
    * @returns Bundle submission result
    */
-  async sendCachedBundle(
-    bundleId: string,
-    targetBlock: number
-  ): Promise<PrivateTransactionResult> {
+  async sendCachedBundle(bundleId: string, targetBlock: number): Promise<PrivateTransactionResult> {
     try {
       // Get all transactions from the bundle cache
       const bundleInfo = await this.getBundleCacheTransactions(bundleId);
-      
+
       if (bundleInfo.rawTxs.length === 0) {
         throw new Error(`Bundle ${bundleId} is empty`);
       }
@@ -1308,7 +1284,10 @@ export class PrivateRPCManager {
 
       return result;
     } catch (error: any) {
-      logger.error(`[BundleCache] Failed to send cached bundle ${bundleId}:`, error?.message || error);
+      logger.error(
+        `[BundleCache] Failed to send cached bundle ${bundleId}:`,
+        error?.message || error
+      );
       this.updateStats(PrivateRelayType.FLASHBOTS_PROTECT, false);
       throw error;
     }
@@ -1337,7 +1316,7 @@ export function createFlashbotsProtectConfig(
   fastMode: boolean = false
 ): PrivateRelayConfig {
   let endpoint: string;
-  
+
   switch (chainId) {
     case 1: // Mainnet
       endpoint = fastMode ? 'https://rpc.flashbots.net/fast' : FLASHBOTS_ENDPOINTS.MAINNET;

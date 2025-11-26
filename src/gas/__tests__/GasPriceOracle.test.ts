@@ -9,7 +9,12 @@ describe('GasPriceOracle', () => {
 
   beforeEach(() => {
     // Use a test provider URL
-    oracle = new GasPriceOracle('http://localhost:8545', undefined, 12000, BigInt(50) * BigInt(10 ** 9));
+    oracle = new GasPriceOracle(
+      'http://localhost:8545',
+      undefined,
+      12000,
+      BigInt(50) * BigInt(10 ** 9)
+    );
   });
 
   afterEach(() => {

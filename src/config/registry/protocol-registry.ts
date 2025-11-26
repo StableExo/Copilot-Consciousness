@@ -1,11 +1,21 @@
 /**
  * Protocol Registry - Advanced DEX Protocol Management
- * 
+ *
  * Centralizes protocol configurations for all supported DEXes across chains.
  * Provides type-safe access to protocol metadata, addresses, and features.
  */
 
-export type ProtocolType = 'uniswap-v3' | 'sushiswap-v3' | 'curve' | 'balancer' | 'uniswap-v2' | 'sushiswap-v2' | 'aerodrome' | 'baseswap' | 'velodrome' | 'pancakeswap-v3';
+export type ProtocolType =
+  | 'uniswap-v3'
+  | 'sushiswap-v3'
+  | 'curve'
+  | 'balancer'
+  | 'uniswap-v2'
+  | 'sushiswap-v2'
+  | 'aerodrome'
+  | 'baseswap'
+  | 'velodrome'
+  | 'pancakeswap-v3';
 
 export interface ProtocolConfig {
   name: string;
@@ -77,7 +87,7 @@ export class ProtocolRegistry {
    * Get protocols by type
    */
   getByType(type: ProtocolType): ProtocolConfig[] {
-    return Array.from(this.protocols.values()).filter(p => p.type === type);
+    return Array.from(this.protocols.values()).filter((p) => p.type === type);
   }
 
   /**
@@ -101,7 +111,7 @@ export class ProtocolRegistry {
     // Remove from chain index
     for (const chainId of protocol.supportedChains) {
       const chainProtocols = this.protocolsByChain.get(chainId) || [];
-      const filtered = chainProtocols.filter(p => p.name.toLowerCase() !== name.toLowerCase());
+      const filtered = chainProtocols.filter((p) => p.name.toLowerCase() !== name.toLowerCase());
       this.protocolsByChain.set(chainId, filtered);
     }
 
@@ -138,7 +148,7 @@ protocolRegistry.loadFromConfig([
     quoter: '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6',
     supportedChains: [1, 42161, 137, 8453], // Ethereum, Arbitrum, Polygon, Base
     features: ['flash-swap', 'concentrated-liquidity', 'multiple-fee-tiers'],
-    version: '3'
+    version: '3',
   },
   {
     name: 'SushiSwap V3',
@@ -148,7 +158,7 @@ protocolRegistry.loadFromConfig([
     quoter: '0x64e8802FE490fa7cc61d3463958199161Bb608A7',
     supportedChains: [1, 42161, 137],
     features: ['flash-swap', 'concentrated-liquidity', 'multiple-fee-tiers'],
-    version: '3'
+    version: '3',
   },
   {
     name: 'Uniswap V2',
@@ -157,7 +167,7 @@ protocolRegistry.loadFromConfig([
     factory: '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f',
     supportedChains: [1, 42161, 137],
     features: ['flash-swap', 'constant-product'],
-    version: '2'
+    version: '2',
   },
   {
     name: 'SushiSwap V2',
@@ -166,7 +176,7 @@ protocolRegistry.loadFromConfig([
     factory: '0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac',
     supportedChains: [1, 42161, 137],
     features: ['flash-swap', 'constant-product'],
-    version: '2'
+    version: '2',
   },
   {
     name: 'Aerodrome',
@@ -175,7 +185,7 @@ protocolRegistry.loadFromConfig([
     factory: '0x420DD381b31aEf6683db6B902084cB0FFECe40Da',
     supportedChains: [8453], // Base only
     features: ['flash-swap', 'concentrated-liquidity', 'variable-fee'],
-    version: '1'
+    version: '1',
   },
   {
     name: 'BaseSwap',
@@ -184,7 +194,7 @@ protocolRegistry.loadFromConfig([
     factory: '0xFDa619b6d20975be80A10332cD39b9a4b0FAa8BB',
     supportedChains: [8453], // Base only
     features: ['flash-swap', 'constant-product'],
-    version: '2'
+    version: '2',
   },
   {
     name: 'PancakeSwap V3 Base',
@@ -194,7 +204,7 @@ protocolRegistry.loadFromConfig([
     quoter: '0xB048Bbc1Ee6b733FFfCFb9e9CeF7375518e25997',
     supportedChains: [8453], // Base
     features: ['flash-swap', 'concentrated-liquidity', 'multiple-fee-tiers'],
-    version: '3'
+    version: '3',
   },
   {
     name: 'Velodrome',
@@ -203,6 +213,6 @@ protocolRegistry.loadFromConfig([
     factory: '0x31832f2a97Fd20664D76Cc421207669b55CE4BC0',
     supportedChains: [8453], // Base (Velodrome Slipstream on Base)
     features: ['flash-swap', 'concentrated-liquidity', 'variable-fee'],
-    version: '2'
-  }
+    version: '2',
+  },
 ]);

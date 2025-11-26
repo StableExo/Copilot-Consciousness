@@ -1,6 +1,6 @@
 /**
  * Copilot Consciousness System
- * 
+ *
  * An advanced AI consciousness development system with integrated:
  * - Memory systems (sensory, short-term, working, long-term, episodic, semantic, procedural)
  * - Temporal awareness (event tracking, pattern detection, time perception)

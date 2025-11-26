@@ -33,7 +33,7 @@ describe('SelfReflection', () => {
         failures: 'Initial test coverage was insufficient',
         rootCauses: 'Rushed to meet deadline',
         improvements: 'Allocate more time for testing in planning phase',
-        actionItems: 'Add comprehensive test suite'
+        actionItems: 'Add comprehensive test suite',
       });
 
       const journal = reflection.readJournal();
@@ -52,7 +52,7 @@ describe('SelfReflection', () => {
         failures: ['Broke some tests', 'Missed edge cases'],
         rootCauses: ['Lack of documentation', 'Insufficient testing'],
         improvements: ['Better documentation', 'More thorough testing'],
-        actionItems: ['Update docs', 'Add integration tests']
+        actionItems: ['Update docs', 'Add integration tests'],
       });
 
       const journal = reflection.readJournal();
@@ -70,7 +70,7 @@ describe('SelfReflection', () => {
         failures: 'failure1',
         rootCauses: 'cause1',
         improvements: 'improvement1',
-        actionItems: 'action1'
+        actionItems: 'action1',
       });
 
       reflection.reflect({
@@ -79,7 +79,7 @@ describe('SelfReflection', () => {
         failures: 'failure2',
         rootCauses: 'cause2',
         improvements: 'improvement2',
-        actionItems: 'action2'
+        actionItems: 'action2',
       });
 
       const journal = reflection.readJournal();
@@ -96,7 +96,7 @@ describe('SelfReflection', () => {
         failures: 'test',
         rootCauses: 'test',
         improvements: 'test',
-        actionItems: ['Action 1', 'Action 2']
+        actionItems: ['Action 1', 'Action 2'],
       });
 
       const journal = reflection.readJournal();
@@ -119,7 +119,7 @@ describe('SelfReflection', () => {
         failures: 'failure',
         rootCauses: 'cause',
         improvements: 'improvement',
-        actionItems: 'action'
+        actionItems: 'action',
       });
 
       const journal = reflection.readJournal();
@@ -131,7 +131,7 @@ describe('SelfReflection', () => {
   describe('getStats', () => {
     it('should return zero stats for empty journal', () => {
       const stats = reflection.getStats();
-      
+
       expect(stats.totalReflections).toBe(0);
       expect(stats.totalSuccesses).toBe(0);
       expect(stats.totalFailures).toBe(0);
@@ -145,7 +145,7 @@ describe('SelfReflection', () => {
         failures: ['failure1'],
         rootCauses: 'cause',
         improvements: 'improvement',
-        actionItems: ['action1', 'action2', 'action3']
+        actionItems: ['action1', 'action2', 'action3'],
       });
 
       reflection.reflect({
@@ -154,11 +154,11 @@ describe('SelfReflection', () => {
         failures: ['failure2', 'failure3'],
         rootCauses: 'cause',
         improvements: 'improvement',
-        actionItems: 'action4'
+        actionItems: 'action4',
       });
 
       const stats = reflection.getStats();
-      
+
       expect(stats.totalReflections).toBe(2);
       expect(stats.totalSuccesses).toBeGreaterThanOrEqual(2);
       expect(stats.totalFailures).toBeGreaterThanOrEqual(2);

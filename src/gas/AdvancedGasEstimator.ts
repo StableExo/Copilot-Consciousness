@@ -1,11 +1,11 @@
 /**
  * AdvancedGasEstimator - Advanced gas estimation and pre-execution validation
- * 
+ *
  * This module implements a sophisticated gas estimation system that combines:
  * - Path-based heuristic calculations using per-DEX gas profiles
  * - On-chain estimateGas() validation for accuracy
  * - Multi-tier profitability validation before execution
- * 
+ *
  * Design inspired by high-frequency trading systems that prevent capital waste
  * on unprofitable or reverting transactions.
  */
@@ -19,10 +19,10 @@ import { GasPriceOracle, GasPrice } from './GasPriceOracle';
  */
 export interface DEXGasConfig {
   dexName: string;
-  baseGas: number;        // Base gas cost for a swap on this DEX
-  gasPerHop: number;      // Additional gas per hop/step
-  overhead: number;       // Protocol overhead gas
-  complexity: number;     // Complexity multiplier (1.0 = normal)
+  baseGas: number; // Base gas cost for a swap on this DEX
+  gasPerHop: number; // Additional gas per hop/step
+  overhead: number; // Protocol overhead gas
+  complexity: number; // Complexity multiplier (1.0 = normal)
 }
 
 /**
@@ -30,24 +30,24 @@ export interface DEXGasConfig {
  */
 export interface GasEstimationConfig {
   // Gas buffer multipliers
-  bufferMultiplier: number;           // Default buffer (e.g., 1.1 = 10% buffer)
-  maxBufferMultiplier: number;        // Maximum buffer allowed (e.g., 1.5 = 50%)
-  
+  bufferMultiplier: number; // Default buffer (e.g., 1.1 = 10% buffer)
+  maxBufferMultiplier: number; // Maximum buffer allowed (e.g., 1.5 = 50%)
+
   // Gas price limits
-  maxGasPrice: bigint;                // Maximum acceptable gas price
-  minGasPrice: bigint;                // Minimum gas price (fallback)
-  
+  maxGasPrice: bigint; // Maximum acceptable gas price
+  minGasPrice: bigint; // Minimum gas price (fallback)
+
   // Profitability thresholds
-  minProfitAfterGas: bigint;          // Minimum net profit required
-  maxGasCostPercentage: number;       // Max % of profit that can be gas
-  
+  minProfitAfterGas: bigint; // Minimum net profit required
+  maxGasCostPercentage: number; // Max % of profit that can be gas
+
   // Estimation strategy
-  useOnChainEstimation: boolean;      // Whether to use estimateGas()
-  fallbackToHeuristic: boolean;       // Fall back to heuristic if on-chain fails
-  
+  useOnChainEstimation: boolean; // Whether to use estimateGas()
+  fallbackToHeuristic: boolean; // Fall back to heuristic if on-chain fails
+
   // Per-DEX configurations
   dexConfigs: Map<string, DEXGasConfig>;
-  
+
   // Default DEX config for unknown DEXes
   defaultDEXConfig: DEXGasConfig;
 }
@@ -107,56 +107,56 @@ const DEFAULT_DEX_CONFIGS: Record<string, DEXGasConfig> = {
     baseGas: 100000,
     gasPerHop: 30000,
     overhead: 21000,
-    complexity: 1.0
+    complexity: 1.0,
   },
   'Uniswap V3': {
     dexName: 'Uniswap V3',
     baseGas: 120000,
     gasPerHop: 35000,
     overhead: 21000,
-    complexity: 1.2
+    complexity: 1.2,
   },
-  'SushiSwap': {
+  SushiSwap: {
     dexName: 'SushiSwap',
     baseGas: 100000,
     gasPerHop: 30000,
     overhead: 21000,
-    complexity: 1.0
+    complexity: 1.0,
   },
-  'Curve': {
+  Curve: {
     dexName: 'Curve',
     baseGas: 150000,
     gasPerHop: 40000,
     overhead: 21000,
-    complexity: 1.5
+    complexity: 1.5,
   },
-  'Balancer': {
+  Balancer: {
     dexName: 'Balancer',
     baseGas: 180000,
     gasPerHop: 45000,
     overhead: 21000,
-    complexity: 1.8
+    complexity: 1.8,
   },
   '1inch': {
     dexName: '1inch',
     baseGas: 140000,
     gasPerHop: 38000,
     overhead: 21000,
-    complexity: 1.4
+    complexity: 1.4,
   },
-  'PancakeSwap': {
+  PancakeSwap: {
     dexName: 'PancakeSwap',
     baseGas: 100000,
     gasPerHop: 30000,
     overhead: 21000,
-    complexity: 1.0
+    complexity: 1.0,
   },
   'PancakeSwap V3': {
     dexName: 'PancakeSwap V3',
     baseGas: 120000,
     gasPerHop: 35000,
     overhead: 21000,
-    complexity: 1.2
+    complexity: 1.2,
   },
   // Base-specific DEXes
   'Uniswap V3 on Base': {
@@ -164,35 +164,35 @@ const DEFAULT_DEX_CONFIGS: Record<string, DEXGasConfig> = {
     baseGas: 120000,
     gasPerHop: 35000,
     overhead: 21000,
-    complexity: 1.2
+    complexity: 1.2,
   },
   'Aerodrome on Base': {
     dexName: 'Aerodrome on Base',
     baseGas: 120000,
     gasPerHop: 35000,
     overhead: 21000,
-    complexity: 1.2
+    complexity: 1.2,
   },
-  'BaseSwap': {
+  BaseSwap: {
     dexName: 'BaseSwap',
     baseGas: 100000,
     gasPerHop: 30000,
     overhead: 21000,
-    complexity: 1.0
+    complexity: 1.0,
   },
   'Uniswap V2 on Base': {
     dexName: 'Uniswap V2 on Base',
     baseGas: 100000,
     gasPerHop: 30000,
     overhead: 21000,
-    complexity: 1.0
+    complexity: 1.0,
   },
   'SushiSwap on Base': {
     dexName: 'SushiSwap on Base',
     baseGas: 100000,
     gasPerHop: 30000,
     overhead: 21000,
-    complexity: 1.0
+    complexity: 1.0,
   },
   // Added from PROFITABLE_EXECUTION_PLAN Phase 2.1
   'PancakeSwap V3 on Base': {
@@ -200,29 +200,29 @@ const DEFAULT_DEX_CONFIGS: Record<string, DEXGasConfig> = {
     baseGas: 120000,
     gasPerHop: 35000,
     overhead: 21000,
-    complexity: 1.2
+    complexity: 1.2,
   },
   'Velodrome on Base': {
     dexName: 'Velodrome on Base',
     baseGas: 120000,
     gasPerHop: 35000,
     overhead: 21000,
-    complexity: 1.2
-  }
+    complexity: 1.2,
+  },
 };
 
 export class AdvancedGasEstimator {
   private provider: JsonRpcProvider;
   private oracle: GasPriceOracle;
   private config: GasEstimationConfig;
-  
+
   // Statistics for monitoring
   private stats = {
     totalEstimations: 0,
     onChainEstimations: 0,
     heuristicEstimations: 0,
     failedEstimations: 0,
-    blockedOpportunities: 0
+    blockedOpportunities: 0,
   };
 
   constructor(
@@ -232,19 +232,19 @@ export class AdvancedGasEstimator {
   ) {
     this.provider = provider;
     this.oracle = oracle;
-    
+
     // Initialize DEX configs
     const dexConfigs = new Map<string, DEXGasConfig>();
     for (const [name, cfg] of Object.entries(DEFAULT_DEX_CONFIGS)) {
       dexConfigs.set(name, cfg);
     }
-    
+
     // Merge with provided config
     this.config = {
       bufferMultiplier: config?.bufferMultiplier || 1.1,
       maxBufferMultiplier: config?.maxBufferMultiplier || 1.5,
       maxGasPrice: config?.maxGasPrice || BigInt(500) * BigInt(10 ** 9), // 500 gwei
-      minGasPrice: config?.minGasPrice || BigInt(1) * BigInt(10 ** 9),   // 1 gwei
+      minGasPrice: config?.minGasPrice || BigInt(1) * BigInt(10 ** 9), // 1 gwei
       minProfitAfterGas: config?.minProfitAfterGas || BigInt(10) * BigInt(10 ** 18), // 10 tokens
       maxGasCostPercentage: config?.maxGasCostPercentage || 50,
       useOnChainEstimation: config?.useOnChainEstimation !== false,
@@ -255,8 +255,8 @@ export class AdvancedGasEstimator {
         baseGas: 150000,
         gasPerHop: 40000,
         overhead: 21000,
-        complexity: 1.5
-      }
+        complexity: 1.5,
+      },
     };
   }
 
@@ -270,19 +270,19 @@ export class AdvancedGasEstimator {
     try {
       // Calculate gas breakdown
       const breakdown = this.calculateGasBreakdown(path);
-      
+
       // Get current gas price with clamping
       const gasPrice = await this.getClampedGasPrice();
-      
+
       // Calculate total gas cost
       const totalGasCost = breakdown.total * gasPrice;
-      
+
       // Calculate net profit
       const netProfit = path.estimatedProfit - totalGasCost;
-      
+
       // Check profitability
       const profitable = this.isProfitable(path.estimatedProfit, totalGasCost);
-      
+
       return {
         success: true,
         estimatedGas: breakdown.total,
@@ -290,7 +290,7 @@ export class AdvancedGasEstimator {
         totalGasCost,
         netProfit,
         profitable,
-        breakdown
+        breakdown,
       };
     } catch (error) {
       this.stats.failedEstimations++;
@@ -316,33 +316,33 @@ export class AdvancedGasEstimator {
     try {
       // Build transaction data for estimation
       const txData = this.buildTransactionData(path);
-      
+
       // Estimate gas using provider
       const estimatedGas = await this.provider.estimateGas({
         from,
         to: executorAddress,
         data: txData,
-        value: 0
+        value: 0,
       });
-      
+
       // Apply buffer to estimated gas
       const bufferedGas = this.applyGasBuffer(BigInt(estimatedGas.toString()));
-      
+
       // Get clamped gas price
       const gasPrice = await this.getClampedGasPrice();
-      
+
       // Calculate costs
       const totalGasCost = bufferedGas * gasPrice;
       const netProfit = path.estimatedProfit - totalGasCost;
       const profitable = this.isProfitable(path.estimatedProfit, totalGasCost);
-      
+
       return {
         success: true,
         estimatedGas: bufferedGas,
         gasPrice,
         totalGasCost,
         netProfit,
-        profitable
+        profitable,
       };
     } catch (error) {
       // On-chain estimation failed, fall back to heuristic if configured
@@ -350,7 +350,7 @@ export class AdvancedGasEstimator {
         console.warn('On-chain gas estimation failed, falling back to heuristic:', error);
         return this.estimateGasHeuristic(path);
       }
-      
+
       this.stats.failedEstimations++;
       return this.createFailedEstimation(
         `On-chain estimation failed: ${error instanceof Error ? error.message : 'Unknown error'}`
@@ -367,37 +367,37 @@ export class AdvancedGasEstimator {
     executorAddress?: string
   ): Promise<ValidationResult> {
     const warnings: string[] = [];
-    
+
     try {
       // Step 1: Estimate gas
       let estimation: GasEstimationResult;
-      
+
       if (from && executorAddress && this.config.useOnChainEstimation) {
         estimation = await this.estimateGasOnChain(path, from, executorAddress);
-        
+
         // If on-chain fails and we have fallback, estimation will use heuristic
         if (!estimation.success) {
           return {
             valid: false,
             executable: false,
             reason: estimation.reason || 'Gas estimation failed',
-            warnings
+            warnings,
           };
         }
       } else {
         estimation = await this.estimateGasHeuristic(path);
       }
-      
+
       // Step 2: Check if estimation was successful
       if (!estimation.success) {
         return {
           valid: false,
           executable: false,
           reason: estimation.reason,
-          warnings
+          warnings,
         };
       }
-      
+
       // Step 3: Validate profitability
       if (!estimation.profitable) {
         this.stats.blockedOpportunities++;
@@ -408,13 +408,15 @@ export class AdvancedGasEstimator {
           estimatedGas: estimation.estimatedGas,
           gasPrice: estimation.gasPrice,
           netProfit: estimation.netProfit,
-          warnings
+          warnings,
         };
       }
-      
+
       // Step 4: Check gas price limits
       if (estimation.gasPrice > this.config.maxGasPrice) {
-        warnings.push(`Gas price (${estimation.gasPrice}) exceeds maximum (${this.config.maxGasPrice})`);
+        warnings.push(
+          `Gas price (${estimation.gasPrice}) exceeds maximum (${this.config.maxGasPrice})`
+        );
         this.stats.blockedOpportunities++;
         return {
           valid: true,
@@ -423,13 +425,15 @@ export class AdvancedGasEstimator {
           estimatedGas: estimation.estimatedGas,
           gasPrice: estimation.gasPrice,
           netProfit: estimation.netProfit,
-          warnings
+          warnings,
         };
       }
-      
+
       // Step 5: Check minimum profit threshold
       if (estimation.netProfit < this.config.minProfitAfterGas) {
-        warnings.push(`Net profit (${estimation.netProfit}) below minimum threshold (${this.config.minProfitAfterGas})`);
+        warnings.push(
+          `Net profit (${estimation.netProfit}) below minimum threshold (${this.config.minProfitAfterGas})`
+        );
         this.stats.blockedOpportunities++;
         return {
           valid: true,
@@ -438,14 +442,19 @@ export class AdvancedGasEstimator {
           estimatedGas: estimation.estimatedGas,
           gasPrice: estimation.gasPrice,
           netProfit: estimation.netProfit,
-          warnings
+          warnings,
         };
       }
-      
+
       // Step 6: Check gas cost percentage
-      const gasCostPercentage = Number((estimation.totalGasCost * BigInt(10000)) / path.estimatedProfit) / 100;
+      const gasCostPercentage =
+        Number((estimation.totalGasCost * BigInt(10000)) / path.estimatedProfit) / 100;
       if (gasCostPercentage > this.config.maxGasCostPercentage) {
-        warnings.push(`Gas cost (${gasCostPercentage.toFixed(2)}%) exceeds maximum percentage (${this.config.maxGasCostPercentage}%)`);
+        warnings.push(
+          `Gas cost (${gasCostPercentage.toFixed(2)}%) exceeds maximum percentage (${
+            this.config.maxGasCostPercentage
+          }%)`
+        );
         this.stats.blockedOpportunities++;
         return {
           valid: true,
@@ -454,10 +463,10 @@ export class AdvancedGasEstimator {
           estimatedGas: estimation.estimatedGas,
           gasPrice: estimation.gasPrice,
           netProfit: estimation.netProfit,
-          warnings
+          warnings,
         };
       }
-      
+
       // All checks passed
       return {
         valid: true,
@@ -465,15 +474,14 @@ export class AdvancedGasEstimator {
         estimatedGas: estimation.estimatedGas,
         gasPrice: estimation.gasPrice,
         netProfit: estimation.netProfit,
-        warnings
+        warnings,
       };
-      
     } catch (error) {
       return {
         valid: false,
         executable: false,
         reason: `Validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        warnings
+        warnings,
       };
     }
   }
@@ -485,40 +493,41 @@ export class AdvancedGasEstimator {
     let baseGas = BigInt(0);
     let hopGas = BigInt(0);
     let overhead = BigInt(0);
-    
+
     // Calculate gas for each hop
     for (const hop of path.hops) {
       const dexConfig = this.getDEXConfig(hop.dexName);
-      
+
       baseGas += BigInt(dexConfig.baseGas);
       hopGas += BigInt(dexConfig.gasPerHop);
       overhead += BigInt(dexConfig.overhead);
     }
-    
+
     // Account for multi-hop complexity
     if (path.hops.length > 1) {
       // Add complexity multiplier for multi-hop trades
-      const avgComplexity = path.hops.reduce((sum, hop) => {
-        const cfg = this.getDEXConfig(hop.dexName);
-        return sum + cfg.complexity;
-      }, 0) / path.hops.length;
-      
+      const avgComplexity =
+        path.hops.reduce((sum, hop) => {
+          const cfg = this.getDEXConfig(hop.dexName);
+          return sum + cfg.complexity;
+        }, 0) / path.hops.length;
+
       const complexityMultiplier = BigInt(Math.floor(avgComplexity * 1000));
       hopGas = (hopGas * complexityMultiplier) / BigInt(1000);
     }
-    
+
     const subtotal = baseGas + hopGas + overhead;
-    
+
     // Apply buffer
     const buffer = this.applyGasBuffer(subtotal) - subtotal;
     const total = subtotal + buffer;
-    
+
     return {
       baseGas,
       hopGas,
       overhead,
       buffer,
-      total
+      total,
     };
   }
 
@@ -530,15 +539,17 @@ export class AdvancedGasEstimator {
     if (this.config.dexConfigs.has(dexName)) {
       return this.config.dexConfigs.get(dexName)!;
     }
-    
+
     // Try partial match (e.g., "Uniswap V3" matches "Uniswap")
     for (const [name, config] of this.config.dexConfigs.entries()) {
-      if (dexName.toLowerCase().includes(name.toLowerCase()) ||
-          name.toLowerCase().includes(dexName.toLowerCase())) {
+      if (
+        dexName.toLowerCase().includes(name.toLowerCase()) ||
+        name.toLowerCase().includes(dexName.toLowerCase())
+      ) {
         return config;
       }
     }
-    
+
     // Return default config
     return this.config.defaultDEXConfig;
   }
@@ -559,7 +570,7 @@ export class AdvancedGasEstimator {
     try {
       const gasPrice = await this.oracle.getCurrentGasPrice('fast');
       const price = gasPrice.maxFeePerGas;
-      
+
       // Clamp to configured limits
       if (price > this.config.maxGasPrice) {
         return this.config.maxGasPrice;
@@ -567,7 +578,7 @@ export class AdvancedGasEstimator {
       if (price < this.config.minGasPrice) {
         return this.config.minGasPrice;
       }
-      
+
       return price;
     } catch (error) {
       console.error('Failed to get gas price, using fallback:', error);
@@ -580,29 +591,29 @@ export class AdvancedGasEstimator {
    */
   private isProfitable(estimatedProfit: bigint, gasCost: bigint): boolean {
     const netProfit = estimatedProfit - gasCost;
-    
+
     // Must have positive net profit
     if (netProfit <= BigInt(0)) {
       return false;
     }
-    
+
     // Must meet minimum threshold
     if (netProfit < this.config.minProfitAfterGas) {
       return false;
     }
-    
+
     // Must not exceed max gas cost percentage
     const gasCostPercentage = Number((gasCost * BigInt(10000)) / estimatedProfit) / 100;
     if (gasCostPercentage > this.config.maxGasCostPercentage) {
       return false;
     }
-    
+
     return true;
   }
 
   /**
    * Build transaction data for on-chain estimation
-   * 
+   *
    * IMPORTANT: This is a simplified placeholder implementation.
    * In production, this should encode actual DEX-specific swap calls based on the path.
    * The current implementation provides a rough estimate but may not account for:
@@ -610,22 +621,22 @@ export class AdvancedGasEstimator {
    * - Token approval gas costs
    * - Flash loan callback overhead
    * - Multi-protocol differences
-   * 
+   *
    * For accurate on-chain estimation, integrate with actual executor contract's
    * executeArbitrage function that matches your deployment.
    */
   private buildTransactionData(path: ArbitragePath): string {
     // Simplified encoding - replace with actual executor contract interface
     const iface = new Interface([
-      'function executeArbitrage(address[] tokens, address[] pools, uint256 amountIn)'
+      'function executeArbitrage(address[] tokens, address[] pools, uint256 amountIn)',
     ]);
-    
-    const tokens = path.hops.map(h => h.tokenIn);
+
+    const tokens = path.hops.map((h) => h.tokenIn);
     tokens.push(path.hops[path.hops.length - 1].tokenOut);
-    
-    const pools = path.hops.map(h => h.poolAddress);
+
+    const pools = path.hops.map((h) => h.poolAddress);
     const amountIn = path.hops[0].amountIn;
-    
+
     return iface.encodeFunctionData('executeArbitrage', [tokens, pools, amountIn]);
   }
 
@@ -640,7 +651,7 @@ export class AdvancedGasEstimator {
       totalGasCost: BigInt(0),
       netProfit: BigInt(0),
       profitable: false,
-      reason
+      reason,
     };
   }
 
@@ -650,7 +661,7 @@ export class AdvancedGasEstimator {
   updateConfig(config: Partial<GasEstimationConfig>): void {
     this.config = {
       ...this.config,
-      ...config
+      ...config,
     };
   }
 
@@ -677,7 +688,7 @@ export class AdvancedGasEstimator {
       onChainEstimations: 0,
       heuristicEstimations: 0,
       failedEstimations: 0,
-      blockedOpportunities: 0
+      blockedOpportunities: 0,
     };
   }
 

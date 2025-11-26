@@ -10,11 +10,11 @@ describe('AdvancedPathFinder', () => {
       maxHops: 4,
       minProfitThreshold: BigInt(100),
       maxSlippage: 0.05,
-      gasPrice: BigInt(50000000000) // 50 gwei
+      gasPrice: BigInt(50000000000), // 50 gwei
     };
     pathFinder = new AdvancedPathFinder({
       ...config,
-      strategy: 'auto'
+      strategy: 'auto',
     });
   });
 
@@ -27,7 +27,7 @@ describe('AdvancedPathFinder', () => {
     it('should accept explicit strategy', () => {
       const bf = new AdvancedPathFinder({
         ...config,
-        strategy: 'bellman-ford'
+        strategy: 'bellman-ford',
       });
       expect(bf).toBeDefined();
     });
@@ -43,11 +43,11 @@ describe('AdvancedPathFinder', () => {
         reserve0: BigInt(1000000),
         reserve1: BigInt(2000000),
         fee: 0.003,
-        gasEstimate: 150000
+        gasEstimate: 150000,
       };
 
       pathFinder.addPoolEdge(edge);
-      
+
       expect(pathFinder.getTokens()).toContain('0xToken1');
       expect(pathFinder.getTokens()).toContain('0xToken2');
       expect(pathFinder.getEdgeCount()).toBe(1);
@@ -58,7 +58,7 @@ describe('AdvancedPathFinder', () => {
     it('should find arbitrage cycle with profitable opportunity', () => {
       const bellmanFord = new AdvancedPathFinder({
         ...config,
-        strategy: 'bellman-ford'
+        strategy: 'bellman-ford',
       });
 
       // Create a triangular arbitrage with profit
@@ -71,7 +71,7 @@ describe('AdvancedPathFinder', () => {
           reserve0: BigInt('10000000000000000000000'),
           reserve1: BigInt('10000000000000000000000'),
           fee: 0.003,
-          gasEstimate: 150000
+          gasEstimate: 150000,
         },
         {
           poolAddress: '0x456',
@@ -81,7 +81,7 @@ describe('AdvancedPathFinder', () => {
           reserve0: BigInt('10000000000000000000000'),
           reserve1: BigInt('10000000000000000000000'),
           fee: 0.003,
-          gasEstimate: 150000
+          gasEstimate: 150000,
         },
         {
           poolAddress: '0x789',
@@ -91,11 +91,11 @@ describe('AdvancedPathFinder', () => {
           reserve0: BigInt('10000000000000000000000'),
           reserve1: BigInt('10500000000000000000000'), // 5% profit opportunity
           fee: 0.0004,
-          gasEstimate: 180000
-        }
+          gasEstimate: 180000,
+        },
       ];
 
-      edges.forEach(edge => bellmanFord.addPoolEdge(edge));
+      edges.forEach((edge) => bellmanFord.addPoolEdge(edge));
 
       const startAmount = BigInt('100000000000000000000'); // 100 tokens
       const paths = bellmanFord.findArbitragePaths('0xToken1', startAmount);
@@ -108,7 +108,7 @@ describe('AdvancedPathFinder', () => {
     it('should handle graphs with no arbitrage', () => {
       const bellmanFord = new AdvancedPathFinder({
         ...config,
-        strategy: 'bellman-ford'
+        strategy: 'bellman-ford',
       });
 
       const edges: PoolEdge[] = [
@@ -120,11 +120,11 @@ describe('AdvancedPathFinder', () => {
           reserve0: BigInt('10000000000000000000000'),
           reserve1: BigInt('10000000000000000000000'),
           fee: 0.1, // High fee ensures no arbitrage
-          gasEstimate: 150000
-        }
+          gasEstimate: 150000,
+        },
       ];
 
-      edges.forEach(edge => bellmanFord.addPoolEdge(edge));
+      edges.forEach((edge) => bellmanFord.addPoolEdge(edge));
 
       const startAmount = BigInt('100000000000000000000');
       const paths = bellmanFord.findArbitragePaths('0xToken1', startAmount);
@@ -138,7 +138,7 @@ describe('AdvancedPathFinder', () => {
     it('should find paths using breadth-first search', () => {
       const bfs = new AdvancedPathFinder({
         ...config,
-        strategy: 'bfs'
+        strategy: 'bfs',
       });
 
       const edges: PoolEdge[] = [
@@ -150,7 +150,7 @@ describe('AdvancedPathFinder', () => {
           reserve0: BigInt('10000000000000000000000'),
           reserve1: BigInt('10000000000000000000000'),
           fee: 0.003,
-          gasEstimate: 150000
+          gasEstimate: 150000,
         },
         {
           poolAddress: '0x456',
@@ -160,11 +160,11 @@ describe('AdvancedPathFinder', () => {
           reserve0: BigInt('10000000000000000000000'),
           reserve1: BigInt('10100000000000000000000'), // Small profit
           fee: 0.003,
-          gasEstimate: 150000
-        }
+          gasEstimate: 150000,
+        },
       ];
 
-      edges.forEach(edge => bfs.addPoolEdge(edge));
+      edges.forEach((edge) => bfs.addPoolEdge(edge));
 
       const startAmount = BigInt('100000000000000000000');
       const paths = bfs.findArbitragePaths('0xToken1', startAmount);
@@ -177,7 +177,7 @@ describe('AdvancedPathFinder', () => {
     it('should select DFS for small graphs', () => {
       const auto = new AdvancedPathFinder({
         ...config,
-        strategy: 'auto'
+        strategy: 'auto',
       });
 
       // Add a few edges (small graph)
@@ -189,11 +189,11 @@ describe('AdvancedPathFinder', () => {
         reserve0: BigInt(1000000),
         reserve1: BigInt(2000000),
         fee: 0.003,
-        gasEstimate: 150000
+        gasEstimate: 150000,
       };
 
       auto.addPoolEdge(edge);
-      
+
       const startAmount = BigInt('100000000000000000000');
       auto.findArbitragePaths('0xToken1', startAmount);
 
@@ -213,14 +213,14 @@ describe('AdvancedPathFinder', () => {
         reserve0: BigInt(1000000),
         reserve1: BigInt(2000000),
         fee: 0.003,
-        gasEstimate: 150000
+        gasEstimate: 150000,
       };
 
       pathFinder.addPoolEdge(edge);
       pathFinder.findArbitragePaths('0xToken1', BigInt(1000000));
 
       const metrics = pathFinder.getMetrics();
-      
+
       expect(metrics).toHaveProperty('pathsExplored');
       expect(metrics).toHaveProperty('pathsPruned');
       expect(metrics).toHaveProperty('timeElapsedMs');
@@ -239,14 +239,14 @@ describe('AdvancedPathFinder', () => {
         reserve0: BigInt(1000000),
         reserve1: BigInt(2000000),
         fee: 0.003,
-        gasEstimate: 150000
+        gasEstimate: 150000,
       };
 
       pathFinder.addPoolEdge(edge);
       expect(pathFinder.getEdgeCount()).toBe(1);
 
       pathFinder.clear();
-      
+
       expect(pathFinder.getEdgeCount()).toBe(0);
       expect(pathFinder.getTokens().length).toBe(0);
     });
@@ -257,7 +257,7 @@ describe('AdvancedPathFinder', () => {
       // Create a pathfinder that might fail with Bellman-Ford
       const pf = new AdvancedPathFinder({
         ...config,
-        strategy: 'bellman-ford'
+        strategy: 'bellman-ford',
       });
 
       const edge: PoolEdge = {
@@ -268,7 +268,7 @@ describe('AdvancedPathFinder', () => {
         reserve0: BigInt(1000000),
         reserve1: BigInt(2000000),
         fee: 0.003,
-        gasEstimate: 150000
+        gasEstimate: 150000,
       };
 
       pf.addPoolEdge(edge);

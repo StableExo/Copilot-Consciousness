@@ -1,6 +1,6 @@
 /**
  * Uniswap V3 Protocol Implementation
- * 
+ *
  * Implements the IProtocol interface for Uniswap V3
  */
 
@@ -15,11 +15,7 @@ import {
 } from '../../base/IProtocol';
 
 export class UniswapV3Protocol extends BaseProtocol {
-  constructor(
-    provider: Provider,
-    chainId: number,
-    signer?: ethers.Signer
-  ) {
+  constructor(provider: Provider, chainId: number, signer?: ethers.Signer) {
     const metadata: ProtocolMetadata = {
       name: 'Uniswap V3',
       type: 'uniswap-v3',

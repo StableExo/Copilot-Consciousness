@@ -10,7 +10,7 @@ describe('Knowledge Base', () => {
   describe('CodexManager', () => {
     it('should add and retrieve knowledge entries', () => {
       const codex = new CodexManager();
-      
+
       const entry = codex.addEntry(
         'Test Knowledge',
         'This is test content about AI consciousness',
@@ -30,7 +30,7 @@ describe('Knowledge Base', () => {
 
     it('should search knowledge entries', () => {
       const codex = new CodexManager();
-      
+
       codex.addEntry('Machine Learning', 'ML basics', 'learning', ['ML']);
       codex.addEntry('Deep Learning', 'Neural networks', 'learning', ['ML', 'neural']);
       codex.addEntry('Consciousness', 'AI awareness', 'consciousness', ['AI']);
@@ -42,7 +42,7 @@ describe('Knowledge Base', () => {
 
     it('should get entries by category', () => {
       const codex = new CodexManager();
-      
+
       codex.addEntry('Entry 1', 'Content 1', 'cat1');
       codex.addEntry('Entry 2', 'Content 2', 'cat1');
       codex.addEntry('Entry 3', 'Content 3', 'cat2');
@@ -55,7 +55,7 @@ describe('Knowledge Base', () => {
   describe('PatternTracker', () => {
     it('should register patterns', () => {
       const tracker = new PatternTracker();
-      
+
       const pattern = tracker.registerPattern(
         'Test Pattern',
         PatternType.BEHAVIORAL,
@@ -71,7 +71,7 @@ describe('Knowledge Base', () => {
 
     it('should record observations', () => {
       const tracker = new PatternTracker();
-      
+
       tracker.recordObservation({ event: 'test', value: 42 });
       tracker.recordObservation({ event: 'test', value: 45 });
 
@@ -81,7 +81,7 @@ describe('Knowledge Base', () => {
 
     it('should get patterns by type', () => {
       const tracker = new PatternTracker();
-      
+
       tracker.registerPattern('P1', PatternType.TEMPORAL, 'Desc', {});
       tracker.registerPattern('P2', PatternType.BEHAVIORAL, 'Desc', {});
       tracker.registerPattern('P3', PatternType.TEMPORAL, 'Desc', {});
@@ -94,13 +94,13 @@ describe('Knowledge Base', () => {
   describe('LearningEngine', () => {
     it('should start and end learning sessions', () => {
       const engine = new LearningEngine();
-      
+
       const session = engine.startSession('Test Topic', LearningMode.SUPERVISED);
       expect(session.topic).toBe('Test Topic');
       expect(session.mode).toBe(LearningMode.SUPERVISED);
 
       engine.addExample({ input: 'test' }, 'output', 'output', 'POSITIVE');
-      
+
       const ended = engine.endSession(['Learned something']);
       expect(ended).not.toBeNull();
       expect(ended?.insights.length).toBe(1);
@@ -108,20 +108,20 @@ describe('Knowledge Base', () => {
 
     it('should register and practice skills', () => {
       const engine = new LearningEngine();
-      
+
       const skill = engine.registerSkill('TypeScript', 'programming', 0.3);
       expect(skill.name).toBe('TypeScript');
       expect(skill.proficiency).toBe(0.3);
 
       engine.practiceSkill(skill.id, true);
       const updatedProficiency = engine.getSkillProficiency(skill.id);
-      
+
       expect(updatedProficiency).toBeGreaterThan(0.3);
     });
 
     it('should track learning progress', () => {
       const engine = new LearningEngine();
-      
+
       engine.startSession('Topic 1');
       engine.addExample({ x: 1 }, 'y', 'y', 'POSITIVE');
       engine.endSession();

@@ -1,6 +1,6 @@
 /**
  * Architectural Principles Tracker
- * 
+ *
  * Adapted from AxionCitadel's ctx_architectural_principles_and_evolution.txt
  * Tracks architectural principles and their evolution over time
  */
@@ -11,14 +11,14 @@ export enum PrincipleCategory {
   SECURITY = 'SECURITY',
   SCALABILITY = 'SCALABILITY',
   MAINTAINABILITY = 'MAINTAINABILITY',
-  RELIABILITY = 'RELIABILITY'
+  RELIABILITY = 'RELIABILITY',
 }
 
 export enum AdherenceLevel {
   STRICT = 'STRICT',
   MODERATE = 'MODERATE',
   FLEXIBLE = 'FLEXIBLE',
-  DEPRECATED = 'DEPRECATED'
+  DEPRECATED = 'DEPRECATED',
 }
 
 export interface ArchitecturalPrinciple {
@@ -108,7 +108,7 @@ export class ArchitecturalPrinciples {
       violations: [],
       createdAt: Date.now(),
       updatedAt: Date.now(),
-      metadata: {}
+      metadata: {},
     };
 
     this.principles.set(principle.id, principle);
@@ -134,7 +134,7 @@ export class ArchitecturalPrinciples {
       newVersion: newDescription,
       changes,
       justification,
-      impact
+      impact,
     };
 
     principle.evolutionHistory.push(evolution);
@@ -159,7 +159,7 @@ export class ArchitecturalPrinciples {
       id: this.generateId('violation'),
       timestamp: Date.now(),
       description,
-      severity
+      severity,
     };
 
     principle.violations.push(violation);
@@ -175,7 +175,7 @@ export class ArchitecturalPrinciples {
     const principle = this.principles.get(principleId);
     if (!principle) return false;
 
-    const violation = principle.violations.find(v => v.id === violationId);
+    const violation = principle.violations.find((v) => v.id === violationId);
     if (!violation) return false;
 
     violation.remediation = remediation;
@@ -204,7 +204,7 @@ export class ArchitecturalPrinciples {
       reason,
       context,
       approvedBy,
-      expiresAt
+      expiresAt,
     };
 
     principle.exceptions.push(exception);
@@ -235,13 +235,13 @@ export class ArchitecturalPrinciples {
       decision,
       consequences,
       affectedPrinciples,
-      metadata: {}
+      metadata: {},
     };
 
     this.decisions.set(record.id, record);
 
     // Update affected principles
-    affectedPrinciples.forEach(principleId => {
+    affectedPrinciples.forEach((principleId) => {
       const principle = this.principles.get(principleId);
       if (principle) {
         if (!principle.metadata.relatedDecisions) {
@@ -265,8 +265,7 @@ export class ArchitecturalPrinciples {
    * Get principles by category
    */
   getPrinciplesByCategory(category: PrincipleCategory): ArchitecturalPrinciple[] {
-    return Array.from(this.principles.values())
-      .filter(p => p.category === category);
+    return Array.from(this.principles.values()).filter((p) => p.category === category);
   }
 
   /**
@@ -276,13 +275,14 @@ export class ArchitecturalPrinciples {
     principle: ArchitecturalPrinciple;
     violation: PrincipleViolation;
   }> {
-    const violations: Array<{ principle: ArchitecturalPrinciple; violation: PrincipleViolation }> = [];
+    const violations: Array<{ principle: ArchitecturalPrinciple; violation: PrincipleViolation }> =
+      [];
 
-    this.principles.forEach(principle => {
+    this.principles.forEach((principle) => {
       principle.violations
-        .filter(v => !v.remediatedAt)
-        .filter(v => !severity || v.severity === severity)
-        .forEach(violation => {
+        .filter((v) => !v.remediatedAt)
+        .filter((v) => !severity || v.severity === severity)
+        .forEach((violation) => {
           violations.push({ principle, violation });
         });
     });
@@ -305,32 +305,31 @@ export class ArchitecturalPrinciples {
     complianceRate: number;
   } {
     const principles = Array.from(this.principles.values());
-    
+
     const byCategory: Record<PrincipleCategory, number> = {
       [PrincipleCategory.DESIGN]: 0,
       [PrincipleCategory.PERFORMANCE]: 0,
       [PrincipleCategory.SECURITY]: 0,
       [PrincipleCategory.SCALABILITY]: 0,
       [PrincipleCategory.MAINTAINABILITY]: 0,
-      [PrincipleCategory.RELIABILITY]: 0
+      [PrincipleCategory.RELIABILITY]: 0,
     };
 
-    principles.forEach(p => {
+    principles.forEach((p) => {
       byCategory[p.category]++;
     });
 
-    const allViolations = principles.flatMap(p => p.violations);
-    const activeViolations = allViolations.filter(v => !v.remediatedAt).length;
-    const remediatedViolations = allViolations.filter(v => v.remediatedAt).length;
+    const allViolations = principles.flatMap((p) => p.violations);
+    const activeViolations = allViolations.filter((v) => !v.remediatedAt).length;
+    const remediatedViolations = allViolations.filter((v) => v.remediatedAt).length;
 
     const now = Date.now();
-    const activeExceptions = principles.flatMap(p => p.exceptions)
-      .filter(e => !e.expiresAt || e.expiresAt > now)
-      .length;
+    const activeExceptions = principles
+      .flatMap((p) => p.exceptions)
+      .filter((e) => !e.expiresAt || e.expiresAt > now).length;
 
-    const complianceRate = allViolations.length > 0
-      ? remediatedViolations / allViolations.length
-      : 1.0;
+    const complianceRate =
+      allViolations.length > 0 ? remediatedViolations / allViolations.length : 1.0;
 
     return {
       totalPrinciples: principles.length,
@@ -338,7 +337,7 @@ export class ArchitecturalPrinciples {
       activeViolations,
       remediatedViolations,
       activeExceptions,
-      complianceRate
+      complianceRate,
     };
   }
 
@@ -358,13 +357,13 @@ export class ArchitecturalPrinciples {
       evolution: PrincipleEvolution;
     }> = [];
 
-    this.principles.forEach(principle => {
-      principle.evolutionHistory.forEach(evolution => {
+    this.principles.forEach((principle) => {
+      principle.evolutionHistory.forEach((evolution) => {
         timeline.push({
           timestamp: evolution.timestamp,
           principleId: principle.id,
           principleName: principle.name,
-          evolution
+          evolution,
         });
       });
     });
@@ -381,7 +380,7 @@ export class ArchitecturalPrinciples {
   } {
     return {
       principles: Array.from(this.principles.values()),
-      decisions: Array.from(this.decisions.values())
+      decisions: Array.from(this.decisions.values()),
     };
   }
 
@@ -395,11 +394,11 @@ export class ArchitecturalPrinciples {
     this.principles.clear();
     this.decisions.clear();
 
-    data.principles.forEach(principle => {
+    data.principles.forEach((principle) => {
       this.principles.set(principle.id, principle);
     });
 
-    data.decisions.forEach(decision => {
+    data.decisions.forEach((decision) => {
       this.decisions.set(decision.id, decision);
     });
   }

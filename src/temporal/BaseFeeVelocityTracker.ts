@@ -1,17 +1,17 @@
 /**
  * BaseFeeVelocityTracker - Dynamic Min-Profit Threshold Adjuster
- * 
+ *
  * Tier S Feature #1: Dynamic min-profit thresholds tied to base-fee velocity
- * 
+ *
  * This module tracks base-fee changes across blocks and dynamically adjusts
  * minimum profit thresholds to capture more opportunities during favorable
  * conditions while protecting against unfavorable ones.
- * 
+ *
  * Thresholds:
  * - Base fee delta < -3 Mwei: Lower threshold to 0.04-0.06% (liquidity explosion)
  * - Base fee delta -3 to +2 Mwei: Default 0.08% (normal conditions)
  * - Base fee delta > +2 Mwei: Raise threshold to 0.12-0.15% (congestion)
- * 
+ *
  * Integration: Wired into OpportunityValidator and ProfitabilityCalculator
  */
 
@@ -42,10 +42,10 @@ export interface BaseFeeVelocityConfig {
 const DEFAULT_CONFIG: BaseFeeVelocityConfig = {
   windowSize: 10,
   dropThreshold: -3, // -3 Mwei per block
-  riseThreshold: 2,  // +2 Mwei per block
-  minProfitLow: 0.05,    // 0.05% when dropping
+  riseThreshold: 2, // +2 Mwei per block
+  minProfitLow: 0.05, // 0.05% when dropping
   minProfitNormal: 0.08, // 0.08% normal
-  minProfitHigh: 0.135,  // 0.135% when rising
+  minProfitHigh: 0.135, // 0.135% when rising
 };
 
 /**
@@ -123,8 +123,12 @@ export class BaseFeeVelocityTracker extends EventEmitter {
     }
 
     // Convert to Mwei (divide by 1e6) for reasonable numeric range
-    const recentFee = Number(this.baseFeeHistory[this.baseFeeHistory.length - 1].baseFee / BigInt(1e6));
-    const previousFee = Number(this.baseFeeHistory[this.baseFeeHistory.length - 2].baseFee / BigInt(1e6));
+    const recentFee = Number(
+      this.baseFeeHistory[this.baseFeeHistory.length - 1].baseFee / BigInt(1e6)
+    );
+    const previousFee = Number(
+      this.baseFeeHistory[this.baseFeeHistory.length - 2].baseFee / BigInt(1e6)
+    );
 
     // Calculate delta in Mwei
     const delta = recentFee - previousFee;
@@ -154,7 +158,8 @@ export class BaseFeeVelocityTracker extends EventEmitter {
       const scale = Math.min(Math.abs(velocity / this.config.dropThreshold), 2); // Cap at 2x threshold
       return Math.max(
         this.config.minProfitLow,
-        this.config.minProfitNormal - (this.config.minProfitNormal - this.config.minProfitLow) * Math.min(scale, 1)
+        this.config.minProfitNormal -
+          (this.config.minProfitNormal - this.config.minProfitLow) * Math.min(scale, 1)
       );
     }
 
@@ -164,7 +169,8 @@ export class BaseFeeVelocityTracker extends EventEmitter {
       const scale = Math.min(velocity / this.config.riseThreshold, 2); // Cap at 2x threshold
       return Math.min(
         this.config.minProfitHigh,
-        this.config.minProfitNormal + (this.config.minProfitHigh - this.config.minProfitNormal) * Math.min(scale, 1)
+        this.config.minProfitNormal +
+          (this.config.minProfitHigh - this.config.minProfitNormal) * Math.min(scale, 1)
       );
     }
 

@@ -1,6 +1,6 @@
 /**
  * GraphBuilder
- * 
+ *
  * Builds pool connectivity graphs and finds triangular cycles.
  * Used by arbitrage engines for opportunity detection.
  */
@@ -14,10 +14,10 @@ import { PoolState } from '../engines/SpatialArbEngine';
 export interface Triangle {
   /** Three tokens forming the triangle */
   tokens: [string, string, string];
-  
+
   /** Three pools connecting the tokens */
   pools: [PoolState, PoolState, PoolState];
-  
+
   /** Whether this is a valid arbitrage triangle */
   isValid: boolean;
 }
@@ -28,7 +28,7 @@ export interface Triangle {
 export interface GraphBuilderConfig {
   /** Supported protocols for filtering */
   supportedProtocols?: string[];
-  
+
   /** Minimum liquidity for pools (optional) */
   minLiquidity?: number;
 }
@@ -83,7 +83,7 @@ export class GraphBuilder {
     const stats = this.graph.getStats();
     console.log(
       `Built graph: ${stats.tokenCount} tokens, ${stats.poolCount} pools, ` +
-      `${stats.edgeCount} edges, avg degree ${stats.avgDegree.toFixed(2)}`
+        `${stats.edgeCount} edges, avg degree ${stats.avgDegree.toFixed(2)}`
     );
 
     return this.graph;
@@ -120,7 +120,7 @@ export class GraphBuilder {
           const neighbors3 = this.graph.getNeighbors(token2);
           if (neighbors3.includes(token0)) {
             // Found a triangle: token0 -> token1 -> token2 -> token0
-            
+
             // Create signature to avoid duplicates
             const tokensSorted = [token0, token1, token2].sort();
             const signature = tokensSorted.join('_');
@@ -171,7 +171,7 @@ export class GraphBuilder {
         const neighbors3 = this.graph.getNeighbors(token2);
         if (neighbors3.includes(token)) {
           // Found a triangle: token -> token1 -> token2 -> token
-          
+
           const tokensSorted = [token, token1, token2].sort();
           const signature = tokensSorted.join('_');
 
@@ -202,7 +202,7 @@ export class GraphBuilder {
    */
   private findPool(from: string, to: string): PoolState | undefined {
     const edges = this.graph.getEdges(from);
-    
+
     for (const edge of edges) {
       if (edge.to === to) {
         return edge.pool;
@@ -258,12 +258,7 @@ export class GraphBuilder {
           continue;
         }
 
-        dfs(
-          edge.to,
-          [...path, edge.to],
-          [...pools, edge.pool],
-          newVisited
-        );
+        dfs(edge.to, [...path, edge.to], [...pools, edge.pool], newVisited);
       }
     };
 

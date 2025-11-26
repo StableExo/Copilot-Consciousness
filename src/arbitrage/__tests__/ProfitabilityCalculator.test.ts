@@ -20,7 +20,7 @@ describe('ProfitabilityCalculator', () => {
           amountIn: BigInt('1000000000000000000000'), // 1000 tokens
           amountOut: BigInt('2000000000000000000000'), // 2000 tokens
           fee: 0.003,
-          gasEstimate: 150000
+          gasEstimate: 150000,
         },
         {
           dexName: 'SushiSwap',
@@ -30,8 +30,8 @@ describe('ProfitabilityCalculator', () => {
           amountIn: BigInt('2000000000000000000000'),
           amountOut: BigInt('1100000000000000000000'), // 1100 tokens (profit)
           fee: 0.003,
-          gasEstimate: 150000
-        }
+          gasEstimate: 150000,
+        },
       ];
 
       const path: ArbitragePath = {
@@ -42,7 +42,7 @@ describe('ProfitabilityCalculator', () => {
         totalGasCost: BigInt(0),
         netProfit: BigInt('100000000000000000000'),
         totalFees: 0.006,
-        slippageImpact: 0.002
+        slippageImpact: 0.002,
       };
 
       const result = calculator.calculateProfitability(path);
@@ -66,8 +66,8 @@ describe('ProfitabilityCalculator', () => {
           amountIn: BigInt('1000000000000000000'), // 1 token
           amountOut: BigInt('1010000000000000000'), // 1.01 tokens
           fee: 0.003,
-          gasEstimate: 150000
-        }
+          gasEstimate: 150000,
+        },
       ];
 
       const path: ArbitragePath = {
@@ -78,7 +78,7 @@ describe('ProfitabilityCalculator', () => {
         totalGasCost: BigInt(0),
         netProfit: BigInt('10000000000000000'),
         totalFees: 0.003,
-        slippageImpact: 0.001
+        slippageImpact: 0.001,
       };
 
       const result = highGasCalculator.calculateProfitability(path);
@@ -122,8 +122,8 @@ describe('ProfitabilityCalculator', () => {
           amountIn: BigInt('1000000000000000000000'),
           amountOut: BigInt('2000000000000000000000'),
           fee: 0.003,
-          gasEstimate: 150000
-        }
+          gasEstimate: 150000,
+        },
       ];
 
       const path: ArbitragePath = {
@@ -134,7 +134,7 @@ describe('ProfitabilityCalculator', () => {
         totalGasCost: BigInt(0),
         netProfit: BigInt('100000000000000000000'),
         totalFees: 0.003,
-        slippageImpact: 0.001
+        slippageImpact: 0.001,
       };
 
       const minThreshold = BigInt('1000000000000000000'); // 1 token
@@ -153,8 +153,8 @@ describe('ProfitabilityCalculator', () => {
           amountIn: BigInt('1000000000000000000000'),
           amountOut: BigInt('1001000000000000000000'),
           fee: 0.003,
-          gasEstimate: 150000
-        }
+          gasEstimate: 150000,
+        },
       ];
 
       const path: ArbitragePath = {
@@ -165,7 +165,7 @@ describe('ProfitabilityCalculator', () => {
         totalGasCost: BigInt(0),
         netProfit: BigInt('1000000000000000000'),
         totalFees: 0.003,
-        slippageImpact: 0.001
+        slippageImpact: 0.001,
       };
 
       const minThreshold = BigInt('1000000000000000000000'); // 1000 tokens
@@ -186,8 +186,8 @@ describe('ProfitabilityCalculator', () => {
           amountIn: BigInt('1000000000000000000000'),
           amountOut: BigInt('1050000000000000000000'),
           fee: 0.003,
-          gasEstimate: 150000
-        }
+          gasEstimate: 150000,
+        },
       ];
 
       const path1: ArbitragePath = {
@@ -198,7 +198,7 @@ describe('ProfitabilityCalculator', () => {
         totalGasCost: BigInt(0),
         netProfit: BigInt('50000000000000000000'),
         totalFees: 0.003,
-        slippageImpact: 0.001
+        slippageImpact: 0.001,
       };
 
       const path2Hops: ArbitrageHop[] = [
@@ -210,8 +210,8 @@ describe('ProfitabilityCalculator', () => {
           amountIn: BigInt('1000000000000000000000'),
           amountOut: BigInt('1100000000000000000000'),
           fee: 0.003,
-          gasEstimate: 150000
-        }
+          gasEstimate: 150000,
+        },
       ];
 
       const path2: ArbitragePath = {
@@ -222,7 +222,7 @@ describe('ProfitabilityCalculator', () => {
         totalGasCost: BigInt(0),
         netProfit: BigInt('100000000000000000000'),
         totalFees: 0.003,
-        slippageImpact: 0.001
+        slippageImpact: 0.001,
       };
 
       const betterPath = calculator.comparePathProfitability(path1, path2);

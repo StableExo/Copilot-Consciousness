@@ -1,12 +1,12 @@
 /**
  * Flash Swap Executor for On-Chain Arbitrage
- * 
+ *
  * Extracted from AxionCitadel - Operation First Light validated
  * Source: https://github.com/metalxalloy/AxionCitadel
- * 
+ *
  * On-chain arbitrage execution via FlashSwap smart contract with
  * ArbParams construction, flash loan encoding, and transaction safety checks.
- * 
+ *
  * Features:
  * - ArbParams struct construction from opportunities
  * - Flash loan parameter encoding
@@ -105,7 +105,7 @@ export interface ValidationResult {
 
 /**
  * FlashSwapExecutor - Executes arbitrage opportunities using FlashSwap smart contract
- * 
+ *
  * Features from AxionCitadel:
  * - ArbParams struct construction from opportunities
  * - Flash loan parameter encoding
@@ -131,15 +131,15 @@ export class FlashSwapExecutor {
   };
 
   // Flash loan fee constants
-  private static readonly AAVE_FLASH_LOAN_FEE = 0.0009;  // 0.09%
-  private static readonly UNISWAP_V3_FLASH_FEE = 0.0005;  // 0.05% (varies by pool)
+  private static readonly AAVE_FLASH_LOAN_FEE = 0.0009; // 0.09%
+  private static readonly UNISWAP_V3_FLASH_FEE = 0.0005; // 0.05% (varies by pool)
 
   constructor(config: FlashSwapExecutorConfig) {
     this.contractAddress = config.contractAddress;
     this.provider = config.provider;
     this.signer = config.signer;
-    this.gasBuffer = config.gasBuffer ?? 1.2;  // 20% buffer
-    this.defaultSlippage = config.defaultSlippage ?? 0.01;  // 1% slippage
+    this.gasBuffer = config.gasBuffer ?? 1.2; // 20% buffer
+    this.defaultSlippage = config.defaultSlippage ?? 0.01; // 1% slippage
 
     // Initialize contract if signer is provided
     if (this.signer) {
@@ -150,24 +150,21 @@ export class FlashSwapExecutor {
 
     logger.info(
       `[FlashSwapExecutor] Initialized at ${this.contractAddress} ` +
-      `(gasBuffer: ${this.gasBuffer}x, slippage: ${this.defaultSlippage * 100}%)`
+        `(gasBuffer: ${this.gasBuffer}x, slippage: ${this.defaultSlippage * 100}%)`
     );
   }
 
   /**
    * Build ArbParams struct from arbitrage opportunity
    */
-  buildArbParams(
-    opportunity: ArbitrageOpportunity,
-    slippage?: number
-  ): ArbParams {
+  buildArbParams(opportunity: ArbitrageOpportunity, slippage?: number): ArbParams {
     const actualSlippage = slippage ?? this.defaultSlippage;
 
     // Extract flash loan parameters
     const flashLoanAmount = opportunity.flashLoanAmount
       ? parseUnits(opportunity.flashLoanAmount.toString(), 'ether')
       : 0n;
-    
+
     const flashLoanToken = opportunity.flashLoanToken || '';
     const flashLoanPool = opportunity.flashLoanPool || '';
 
@@ -176,11 +173,9 @@ export class FlashSwapExecutor {
 
     for (const step of opportunity.path) {
       // Calculate minimum output with slippage protection
-      const expectedOutput = parseUnits(
-        step.expectedOutput.toString(),
-        'ether'
-      );
-      const minOutput = (expectedOutput * BigInt(Math.floor((1 - actualSlippage) * 10000))) / 10000n;
+      const expectedOutput = parseUnits(step.expectedOutput.toString(), 'ether');
+      const minOutput =
+        (expectedOutput * BigInt(Math.floor((1 - actualSlippage) * 10000))) / 10000n;
 
       const swapStep: SwapStep = {
         poolAddress: step.poolAddress,
@@ -195,11 +190,11 @@ export class FlashSwapExecutor {
     }
 
     // Calculate expected profit (final amount - flash loan - fees)
-    const finalAmount = swapSteps.length > 0
-      ? swapSteps[swapSteps.length - 1].minAmountOut
-      : 0n;
+    const finalAmount = swapSteps.length > 0 ? swapSteps[swapSteps.length - 1].minAmountOut : 0n;
 
-    const flashLoanFee = (flashLoanAmount * BigInt(Math.floor(FlashSwapExecutor.AAVE_FLASH_LOAN_FEE * 10000))) / 10000n;
+    const flashLoanFee =
+      (flashLoanAmount * BigInt(Math.floor(FlashSwapExecutor.AAVE_FLASH_LOAN_FEE * 10000))) /
+      10000n;
 
     const expectedProfit = finalAmount - flashLoanAmount - flashLoanFee;
 
@@ -224,8 +219,8 @@ export class FlashSwapExecutor {
   encodeSwapSteps(swapSteps: SwapStep[]): string {
     // In production, this would use proper ABI encoding
     // For now, we'll create a placeholder encoding
-    
-    const encoded = swapSteps.map(step => ({
+
+    const encoded = swapSteps.map((step) => ({
       pool: step.poolAddress,
       tokenIn: step.tokenIn,
       tokenOut: step.tokenOut,
@@ -237,7 +232,7 @@ export class FlashSwapExecutor {
     logger.debug(`[FlashSwapExecutor] Encoded swap steps: ${JSON.stringify(encoded)}`);
 
     // In production: return AbiCoder.defaultAbiCoder().encode(...)
-    return JSON.stringify(encoded);  // Placeholder
+    return JSON.stringify(encoded); // Placeholder
   }
 
   /**
@@ -245,20 +240,20 @@ export class FlashSwapExecutor {
    */
   estimateGas(arbParams: ArbParams): number {
     // Base gas costs
-    const baseGas = 100000;  // Base transaction cost
-    const flashLoanGas = 150000;  // Flash loan overhead
-    const swapGasPerStep = 120000;  // Average gas per swap
+    const baseGas = 100000; // Base transaction cost
+    const flashLoanGas = 150000; // Flash loan overhead
+    const swapGasPerStep = 120000; // Average gas per swap
 
     // Calculate total gas
     const totalSwaps = arbParams.swapSteps.length;
-    const estimatedGas = baseGas + flashLoanGas + (swapGasPerStep * totalSwaps);
+    const estimatedGas = baseGas + flashLoanGas + swapGasPerStep * totalSwaps;
 
     // Apply buffer
     const gasWithBuffer = Math.floor(estimatedGas * this.gasBuffer);
 
     logger.debug(
       `[FlashSwapExecutor] Estimated gas: ${estimatedGas} -> ${gasWithBuffer} ` +
-      `(with ${this.gasBuffer}x buffer)`
+        `(with ${this.gasBuffer}x buffer)`
     );
 
     return gasWithBuffer;
@@ -373,9 +368,7 @@ export class FlashSwapExecutor {
       // Validate parameters
       const validation = this.validateArbParams(arbParams);
       if (!validation.isValid) {
-        logger.error(
-          `[FlashSwapExecutor] Validation failed: ${validation.errorMessage}`
-        );
+        logger.error(`[FlashSwapExecutor] Validation failed: ${validation.errorMessage}`);
         this.stats.failedExecutions++;
         return {
           success: false,
@@ -392,12 +385,12 @@ export class FlashSwapExecutor {
       if (dryRun) {
         logger.info(
           `[FlashSwapExecutor] DRY RUN: Would execute arbitrage with ` +
-          `${arbParams.swapSteps.length} steps`
+            `${arbParams.swapSteps.length} steps`
         );
         logger.info(
           `[FlashSwapExecutor] Expected profit: ${formatEther(arbParams.expectedProfit)} ETH`
         );
-        
+
         return {
           success: true,
           gasLimit,
@@ -414,7 +407,7 @@ export class FlashSwapExecutor {
       logger.info('[FlashSwapExecutor] Executing arbitrage transaction');
       logger.info(
         `[FlashSwapExecutor] Flash loan: ${formatEther(arbParams.flashLoanAmount)} ` +
-        `${arbParams.flashLoanToken}`
+          `${arbParams.flashLoanToken}`
       );
       logger.info(`[FlashSwapExecutor] Swap steps: ${arbParams.swapSteps.length}`);
       logger.info(
@@ -430,10 +423,10 @@ export class FlashSwapExecutor {
       //   arbParams.deadline,
       //   { gasLimit, gasPrice }
       // );
-      
+
       // Placeholder transaction hash
       const txHash = `0x${Buffer.from(Math.random().toString()).toString('hex').slice(0, 64)}`;
-      
+
       logger.info(`[FlashSwapExecutor] Transaction submitted: ${txHash}`);
 
       // Update statistics
@@ -449,9 +442,13 @@ export class FlashSwapExecutor {
         swapSteps: arbParams.swapSteps.length,
       };
     } catch (error) {
-      logger.error(`[FlashSwapExecutor] Execution failed: ${error instanceof Error ? error.message : String(error)}`);
+      logger.error(
+        `[FlashSwapExecutor] Execution failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
       this.stats.failedExecutions++;
-      
+
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
@@ -483,7 +480,7 @@ export class FlashSwapExecutor {
 
       // In production, this would call the contract's simulation function
       // For now, return estimated results
-      
+
       return {
         success: true,
         gasLimit,
@@ -491,7 +488,11 @@ export class FlashSwapExecutor {
         swapSteps: arbParams.swapSteps.length,
       };
     } catch (error) {
-      logger.error(`[FlashSwapExecutor] Simulation failed: ${error instanceof Error ? error.message : String(error)}`);
+      logger.error(
+        `[FlashSwapExecutor] Simulation failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
@@ -503,13 +504,15 @@ export class FlashSwapExecutor {
    * Get execution statistics
    */
   getExecutionStats() {
-    const successRate = this.stats.totalExecutions > 0
-      ? (this.stats.successfulExecutions / this.stats.totalExecutions) * 100
-      : 0;
+    const successRate =
+      this.stats.totalExecutions > 0
+        ? (this.stats.successfulExecutions / this.stats.totalExecutions) * 100
+        : 0;
 
-    const avgGasPerExecution = this.stats.totalExecutions > 0
-      ? Number(this.stats.totalGasUsed / BigInt(this.stats.totalExecutions))
-      : 0;
+    const avgGasPerExecution =
+      this.stats.totalExecutions > 0
+        ? Number(this.stats.totalGasUsed / BigInt(this.stats.totalExecutions))
+        : 0;
 
     return {
       totalExecutions: this.stats.totalExecutions,
@@ -527,7 +530,7 @@ export class FlashSwapExecutor {
    */
   private parseProtocol(protocol: string): SwapProtocol {
     const normalized = protocol.toLowerCase().replace(/[-_]/g, '_');
-    
+
     switch (normalized) {
       case 'uniswap_v2':
       case 'uniswapv2':
@@ -548,13 +551,11 @@ export class FlashSwapExecutor {
   /**
    * Calculate flash loan fee for given amount and provider
    */
-  static calculateFlashLoanFee(
-    amount: bigint,
-    provider: 'aave' | 'uniswap_v3' = 'aave'
-  ): bigint {
-    const feeRate = provider === 'aave'
-      ? FlashSwapExecutor.AAVE_FLASH_LOAN_FEE
-      : FlashSwapExecutor.UNISWAP_V3_FLASH_FEE;
+  static calculateFlashLoanFee(amount: bigint, provider: 'aave' | 'uniswap_v3' = 'aave'): bigint {
+    const feeRate =
+      provider === 'aave'
+        ? FlashSwapExecutor.AAVE_FLASH_LOAN_FEE
+        : FlashSwapExecutor.UNISWAP_V3_FLASH_FEE;
 
     return (amount * BigInt(Math.floor(feeRate * 10000))) / 10000n;
   }

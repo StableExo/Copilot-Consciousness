@@ -1,9 +1,9 @@
 /**
  * FlashLoanExecutor - Aave V3 Flashloan Integration for Live Arbitrage
- * 
+ *
  * Handles execution of multi-DEX arbitrage opportunities using Aave V3 flashloans
  * through the FlashSwapV2 contract. Supports multi-hop paths and cross-DEX routes.
- * 
+ *
  * Safety features:
  * - Pre-execution simulation via SimulationService
  * - Profit threshold validation
@@ -21,7 +21,9 @@ try {
 } catch (error) {
   // Artifact not found - contracts haven't been compiled
   // This is OK for testing/development without deploying contracts
-  console.warn('[FlashLoanExecutor] FlashSwapV2 artifact not found. Run `npm run compile` to generate contract artifacts.');
+  console.warn(
+    '[FlashLoanExecutor] FlashSwapV2 artifact not found. Run `npm run compile` to generate contract artifacts.'
+  );
   FlashSwapV2Artifact = {
     abi: [], // Empty ABI as fallback
   };
@@ -88,7 +90,7 @@ export interface FlashLoanExecutorConfig {
 
 /**
  * FlashLoanExecutor
- * 
+ *
  * Executes arbitrage opportunities using Aave V3 flashloans through FlashSwapV2 contract.
  * Handles multi-DEX, multi-hop paths with comprehensive safety checks.
  */
@@ -111,19 +113,15 @@ export class FlashLoanExecutor {
     const aavePoolABI = [
       'function flashLoan(address receiverAddress, address[] calldata assets, uint256[] calldata amounts, uint256[] calldata interestRateModes, address onBehalfOf, bytes calldata params, uint16 referralCode) external',
     ];
-    this.aavePoolContract = new ethers.Contract(
-      config.aavePoolAddress,
-      aavePoolABI,
-      config.signer
-    );
+    this.aavePoolContract = new ethers.Contract(config.aavePoolAddress, aavePoolABI, config.signer);
   }
 
   /**
    * Execute a flashloan arbitrage opportunity
-   * 
+   *
    * This triggers an Aave V3 flashloan which calls FlashSwapV2.executeOperation()
    * to execute the swap path.
-   * 
+   *
    * @param params Flashloan arbitrage parameters
    * @returns Execution result
    */
@@ -172,7 +170,7 @@ export class FlashLoanExecutor {
 
       if (receipt && receipt.status === 1) {
         console.log('[FlashLoanExecutor] ✓ Flashloan execution successful!');
-        
+
         // Parse profit from events (TradeProfit event)
         const profit = this.extractProfitFromReceipt(receipt);
 
@@ -199,7 +197,7 @@ export class FlashLoanExecutor {
 
   /**
    * Encode swap path for FlashSwapV2.executeOperation callback
-   * 
+   *
    * The encoded data will be decoded by FlashSwapV2 as ArbParams:
    * struct ArbParams { SwapStep[] path; address initiator; }
    */

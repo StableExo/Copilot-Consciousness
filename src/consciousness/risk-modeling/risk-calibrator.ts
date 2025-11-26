@@ -1,6 +1,6 @@
 /**
  * Risk Calibrator
- * 
+ *
  * Adapted from AxionCitadel's mev-risk-calibration.json approach
  * Dynamically calibrates risk parameters based on historical data
  */
@@ -47,7 +47,7 @@ export class RiskCalibrator {
       calibrationInterval: 24 * 60 * 60 * 1000, // 24 hours
       learningRate: 0.1,
       targetAccuracy: 0.85,
-      ...config
+      ...config,
     };
   }
 
@@ -65,7 +65,7 @@ export class RiskCalibrator {
       actualRisk: Math.max(0, Math.min(1, actualRisk)),
       predictedRisk: Math.max(0, Math.min(1, predictedRisk)),
       outcome,
-      factors
+      factors,
     };
 
     this.calibrationHistory.push(dataPoint);
@@ -93,7 +93,7 @@ export class RiskCalibrator {
         falsePositiveRate: 0,
         falseNegativeRate: 0,
         recommendedAdjustments: {},
-        confidence: 0
+        confidence: 0,
       };
     }
 
@@ -105,7 +105,7 @@ export class RiskCalibrator {
     let falsePositives = 0;
     let falseNegatives = 0;
 
-    this.calibrationHistory.forEach(data => {
+    this.calibrationHistory.forEach((data) => {
       const predictedHigh = data.predictedRisk >= threshold;
       const actualHigh = data.actualRisk >= threshold;
 
@@ -117,18 +117,12 @@ export class RiskCalibrator {
 
     const total = this.calibrationHistory.length;
     const accuracy = (truePositives + trueNegatives) / total;
-    const precision = truePositives > 0
-      ? truePositives / (truePositives + falsePositives)
-      : 0;
-    const recall = truePositives > 0
-      ? truePositives / (truePositives + falseNegatives)
-      : 0;
-    const falsePositiveRate = falsePositives > 0
-      ? falsePositives / (falsePositives + trueNegatives)
-      : 0;
-    const falseNegativeRate = falseNegatives > 0
-      ? falseNegatives / (falseNegatives + truePositives)
-      : 0;
+    const precision = truePositives > 0 ? truePositives / (truePositives + falsePositives) : 0;
+    const recall = truePositives > 0 ? truePositives / (truePositives + falseNegatives) : 0;
+    const falsePositiveRate =
+      falsePositives > 0 ? falsePositives / (falsePositives + trueNegatives) : 0;
+    const falseNegativeRate =
+      falseNegatives > 0 ? falseNegatives / (falseNegatives + truePositives) : 0;
 
     // Calculate recommended adjustments
     const recommendedAdjustments = this.calculateAdjustments();
@@ -149,7 +143,7 @@ export class RiskCalibrator {
       falsePositiveRate,
       falseNegativeRate,
       recommendedAdjustments,
-      confidence
+      confidence,
     };
   }
 
@@ -178,18 +172,13 @@ export class RiskCalibrator {
         dataPoints: 0,
         lastCalibration: null,
         averageError: 0,
-        bias: 0
+        bias: 0,
       };
     }
 
-    const errors = this.calibrationHistory.map(
-      d => d.predictedRisk - d.actualRisk
-    );
+    const errors = this.calibrationHistory.map((d) => d.predictedRisk - d.actualRisk);
 
-    const averageError = errors.reduce(
-      (sum, e) => sum + Math.abs(e),
-      0
-    ) / errors.length;
+    const averageError = errors.reduce((sum, e) => sum + Math.abs(e), 0) / errors.length;
 
     const bias = errors.reduce((sum, e) => sum + e, 0) / errors.length;
 
@@ -197,28 +186,31 @@ export class RiskCalibrator {
       dataPoints: this.calibrationHistory.length,
       lastCalibration: this.lastCalibration || null,
       averageError,
-      bias
+      bias,
     };
   }
 
   /**
    * Get factor importance analysis
    */
-  analyzeFactorImportance(): Record<string, {
-    correlation: number;
-    predictivePower: number;
-  }> {
+  analyzeFactorImportance(): Record<
+    string,
+    {
+      correlation: number;
+      predictivePower: number;
+    }
+  > {
     const factorNames = new Set<string>();
-    this.calibrationHistory.forEach(data => {
-      Object.keys(data.factors).forEach(name => factorNames.add(name));
+    this.calibrationHistory.forEach((data) => {
+      Object.keys(data.factors).forEach((name) => factorNames.add(name));
     });
 
     const analysis: Record<string, { correlation: number; predictivePower: number }> = {};
 
-    factorNames.forEach(factorName => {
+    factorNames.forEach((factorName) => {
       const correlation = this.calculateFactorCorrelation(factorName);
       const predictivePower = this.calculatePredictivePower(factorName);
-      
+
       analysis[factorName] = { correlation, predictivePower };
     });
 
@@ -236,7 +228,7 @@ export class RiskCalibrator {
     return {
       history: [...this.calibrationHistory],
       adjustments: this.getAdjustments(),
-      config: { ...this.config }
+      config: { ...this.config },
     };
   }
 
@@ -249,7 +241,7 @@ export class RiskCalibrator {
     config?: CalibrationConfig;
   }): void {
     this.calibrationHistory = [...data.history];
-    
+
     this.parameterAdjustments.clear();
     Object.entries(data.adjustments).forEach(([key, value]) => {
       this.parameterAdjustments.set(key, value);
@@ -277,7 +269,7 @@ export class RiskCalibrator {
 
     // Analyze prediction errors
     const metrics = this.getMetrics();
-    
+
     // If we're consistently over-predicting, reduce base risk
     if (metrics.bias > 0.1) {
       adjustments.baseRiskLevel = -this.config.learningRate * metrics.bias;
@@ -305,33 +297,35 @@ export class RiskCalibrator {
 
   private calculateFactorCorrelation(factorName: string): number {
     const dataWithFactor = this.calibrationHistory.filter(
-      d => d.factors[factorName] !== undefined
+      (d) => d.factors[factorName] !== undefined
     );
 
     if (dataWithFactor.length < 10) return 0;
 
-    const xValues = dataWithFactor.map(d => d.factors[factorName]);
-    const yValues = dataWithFactor.map(d => d.actualRisk);
+    const xValues = dataWithFactor.map((d) => d.factors[factorName]);
+    const yValues = dataWithFactor.map((d) => d.actualRisk);
 
     return this.pearsonCorrelation(xValues, yValues);
   }
 
   private calculatePredictivePower(factorName: string): number {
     const dataWithFactor = this.calibrationHistory.filter(
-      d => d.factors[factorName] !== undefined
+      (d) => d.factors[factorName] !== undefined
     );
 
     if (dataWithFactor.length < 10) return 0;
 
     // Simple predictive power: how well does this factor predict high risk?
     const threshold = 0.5;
-    const highRiskData = dataWithFactor.filter(d => d.actualRisk >= threshold);
-    const lowRiskData = dataWithFactor.filter(d => d.actualRisk < threshold);
+    const highRiskData = dataWithFactor.filter((d) => d.actualRisk >= threshold);
+    const lowRiskData = dataWithFactor.filter((d) => d.actualRisk < threshold);
 
     if (highRiskData.length === 0 || lowRiskData.length === 0) return 0;
 
-    const highRiskAvg = highRiskData.reduce((sum, d) => sum + d.factors[factorName], 0) / highRiskData.length;
-    const lowRiskAvg = lowRiskData.reduce((sum, d) => sum + d.factors[factorName], 0) / lowRiskData.length;
+    const highRiskAvg =
+      highRiskData.reduce((sum, d) => sum + d.factors[factorName], 0) / highRiskData.length;
+    const lowRiskAvg =
+      lowRiskData.reduce((sum, d) => sum + d.factors[factorName], 0) / lowRiskData.length;
 
     // Larger difference = better predictive power
     return Math.min(1, Math.abs(highRiskAvg - lowRiskAvg));
@@ -357,7 +351,7 @@ export class RiskCalibrator {
     // Confidence based on accuracy and sample size
     const accuracyScore = accuracy;
     const sampleScore = Math.min(1, dataPoints / 1000); // Full confidence at 1000+ samples
-    
-    return (accuracyScore * 0.7 + sampleScore * 0.3);
+
+    return accuracyScore * 0.7 + sampleScore * 0.3;
   }
 }

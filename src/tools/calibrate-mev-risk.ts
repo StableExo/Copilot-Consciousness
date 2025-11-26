@@ -1,7 +1,7 @@
 /**
  * MEV Risk Model Calibration Tool
  * Adapted from AxionCitadel's src/tools/calibrate-mev-risk.ts
- * 
+ *
  * Analyzes historical MEV prediction accuracy and suggests parameter adjustments
  */
 
@@ -84,10 +84,10 @@ export async function calibrateMEVRisk(
   // If bias < 0, we're underestimating, so increase baseRisk
   const currentBaseRisk = 0.001; // Default from MEVRiskModel
   const currentAlpha = 0.15; // Default valueSensitivity
-  
+
   // Adjust baseRisk proportionally to bias (with dampening factor)
   const suggestedBaseRisk = Math.max(0.0001, currentBaseRisk * (1 - meanBias * 10));
-  
+
   // Adjust alpha based on MAE (if error is high, increase sensitivity)
   const suggestedAlpha = Math.max(0.1, Math.min(0.9, currentAlpha * (1 + mae)));
 

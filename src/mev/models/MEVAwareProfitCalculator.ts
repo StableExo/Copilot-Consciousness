@@ -1,7 +1,7 @@
 /**
  * ProfitCalculator - MEV-aware profit calculator with game-theoretic risk modeling
  * Ported from AxionCitadel's mev_profit_calculator/profit_calculator.py
- * 
+ *
  * Calculates adjusted profit after accounting for MEV leakage risk
  */
 
@@ -17,7 +17,7 @@ export class MEVAwareProfitCalculator {
 
   /**
    * Calculate adjusted profit with MEV risk
-   * 
+   *
    * @param revenue - Expected revenue in ETH
    * @param gasCost - Gas cost in ETH
    * @param txValue - Transaction value in ETH
@@ -38,11 +38,7 @@ export class MEVAwareProfitCalculator {
     }
 
     // Calculate MEV leakage risk
-    const mevRisk = this.riskModel.calculateRisk(
-      txValue,
-      txType,
-      mempoolCongestion
-    );
+    const mevRisk = this.riskModel.calculateRisk(txValue, txType, mempoolCongestion);
 
     // Core profit calculation
     const grossProfit = revenue - gasCost;

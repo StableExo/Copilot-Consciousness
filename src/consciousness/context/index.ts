@@ -1,6 +1,6 @@
 /**
  * Context Module - AI Collaboration Framework
- * 
+ *
  * Adapted from AxionCitadel's context-driven collaboration system
  * Provides autonomous goal tracking, operational decision-making,
  * architectural principles, vision/mission alignment, and evolution tracking

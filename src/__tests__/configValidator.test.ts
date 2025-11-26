@@ -22,17 +22,21 @@ describe('Config Validator', () => {
   describe('validateConfig', () => {
     it('should validate and return config with valid environment variables', () => {
       process.env.BASE_RPC_URL = 'https://base-mainnet.g.alchemy.com/v2/test-key';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
 
       const config = validateConfig();
 
       expect(config).toBeDefined();
       expect(config.rpcUrl).toBe('https://base-mainnet.g.alchemy.com/v2/test-key');
-      expect(config.privateKey).toBe('0x1234567890123456789012345678901234567890123456789012345678901234');
+      expect(config.privateKey).toBe(
+        '0x1234567890123456789012345678901234567890123456789012345678901234'
+      );
     });
 
     it('should throw ConfigValidationError if no RPC URL is provided', () => {
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
       delete process.env.BASE_RPC_URL;
       delete process.env.ETHEREUM_RPC_URL;
 
@@ -50,7 +54,8 @@ describe('Config Validator', () => {
 
     it('should throw ConfigValidationError for invalid RPC URL format', () => {
       process.env.BASE_RPC_URL = 'invalid-url';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
 
       expect(() => validateConfig()).toThrow(ConfigValidationError);
       expect(() => validateConfig()).toThrow(/Invalid RPC URL/);
@@ -66,7 +71,8 @@ describe('Config Validator', () => {
 
     it('should throw ConfigValidationError for non-hex private key', () => {
       process.env.BASE_RPC_URL = 'https://base-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0xGGGG567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0xGGGG567890123456789012345678901234567890123456789012345678901234';
 
       expect(() => validateConfig()).toThrow(ConfigValidationError);
       expect(() => validateConfig()).toThrow(/non-hexadecimal characters/);
@@ -74,7 +80,8 @@ describe('Config Validator', () => {
 
     it('should validate and set default values for numeric configuration', () => {
       process.env.BASE_RPC_URL = 'https://base-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
 
       const config = validateConfig();
 
@@ -88,7 +95,8 @@ describe('Config Validator', () => {
 
     it('should parse custom numeric values correctly', () => {
       process.env.BASE_RPC_URL = 'https://base-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
       process.env.MIN_PROFIT_THRESHOLD = '0.05';
       process.env.MIN_PROFIT_PERCENT = '2.0';
       process.env.MAX_GAS_PRICE = '200';
@@ -104,7 +112,8 @@ describe('Config Validator', () => {
 
     it('should throw ConfigValidationError for invalid MIN_PROFIT_THRESHOLD', () => {
       process.env.BASE_RPC_URL = 'https://base-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
       process.env.MIN_PROFIT_THRESHOLD = '1.5'; // > 1
 
       expect(() => validateConfig()).toThrow(ConfigValidationError);
@@ -113,7 +122,8 @@ describe('Config Validator', () => {
 
     it('should throw ConfigValidationError for invalid SCAN_INTERVAL', () => {
       process.env.BASE_RPC_URL = 'https://base-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
       process.env.SCAN_INTERVAL = '50'; // < 100
 
       expect(() => validateConfig()).toThrow(ConfigValidationError);
@@ -122,7 +132,8 @@ describe('Config Validator', () => {
 
     it('should parse boolean flags correctly', () => {
       process.env.BASE_RPC_URL = 'https://base-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
       process.env.ENABLE_ML_PREDICTIONS = 'true';
       process.env.ENABLE_CROSS_CHAIN = '1';
       process.env.ENABLE_LAYER2 = 'yes';
@@ -136,7 +147,8 @@ describe('Config Validator', () => {
 
     it('should validate Ethereum addresses when provided', () => {
       process.env.BASE_RPC_URL = 'https://base-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
       process.env.FLASHSWAP_V2_ADDRESS = '0x5FbDB2315678afecb367f032d93F642f64180aa3'; // Valid address
 
       const config = validateConfig();
@@ -146,7 +158,8 @@ describe('Config Validator', () => {
 
     it('should throw ConfigValidationError for invalid Ethereum address', () => {
       process.env.BASE_RPC_URL = 'https://base-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
       process.env.FLASHSWAP_V2_ADDRESS = 'invalid-address';
 
       expect(() => validateConfig()).toThrow(ConfigValidationError);
@@ -155,8 +168,9 @@ describe('Config Validator', () => {
 
     it('should set dryRun based on NODE_ENV', () => {
       process.env.BASE_RPC_URL = 'https://base-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
-      
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
+
       // Development mode
       process.env.NODE_ENV = 'development';
       const devConfig = validateConfig();
@@ -176,7 +190,8 @@ describe('Config Validator', () => {
     it('should prefer BASE_RPC_URL over ETHEREUM_RPC_URL', () => {
       process.env.BASE_RPC_URL = 'https://base-mainnet.example.com';
       process.env.ETHEREUM_RPC_URL = 'https://eth-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
 
       const config = validateConfig();
 
@@ -185,7 +200,8 @@ describe('Config Validator', () => {
 
     it('should parse BigInt values correctly', () => {
       process.env.BASE_RPC_URL = 'https://base-mainnet.example.com';
-      process.env.WALLET_PRIVATE_KEY = '0x1234567890123456789012345678901234567890123456789012345678901234';
+      process.env.WALLET_PRIVATE_KEY =
+        '0x1234567890123456789012345678901234567890123456789012345678901234';
       process.env.MIN_LIQUIDITY = '500000000000000000000000'; // 500k tokens
 
       const config = validateConfig();

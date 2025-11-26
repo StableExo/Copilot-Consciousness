@@ -1,6 +1,6 @@
 /**
  * Protocol Registry Module
- * 
+ *
  * Centralized configuration management for protocols, tokens, and pools.
  */
 

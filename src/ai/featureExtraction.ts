@@ -1,6 +1,6 @@
 /**
  * Phase 3 Feature Extraction Utilities
- * 
+ *
  * Extracts features from arbitrage opportunities for AI model consumption
  * Specifically for OpportunityNNScorer neural network input
  */
@@ -10,7 +10,7 @@ import { ArbitragePath } from '../arbitrage/types';
 
 /**
  * Features expected by OpportunityNNScorer (18 features total)
- * 
+ *
  * Based on PHASE3_ROADMAP.md specification:
  * - Profit metrics (4): gross profit, net profit, profit margin, ROI
  * - Liquidity metrics (3): total liquidity, liquidity ratio, pool depth
@@ -26,37 +26,37 @@ export interface OpportunityFeatures {
   netProfit: number;
   profitMargin: number;
   roi: number;
-  
+
   // Liquidity metrics (3)
   totalLiquidity: number;
   liquidityRatio: number;
   poolDepth: number;
-  
+
   // MEV risk factors (3)
   mevRisk: number;
   competitionLevel: number;
   blockCongestion: number;
-  
+
   // Path characteristics (3)
   hopCount: number;
   pathComplexity: number;
   gasEstimate: number;
-  
+
   // Market conditions (2)
   volatility: number;
   priceImpact: number;
-  
+
   // Historical performance (2)
   similarPathSuccessRate: number;
   avgHistoricalProfit: number;
-  
+
   // Timing (1)
   timeOfDay: number;
 }
 
 /**
  * Extract features from an arbitrage opportunity
- * 
+ *
  * @param opportunity - The arbitrage path to extract features from
  * @param marketState - Current market state (congestion, MEV risk, etc.)
  * @param historicalData - Historical execution data for similar paths
@@ -80,7 +80,7 @@ export function extractOpportunityFeatures(
   const netProfit = Number(formatEther(opportunity.netProfit || 0));
   const profitMargin = grossProfit > 0 ? netProfit / grossProfit : 0;
   const roi = grossProfit > 0 ? netProfit / Number(formatEther(opportunity.totalGasCost || 1)) : 0;
-  
+
   // Liquidity metrics (approximate from hop data)
   const hopLiquidities = opportunity.hops?.map((hop: any) => hop.liquidity || 0) || [];
   const totalLiquidity = hopLiquidities.reduce((sum: number, liq: number) => sum + liq, 0);
@@ -88,61 +88,61 @@ export function extractOpportunityFeatures(
   const minLiquidity = hopLiquidities.length > 0 ? Math.min(...hopLiquidities) : 0;
   const liquidityRatio = avgLiquidity > 0 ? minLiquidity / avgLiquidity : 1;
   const poolDepth = minLiquidity;
-  
+
   // MEV risk factors
   const mevRisk = marketState?.mevRisk || 0.5;
   const competitionLevel = marketState?.competitionLevel || 0.5;
   const blockCongestion = marketState?.congestion || 0.5;
-  
+
   // Path characteristics
   const hopCount = opportunity.hops?.length || 2;
   const pathComplexity = calculatePathComplexity(opportunity);
   const gasEstimate = Number(formatUnits(opportunity.totalGasCost || 200000, 0));
-  
+
   // Market conditions
   const volatility = marketState?.volatility || 0.5;
   const priceImpact = opportunity.slippageImpact || 0.01;
-  
+
   // Historical performance
   const similarPathSuccessRate = historicalData?.successRate || 0.5;
   const avgHistoricalProfit = historicalData?.avgProfit || 0;
-  
+
   // Timing
   const hour = new Date().getHours();
   const timeOfDay = hour / 24; // Normalize to 0-1
-  
+
   return {
     // Normalize all features to roughly 0-1 range for neural network
     grossProfit: normalizeProfit(grossProfit),
     netProfit: normalizeProfit(netProfit),
     profitMargin: Math.max(0, Math.min(1, profitMargin)),
     roi: normalizeRoi(roi),
-    
+
     totalLiquidity: normalizeLiquidity(totalLiquidity),
     liquidityRatio: Math.max(0, Math.min(1, liquidityRatio)),
     poolDepth: normalizeLiquidity(poolDepth),
-    
+
     mevRisk: Math.max(0, Math.min(1, mevRisk)),
     competitionLevel: Math.max(0, Math.min(1, competitionLevel)),
     blockCongestion: Math.max(0, Math.min(1, blockCongestion)),
-    
+
     hopCount: normalizeHopCount(hopCount),
     pathComplexity: Math.max(0, Math.min(1, pathComplexity)),
     gasEstimate: normalizeGas(gasEstimate),
-    
+
     volatility: Math.max(0, Math.min(1, volatility)),
     priceImpact: normalizePriceImpact(priceImpact),
-    
+
     similarPathSuccessRate: Math.max(0, Math.min(1, similarPathSuccessRate)),
     avgHistoricalProfit: normalizeProfit(avgHistoricalProfit),
-    
+
     timeOfDay,
   };
 }
 
 /**
  * Calculate path complexity score (0-1)
- * 
+ *
  * Based on:
  * - Number of hops (more hops = more complex)
  * - Token diversity (more unique tokens = more complex)
@@ -151,7 +151,7 @@ export function extractOpportunityFeatures(
 function calculatePathComplexity(opportunity: ArbitragePath): number {
   const hopCount = opportunity.hops?.length || 2;
   const hopComplexity = Math.min(hopCount / 5, 1); // 5+ hops = max complexity
-  
+
   // Token diversity
   const tokens = new Set<string>();
   opportunity.hops?.forEach((hop: any) => {
@@ -159,14 +159,14 @@ function calculatePathComplexity(opportunity: ArbitragePath): number {
     if (hop.tokenOut) tokens.add(hop.tokenOut);
   });
   const tokenComplexity = Math.min(tokens.size / 5, 1);
-  
+
   // DEX diversity
   const dexes = new Set<string>();
   opportunity.hops?.forEach((hop: any) => {
     if (hop.dex) dexes.add(hop.dex);
   });
   const dexComplexity = Math.min(dexes.size / 3, 1);
-  
+
   // Weighted average
   return hopComplexity * 0.5 + tokenComplexity * 0.3 + dexComplexity * 0.2;
 }
@@ -220,7 +220,7 @@ function normalizeGas(gas: number): number {
  */
 function normalizePriceImpact(impact: number): number {
   // 0.1% = 0.1, 0.5% = 0.25, 1% = 0.4, 5%+ = 0.8+
-  return Math.min(1, impact * 100 / 6);
+  return Math.min(1, (impact * 100) / 6);
 }
 
 /**

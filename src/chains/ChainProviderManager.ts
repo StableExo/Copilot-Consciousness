@@ -1,6 +1,6 @@
 /**
  * ChainProviderManager - Multi-chain RPC connection management
- * 
+ *
  * Manages provider connections for all supported chains with health monitoring,
  * automatic failover, and connection pooling
  */
@@ -71,8 +71,8 @@ export class ChainProviderManager {
                 isHealthy: true,
                 latency: 0,
                 lastCheck: Date.now(),
-                errorCount: 0
-              }
+                errorCount: 0,
+              },
             });
           } catch (error) {
             console.warn(`Failed to initialize EVM provider for ${config.name}: ${error}`);
@@ -84,7 +84,7 @@ export class ChainProviderManager {
           try {
             const connectionConfig: ConnectionConfig = {
               commitment: 'confirmed',
-              confirmTransactionInitialTimeout: 60000
+              confirmTransactionInitialTimeout: 60000,
             };
             const connection = new Connection(rpcUrl, connectionConfig);
 
@@ -98,8 +98,8 @@ export class ChainProviderManager {
                 isHealthy: true,
                 latency: 0,
                 lastCheck: Date.now(),
-                errorCount: 0
-              }
+                errorCount: 0,
+              },
             });
           } catch (error) {
             console.warn(`Failed to initialize Solana connection for ${config.name}: ${error}`);
@@ -123,13 +123,13 @@ export class ChainProviderManager {
     }
 
     // Filter EVM providers only
-    const evmProviders = chainProviders.filter(cp => cp.type === 'EVM');
+    const evmProviders = chainProviders.filter((cp) => cp.type === 'EVM');
     if (evmProviders.length === 0) {
       return null;
     }
 
     // Find first healthy provider
-    const healthyProvider = evmProviders.find(cp => cp.health.isHealthy);
+    const healthyProvider = evmProviders.find((cp) => cp.health.isHealthy);
     if (healthyProvider) {
       return healthyProvider.provider as JsonRpcProvider;
     }
@@ -149,13 +149,15 @@ export class ChainProviderManager {
     }
 
     // Find first healthy Solana provider
-    const healthyProvider = solanaProviders.find(cp => cp.health.isHealthy && cp.type === 'Solana');
+    const healthyProvider = solanaProviders.find(
+      (cp) => cp.health.isHealthy && cp.type === 'Solana'
+    );
     if (healthyProvider) {
       return healthyProvider.provider as Connection;
     }
 
     // Fallback to first provider
-    const solanaProvider = solanaProviders.find(cp => cp.type === 'Solana');
+    const solanaProvider = solanaProviders.find((cp) => cp.type === 'Solana');
     if (solanaProvider) {
       return solanaProvider.provider as Connection;
     }
@@ -173,7 +175,7 @@ export class ChainProviderManager {
     }
 
     // Chain is healthy if at least one provider is healthy
-    return chainProviders.some(cp => cp.health.isHealthy);
+    return chainProviders.some((cp) => cp.health.isHealthy);
   }
 
   /**
@@ -181,9 +183,9 @@ export class ChainProviderManager {
    */
   getAllActiveChains(): (number | string)[] {
     const activeChains: (number | string)[] = [];
-    
+
     for (const [chainId, providers] of this.providers.entries()) {
-      if (providers.some(cp => cp.health.isHealthy)) {
+      if (providers.some((cp) => cp.health.isHealthy)) {
         activeChains.push(chainId);
       }
     }
@@ -200,7 +202,7 @@ export class ChainProviderManager {
       return [];
     }
 
-    return chainProviders.map(cp => cp.health);
+    return chainProviders.map((cp) => cp.health);
   }
 
   /**
@@ -208,15 +210,13 @@ export class ChainProviderManager {
    */
   private async checkProviderHealth(chainProvider: ChainProvider): Promise<void> {
     const startTime = Date.now();
-    
+
     try {
       if (chainProvider.type === 'EVM') {
         const provider = chainProvider.provider as JsonRpcProvider;
         const blockNumber = await Promise.race([
           provider.getBlockNumber(),
-          new Promise<number>((_, reject) => 
-            setTimeout(() => reject(new Error('Timeout')), 5000)
-          )
+          new Promise<number>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000)),
         ]);
 
         chainProvider.health.isHealthy = true;
@@ -227,9 +227,7 @@ export class ChainProviderManager {
         const connection = chainProvider.provider as Connection;
         const slot = await Promise.race([
           connection.getSlot(),
-          new Promise<number>((_, reject) => 
-            setTimeout(() => reject(new Error('Timeout')), 5000)
-          )
+          new Promise<number>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000)),
         ]);
 
         chainProvider.health.isHealthy = true;
@@ -239,12 +237,12 @@ export class ChainProviderManager {
       }
     } catch (error) {
       chainProvider.health.errorCount++;
-      
+
       // Mark as unhealthy after maxRetries consecutive failures
       if (chainProvider.health.errorCount >= this.maxRetries) {
         chainProvider.health.isHealthy = false;
       }
-      
+
       chainProvider.health.latency = Date.now() - startTime;
       console.warn(`Health check failed for chain ${chainProvider.chainId}:`, error);
     }
@@ -276,15 +274,11 @@ export class ChainProviderManager {
     }
 
     // Run initial health check
-    this.runHealthChecks().catch(err => 
-      console.error('Initial health check failed:', err)
-    );
+    this.runHealthChecks().catch((err) => console.error('Initial health check failed:', err));
 
     // Schedule periodic health checks
     this.healthCheckTimer = setInterval(() => {
-      this.runHealthChecks().catch(err => 
-        console.error('Periodic health check failed:', err)
-      );
+      this.runHealthChecks().catch((err) => console.error('Periodic health check failed:', err));
     }, this.healthCheckInterval);
   }
 
@@ -319,16 +313,26 @@ export class ChainProviderManager {
   /**
    * Get summary of all chains
    */
-  getChainsSummary(): { chainId: number | string; name: string; healthy: boolean; providers: number }[] {
-    const summary: { chainId: number | string; name: string; healthy: boolean; providers: number }[] = [];
+  getChainsSummary(): {
+    chainId: number | string;
+    name: string;
+    healthy: boolean;
+    providers: number;
+  }[] {
+    const summary: {
+      chainId: number | string;
+      name: string;
+      healthy: boolean;
+      providers: number;
+    }[] = [];
 
     for (const [chainId, providers] of this.providers.entries()) {
-      const healthyCount = providers.filter(cp => cp.health.isHealthy).length;
+      const healthyCount = providers.filter((cp) => cp.health.isHealthy).length;
       summary.push({
         chainId,
         name: providers[0].config.name,
         healthy: healthyCount > 0,
-        providers: providers.length
+        providers: providers.length,
       });
     }
 
@@ -340,14 +344,14 @@ export class ChainProviderManager {
    */
   async cleanup(): Promise<void> {
     this.stopHealthMonitoring();
-    
+
     // Close all connections
     for (const chainProviders of this.providers.values()) {
       for (const chainProvider of chainProviders) {
         // Cleanup logic if needed
       }
     }
-    
+
     this.providers.clear();
   }
 }

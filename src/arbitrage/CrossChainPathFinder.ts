@@ -1,6 +1,6 @@
 /**
  * CrossChainPathFinder - Find arbitrage opportunities across multiple blockchains
- * 
+ *
  * Extends PathFinder with cross-chain capabilities including bridge hops
  */
 
@@ -53,7 +53,7 @@ export class CrossChainPathFinder {
     this.bridgeManager = bridgeManager;
     this.crossChainConfig = crossChainConfig;
     this.chainEdges = new Map();
-    
+
     // Initialize a PathFinder for each chain
     // (would be populated when edges are added)
   }
@@ -74,7 +74,7 @@ export class CrossChainPathFinder {
         maxHops: this.crossChainConfig.maxHops,
         minProfitThreshold: BigInt(0),
         maxSlippage: 5.0,
-        gasPrice: BigInt(50 * 10 ** 9)
+        gasPrice: BigInt(50 * 10 ** 9),
       };
       this.pathFindersByChain.set(chainId, new PathFinder(config));
     }
@@ -94,25 +94,27 @@ export class CrossChainPathFinder {
   ): Promise<CrossChainPath[]> {
     const paths: CrossChainPath[] = [];
     const visited = new Set<string>();
-    
+
     // BFS queue: [currentChain, currentToken, currentAmount, path, bridgeCount]
-    const queue: QueueItem[] = [{
-      chain: startChain,
-      token: startToken,
-      amount: startAmount,
-      hops: [],
-      bridgeCount: 0,
-      totalBridgeFees: BigInt(0),
-      totalTime: 0,
-      chains: [startChain]
-    }];
+    const queue: QueueItem[] = [
+      {
+        chain: startChain,
+        token: startToken,
+        amount: startAmount,
+        hops: [],
+        bridgeCount: 0,
+        totalBridgeFees: BigInt(0),
+        totalTime: 0,
+        chains: [startChain],
+      },
+    ];
 
     const startTime = Date.now();
     const maxTime = this.crossChainConfig.maxPathExplorationTime;
 
     while (queue.length > 0 && Date.now() - startTime < maxTime) {
       const current = queue.shift()!;
-      
+
       // Check if we've exceeded max hops
       if (current.hops.length >= this.crossChainConfig.maxHops) {
         continue;
@@ -131,16 +133,18 @@ export class CrossChainPathFinder {
       visited.add(stateKey);
 
       // Check if we've completed a profitable cycle back to start
-      if (current.hops.length > 0 && 
-          current.chain === startChain && 
-          current.token === startToken &&
-          current.amount > startAmount) {
-        
+      if (
+        current.hops.length > 0 &&
+        current.chain === startChain &&
+        current.token === startToken &&
+        current.amount > startAmount
+      ) {
         const profit = current.amount - startAmount;
-        
+
         // Apply pruning: don't add if profit doesn't justify bridge fees
         if (current.bridgeCount > 0) {
-          const minProfit = current.totalBridgeFees * BigInt(this.crossChainConfig.minBridgeFeeRatio);
+          const minProfit =
+            current.totalBridgeFees * BigInt(this.crossChainConfig.minBridgeFeeRatio);
           if (profit < minProfit) {
             continue; // Not profitable enough
           }
@@ -158,7 +162,7 @@ export class CrossChainPathFinder {
           bridgeCount: current.bridgeCount,
           totalBridgeFees: current.totalBridgeFees,
           estimatedTimeSeconds: current.totalTime,
-          chains: current.chains
+          chains: current.chains,
         };
 
         paths.push(path);
@@ -190,12 +194,9 @@ export class CrossChainPathFinder {
   /**
    * Explore swap opportunities on the same chain
    */
-  private async exploreSameChainSwaps(
-    current: QueueItem,
-    queue: QueueItem[]
-  ): Promise<void> {
+  private async exploreSameChainSwaps(current: QueueItem, queue: QueueItem[]): Promise<void> {
     const edges = this.chainEdges.get(current.chain) || [];
-    
+
     for (const edge of edges) {
       if (edge.tokenIn !== current.token) {
         continue;
@@ -203,9 +204,10 @@ export class CrossChainPathFinder {
 
       // Calculate output amount (simplified)
       const amountOut = this.calculateSwapOutput(current.amount, edge);
-      
+
       // Skip if amount too small
-      if (amountOut < BigInt(10 ** 15)) { // Minimum threshold
+      if (amountOut < BigInt(10 ** 15)) {
+        // Minimum threshold
         continue;
       }
 
@@ -221,7 +223,7 @@ export class CrossChainPathFinder {
         chainId: current.chain,
         isBridge: false,
         reserve0: edge.reserve0,
-        reserve1: edge.reserve1
+        reserve1: edge.reserve1,
       };
 
       queue.push({
@@ -232,7 +234,7 @@ export class CrossChainPathFinder {
         bridgeCount: current.bridgeCount,
         totalBridgeFees: current.totalBridgeFees,
         totalTime: current.totalTime + 10, // Assume 10 seconds per swap
-        chains: current.chains
+        chains: current.chains,
       });
     }
   }
@@ -253,7 +255,7 @@ export class CrossChainPathFinder {
 
     // Get available chains to bridge to
     const availableChains = Array.from(this.chainEdges.keys()).filter(
-      chain => chain !== current.chain
+      (chain) => chain !== current.chain
     );
 
     for (const toChain of availableChains) {
@@ -272,14 +274,18 @@ export class CrossChainPathFinder {
 
         // Check if bridge fee is acceptable
         const feeRatio = Number(bridgeRoute.estimatedFee) / Number(current.amount);
-        if (feeRatio > 0.1) { // Don't bridge if fee > 10%
+        if (feeRatio > 0.1) {
+          // Don't bridge if fee > 10%
           continue;
         }
 
         const amountAfterBridge = current.amount - bridgeRoute.estimatedFee;
 
         // Pruning: don't bridge if amount < minBridgeFeeRatio * fee
-        if (amountAfterBridge < bridgeRoute.estimatedFee * BigInt(this.crossChainConfig.minBridgeFeeRatio)) {
+        if (
+          amountAfterBridge <
+          bridgeRoute.estimatedFee * BigInt(this.crossChainConfig.minBridgeFeeRatio)
+        ) {
           continue;
         }
 
@@ -297,8 +303,8 @@ export class CrossChainPathFinder {
           bridgeInfo: {
             bridge: bridgeRoute.bridge,
             toChain: toChain,
-            estimatedTime: bridgeRoute.estimatedTime
-          }
+            estimatedTime: bridgeRoute.estimatedTime,
+          },
         };
 
         queue.push({
@@ -309,7 +315,7 @@ export class CrossChainPathFinder {
           bridgeCount: current.bridgeCount + 1,
           totalBridgeFees: current.totalBridgeFees + bridgeRoute.estimatedFee,
           totalTime: current.totalTime + bridgeRoute.estimatedTime,
-          chains: [...current.chains, toChain]
+          chains: [...current.chains, toChain],
         });
       } catch (error) {
         // Skip this bridge if there's an error
@@ -325,15 +331,15 @@ export class CrossChainPathFinder {
     // Simplified constant product formula: x * y = k
     // amountOut = (amountIn * reserve1) / (reserve0 + amountIn)
     // With fee deduction
-    
-    const amountInWithFee = amountIn * BigInt(Math.floor((1 - edge.fee) * 10000)) / BigInt(10000);
+
+    const amountInWithFee = (amountIn * BigInt(Math.floor((1 - edge.fee) * 10000))) / BigInt(10000);
     const numerator = amountInWithFee * edge.reserve1;
     const denominator = edge.reserve0 + amountInWithFee;
-    
+
     if (denominator === BigInt(0)) {
       return BigInt(0);
     }
-    
+
     return numerator / denominator;
   }
 
@@ -369,7 +375,7 @@ export class CrossChainPathFinder {
     let cumulativeSlippage = 1.0;
     for (const hop of hops) {
       // Assume 0.5% slippage per hop (simplified)
-      cumulativeSlippage *= (1 - 0.005);
+      cumulativeSlippage *= 1 - 0.005;
     }
     return (1 - cumulativeSlippage) * 100; // Return as percentage
   }

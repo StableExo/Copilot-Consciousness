@@ -1,9 +1,9 @@
 /**
  * CalibrationEngine - Continuous Improvement System
- * 
+ *
  * Integrated from AxionCitadel's calibration systems.
  * Analyzes operational logs to identify patterns and optimize parameters.
- * 
+ *
  * This engine implements a feedback loop that adjusts system parameters
  * based on historical performance data.
  */
@@ -101,8 +101,7 @@ export class CalibrationEngine {
       successRate: successCount / logs.length,
       avgProfit: profits.length > 0 ? this.average(profits) : 0,
       avgGasCost: gasCosts.length > 0 ? this.average(gasCosts) : 0,
-      avgExecutionTime:
-        executionTimes.length > 0 ? this.average(executionTimes) : 0,
+      avgExecutionTime: executionTimes.length > 0 ? this.average(executionTimes) : 0,
       totalAttempts: logs.length,
     };
   }
@@ -122,7 +121,7 @@ export class CalibrationEngine {
 
     // Analyze current performance
     const currentPerformance = await this.analyzePerformance();
-    
+
     if (currentPerformance.totalAttempts < 10) {
       // Not enough data to calibrate
       return null;

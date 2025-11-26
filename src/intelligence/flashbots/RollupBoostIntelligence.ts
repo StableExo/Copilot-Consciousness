@@ -1,16 +1,16 @@
 /**
  * Rollup-Boost Intelligence Module
- * 
+ *
  * Integration with Flashbots Rollup-Boost for Layer 2 optimistic rollups
  * Introduced in 2024-2025 for enhanced L2 performance and decentralization
- * 
+ *
  * Key Features:
  * - Flashblocks: Sub-second block confirmations (200-250ms)
  * - OP Stack integration support
  * - Builder sidecar coordination
  * - Rollup extension modules
  * - L2 sequencer optimization
- * 
+ *
  * Based on: https://rollup-boost.flashbots.net/
  */
 
@@ -23,13 +23,13 @@ import { logger } from '../../utils/logger';
 export enum L2Network {
   /** OP Stack based chains (Optimism, Base, etc.) */
   OP_STACK = 'op_stack',
-  
+
   /** Arbitrum chains */
   ARBITRUM = 'arbitrum',
-  
+
   /** Polygon zkEVM */
   POLYGON_ZKEVM = 'polygon_zkevm',
-  
+
   /** Other L2s */
   OTHER = 'other',
 }
@@ -40,13 +40,13 @@ export enum L2Network {
 export interface FlashblockConfig {
   /** Enable Flashblocks */
   enabled: boolean;
-  
+
   /** Target confirmation time in milliseconds */
   targetConfirmationMs: number;
-  
+
   /** Maximum blocks to buffer before committing to L1 */
   maxBufferBlocks: number;
-  
+
   /** Enable verifiable priority ordering */
   enablePriorityOrdering: boolean;
 }
@@ -57,13 +57,13 @@ export interface FlashblockConfig {
 export enum RollupExtension {
   /** Performance optimizations */
   PERFORMANCE = 'performance',
-  
+
   /** Programmability enhancements */
   PROGRAMMABILITY = 'programmability',
-  
+
   /** Decentralization features */
   DECENTRALIZATION = 'decentralization',
-  
+
   /** Privacy features */
   PRIVACY = 'privacy',
 }
@@ -74,19 +74,19 @@ export enum RollupExtension {
 export interface BuilderSidecarConfig {
   /** L2 execution engine endpoint (e.g., op-geth) */
   executionEngineUrl: string;
-  
+
   /** L2 proposer node endpoint (e.g., op-node) */
   proposerNodeUrl: string;
-  
+
   /** JWT token for authentication */
   jwtSecret: string;
-  
+
   /** Builder RPC endpoint */
   builderRpcUrl?: string;
-  
+
   /** Enable tracing */
   enableTracing: boolean;
-  
+
   /** Enable metrics */
   enableMetrics: boolean;
 }
@@ -97,22 +97,22 @@ export interface BuilderSidecarConfig {
 export interface FlashblockStatus {
   /** Block number */
   blockNumber: number;
-  
+
   /** Timestamp */
   timestamp: number;
-  
+
   /** Confirmation time in milliseconds */
   confirmationTimeMs: number;
-  
+
   /** Number of transactions */
   txCount: number;
-  
+
   /** Whether block was finalized on L1 */
   finalizedOnL1: boolean;
-  
+
   /** Gas used */
   gasUsed: number;
-  
+
   /** Builder who produced the block */
   builder?: string;
 }
@@ -123,22 +123,22 @@ export interface FlashblockStatus {
 export interface OPRBuilderConfig {
   /** Chain configuration */
   chainId: number;
-  
+
   /** L1 consensus layer client URL */
   l1ConsensusUrl: string;
-  
+
   /** Sequencer node URL */
   sequencerUrl: string;
-  
+
   /** JWT secret for authentication */
   jwtSecret: string;
-  
+
   /** Enable flashblocks */
   enableFlashblocks: boolean;
-  
+
   /** Flashblock number contract address */
   flashblockContractAddress?: string;
-  
+
   /** Enable flashtestations (builder attestation) */
   enableFlashtestations: boolean;
 }
@@ -149,25 +149,25 @@ export interface OPRBuilderConfig {
 export interface RollupPerformanceMetrics {
   /** Average confirmation time in milliseconds */
   avgConfirmationTimeMs: number;
-  
+
   /** Minimum confirmation time */
   minConfirmationTimeMs: number;
-  
+
   /** Maximum confirmation time */
   maxConfirmationTimeMs: number;
-  
+
   /** Total blocks produced */
   totalBlocks: number;
-  
+
   /** Total transactions processed */
   totalTransactions: number;
-  
+
   /** Average transactions per block */
   avgTxPerBlock: number;
-  
+
   /** L1 finalization rate (0-1) */
   l1FinalizationRate: number;
-  
+
   /** Uptime percentage */
   uptimePercentage: number;
 }
@@ -193,20 +193,20 @@ export class RollupBoostIntelligence {
     this.l2Network = l2Network;
     this.flashblockHistory = [];
     this.activeExtensions = new Set();
-    
+
     this.flashblockConfig = {
       enabled: flashblockConfig?.enabled ?? false,
       targetConfirmationMs: flashblockConfig?.targetConfirmationMs || 250, // 250ms default
       maxBufferBlocks: flashblockConfig?.maxBufferBlocks || 10,
       enablePriorityOrdering: flashblockConfig?.enablePriorityOrdering ?? true,
     };
-    
+
     this.sidecarConfig = sidecarConfig;
 
     logger.info(
       `[RollupBoostIntelligence] Initialized for ${l2Network}: ` +
-      `flashblocks=${this.flashblockConfig.enabled}, ` +
-      `target=${this.flashblockConfig.targetConfirmationMs}ms`
+        `flashblocks=${this.flashblockConfig.enabled}, ` +
+        `target=${this.flashblockConfig.targetConfirmationMs}ms`
     );
   }
 
@@ -231,15 +231,15 @@ export class RollupBoostIntelligence {
    */
   recordFlashblock(status: FlashblockStatus): void {
     this.flashblockHistory.push(status);
-    
+
     // Keep only last 1000 flashblocks
     if (this.flashblockHistory.length > 1000) {
       this.flashblockHistory.shift();
     }
-    
+
     logger.debug(
       `[RollupBoostIntelligence] Recorded flashblock ${status.blockNumber}: ` +
-      `${status.confirmationTimeMs.toFixed(0)}ms (${status.txCount} txs)`
+        `${status.confirmationTimeMs.toFixed(0)}ms (${status.txCount} txs)`
     );
   }
 
@@ -260,14 +260,15 @@ export class RollupBoostIntelligence {
       };
     }
 
-    const confirmationTimes = this.flashblockHistory.map(b => b.confirmationTimeMs);
-    const txCounts = this.flashblockHistory.map(b => b.txCount);
-    const finalizedCount = this.flashblockHistory.filter(b => b.finalizedOnL1).length;
-    
+    const confirmationTimes = this.flashblockHistory.map((b) => b.confirmationTimeMs);
+    const txCounts = this.flashblockHistory.map((b) => b.txCount);
+    const finalizedCount = this.flashblockHistory.filter((b) => b.finalizedOnL1).length;
+
     const totalTx = txCounts.reduce((sum, count) => sum + count, 0);
 
     return {
-      avgConfirmationTimeMs: confirmationTimes.reduce((sum, t) => sum + t, 0) / confirmationTimes.length,
+      avgConfirmationTimeMs:
+        confirmationTimes.reduce((sum, t) => sum + t, 0) / confirmationTimes.length,
       minConfirmationTimeMs: Math.min(...confirmationTimes),
       maxConfirmationTimeMs: Math.max(...confirmationTimes),
       totalBlocks: this.flashblockHistory.length,
@@ -293,7 +294,7 @@ export class RollupBoostIntelligence {
     reasoning: string;
   } {
     const metrics = this.getPerformanceMetrics();
-    
+
     if (metrics.totalBlocks === 0) {
       return {
         targetConfirmationMs: 250,
@@ -342,15 +343,15 @@ export class RollupBoostIntelligence {
     }
 
     const metrics = this.getPerformanceMetrics();
-    
+
     // With priority ordering enabled, higher gas = faster inclusion
     if (this.flashblockConfig.enablePriorityOrdering && priorityFee) {
       // Simple heuristic: higher priority fee = closer to min time
       const priorityMultiplier = Number(priorityFee) / 1e9; // Convert to gwei
       const speedBoost = Math.min(priorityMultiplier / 10, 0.5); // Max 50% speed boost
-      
+
       const estimatedMs = metrics.avgConfirmationTimeMs * (1 - speedBoost);
-      
+
       return {
         estimatedMs,
         confidence: 0.85,
@@ -411,11 +412,11 @@ export class RollupBoostIntelligence {
     if (!this.sidecarConfig.executionEngineUrl) {
       errors.push('Missing execution engine URL');
     }
-    
+
     if (!this.sidecarConfig.proposerNodeUrl) {
       errors.push('Missing proposer node URL');
     }
-    
+
     if (!this.sidecarConfig.jwtSecret || this.sidecarConfig.jwtSecret.length < 32) {
       errors.push('JWT secret missing or too short (min 32 characters)');
     }
@@ -424,11 +425,11 @@ export class RollupBoostIntelligence {
     if (!this.sidecarConfig.enableTracing) {
       warnings.push('Tracing disabled - debugging may be difficult');
     }
-    
+
     if (!this.sidecarConfig.enableMetrics) {
       warnings.push('Metrics disabled - performance monitoring limited');
     }
-    
+
     if (this.flashblockConfig.enabled && !this.sidecarConfig.builderRpcUrl) {
       warnings.push('Flashblocks enabled but no builder RPC configured');
     }
@@ -462,13 +463,9 @@ export class RollupBoostIntelligence {
   /**
    * Simulate flashblock production (for testing)
    */
-  simulateFlashblock(
-    blockNumber: number,
-    txCount: number,
-    builder?: string
-  ): FlashblockStatus {
-    const confirmationTimeMs = this.flashblockConfig.targetConfirmationMs +
-      (Math.random() - 0.5) * 100; // +/- 50ms variance
+  simulateFlashblock(blockNumber: number, txCount: number, builder?: string): FlashblockStatus {
+    const confirmationTimeMs =
+      this.flashblockConfig.targetConfirmationMs + (Math.random() - 0.5) * 100; // +/- 50ms variance
 
     const status: FlashblockStatus = {
       blockNumber,
@@ -481,7 +478,7 @@ export class RollupBoostIntelligence {
     };
 
     this.recordFlashblock(status);
-    
+
     return status;
   }
 
@@ -490,7 +487,7 @@ export class RollupBoostIntelligence {
    */
   calculateOptimalGasPrice(targetMs: number): bigint {
     const metrics = this.getPerformanceMetrics();
-    
+
     if (metrics.totalBlocks === 0) {
       // No data - use conservative estimate
       return BigInt(0.1e9); // 0.1 gwei
@@ -499,7 +496,7 @@ export class RollupBoostIntelligence {
     // Simple linear model: faster target = higher gas price
     const speedRatio = metrics.avgConfirmationTimeMs / targetMs;
     const baseGasPrice = BigInt(0.05e9); // 0.05 gwei base
-    
+
     if (speedRatio > 1) {
       // Target is faster than average - increase gas price
       const multiplier = Math.min(speedRatio * 2, 10); // Cap at 10x

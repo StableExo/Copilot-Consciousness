@@ -1,8 +1,8 @@
 /**
  * Identity Core Module
- * 
+ *
  * Category 192, Layer 0: Paradox-Free Cognition System
- * 
+ *
  * Exports the complete Identity Core architecture for TheWarden.
  */
 

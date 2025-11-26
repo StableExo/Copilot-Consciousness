@@ -64,7 +64,7 @@ export class PasswordService {
 
     return {
       valid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -79,7 +79,7 @@ export class PasswordService {
     const all = uppercase + lowercase + numbers + special;
 
     let password = '';
-    
+
     // Ensure at least one character from each category
     password += uppercase[Math.floor(Math.random() * uppercase.length)];
     password += lowercase[Math.floor(Math.random() * lowercase.length)];
@@ -92,6 +92,9 @@ export class PasswordService {
     }
 
     // Shuffle the password
-    return password.split('').sort(() => Math.random() - 0.5).join('');
+    return password
+      .split('')
+      .sort(() => Math.random() - 0.5)
+      .join('');
   }
 }

@@ -22,14 +22,14 @@ export enum AuditEventType {
   RATE_LIMIT_EXCEEDED = 'security.rate_limit_exceeded',
   IP_BLOCKED = 'security.ip_blocked',
   INTRUSION_DETECTED = 'security.intrusion_detected',
-  SYSTEM_ERROR = 'system.error'
+  SYSTEM_ERROR = 'system.error',
 }
 
 export enum AuditSeverity {
   INFO = 'INFO',
   WARNING = 'WARNING',
   ERROR = 'ERROR',
-  CRITICAL = 'CRITICAL'
+  CRITICAL = 'CRITICAL',
 }
 
 export interface AuditEvent {
@@ -89,7 +89,7 @@ export class AuditLogger extends EventEmitter {
       severity,
       ...context,
       details,
-      previousHash: this.lastHash
+      previousHash: this.lastHash,
     };
 
     // Calculate hash
@@ -113,7 +113,7 @@ export class AuditLogger extends EventEmitter {
 
     for (let i = 0; i < this.logs.length; i++) {
       const event = this.logs[i];
-      
+
       // Check previous hash matches
       if (event.previousHash !== previousHash) {
         return { valid: false, corruptedIndex: i };
@@ -147,23 +147,23 @@ export class AuditLogger extends EventEmitter {
     let results = [...this.logs];
 
     if (filters.startDate) {
-      results = results.filter(e => e.timestamp >= filters.startDate!);
+      results = results.filter((e) => e.timestamp >= filters.startDate!);
     }
 
     if (filters.endDate) {
-      results = results.filter(e => e.timestamp <= filters.endDate!);
+      results = results.filter((e) => e.timestamp <= filters.endDate!);
     }
 
     if (filters.userId) {
-      results = results.filter(e => e.userId === filters.userId);
+      results = results.filter((e) => e.userId === filters.userId);
     }
 
     if (filters.type) {
-      results = results.filter(e => e.type === filters.type);
+      results = results.filter((e) => e.type === filters.type);
     }
 
     if (filters.severity) {
-      results = results.filter(e => e.severity === filters.severity);
+      results = results.filter((e) => e.severity === filters.severity);
     }
 
     // Sort by timestamp descending
@@ -186,7 +186,7 @@ export class AuditLogger extends EventEmitter {
     uniqueUsers: number;
   } {
     const cutoff = new Date(Date.now() - timeframeHours * 60 * 60 * 1000);
-    const recentLogs = this.logs.filter(e => e.timestamp >= cutoff);
+    const recentLogs = this.logs.filter((e) => e.timestamp >= cutoff);
 
     const eventsByType: Record<string, number> = {};
     const eventsBySeverity: Record<string, number> = {};
@@ -204,7 +204,7 @@ export class AuditLogger extends EventEmitter {
       totalEvents: recentLogs.length,
       eventsByType,
       eventsBySeverity,
-      uniqueUsers: uniqueUsers.size
+      uniqueUsers: uniqueUsers.size,
     };
   }
 
@@ -220,7 +220,7 @@ export class AuditLogger extends EventEmitter {
       severity,
       userId,
       details,
-      previousHash
+      previousHash,
     });
 
     return crypto.createHash('sha256').update(data).digest('hex');
@@ -239,9 +239,9 @@ export class AuditLogger extends EventEmitter {
   cleanupOldLogs(): number {
     const cutoffDate = new Date(Date.now() - this.config.retentionDays * 24 * 60 * 60 * 1000);
     const initialLength = this.logs.length;
-    
-    this.logs = this.logs.filter(e => e.timestamp >= cutoffDate);
-    
+
+    this.logs = this.logs.filter((e) => e.timestamp >= cutoffDate);
+
     return initialLength - this.logs.length;
   }
 

@@ -1,15 +1,11 @@
 /**
  * Multi-Path Explorer Tests
- * 
+ *
  * Comprehensive test suite for the Multi-Path Explorer Engine
  */
 
 import { MultiPathExplorer } from '../multi-path-explorer';
-import {
-  ProblemSpace,
-  Node,
-  Transition
-} from '../types/problem-space';
+import { ProblemSpace, Node, Transition } from '../types/problem-space';
 import { PathStatus } from '../types/path';
 
 describe('MultiPathExplorer', () => {
@@ -31,7 +27,7 @@ describe('MultiPathExplorer', () => {
       const customExplorer = new MultiPathExplorer({
         maxPathLength: 5,
         explorationStrategy: 'depth-first',
-        cyclicDetection: false
+        cyclicDetection: false,
       });
       expect(customExplorer).toBeDefined();
     });
@@ -51,12 +47,10 @@ describe('MultiPathExplorer', () => {
         dimensions: ['x'],
         nodes: [
           { id: 'n1', type: 'node', properties: {}, position: [1] },
-          { id: 'n2', type: 'node', properties: {}, position: [2] }
+          { id: 'n2', type: 'node', properties: {}, position: [2] },
         ],
-        transitions: [
-          { id: 't1', from: 'n1', to: 'n2', cost: 1, time: 1, risk: 0.1 }
-        ],
-        constraints: []
+        transitions: [{ id: 't1', from: 'n1', to: 'n2', cost: 1, time: 1, risk: 0.1 }],
+        constraints: [],
       };
 
       expect(() => explorer.buildGraph(space)).not.toThrow();
@@ -67,7 +61,7 @@ describe('MultiPathExplorer', () => {
         id: 'test_graph_2',
         dimensions: [],
         nodes: [],
-        constraints: []
+        constraints: [],
       };
 
       expect(() => explorer.buildGraph(space)).not.toThrow();
@@ -82,19 +76,19 @@ describe('MultiPathExplorer', () => {
         nodes: [
           { id: 'start', type: 'node', properties: {}, position: [0] },
           { id: 'middle', type: 'node', properties: {}, position: [1] },
-          { id: 'goal', type: 'node', properties: {}, position: [2] }
+          { id: 'goal', type: 'node', properties: {}, position: [2] },
         ],
         transitions: [
           { id: 't1', from: 'start', to: 'middle', cost: 1, time: 1, risk: 0.1 },
-          { id: 't2', from: 'middle', to: 'goal', cost: 1, time: 1, risk: 0.1 }
+          { id: 't2', from: 'middle', to: 'goal', cost: 1, time: 1, risk: 0.1 },
         ],
-        constraints: []
+        constraints: [],
       };
 
       const result = await explorer.findPaths({
         start: 'start',
         goal: 'goal',
-        space
+        space,
       });
 
       expect(result.paths.length).toBeGreaterThan(0);
@@ -108,16 +102,16 @@ describe('MultiPathExplorer', () => {
         dimensions: ['x'],
         nodes: [
           { id: 'start', type: 'node', properties: {}, position: [0] },
-          { id: 'isolated', type: 'node', properties: {}, position: [1] }
+          { id: 'isolated', type: 'node', properties: {}, position: [1] },
         ],
         transitions: [],
-        constraints: []
+        constraints: [],
       };
 
       const result = await explorer.findPaths({
         start: 'start',
         goal: 'isolated',
-        space
+        space,
       });
 
       expect(result.paths.length).toBe(0);
@@ -132,21 +126,21 @@ describe('MultiPathExplorer', () => {
           { id: 'start', type: 'node', properties: {}, position: [0] },
           { id: 'm1', type: 'node', properties: {}, position: [1] },
           { id: 'm2', type: 'node', properties: {}, position: [1] },
-          { id: 'goal', type: 'node', properties: {}, position: [2] }
+          { id: 'goal', type: 'node', properties: {}, position: [2] },
         ],
         transitions: [
           { id: 't1', from: 'start', to: 'm1', cost: 1, time: 1, risk: 0.1 },
           { id: 't2', from: 'start', to: 'm2', cost: 1, time: 1, risk: 0.1 },
           { id: 't3', from: 'm1', to: 'goal', cost: 1, time: 1, risk: 0.1 },
-          { id: 't4', from: 'm2', to: 'goal', cost: 1, time: 1, risk: 0.1 }
+          { id: 't4', from: 'm2', to: 'goal', cost: 1, time: 1, risk: 0.1 },
         ],
-        constraints: []
+        constraints: [],
       };
 
       const result = await explorer.findPaths({
         start: 'start',
         goal: 'goal',
-        space
+        space,
       });
 
       expect(result.paths.length).toBeGreaterThan(1);
@@ -162,20 +156,20 @@ describe('MultiPathExplorer', () => {
           { id: 'n1', type: 'node', properties: {}, position: [0] },
           { id: 'n2', type: 'node', properties: {}, position: [1] },
           { id: 'n3', type: 'node', properties: {}, position: [2] },
-          { id: 'n4', type: 'node', properties: {}, position: [3] }
+          { id: 'n4', type: 'node', properties: {}, position: [3] },
         ],
         transitions: [
           { id: 't1', from: 'n1', to: 'n2', cost: 1, time: 1, risk: 0.1 },
           { id: 't2', from: 'n2', to: 'n3', cost: 1, time: 1, risk: 0.1 },
-          { id: 't3', from: 'n3', to: 'n4', cost: 1, time: 1, risk: 0.1 }
+          { id: 't3', from: 'n3', to: 'n4', cost: 1, time: 1, risk: 0.1 },
         ],
-        constraints: []
+        constraints: [],
       };
 
       const result = await shortExplorer.findPaths({
         start: 'n1',
         goal: 'n4',
-        space
+        space,
       });
 
       // Path is too long (4 nodes), should not be found
@@ -186,7 +180,7 @@ describe('MultiPathExplorer', () => {
   describe('Path Finding - Depth First Search', () => {
     it('should find path using depth-first search', async () => {
       const dfsExplorer = new MultiPathExplorer({
-        explorationStrategy: 'depth-first'
+        explorationStrategy: 'depth-first',
       });
 
       const space: ProblemSpace = {
@@ -194,18 +188,16 @@ describe('MultiPathExplorer', () => {
         dimensions: ['x'],
         nodes: [
           { id: 'start', type: 'node', properties: {}, position: [0] },
-          { id: 'goal', type: 'node', properties: {}, position: [1] }
+          { id: 'goal', type: 'node', properties: {}, position: [1] },
         ],
-        transitions: [
-          { id: 't1', from: 'start', to: 'goal', cost: 1, time: 1, risk: 0.1 }
-        ],
-        constraints: []
+        transitions: [{ id: 't1', from: 'start', to: 'goal', cost: 1, time: 1, risk: 0.1 }],
+        constraints: [],
       };
 
       const result = await dfsExplorer.findPaths({
         start: 'start',
         goal: 'goal',
-        space
+        space,
       });
 
       expect(result.paths.length).toBeGreaterThan(0);
@@ -219,12 +211,10 @@ describe('MultiPathExplorer', () => {
         dimensions: ['x'],
         nodes: [
           { id: 'n1', type: 'node', properties: {}, position: [0] },
-          { id: 'n2', type: 'node', properties: {}, position: [1] }
+          { id: 'n2', type: 'node', properties: {}, position: [1] },
         ],
-        transitions: [
-          { id: 't1', from: 'n1', to: 'n2', cost: 1, time: 1, risk: 0.1 }
-        ],
-        constraints: []
+        transitions: [{ id: 't1', from: 'n1', to: 'n2', cost: 1, time: 1, risk: 0.1 }],
+        constraints: [],
       };
 
       explorer.buildGraph(space);
@@ -237,7 +227,7 @@ describe('MultiPathExplorer', () => {
         totalTime: 1,
         totalRisk: 0.1,
         score: 0.8,
-        status: PathStatus.VALID
+        status: PathStatus.VALID,
       };
 
       const validation = explorer.validatePath(path);
@@ -250,7 +240,7 @@ describe('MultiPathExplorer', () => {
         id: `n${i}`,
         type: 'node',
         properties: {},
-        position: [i]
+        position: [i],
       }));
 
       const transitions = new Array(14).fill(0).map((_, i) => ({
@@ -259,7 +249,7 @@ describe('MultiPathExplorer', () => {
         to: `n${i + 1}`,
         cost: 1,
         time: 1,
-        risk: 0.1
+        risk: 0.1,
       }));
 
       const path = {
@@ -270,7 +260,7 @@ describe('MultiPathExplorer', () => {
         totalTime: 14,
         totalRisk: 1.4,
         score: 0,
-        status: PathStatus.VALID
+        status: PathStatus.VALID,
       };
 
       const validation = explorer.validatePath(path);
@@ -282,12 +272,12 @@ describe('MultiPathExplorer', () => {
       const nodes = [
         { id: 'n1', type: 'node', properties: {}, position: [0] },
         { id: 'n2', type: 'node', properties: {}, position: [1] },
-        { id: 'n1', type: 'node', properties: {}, position: [2] }
+        { id: 'n1', type: 'node', properties: {}, position: [2] },
       ];
 
       const transitions = [
         { id: 't1', from: 'n1', to: 'n2', cost: 1, time: 1, risk: 0.1 },
-        { id: 't2', from: 'n2', to: 'n1', cost: 1, time: 1, risk: 0.1 }
+        { id: 't2', from: 'n2', to: 'n1', cost: 1, time: 1, risk: 0.1 },
       ];
 
       const path = {
@@ -298,7 +288,7 @@ describe('MultiPathExplorer', () => {
         totalTime: 2,
         totalRisk: 0.2,
         score: 0,
-        status: PathStatus.VALID
+        status: PathStatus.VALID,
       };
 
       const validation = explorer.validatePath(path);
@@ -312,13 +302,13 @@ describe('MultiPathExplorer', () => {
         { id: 'n1', type: 'node', properties: {}, position: [0] },
         { id: 'n2', type: 'node', properties: {}, position: [1] },
         { id: 'n3', type: 'node', properties: {}, position: [2] },
-        { id: 'n2', type: 'node', properties: {}, position: [3] }
+        { id: 'n2', type: 'node', properties: {}, position: [3] },
       ];
 
       const transitions = [
         { id: 't1', from: 'n1', to: 'n2', cost: 1, time: 1, risk: 0.1 },
         { id: 't2', from: 'n2', to: 'n3', cost: 1, time: 1, risk: 0.1 },
-        { id: 't3', from: 'n3', to: 'n2', cost: 1, time: 1, risk: 0.1 }
+        { id: 't3', from: 'n3', to: 'n2', cost: 1, time: 1, risk: 0.1 },
       ];
 
       const path = {
@@ -329,7 +319,7 @@ describe('MultiPathExplorer', () => {
         totalTime: 3,
         totalRisk: 0.3,
         score: 0,
-        status: PathStatus.VALID
+        status: PathStatus.VALID,
       };
 
       const cycleInfo = explorer.detectCycle(path);
@@ -341,12 +331,12 @@ describe('MultiPathExplorer', () => {
       const nodes = [
         { id: 'n1', type: 'node', properties: {}, position: [0] },
         { id: 'n2', type: 'node', properties: {}, position: [1] },
-        { id: 'n3', type: 'node', properties: {}, position: [2] }
+        { id: 'n3', type: 'node', properties: {}, position: [2] },
       ];
 
       const transitions = [
         { id: 't1', from: 'n1', to: 'n2', cost: 1, time: 1, risk: 0.1 },
-        { id: 't2', from: 'n2', to: 'n3', cost: 1, time: 1, risk: 0.1 }
+        { id: 't2', from: 'n2', to: 'n3', cost: 1, time: 1, risk: 0.1 },
       ];
 
       const path = {
@@ -357,7 +347,7 @@ describe('MultiPathExplorer', () => {
         totalTime: 2,
         totalRisk: 0.2,
         score: 0,
-        status: PathStatus.VALID
+        status: PathStatus.VALID,
       };
 
       const cycleInfo = explorer.detectCycle(path);
@@ -371,22 +361,20 @@ describe('MultiPathExplorer', () => {
         id: 'path_6',
         nodes: [
           { id: 'n1', type: 'node', properties: {}, position: [0] },
-          { id: 'n2', type: 'node', properties: {}, position: [1] }
+          { id: 'n2', type: 'node', properties: {}, position: [1] },
         ],
-        transitions: [
-          { id: 't1', from: 'n1', to: 'n2', cost: 5, time: 10, risk: 0.2 }
-        ],
+        transitions: [{ id: 't1', from: 'n1', to: 'n2', cost: 5, time: 10, risk: 0.2 }],
         totalCost: 5,
         totalTime: 10,
         totalRisk: 0.2,
         score: 0,
-        status: PathStatus.VALID
+        status: PathStatus.VALID,
       };
 
       const criteria = [
         { criterion: 'cost', weight: 0.5, type: 'minimize' as const },
         { criterion: 'time', weight: 0.3, type: 'minimize' as const },
-        { criterion: 'risk', weight: 0.2, type: 'minimize' as const }
+        { criterion: 'risk', weight: 0.2, type: 'minimize' as const },
       ];
 
       const optimized = explorer.optimizePath(path, criteria);
@@ -403,24 +391,22 @@ describe('MultiPathExplorer', () => {
         nodes: [
           { id: 'start', type: 'node', properties: {}, position: [0] },
           { id: 'middle', type: 'node', properties: { risky: true }, position: [1] },
-          { id: 'goal', type: 'node', properties: {}, position: [2] }
+          { id: 'goal', type: 'node', properties: {}, position: [2] },
         ],
         transitions: [
           { id: 't1', from: 'start', to: 'middle', cost: 1, time: 1, risk: 0.1 },
-          { id: 't2', from: 'middle', to: 'goal', cost: 1, time: 1, risk: 0.1 }
+          { id: 't2', from: 'middle', to: 'goal', cost: 1, time: 1, risk: 0.1 },
         ],
-        constraints: []
+        constraints: [],
       };
 
-      const constraints = [
-        (path: any) => !path.nodes.some((n: Node) => n.properties.risky)
-      ];
+      const constraints = [(path: any) => !path.nodes.some((n: Node) => n.properties.risky)];
 
       const result = await explorer.findPaths({
         start: 'start',
         goal: 'goal',
         space,
-        constraints
+        constraints,
       });
 
       // Path goes through risky node, should be filtered out
@@ -435,12 +421,10 @@ describe('MultiPathExplorer', () => {
         dimensions: ['x'],
         nodes: [
           { id: 'start', type: 'node', properties: {}, position: [0] },
-          { id: 'goal', type: 'node', properties: {}, position: [1] }
+          { id: 'goal', type: 'node', properties: {}, position: [1] },
         ],
-        transitions: [
-          { id: 't1', from: 'start', to: 'goal', cost: 1, time: 1, risk: 0.1 }
-        ],
-        constraints: []
+        transitions: [{ id: 't1', from: 'start', to: 'goal', cost: 1, time: 1, risk: 0.1 }],
+        constraints: [],
       };
 
       const initialStats = explorer.getStats();
@@ -456,12 +440,10 @@ describe('MultiPathExplorer', () => {
         dimensions: ['x'],
         nodes: [
           { id: 'start', type: 'node', properties: {}, position: [0] },
-          { id: 'goal', type: 'node', properties: {}, position: [1] }
+          { id: 'goal', type: 'node', properties: {}, position: [1] },
         ],
-        transitions: [
-          { id: 't1', from: 'start', to: 'goal', cost: 1, time: 1, risk: 0.1 }
-        ],
-        constraints: []
+        transitions: [{ id: 't1', from: 'start', to: 'goal', cost: 1, time: 1, risk: 0.1 }],
+        constraints: [],
       };
 
       const initialStats = explorer.getStats();
@@ -478,13 +460,13 @@ describe('MultiPathExplorer', () => {
         nodes: [
           { id: 'start', type: 'node', properties: {}, position: [0] },
           { id: 'middle', type: 'node', properties: {}, position: [1] },
-          { id: 'goal', type: 'node', properties: {}, position: [2] }
+          { id: 'goal', type: 'node', properties: {}, position: [2] },
         ],
         transitions: [
           { id: 't1', from: 'start', to: 'middle', cost: 1, time: 1, risk: 0.1 },
-          { id: 't2', from: 'middle', to: 'goal', cost: 1, time: 1, risk: 0.1 }
+          { id: 't2', from: 'middle', to: 'goal', cost: 1, time: 1, risk: 0.1 },
         ],
-        constraints: []
+        constraints: [],
       };
 
       await explorer.findPaths({ start: 'start', goal: 'goal', space });

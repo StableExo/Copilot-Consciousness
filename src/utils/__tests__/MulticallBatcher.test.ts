@@ -3,7 +3,12 @@
  */
 
 import { Provider, JsonRpcProvider, Interface } from 'ethers';
-import { MulticallBatcher, batchCheckPoolsExist, batchFetchPoolData, MULTICALL3_ADDRESS } from '../MulticallBatcher';
+import {
+  MulticallBatcher,
+  batchCheckPoolsExist,
+  batchFetchPoolData,
+  MULTICALL3_ADDRESS,
+} from '../MulticallBatcher';
 
 describe('MulticallBatcher', () => {
   let provider: Provider;
@@ -41,15 +46,11 @@ describe('MulticallBatcher', () => {
 
   describe('encoding and decoding', () => {
     it('should encode function call correctly', () => {
-      const iface = new Interface([
-        'function balanceOf(address owner) view returns (uint256)',
-      ]);
+      const iface = new Interface(['function balanceOf(address owner) view returns (uint256)']);
 
-      const callData = MulticallBatcher.encodeCall(
-        iface,
-        'balanceOf',
-        ['0x1234567890123456789012345678901234567890']
-      );
+      const callData = MulticallBatcher.encodeCall(iface, 'balanceOf', [
+        '0x1234567890123456789012345678901234567890',
+      ]);
 
       expect(callData).toBeDefined();
       expect(typeof callData).toBe('string');
@@ -57,13 +58,11 @@ describe('MulticallBatcher', () => {
     });
 
     it('should decode function result correctly', () => {
-      const iface = new Interface([
-        'function balanceOf(address owner) view returns (uint256)',
-      ]);
+      const iface = new Interface(['function balanceOf(address owner) view returns (uint256)']);
 
       // Encoded result for uint256(1000)
       const encodedResult = '0x00000000000000000000000000000000000000000000000000000000000003e8';
-      
+
       const decoded = MulticallBatcher.decodeResult(iface, 'balanceOf', encodedResult);
       expect(decoded[0].toString()).toBe('1000');
     });

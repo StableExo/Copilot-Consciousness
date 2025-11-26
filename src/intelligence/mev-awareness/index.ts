@@ -1,10 +1,10 @@
 /**
  * MEV Awareness System - Intelligence Layer
- * 
+ *
  * Integrated from AxionCitadel repository (metalxalloy/AxionCitadel)
  * Provides MEV risk modeling, real-time monitoring, and profit calculation
  * capabilities to the consciousness system.
- * 
+ *
  * This module serves as the foundation for environmental intelligence,
  * enabling the consciousness to perceive and respond to the competitive
  * MEV environment.

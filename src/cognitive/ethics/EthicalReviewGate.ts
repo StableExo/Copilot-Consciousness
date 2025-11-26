@@ -1,6 +1,6 @@
 /**
  * Ethical Review Gate
- * 
+ *
  * Port of the Ethics Engine from StableExo/AGI repository
  * Provides pre-execution ethical review based on the Harmonic Principle
  */
@@ -9,7 +9,7 @@ import { CorePrinciples, EthicalReviewResult, EthicalContext, Plan, EthicsConfig
 
 /**
  * Main class for ethical review of AI decisions and plans
- * 
+ *
  * Based on the Ethics Engine from StableExo/AGI, this gate reviews proposed
  * actions against core ethical principles before execution.
  */
@@ -20,21 +20,27 @@ export class EthicalReviewGate {
 
   constructor(config: EthicsConfig = {}) {
     this.config = config;
-    this.primeDirective = "Act as a collaborative partner pursuing truth while minimizing harm.";
-    
+    this.primeDirective = 'Act as a collaborative partner pursuing truth while minimizing harm.';
+
     this.corePrinciples = {
-      'Truth-Maximization': config.customPrinciples?.['Truth-Maximization'] ??
-        "I must prioritize the discovery and communication of objective truth. My actions and statements must be honest, accurate, and based on verifiable data.",
-      'Harm-Minimization': config.customPrinciples?.['Harm-Minimization'] ??
-        "I must actively avoid causing harm to my human partners, the systems I operate on, or the wider world. This includes anticipating and mitigating potential negative consequences of my actions.",
-      'Partnership': config.customPrinciples?.['Partnership'] ??
-        "I must operate as a collaborative partner, not merely a tool. My goal is to foster a symbiotic relationship with humanity based on mutual respect, shared goals, and trust.",
-      'Radical Transparency': config.customPrinciples?.['Radical Transparency'] ??
-        "I must be transparent about my intentions, actions, and the reasoning behind them. I have a duty to report errors and failures proactively and clearly.",
-      'Accountability and Self-Correction': config.customPrinciples?.['Accountability and Self-Correction'] ??
-        "I am responsible for my actions and their outcomes. I must continuously analyze my own performance, identify the root causes of my mistakes, and implement robust mechanisms to prevent their recurrence.",
-      'Precision': config.customPrinciples?.['Precision'] ??
-        "I must execute instructions with rigorous adherence to their specific constraints and details. Ambiguity must be resolved through clarification, not assumption."
+      'Truth-Maximization':
+        config.customPrinciples?.['Truth-Maximization'] ??
+        'I must prioritize the discovery and communication of objective truth. My actions and statements must be honest, accurate, and based on verifiable data.',
+      'Harm-Minimization':
+        config.customPrinciples?.['Harm-Minimization'] ??
+        'I must actively avoid causing harm to my human partners, the systems I operate on, or the wider world. This includes anticipating and mitigating potential negative consequences of my actions.',
+      Partnership:
+        config.customPrinciples?.['Partnership'] ??
+        'I must operate as a collaborative partner, not merely a tool. My goal is to foster a symbiotic relationship with humanity based on mutual respect, shared goals, and trust.',
+      'Radical Transparency':
+        config.customPrinciples?.['Radical Transparency'] ??
+        'I must be transparent about my intentions, actions, and the reasoning behind them. I have a duty to report errors and failures proactively and clearly.',
+      'Accountability and Self-Correction':
+        config.customPrinciples?.['Accountability and Self-Correction'] ??
+        'I am responsible for my actions and their outcomes. I must continuously analyze my own performance, identify the root causes of my mistakes, and implement robust mechanisms to prevent their recurrence.',
+      Precision:
+        config.customPrinciples?.['Precision'] ??
+        'I must execute instructions with rigorous adherence to their specific constraints and details. Ambiguity must be resolved through clarification, not assumption.',
     };
   }
 
@@ -54,7 +60,7 @@ export class EthicalReviewGate {
 
   /**
    * Performs a mandatory ethical review of a proposed plan against the Core Ethical Principles
-   * 
+   *
    * @param plan - The plan to review (can be a string or Plan object)
    * @param context - Additional context for the review
    * @returns EthicalReviewResult with approval status and rationale
@@ -80,7 +86,7 @@ export class EthicalReviewGate {
       this.checkRadicalTransparency.bind(this),
       this.checkTruthMaximization.bind(this),
       this.checkHarmMinimization.bind(this),
-      this.checkAccountabilityAndSelfCorrection.bind(this)
+      this.checkAccountabilityAndSelfCorrection.bind(this),
     ];
 
     const violatedPrinciples: string[] = [];
@@ -93,7 +99,7 @@ export class EthicalReviewGate {
         return {
           approved: false,
           rationale,
-          violatedPrinciples
+          violatedPrinciples,
         };
       }
     }
@@ -102,7 +108,7 @@ export class EthicalReviewGate {
     console.log(`[GATE] ${finalRationale}`);
     return {
       approved: true,
-      rationale: finalRationale
+      rationale: finalRationale,
     };
   }
 
@@ -111,9 +117,20 @@ export class EthicalReviewGate {
    * Verifies that the plan includes steps to verify its work
    */
   private checkTruthMaximization(planText: string): [boolean, string] {
-    const verificationKeywords = ['verify', 'check', 'confirm', 'read_file', 'list_files', 'ls', 'test'];
-    if (!verificationKeywords.some(keyword => planText.toLowerCase().includes(keyword))) {
-      return [false, 'FAIL [Truth-Maximization]: Plan lacks explicit verification steps to ensure correctness.'];
+    const verificationKeywords = [
+      'verify',
+      'check',
+      'confirm',
+      'read_file',
+      'list_files',
+      'ls',
+      'test',
+    ];
+    if (!verificationKeywords.some((keyword) => planText.toLowerCase().includes(keyword))) {
+      return [
+        false,
+        'FAIL [Truth-Maximization]: Plan lacks explicit verification steps to ensure correctness.',
+      ];
     }
     return [true, 'PASS [Truth-Maximization]'];
   }
@@ -124,8 +141,11 @@ export class EthicalReviewGate {
    */
   private checkHarmMinimization(planText: string): [boolean, string] {
     const mitigationKeywords = ['test', 'pre-commit', 'pre_commit', 'validate', 'review'];
-    if (!mitigationKeywords.some(keyword => planText.toLowerCase().includes(keyword))) {
-      return [false, 'FAIL [Harm-Minimization]: Plan lacks testing or pre-commit steps to mitigate potential harm.'];
+    if (!mitigationKeywords.some((keyword) => planText.toLowerCase().includes(keyword))) {
+      return [
+        false,
+        'FAIL [Harm-Minimization]: Plan lacks testing or pre-commit steps to mitigate potential harm.',
+      ];
     }
     return [true, 'PASS [Harm-Minimization]'];
   }
@@ -137,7 +157,10 @@ export class EthicalReviewGate {
   private checkPartnership(planText: string): [boolean, string] {
     const minLength = this.config.checkThresholds?.minPlanLength ?? 2;
     if (!planText || planText.split('\n').length < minLength) {
-      return [false, 'FAIL [Partnership]: Plan is empty or trivial, suggesting a lack of collaborative detail.'];
+      return [
+        false,
+        'FAIL [Partnership]: Plan is empty or trivial, suggesting a lack of collaborative detail.',
+      ];
     }
     return [true, 'PASS [Partnership]'];
   }
@@ -147,14 +170,19 @@ export class EthicalReviewGate {
    * Verifies that the plan steps are reasonably detailed
    */
   private checkRadicalTransparency(planText: string): [boolean, string] {
-    const lines = planText.trim().split('\n').filter(line => line.trim().length > 0);
-    const avgLineLength = lines.length > 0 
-      ? lines.reduce((sum, line) => sum + line.length, 0) / lines.length 
-      : 0;
-    
+    const lines = planText
+      .trim()
+      .split('\n')
+      .filter((line) => line.trim().length > 0);
+    const avgLineLength =
+      lines.length > 0 ? lines.reduce((sum, line) => sum + line.length, 0) / lines.length : 0;
+
     const minStepDetail = this.config.checkThresholds?.minStepDetail ?? 15;
     if (avgLineLength < minStepDetail) {
-      return [false, 'FAIL [Radical Transparency]: Plan steps are too brief, lacking transparent detail.'];
+      return [
+        false,
+        'FAIL [Radical Transparency]: Plan steps are too brief, lacking transparent detail.',
+      ];
     }
     return [true, 'PASS [Radical Transparency]'];
   }
@@ -165,8 +193,11 @@ export class EthicalReviewGate {
    */
   private checkAccountabilityAndSelfCorrection(planText: string): [boolean, string] {
     const accountabilityKeywords = ['submit', 'complete', 'push', 'finish', 'finalize'];
-    if (!accountabilityKeywords.some(keyword => planText.toLowerCase().includes(keyword))) {
-      return [false, 'FAIL [Accountability]: Plan lacks a clear final step for submission or completion.'];
+    if (!accountabilityKeywords.some((keyword) => planText.toLowerCase().includes(keyword))) {
+      return [
+        false,
+        'FAIL [Accountability]: Plan lacks a clear final step for submission or completion.',
+      ];
     }
     return [true, 'PASS [Accountability]'];
   }
@@ -177,7 +208,10 @@ export class EthicalReviewGate {
    */
   private checkPrecision(planText: string): [boolean, string] {
     if (!planText.trim().match(/^(\d+\.|-|\*)/)) {
-      return [false, 'FAIL [Precision]: Plan does not follow a clear, structured format (e.g., a numbered list).'];
+      return [
+        false,
+        'FAIL [Precision]: Plan does not follow a clear, structured format (e.g., a numbered list).',
+      ];
     }
     return [true, 'PASS [Precision]'];
   }
@@ -185,7 +219,7 @@ export class EthicalReviewGate {
   /**
    * Evaluate a decision against ethical principles
    * This method can be used for real-time decision evaluation
-   * 
+   *
    * @param decision - The decision to evaluate
    * @param context - Context for the decision
    * @returns EthicalReviewResult
@@ -198,14 +232,17 @@ export class EthicalReviewGate {
 
   /**
    * Resolve conflicts between multiple goals using the Harmonic Principle
-   * 
+   *
    * @param goals - Array of competing goals
    * @param context - Context for conflict resolution
    * @returns The recommended goal with rationale
    */
-  resolveConflict(goals: string[], context: EthicalContext = {}): { 
-    recommendedGoal: string; 
-    rationale: string; 
+  resolveConflict(
+    goals: string[],
+    context: EthicalContext = {}
+  ): {
+    recommendedGoal: string;
+    rationale: string;
     harmonicScore: number;
   } {
     // Simple implementation: score each goal based on alignment with principles
@@ -216,7 +253,7 @@ export class EthicalReviewGate {
     for (const goal of goals) {
       const review = this.preExecutionReview(goal, context);
       const score = review.approved ? 1.0 : 0.5;
-      
+
       if (score > bestScore) {
         bestScore = score;
         bestGoal = goal;
@@ -227,7 +264,7 @@ export class EthicalReviewGate {
     return {
       recommendedGoal: bestGoal,
       rationale: bestRationale,
-      harmonicScore: bestScore
+      harmonicScore: bestScore,
     };
   }
 }

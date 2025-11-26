@@ -1,6 +1,6 @@
 /**
  * WebSocketStreamManager
- * 
+ *
  * Manages WebSocket connections to Ethereum providers and listens to DEX pool events.
  * Implements automatic reconnection, error recovery, and event emission.
  */
@@ -41,7 +41,7 @@ export enum ConnectionStatus {
 
 /**
  * WebSocket Stream Manager
- * 
+ *
  * Manages WebSocket connections and pool event subscriptions using EventEmitter pattern.
  */
 export class WebSocketStreamManager extends EventEmitter {
@@ -85,7 +85,7 @@ export class WebSocketStreamManager extends EventEmitter {
 
     try {
       const endpoint = this.endpoints[this.currentEndpointIndex];
-      
+
       this.provider = new WebSocketProvider(endpoint.url);
 
       // Set up provider event listeners
@@ -101,7 +101,7 @@ export class WebSocketStreamManager extends EventEmitter {
     } catch (error) {
       this.setConnectionStatus(ConnectionStatus.ERROR);
       this.emit('error', error);
-      
+
       // Attempt to reconnect
       await this.handleReconnect();
     }
@@ -140,7 +140,7 @@ export class WebSocketStreamManager extends EventEmitter {
       // Try next endpoint
       this.currentEndpointIndex = (this.currentEndpointIndex + 1) % this.endpoints.length;
       this.reconnectAttempts = 0;
-      
+
       // If we've cycled through all endpoints, emit error
       if (this.currentEndpointIndex === 0) {
         this.setConnectionStatus(ConnectionStatus.ERROR);
@@ -150,7 +150,8 @@ export class WebSocketStreamManager extends EventEmitter {
     }
 
     const delay = Math.min(
-      this.retryConfig.baseDelay * Math.pow(this.retryConfig.backoffMultiplier, this.reconnectAttempts),
+      this.retryConfig.baseDelay *
+        Math.pow(this.retryConfig.backoffMultiplier, this.reconnectAttempts),
       this.retryConfig.maxDelay
     );
 
@@ -158,7 +159,7 @@ export class WebSocketStreamManager extends EventEmitter {
 
     this.reconnectTimer = setTimeout(async () => {
       this.reconnectAttempts++;
-      
+
       // Clean up old provider
       if (this.provider) {
         await this.provider.removeAllListeners();
@@ -186,86 +187,93 @@ export class WebSocketStreamManager extends EventEmitter {
     const poolContract = new Contract(poolAddress, this.POOL_ABI, this.provider);
 
     // Listen to Sync events
-    poolContract.on('Sync', async (reserve0: bigint, reserve1: bigint, event: ContractEventPayload) => {
-      const poolEvent: PoolEvent = {
-        eventType: 'Sync',
-        poolAddress,
-        blockNumber: event.log.blockNumber,
-        transactionHash: event.log.transactionHash,
-        timestamp: Date.now(),
-        reserve0: reserve0,
-        reserve1: reserve1,
-      };
-      this.emit('poolEvent', poolEvent);
-    });
+    poolContract.on(
+      'Sync',
+      async (reserve0: bigint, reserve1: bigint, event: ContractEventPayload) => {
+        const poolEvent: PoolEvent = {
+          eventType: 'Sync',
+          poolAddress,
+          blockNumber: event.log.blockNumber,
+          transactionHash: event.log.transactionHash,
+          timestamp: Date.now(),
+          reserve0: reserve0,
+          reserve1: reserve1,
+        };
+        this.emit('poolEvent', poolEvent);
+      }
+    );
 
     // Listen to Swap events
-    poolContract.on('Swap', async (
-      sender: string,
-      amount0In: bigint,
-      amount1In: bigint,
-      amount0Out: bigint,
-      amount1Out: bigint,
-      to: string,
-      event: ContractEventPayload
-    ) => {
-      const poolEvent: PoolEvent = {
-        eventType: 'Swap',
-        poolAddress,
-        blockNumber: event.log.blockNumber,
-        transactionHash: event.log.transactionHash,
-        timestamp: Date.now(),
-        sender,
-        amount0In: amount0In,
-        amount1In: amount1In,
-        amount0Out: amount0Out,
-        amount1Out: amount1Out,
-        to,
-      };
-      this.emit('poolEvent', poolEvent);
-    });
+    poolContract.on(
+      'Swap',
+      async (
+        sender: string,
+        amount0In: bigint,
+        amount1In: bigint,
+        amount0Out: bigint,
+        amount1Out: bigint,
+        to: string,
+        event: ContractEventPayload
+      ) => {
+        const poolEvent: PoolEvent = {
+          eventType: 'Swap',
+          poolAddress,
+          blockNumber: event.log.blockNumber,
+          transactionHash: event.log.transactionHash,
+          timestamp: Date.now(),
+          sender,
+          amount0In: amount0In,
+          amount1In: amount1In,
+          amount0Out: amount0Out,
+          amount1Out: amount1Out,
+          to,
+        };
+        this.emit('poolEvent', poolEvent);
+      }
+    );
 
     // Listen to Mint events
-    poolContract.on('Mint', async (
-      sender: string,
-      amount0: bigint,
-      amount1: bigint,
-      event: ContractEventPayload
-    ) => {
-      const poolEvent: PoolEvent = {
-        eventType: 'Mint',
-        poolAddress,
-        blockNumber: event.log.blockNumber,
-        transactionHash: event.log.transactionHash,
-        timestamp: Date.now(),
-        sender,
-        amount0In: amount0,
-        amount1In: amount1,
-      };
-      this.emit('poolEvent', poolEvent);
-    });
+    poolContract.on(
+      'Mint',
+      async (sender: string, amount0: bigint, amount1: bigint, event: ContractEventPayload) => {
+        const poolEvent: PoolEvent = {
+          eventType: 'Mint',
+          poolAddress,
+          blockNumber: event.log.blockNumber,
+          transactionHash: event.log.transactionHash,
+          timestamp: Date.now(),
+          sender,
+          amount0In: amount0,
+          amount1In: amount1,
+        };
+        this.emit('poolEvent', poolEvent);
+      }
+    );
 
     // Listen to Burn events
-    poolContract.on('Burn', async (
-      sender: string,
-      amount0: bigint,
-      amount1: bigint,
-      to: string,
-      event: ContractEventPayload
-    ) => {
-      const poolEvent: PoolEvent = {
-        eventType: 'Burn',
-        poolAddress,
-        blockNumber: event.log.blockNumber,
-        transactionHash: event.log.transactionHash,
-        timestamp: Date.now(),
-        sender,
-        amount0Out: amount0,
-        amount1Out: amount1,
-        to,
-      };
-      this.emit('poolEvent', poolEvent);
-    });
+    poolContract.on(
+      'Burn',
+      async (
+        sender: string,
+        amount0: bigint,
+        amount1: bigint,
+        to: string,
+        event: ContractEventPayload
+      ) => {
+        const poolEvent: PoolEvent = {
+          eventType: 'Burn',
+          poolAddress,
+          blockNumber: event.log.blockNumber,
+          transactionHash: event.log.transactionHash,
+          timestamp: Date.now(),
+          sender,
+          amount0Out: amount0,
+          amount1Out: amount1,
+          to,
+        };
+        this.emit('poolEvent', poolEvent);
+      }
+    );
 
     this.poolSubscriptions.set(poolAddress, poolContract);
     this.emit('subscribed', { poolAddress });
@@ -320,7 +328,7 @@ export class WebSocketStreamManager extends EventEmitter {
   private setConnectionStatus(status: ConnectionStatus): void {
     const oldStatus = this.connectionStatus;
     this.connectionStatus = status;
-    
+
     if (oldStatus !== status) {
       this.emit('statusChanged', { from: oldStatus, to: status });
     }

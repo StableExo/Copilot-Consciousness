@@ -1,6 +1,6 @@
 /**
  * PoolDataFetcher - Fetch Real Pool Data from On-Chain
- * 
+ *
  * Fetches reserve data, prices, and liquidity from Uniswap V3 and other DEX pools
  * on Base network. Provides real-time data for arbitrage opportunity detection.
  */
@@ -59,7 +59,7 @@ interface CachedPoolData {
 
 /**
  * PoolDataFetcher
- * 
+ *
  * Fetches real-time pool data from on-chain contracts with caching
  * to reduce RPC calls and improve performance.
  */
@@ -76,7 +76,7 @@ export class PoolDataFetcher {
 
   /**
    * Fetch pool data for multiple pools
-   * 
+   *
    * @param poolConfigs Array of pool configurations
    * @returns Array of pool info (null for failed fetches)
    */
@@ -94,17 +94,22 @@ export class PoolDataFetcher {
       if (result.status === 'fulfilled' && result.value) {
         poolData.push(result.value);
       } else if (result.status === 'rejected') {
-        console.warn(`[PoolDataFetcher] Failed to fetch pool ${poolConfigs[i].address}:`, result.reason);
+        console.warn(
+          `[PoolDataFetcher] Failed to fetch pool ${poolConfigs[i].address}:`,
+          result.reason
+        );
       }
     }
 
-    console.log(`[PoolDataFetcher] Successfully fetched ${poolData.length}/${poolConfigs.length} pools`);
+    console.log(
+      `[PoolDataFetcher] Successfully fetched ${poolData.length}/${poolConfigs.length} pools`
+    );
     return poolData;
   }
 
   /**
    * Fetch data for a single pool
-   * 
+   *
    * @param poolConfig Pool configuration
    * @returns Pool info or null if fetch failed
    */
@@ -165,11 +170,11 @@ export class PoolDataFetcher {
 
   /**
    * Calculate reserves from Uniswap V3 liquidity and sqrt price
-   * 
+   *
    * For Uniswap V3, reserves are derived from:
    * - L (liquidity)
    * - sqrtPriceX96 (current price)
-   * 
+   *
    * This is a simplified calculation for display purposes.
    * For actual trading, use the pool's swap simulation.
    */
@@ -192,7 +197,7 @@ export class PoolDataFetcher {
       // Simplified reserve calculation
       // reserve0 ≈ L / sqrt(P)
       // reserve1 ≈ L * sqrt(P)
-      
+
       // Convert sqrtPriceX96 to a usable price
       const Q96 = 2n ** 96n;
       const price = (sqrtPriceX96 * sqrtPriceX96) / Q96 / Q96;

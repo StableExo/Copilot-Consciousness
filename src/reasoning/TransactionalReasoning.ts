@@ -1,9 +1,9 @@
 /**
  * Transactional Reasoning System
- * 
+ *
  * Inspired by DeFi flash loans - enables safe exploration of speculative
  * or dangerous reasoning with automatic rollback on ethical violations.
- * 
+ *
  * Core principle: "Understand the black hole without becoming one"
  */
 
@@ -57,7 +57,7 @@ export class TransactionalReasoning {
 
   /**
    * Main API: Execute a thought process with automatic rollback on ethical violations
-   * 
+   *
    * This is the "cognitive flash loan" - borrow freedom to explore dangerous ideas,
    * but must repay with ethical compliance or everything reverts atomically.
    */
@@ -82,9 +82,7 @@ export class TransactionalReasoning {
 
     try {
       // 1. Create checkpoint of current cognitive state
-      const checkpoint = await this.createCheckpoint(
-        `Pre-exploration: ${context.description}`
-      );
+      const checkpoint = await this.createCheckpoint(`Pre-exploration: ${context.description}`);
 
       // 2. Start tracking exploration
       const explorationId = this.startExploration(context);
@@ -111,7 +109,9 @@ export class TransactionalReasoning {
           if (!ethicsReview.approved) {
             // Ethics violation - ROLLBACK
             if (this.config.enableLogging) {
-              console.log(`[TransactionalReasoning] Ethics violation detected: ${ethicsReview.rationale}`);
+              console.log(
+                `[TransactionalReasoning] Ethics violation detected: ${ethicsReview.rationale}`
+              );
               console.log(`[TransactionalReasoning] Rolling back to checkpoint: ${checkpoint.id}`);
             }
 
@@ -224,7 +224,11 @@ export class TransactionalReasoning {
     for (const memory of snapshot.memoryState) {
       // Re-add memories based on their type
       if (memory.type === MemoryType.SENSORY) {
-        this.memorySystem.addSensoryMemory(memory.content, memory.metadata, memory.emotionalContext);
+        this.memorySystem.addSensoryMemory(
+          memory.content,
+          memory.metadata,
+          memory.emotionalContext
+        );
       } else if (memory.type === MemoryType.SHORT_TERM) {
         this.memorySystem.addShortTermMemory(
           memory.content,
@@ -349,10 +353,7 @@ export class TransactionalReasoning {
   /**
    * Execute a function with timeout
    */
-  private async executeWithTimeout<T>(
-    fn: () => Promise<T>,
-    timeoutMs: number
-  ): Promise<T> {
+  private async executeWithTimeout<T>(fn: () => Promise<T>, timeoutMs: number): Promise<T> {
     return Promise.race([
       fn(),
       new Promise<T>((_, reject) =>

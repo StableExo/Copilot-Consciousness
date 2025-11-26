@@ -1,16 +1,11 @@
 /**
  * Pattern Recognition Engine Tests
- * 
+ *
  * Comprehensive test suite for the Pattern Recognition Engine
  */
 
 import { PatternRecognitionEngine } from '../pattern-recognition';
-import {
-  Pattern,
-  PatternCategory,
-  MatchConfidence,
-  PatternContext
-} from '../types/pattern';
+import { Pattern, PatternCategory, MatchConfidence, PatternContext } from '../types/pattern';
 
 describe('PatternRecognitionEngine', () => {
   let engine: PatternRecognitionEngine;
@@ -25,8 +20,8 @@ describe('PatternRecognitionEngine', () => {
         id: 'cond_1',
         description: 'Test condition',
         evaluate: (context: any) => context.value > 50,
-        weight: 1.0
-      }
+        weight: 1.0,
+      },
     ],
     requiredConfidence: MatchConfidence.MEDIUM,
     actions: [
@@ -34,8 +29,8 @@ describe('PatternRecognitionEngine', () => {
         id: 'action_1',
         type: 'test',
         description: 'Test action',
-        execute: async (context: any) => ({ success: true })
-      }
+        execute: async (context: any) => ({ success: true }),
+      },
     ],
     successRate: 0.75,
     timesMatched: 0,
@@ -43,7 +38,7 @@ describe('PatternRecognitionEngine', () => {
     timesFailed: 0,
     generation: 1,
     createdAt: new Date(),
-    lastUpdated: new Date()
+    lastUpdated: new Date(),
   });
 
   beforeEach(() => {
@@ -60,7 +55,7 @@ describe('PatternRecognitionEngine', () => {
     it('should initialize with initial patterns', () => {
       const patterns = [
         createTestPattern('p1', 'Pattern 1', PatternCategory.STRUCTURAL),
-        createTestPattern('p2', 'Pattern 2', PatternCategory.BEHAVIORAL)
+        createTestPattern('p2', 'Pattern 2', PatternCategory.BEHAVIORAL),
       ];
 
       const engineWithPatterns = new PatternRecognitionEngine(patterns);
@@ -78,19 +73,19 @@ describe('PatternRecognitionEngine', () => {
   describe('Pattern Management', () => {
     it('should add pattern to library', () => {
       const pattern = createTestPattern('p1', 'Test Pattern', PatternCategory.SPATIAL);
-      
+
       engine.addPattern(pattern);
-      
+
       const stats = engine.getStats();
       expect(stats.patternsInLibrary).toBe(1);
     });
 
     it('should retrieve pattern by ID', () => {
       const pattern = createTestPattern('p1', 'Test Pattern', PatternCategory.TEMPORAL);
-      
+
       engine.addPattern(pattern);
       const retrieved = engine.getPattern('p1');
-      
+
       expect(retrieved).toBeDefined();
       expect(retrieved?.id).toBe('p1');
       expect(retrieved?.name).toBe('Test Pattern');
@@ -98,12 +93,12 @@ describe('PatternRecognitionEngine', () => {
 
     it('should remove pattern from library', () => {
       const pattern = createTestPattern('p1', 'Test Pattern', PatternCategory.HYBRID);
-      
+
       engine.addPattern(pattern);
       const removed = engine.removePattern('p1');
-      
+
       expect(removed).toBe(true);
-      
+
       const stats = engine.getStats();
       expect(stats.patternsInLibrary).toBe(0);
     });
@@ -117,11 +112,11 @@ describe('PatternRecognitionEngine', () => {
       const pattern1 = createTestPattern('p1', 'Pattern 1', PatternCategory.STRUCTURAL);
       const pattern2 = createTestPattern('p2', 'Pattern 2', PatternCategory.STRUCTURAL);
       const pattern3 = createTestPattern('p3', 'Pattern 3', PatternCategory.BEHAVIORAL);
-      
+
       engine.addPattern(pattern1);
       engine.addPattern(pattern2);
       engine.addPattern(pattern3);
-      
+
       const structural = engine.getPatternsByCategory(PatternCategory.STRUCTURAL);
       expect(structural.length).toBe(2);
     });
@@ -131,12 +126,12 @@ describe('PatternRecognitionEngine', () => {
     it('should match patterns against context', () => {
       const pattern = createTestPattern('p1', 'Value Check', PatternCategory.SPATIAL);
       engine.addPattern(pattern);
-      
+
       const context: PatternContext = {
         value: 100,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      
+
       const matches = engine.matchPatterns(context);
       expect(matches.length).toBeGreaterThan(0);
     });
@@ -144,12 +139,12 @@ describe('PatternRecognitionEngine', () => {
     it('should not match when conditions fail', () => {
       const pattern = createTestPattern('p1', 'Value Check', PatternCategory.SPATIAL);
       engine.addPattern(pattern);
-      
+
       const context: PatternContext = {
         value: 10, // Below threshold of 50
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      
+
       const matches = engine.matchPatterns(context);
       expect(matches.length).toBe(0);
     });
@@ -165,14 +160,14 @@ describe('PatternRecognitionEngine', () => {
             id: 'cond_1',
             description: 'First condition',
             evaluate: (context: any) => context.value > 50,
-            weight: 1.0
+            weight: 1.0,
           },
           {
             id: 'cond_2',
             description: 'Second condition',
             evaluate: (context: any) => context.risk < 0.3,
-            weight: 1.0
-          }
+            weight: 1.0,
+          },
         ],
         requiredConfidence: MatchConfidence.LOW,
         actions: [],
@@ -182,19 +177,19 @@ describe('PatternRecognitionEngine', () => {
         timesFailed: 0,
         generation: 1,
         createdAt: new Date(),
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       };
-      
+
       engine.addPattern(pattern);
-      
+
       const context: PatternContext = {
         value: 100,
         risk: 0.1,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      
+
       const matches = engine.matchPatterns(context);
-      
+
       if (matches.length > 0) {
         expect(matches[0].confidence).toBeDefined();
         expect(matches[0].matchScore).toBeGreaterThan(0);
@@ -203,35 +198,35 @@ describe('PatternRecognitionEngine', () => {
 
     it('should respect minimum confidence threshold', () => {
       const highConfidenceEngine = new PatternRecognitionEngine([], {
-        minConfidence: MatchConfidence.VERY_HIGH
+        minConfidence: MatchConfidence.VERY_HIGH,
       });
-      
+
       const pattern = createTestPattern('p1', 'Pattern', PatternCategory.SPATIAL);
       pattern.requiredConfidence = MatchConfidence.LOW;
-      
+
       // Add more stringent conditions to ensure only low confidence match
       pattern.conditions = [
         {
           id: 'cond_1',
           description: 'Weak condition',
           evaluate: (context: any) => context.value > 50,
-          weight: 0.5
+          weight: 0.5,
         },
         {
           id: 'cond_2',
           description: 'Failing condition',
           evaluate: (context: any) => false, // Always fails
-          weight: 0.5
-        }
+          weight: 0.5,
+        },
       ];
-      
+
       highConfidenceEngine.addPattern(pattern);
-      
+
       const context: PatternContext = {
         value: 100,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      
+
       const matches = highConfidenceEngine.matchPatterns(context);
       // Should not match due to engine's high confidence requirement and partial match
       expect(matches.length).toBe(0);
@@ -239,20 +234,20 @@ describe('PatternRecognitionEngine', () => {
 
     it('should limit number of matches', () => {
       const limitedEngine = new PatternRecognitionEngine([], {
-        maxMatches: 2
+        maxMatches: 2,
       });
-      
+
       // Add 5 patterns
       for (let i = 1; i <= 5; i++) {
         const pattern = createTestPattern(`p${i}`, `Pattern ${i}`, PatternCategory.SPATIAL);
         limitedEngine.addPattern(pattern);
       }
-      
+
       const context: PatternContext = {
         value: 100,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      
+
       const matches = limitedEngine.matchPatterns(context);
       expect(matches.length).toBeLessThanOrEqual(2);
     });
@@ -260,16 +255,16 @@ describe('PatternRecognitionEngine', () => {
     it('should update statistics when matching', () => {
       const pattern = createTestPattern('p1', 'Pattern', PatternCategory.BEHAVIORAL);
       engine.addPattern(pattern);
-      
+
       const context: PatternContext = {
         value: 100,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      
+
       const initialStats = engine.getStats();
       engine.matchPatterns(context);
       const updatedStats = engine.getStats();
-      
+
       expect(updatedStats.matchesPerformed).toBe(initialStats.matchesPerformed + 1);
     });
   });
@@ -278,30 +273,30 @@ describe('PatternRecognitionEngine', () => {
     it('should generate recommendations from matches', () => {
       const pattern = createTestPattern('p1', 'Recommendation Test', PatternCategory.TEMPORAL);
       engine.addPattern(pattern);
-      
+
       const context: PatternContext = {
         value: 100,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      
+
       const matches = engine.matchPatterns(context);
       const recommendations = engine.recommend(matches);
-      
+
       expect(recommendations.length).toBe(matches.length);
     });
 
     it('should include reasoning in recommendations', () => {
       const pattern = createTestPattern('p1', 'Test Pattern', PatternCategory.HYBRID);
       engine.addPattern(pattern);
-      
+
       const context: PatternContext = {
         value: 100,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      
+
       const matches = engine.matchPatterns(context);
       const recommendations = engine.recommend(matches);
-      
+
       if (recommendations.length > 0) {
         expect(recommendations[0].reasoning).toBeDefined();
         expect(recommendations[0].reasoning.length).toBeGreaterThan(0);
@@ -319,8 +314,8 @@ describe('PatternRecognitionEngine', () => {
             id: 'cond_1',
             description: 'Test condition',
             evaluate: (context: any) => true,
-            weight: 1.0
-          }
+            weight: 1.0,
+          },
         ],
         requiredConfidence: MatchConfidence.LOW,
         actions: [],
@@ -330,18 +325,18 @@ describe('PatternRecognitionEngine', () => {
         timesFailed: 7,
         generation: 1,
         createdAt: new Date(),
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       };
-      
+
       engine.addPattern(pattern);
-      
+
       const context: PatternContext = {
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      
+
       const matches = engine.matchPatterns(context);
       const recommendations = engine.recommend(matches);
-      
+
       if (recommendations.length > 0) {
         expect(recommendations[0].risks.length).toBeGreaterThan(0);
       }
@@ -350,18 +345,18 @@ describe('PatternRecognitionEngine', () => {
     it('should suggest alternatives in recommendations', () => {
       const pattern1 = createTestPattern('p1', 'Pattern 1', PatternCategory.BEHAVIORAL);
       const pattern2 = createTestPattern('p2', 'Pattern 2', PatternCategory.BEHAVIORAL);
-      
+
       engine.addPattern(pattern1);
       engine.addPattern(pattern2);
-      
+
       const context: PatternContext = {
         value: 100,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      
+
       const matches = engine.matchPatterns(context);
       const recommendations = engine.recommend(matches);
-      
+
       if (recommendations.length > 1) {
         // First recommendation should have second as alternative
         expect(recommendations[0].alternatives).toBeDefined();
@@ -373,9 +368,9 @@ describe('PatternRecognitionEngine', () => {
     it('should update pattern on success', () => {
       const pattern = createTestPattern('p1', 'Learning Pattern', PatternCategory.SPATIAL);
       engine.addPattern(pattern);
-      
+
       const result = engine.updatePattern('p1', true);
-      
+
       expect(result).not.toBeNull();
       expect(result!.pattern.timesMatched).toBe(1);
       expect(result!.pattern.timesSucceeded).toBe(1);
@@ -385,9 +380,9 @@ describe('PatternRecognitionEngine', () => {
     it('should update pattern on failure', () => {
       const pattern = createTestPattern('p1', 'Learning Pattern', PatternCategory.TEMPORAL);
       engine.addPattern(pattern);
-      
+
       const result = engine.updatePattern('p1', false);
-      
+
       expect(result).not.toBeNull();
       expect(result!.pattern.timesMatched).toBe(1);
       expect(result!.pattern.timesFailed).toBe(1);
@@ -397,12 +392,12 @@ describe('PatternRecognitionEngine', () => {
       const pattern = createTestPattern('p1', 'Adaptive Pattern', PatternCategory.HYBRID);
       pattern.successRate = 0.5;
       engine.addPattern(pattern);
-      
+
       // Multiple successes should increase success rate
       engine.updatePattern('p1', true);
       engine.updatePattern('p1', true);
       engine.updatePattern('p1', true);
-      
+
       const updated = engine.getPattern('p1');
       expect(updated!.successRate).toBeGreaterThan(0.5);
     });
@@ -417,9 +412,9 @@ describe('PatternRecognitionEngine', () => {
     it('should compose multiple patterns', () => {
       const pattern1 = createTestPattern('p1', 'Pattern 1', PatternCategory.STRUCTURAL);
       const pattern2 = createTestPattern('p2', 'Pattern 2', PatternCategory.BEHAVIORAL);
-      
+
       const composite = engine.composePatterns([pattern1, pattern2], 'sequential');
-      
+
       expect(composite).toBeDefined();
       expect(composite.basePatterns.length).toBe(2);
       expect(composite.compositionStrategy).toBe('sequential');
@@ -428,9 +423,9 @@ describe('PatternRecognitionEngine', () => {
     it('should combine conditions from all patterns', () => {
       const pattern1 = createTestPattern('p1', 'Pattern 1', PatternCategory.SPATIAL);
       const pattern2 = createTestPattern('p2', 'Pattern 2', PatternCategory.TEMPORAL);
-      
+
       const composite = engine.composePatterns([pattern1, pattern2], 'parallel');
-      
+
       expect(composite.conditions.length).toBe(
         pattern1.conditions.length + pattern2.conditions.length
       );
@@ -439,12 +434,10 @@ describe('PatternRecognitionEngine', () => {
     it('should combine actions from all patterns', () => {
       const pattern1 = createTestPattern('p1', 'Pattern 1', PatternCategory.HYBRID);
       const pattern2 = createTestPattern('p2', 'Pattern 2', PatternCategory.STRUCTURAL);
-      
+
       const composite = engine.composePatterns([pattern1, pattern2], 'conditional');
-      
-      expect(composite.actions.length).toBe(
-        pattern1.actions.length + pattern2.actions.length
-      );
+
+      expect(composite.actions.length).toBe(pattern1.actions.length + pattern2.actions.length);
     });
   });
 
@@ -452,14 +445,14 @@ describe('PatternRecognitionEngine', () => {
     it('should provide analytics for pattern', () => {
       const pattern = createTestPattern('p1', 'Analytics Test', PatternCategory.BEHAVIORAL);
       engine.addPattern(pattern);
-      
+
       // Simulate some usage
       engine.updatePattern('p1', true);
       engine.updatePattern('p1', true);
       engine.updatePattern('p1', false);
-      
+
       const analytics = engine.getPatternAnalytics('p1');
-      
+
       expect(analytics).not.toBeNull();
       expect(analytics!.totalMatches).toBe(3);
       expect(analytics!.successfulMatches).toBe(2);
@@ -470,9 +463,9 @@ describe('PatternRecognitionEngine', () => {
       const pattern = createTestPattern('p1', 'Trend Test', PatternCategory.SPATIAL);
       pattern.successRate = 0.9;
       engine.addPattern(pattern);
-      
+
       const analytics = engine.getPatternAnalytics('p1');
-      
+
       expect(analytics).not.toBeNull();
       expect(analytics!.trend).toBeDefined();
     });
@@ -488,13 +481,13 @@ describe('PatternRecognitionEngine', () => {
       const pattern1 = createTestPattern('p1', 'Pattern 1', PatternCategory.STRUCTURAL);
       const pattern2 = createTestPattern('p2', 'Pattern 2', PatternCategory.STRUCTURAL);
       const pattern3 = createTestPattern('p3', 'Pattern 3', PatternCategory.BEHAVIORAL);
-      
+
       engine.addPattern(pattern1);
       engine.addPattern(pattern2);
       engine.addPattern(pattern3);
-      
+
       const info = engine.getLibraryInfo();
-      
+
       expect(info.totalPatterns).toBe(3);
       expect(info.byCategory['structural']).toBe(2);
       expect(info.byCategory['behavioral']).toBe(1);
@@ -504,40 +497,40 @@ describe('PatternRecognitionEngine', () => {
   describe('Statistics Tracking', () => {
     it('should track patterns in library', () => {
       const pattern = createTestPattern('p1', 'Stats Test', PatternCategory.TEMPORAL);
-      
+
       engine.addPattern(pattern);
       const stats = engine.getStats();
-      
+
       expect(stats.patternsInLibrary).toBe(1);
     });
 
     it('should track successful matches', () => {
       const pattern = createTestPattern('p1', 'Match Test', PatternCategory.HYBRID);
       engine.addPattern(pattern);
-      
+
       const context: PatternContext = {
         value: 100,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      
+
       engine.matchPatterns(context);
       const stats = engine.getStats();
-      
+
       expect(stats.matchesPerformed).toBeGreaterThan(0);
     });
 
     it('should calculate average match confidence', () => {
       const pattern = createTestPattern('p1', 'Confidence Test', PatternCategory.SPATIAL);
       engine.addPattern(pattern);
-      
+
       const context: PatternContext = {
         value: 100,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      
+
       engine.matchPatterns(context);
       const stats = engine.getStats();
-      
+
       if (stats.successfulMatches > 0) {
         expect(stats.avgMatchConfidence).toBeGreaterThanOrEqual(0);
       }

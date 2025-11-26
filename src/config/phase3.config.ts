@@ -1,12 +1,12 @@
 /**
  * Phase 3 Configuration - Advanced AI & AEV Evolution
- * 
+ *
  * Configuration for Phase 3 components including:
  * - AI learning agents (RL, NN, Evolution)
  * - Cross-chain intelligence
  * - Enhanced security
  * - Consciousness deepening
- * 
+ *
  * See docs/PHASE3_ROADMAP.md for detailed component documentation
  */
 
@@ -41,7 +41,7 @@ export interface Phase3Config {
       enabled: boolean;
     };
   };
-  
+
   crossChain: {
     enabledChains: number[];
     updateInterval: number; // milliseconds
@@ -50,7 +50,7 @@ export interface Phase3Config {
     minCrossChainProfit: number; // ETH
     enabled: boolean;
   };
-  
+
   security: {
     bloodhound: {
       enableMLScoring: boolean;
@@ -72,7 +72,7 @@ export interface Phase3Config {
       enabled: boolean;
     };
   };
-  
+
   consciousness: {
     learningRate: number;
     maxHistorySize: number;
@@ -86,7 +86,7 @@ export interface Phase3Config {
 
 /**
  * Default Phase 3 Configuration
- * 
+ *
  * Balanced settings for production use. Can be overridden via environment
  * variables or configuration updates.
  */
@@ -121,7 +121,7 @@ export const defaultPhase3Config: Phase3Config = {
       enabled: true,
     },
   },
-  
+
   crossChain: {
     enabledChains: [1, 8453, 42161, 10], // Ethereum, Base, Arbitrum, Optimism
     updateInterval: 15000, // 15 seconds
@@ -130,7 +130,7 @@ export const defaultPhase3Config: Phase3Config = {
     minCrossChainProfit: 0.01, // 0.01 ETH minimum
     enabled: false, // Disabled by default, enable when ready
   },
-  
+
   security: {
     bloodhound: {
       enableMLScoring: true,
@@ -152,7 +152,7 @@ export const defaultPhase3Config: Phase3Config = {
       enabled: true,
     },
   },
-  
+
   consciousness: {
     learningRate: 0.05,
     maxHistorySize: 1000,
@@ -166,7 +166,7 @@ export const defaultPhase3Config: Phase3Config = {
 
 /**
  * Load Phase 3 configuration from environment variables
- * 
+ *
  * Allows overriding default configuration via env vars:
  * - PHASE3_AI_ENABLED=true/false
  * - PHASE3_CROSSCHAIN_ENABLED=true/false
@@ -175,7 +175,7 @@ export const defaultPhase3Config: Phase3Config = {
  */
 export function loadPhase3Config(): Phase3Config {
   const config = { ...defaultPhase3Config };
-  
+
   // AI configuration overrides
   if (process.env.PHASE3_AI_ENABLED !== undefined) {
     const enabled = process.env.PHASE3_AI_ENABLED === 'true';
@@ -183,26 +183,26 @@ export function loadPhase3Config(): Phase3Config {
     config.ai.nnScorer.enabled = enabled;
     config.ai.evolution.enabled = enabled;
   }
-  
+
   if (process.env.PHASE3_RL_LEARNING_RATE) {
     config.ai.rlAgent.learningRate = parseFloat(process.env.PHASE3_RL_LEARNING_RATE);
   }
-  
+
   if (process.env.PHASE3_NN_CONFIDENCE) {
     config.ai.nnScorer.minConfidenceScore = parseFloat(process.env.PHASE3_NN_CONFIDENCE);
   }
-  
+
   // Cross-chain configuration overrides
   if (process.env.PHASE3_CROSSCHAIN_ENABLED !== undefined) {
     config.crossChain.enabled = process.env.PHASE3_CROSSCHAIN_ENABLED === 'true';
   }
-  
+
   if (process.env.PHASE3_CROSSCHAIN_CHAINS) {
-    config.crossChain.enabledChains = process.env.PHASE3_CROSSCHAIN_CHAINS
-      .split(',')
-      .map(id => parseInt(id.trim()));
+    config.crossChain.enabledChains = process.env.PHASE3_CROSSCHAIN_CHAINS.split(',').map((id) =>
+      parseInt(id.trim())
+    );
   }
-  
+
   // Security configuration overrides
   if (process.env.PHASE3_SECURITY_ENABLED !== undefined) {
     const enabled = process.env.PHASE3_SECURITY_ENABLED === 'true';
@@ -210,71 +210,75 @@ export function loadPhase3Config(): Phase3Config {
     config.security.threatResponse.enabled = enabled;
     config.security.patternLearner.enabled = enabled;
   }
-  
+
   if (process.env.PHASE3_SECURITY_AUTO_RESPOND !== undefined) {
-    config.security.threatResponse.autoRespond = process.env.PHASE3_SECURITY_AUTO_RESPOND === 'true';
+    config.security.threatResponse.autoRespond =
+      process.env.PHASE3_SECURITY_AUTO_RESPOND === 'true';
   }
-  
+
   // Consciousness configuration overrides
   if (process.env.PHASE3_EPISODIC_MEMORY !== undefined) {
     config.consciousness.enableEpisodicMemory = process.env.PHASE3_EPISODIC_MEMORY === 'true';
   }
-  
+
   if (process.env.PHASE3_REFLECTION_INTERVAL) {
     config.consciousness.reflectionInterval = parseInt(process.env.PHASE3_REFLECTION_INTERVAL);
   }
-  
+
   return config;
 }
 
 /**
  * Validate Phase 3 configuration
- * 
+ *
  * Ensures configuration values are within acceptable ranges
  */
 export function validatePhase3Config(config: Phase3Config): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
-  
+
   // Validate AI configuration
   if (config.ai.rlAgent.learningRate <= 0 || config.ai.rlAgent.learningRate > 1) {
     errors.push('RL learning rate must be between 0 and 1');
   }
-  
+
   if (config.ai.rlAgent.discountFactor <= 0 || config.ai.rlAgent.discountFactor > 1) {
     errors.push('RL discount factor must be between 0 and 1');
   }
-  
+
   if (config.ai.nnScorer.minConfidenceScore < 0 || config.ai.nnScorer.minConfidenceScore > 1) {
     errors.push('NN confidence score must be between 0 and 1');
   }
-  
+
   // Validate cross-chain configuration
   if (config.crossChain.minPriceDivergence <= 0) {
     errors.push('Minimum price divergence must be positive');
   }
-  
+
   if (config.crossChain.enabledChains.length === 0) {
     errors.push('At least one chain must be enabled for cross-chain intelligence');
   }
-  
+
   // Validate security configuration
-  if (config.security.bloodhound.minConfidence < 0 || config.security.bloodhound.minConfidence > 1) {
+  if (
+    config.security.bloodhound.minConfidence < 0 ||
+    config.security.bloodhound.minConfidence > 1
+  ) {
     errors.push('Bloodhound confidence must be between 0 and 1');
   }
-  
+
   if (config.security.patternLearner.minOccurrencesForPattern < 1) {
     errors.push('Minimum pattern occurrences must be at least 1');
   }
-  
+
   // Validate consciousness configuration
   if (config.consciousness.learningRate <= 0 || config.consciousness.learningRate > 1) {
     errors.push('Consciousness learning rate must be between 0 and 1');
   }
-  
+
   if (config.consciousness.maxEpisodesStored < 100) {
     errors.push('Maximum episodes stored should be at least 100 for meaningful learning');
   }
-  
+
   return {
     valid: errors.length === 0,
     errors,
@@ -304,11 +308,13 @@ export function getPhase3ConfigSummary(config: Phase3Config): string {
     '',
     'Consciousness:',
     `  Episodic Memory: ${config.consciousness.enableEpisodicMemory ? 'ENABLED' : 'DISABLED'}`,
-    `  Adversarial Recognition: ${config.consciousness.enableAdversarialRecognition ? 'ENABLED' : 'DISABLED'}`,
+    `  Adversarial Recognition: ${
+      config.consciousness.enableAdversarialRecognition ? 'ENABLED' : 'DISABLED'
+    }`,
     `  Self-Reflection: ${config.consciousness.enableSelfReflection ? 'ENABLED' : 'DISABLED'}`,
     '',
     '============================',
   ];
-  
+
   return lines.join('\n');
 }

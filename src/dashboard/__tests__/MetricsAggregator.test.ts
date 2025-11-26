@@ -43,13 +43,13 @@ describe('MetricsAggregator', () => {
           totalBridgeFees: BigInt(0),
           estimatedTimeSeconds: 10,
           chains: [1],
-          hops: []
+          hops: [],
         },
         gasUsed: BigInt(50000),
         gasCost: BigInt(100),
         chain: 'ethereum',
         timestamp: Date.now(),
-        success: true
+        success: true,
       });
 
       const metrics = await metricsAggregator.getCurrentMetrics();
@@ -74,10 +74,10 @@ describe('MetricsAggregator', () => {
     it('should filter data by time range', () => {
       const now = Date.now();
       const oneDayAgo = now - 24 * 60 * 60 * 1000;
-      
+
       const chartData = metricsAggregator.getChartData({
         start: oneDayAgo,
-        end: now
+        end: now,
       });
 
       expect(chartData).toBeDefined();

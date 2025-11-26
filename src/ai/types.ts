@@ -1,6 +1,6 @@
 /**
  * Types for Phase 3: Advanced AI Integration
- * 
+ *
  * Core type definitions for reinforcement learning, neural network scoring,
  * and automated strategy evolution.
  */
@@ -13,17 +13,17 @@ export interface ExecutionEpisode {
   // Episode metadata
   timestamp: number;
   episodeId: string;
-  
+
   // State representation
   state: ExecutionState;
-  
+
   // Action taken
   action: ExecutionAction;
-  
+
   // Outcome and reward
   outcome: ExecutionOutcome;
   reward: number;
-  
+
   // MEV context
   mevContext: MEVContext;
 }
@@ -37,12 +37,12 @@ export interface ExecutionState {
   gasPrice: number;
   congestion: number;
   searcherDensity: number;
-  
+
   // Opportunity characteristics
   expectedProfit: number;
   pathComplexity: number;
   liquidityDepth: number;
-  
+
   // Historical context
   recentSuccessRate: number;
   avgProfitPerTx: number;
@@ -55,10 +55,10 @@ export interface ExecutionState {
 export interface ExecutionAction {
   // Decision
   executed: boolean;
-  
+
   // Strategy parameters used
   strategyParams: StrategyParameters;
-  
+
   // Execution timing
   blockDelay: number;
   priorityFee: number;
@@ -118,27 +118,27 @@ export interface OpportunityFeatures {
   netProfit: number;
   profitMargin: number;
   roi: number;
-  
+
   // Liquidity metrics
   totalLiquidity: number;
   liquidityRatio: number;
   poolDepth: number;
-  
+
   // MEV risk factors
   mevRisk: number;
   competitionLevel: number;
   blockCongestion: number;
-  
+
   // Path characteristics
   hopCount: number;
   pathComplexity: number;
   gasEstimate: number;
-  
+
   // Market conditions
   volatility: number;
   priceImpact: number;
   timeOfDay: number;
-  
+
   // Historical performance
   similarPathSuccessRate: number;
   avgHistoricalProfit: number;

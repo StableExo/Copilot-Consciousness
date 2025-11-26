@@ -1,6 +1,6 @@
 /**
  * Alchemy Prices Service
- * 
+ *
  * Provides token price data using Alchemy's Enhanced APIs.
  * Useful for arbitrage profit calculations and cross-DEX price comparison.
  */
@@ -44,7 +44,7 @@ export class AlchemyPricesService {
       // Implementation would fetch from price oracle
       // Placeholder: would integrate with Alchemy's price endpoints when available
       const price = await this.fetchPriceFromChain('ETH');
-      
+
       this.setCachedPrice(cacheKey, price);
       return price;
     } catch (error) {
@@ -63,7 +63,7 @@ export class AlchemyPricesService {
       if (cached !== null) return cached;
 
       const price = await this.fetchPriceFromChain(tokenAddress);
-      
+
       this.setCachedPrice(cacheKey, price);
       return price;
     } catch (error) {
@@ -79,7 +79,7 @@ export class AlchemyPricesService {
     try {
       const tokenPriceUsd = await this.getTokenPriceUsd(tokenAddress);
       const ethPriceUsd = await this.getEthPriceUsd();
-      
+
       return tokenPriceUsd / ethPriceUsd;
     } catch (error) {
       console.error(`Error calculating ETH price for ${tokenAddress}:`, error);
@@ -97,7 +97,7 @@ export class AlchemyPricesService {
   ): Promise<PriceComparison> {
     const spread = Math.abs(source1Price - source2Price);
     const spreadPercent = (spread / Math.min(source1Price, source2Price)) * 100;
-    
+
     return {
       token: tokenAddress,
       dex1Price: source1Price,
@@ -120,10 +120,10 @@ export class AlchemyPricesService {
     try {
       const amountFloat = parseFloat(formatUnits(amount, decimals));
       const priceUsd = await this.getTokenPriceUsd(tokenAddress);
-      
+
       const buyValueUsd = buyPrice * amountFloat * priceUsd;
       const sellValueUsd = sellPrice * amountFloat * priceUsd;
-      
+
       return sellValueUsd - buyValueUsd;
     } catch (error) {
       console.error('Error calculating arbitrage value:', error);
@@ -141,9 +141,11 @@ export class AlchemyPricesService {
       // 1. Chainlink price feeds
       // 2. Uniswap V3 TWAP
       // 3. Other reliable price oracles
-      
+
       // For now, throw an error to indicate not implemented
-      throw new Error(`Price fetching not fully implemented for ${tokenAddress}. Please integrate with price oracle.`);
+      throw new Error(
+        `Price fetching not fully implemented for ${tokenAddress}. Please integrate with price oracle.`
+      );
     } catch (error) {
       console.error(`Error fetching on-chain price for ${tokenAddress}:`, error);
       throw error;
@@ -156,13 +158,13 @@ export class AlchemyPricesService {
   private getCachedPrice(key: string): number | null {
     const cached = this.priceCache.get(key);
     if (!cached) return null;
-    
+
     const age = Date.now() - cached.timestamp;
     if (age > this.cacheTTL) {
       this.priceCache.delete(key);
       return null;
     }
-    
+
     return cached.price;
   }
 
@@ -186,14 +188,13 @@ export class AlchemyPricesService {
   /**
    * Get historical prices (if available through Alchemy)
    */
-  async getHistoricalPrice(
-    tokenAddress: string,
-    blockNumber: number
-  ): Promise<number> {
+  async getHistoricalPrice(tokenAddress: string, blockNumber: number): Promise<number> {
     try {
       // Would fetch historical price at specific block
       // This requires integration with historical price oracles or indexed data
-      throw new Error(`Historical price fetching not fully implemented for ${tokenAddress} at block ${blockNumber}. Please integrate with historical price oracle.`);
+      throw new Error(
+        `Historical price fetching not fully implemented for ${tokenAddress} at block ${blockNumber}. Please integrate with historical price oracle.`
+      );
     } catch (error) {
       console.error('Error fetching historical price:', error);
       throw error;

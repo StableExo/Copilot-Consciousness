@@ -10,10 +10,10 @@
 import { JsonRpcProvider, Provider, ethers, isAddress } from 'ethers';
 
 interface TransactionParameters {
-    to: string;
-    value: number;
-    gasLimit?: number;
-    data?: string;
+  to: string;
+  value: number;
+  gasLimit?: number;
+  data?: string;
 }
 
 /**
@@ -21,10 +21,10 @@ interface TransactionParameters {
  * @returns {ethers.Provider} The detected provider instance.
  */
 function detectProvider(): Provider {
-    // Logic to detect provider
-    // This is a placeholder implementation
-    const provider = new JsonRpcProvider();  // Replace with actual detection logic
-    return provider;
+  // Logic to detect provider
+  // This is a placeholder implementation
+  const provider = new JsonRpcProvider(); // Replace with actual detection logic
+  return provider;
 }
 
 /**
@@ -33,8 +33,8 @@ function detectProvider(): Provider {
  * @returns {boolean} True if valid.
  */
 function validateProvider(provider: Provider): boolean {
-    // Basic validation
-    return provider !== null && provider !== undefined;
+  // Basic validation
+  return provider !== null && provider !== undefined;
 }
 
 /**
@@ -43,8 +43,8 @@ function validateProvider(provider: Provider): boolean {
  * @returns {boolean} True if valid.
  */
 function isValidTransaction(params: TransactionParameters): boolean {
-    // Basic validation
-    return !!(params.to && isAddress(params.to));
+  // Basic validation
+  return !!(params.to && isAddress(params.to));
 }
 
 /**
@@ -54,30 +54,30 @@ function isValidTransaction(params: TransactionParameters): boolean {
  * @throws {Error} If validation fails.
  */
 function prepareTransaction(params: TransactionParameters): ethers.TransactionRequest {
-    const provider = detectProvider();
+  const provider = detectProvider();
 
-    // Validation logic
-    if (!validateProvider(provider)) {
-        throw new Error('Invalid provider.');
-    }
-    if (!isValidTransaction(params)) {
-        throw new Error('Invalid transaction parameters.');
-    }
+  // Validation logic
+  if (!validateProvider(provider)) {
+    throw new Error('Invalid provider.');
+  }
+  if (!isValidTransaction(params)) {
+    throw new Error('Invalid transaction parameters.');
+  }
 
-    // Build transaction request
-    const txRequest: ethers.TransactionRequest = {
-        to: params.to,
-        value: params.value,
-    };
-    
-    if (params.gasLimit) {
-        txRequest.gasLimit = params.gasLimit;
-    }
-    if (params.data) {
-        txRequest.data = params.data;
-    }
+  // Build transaction request
+  const txRequest: ethers.TransactionRequest = {
+    to: params.to,
+    value: params.value,
+  };
 
-    return txRequest;
+  if (params.gasLimit) {
+    txRequest.gasLimit = params.gasLimit;
+  }
+  if (params.data) {
+    txRequest.data = params.data;
+  }
+
+  return txRequest;
 }
 
 // Export the prepareTransaction function for use in other modules

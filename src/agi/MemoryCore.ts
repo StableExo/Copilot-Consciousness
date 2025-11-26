@@ -21,7 +21,7 @@ export interface FAISSIndex {
 
 /**
  * Memory Core class for AGI-aligned memory management with vector indexing
- * 
+ *
  * This implementation provides an interface for FAISS integration.
  * Actual FAISS implementation should be provided via dependency injection.
  */
@@ -34,16 +34,12 @@ export class MemoryCore {
 
   /**
    * Create a new MemoryCore instance
-   * 
+   *
    * @param dimension - Vector dimension for embeddings (default: 384 for all-MiniLM-L6-v2)
    * @param index - Optional FAISS index implementation
    * @param embedding - Optional embedding model implementation
    */
-  constructor(
-    dimension: number = 384,
-    index?: FAISSIndex,
-    embedding?: EmbeddingModel
-  ) {
+  constructor(dimension: number = 384, index?: FAISSIndex, embedding?: EmbeddingModel) {
     this.dimension = dimension;
     this.index = index || null;
     this.mapping = new Map();
@@ -53,14 +49,14 @@ export class MemoryCore {
 
   /**
    * Store a memory entry in the core
-   * 
+   *
    * @param memory - Memory entry to store
    * @returns Promise that resolves when the memory is stored
    */
   async store(memory: AGIMemoryEntry): Promise<void> {
     // Store the memory
     this.memories.set(memory.id, memory);
-    
+
     // If embedding model is available, create vector and add to index
     if (this.embedding && this.index) {
       const vector = await this.embedding.encode(memory.content);
@@ -74,7 +70,7 @@ export class MemoryCore {
 
   /**
    * Search for similar memories using vector similarity
-   * 
+   *
    * @param query - Query string to search for
    * @param limit - Maximum number of results to return (default: 5)
    * @returns Promise that resolves to array of matching memory entries
@@ -84,17 +80,17 @@ export class MemoryCore {
     if (this.embedding && this.index) {
       const queryVector = await this.embedding.encode(query);
       const results = await this.index.search(queryVector, limit);
-      
+
       // Convert results to memory entries
       return results
-        .map(result => this.memories.get(result.id))
+        .map((result) => this.memories.get(result.id))
         .filter((mem): mem is AGIMemoryEntry => mem !== undefined);
     }
-    
+
     // Fallback: simple text matching
     const queryLower = query.toLowerCase();
     const matches: Array<{ memory: AGIMemoryEntry; score: number }> = [];
-    
+
     for (const memory of this.memories.values()) {
       const contentLower = memory.content.toLowerCase();
       if (contentLower.includes(queryLower)) {
@@ -103,17 +99,17 @@ export class MemoryCore {
         matches.push({ memory, score });
       }
     }
-    
+
     // Sort by score and return top results
     return matches
       .sort((a, b) => b.score - a.score)
       .slice(0, limit)
-      .map(m => m.memory);
+      .map((m) => m.memory);
   }
 
   /**
    * Retrieve a memory by ID
-   * 
+   *
    * @param id - Memory ID
    * @returns Memory entry or undefined if not found
    */
@@ -123,7 +119,7 @@ export class MemoryCore {
 
   /**
    * Get all stored memories
-   * 
+   *
    * @returns Array of all memory entries
    */
   getAllMemories(): AGIMemoryEntry[] {
@@ -132,7 +128,7 @@ export class MemoryCore {
 
   /**
    * Delete a memory from the core
-   * 
+   *
    * @param id - Memory ID to delete
    * @returns true if memory was deleted, false if not found
    */
@@ -154,7 +150,7 @@ export class MemoryCore {
 
   /**
    * Get the number of stored memories
-   * 
+   *
    * @returns Number of memories in the core
    */
   getSize(): number {
@@ -163,7 +159,7 @@ export class MemoryCore {
 
   /**
    * Set the embedding model for vector search
-   * 
+   *
    * @param embedding - Embedding model implementation
    */
   setEmbeddingModel(embedding: EmbeddingModel): void {
@@ -172,7 +168,7 @@ export class MemoryCore {
 
   /**
    * Set the FAISS index for vector search
-   * 
+   *
    * @param index - FAISS index implementation
    */
   setFAISSIndex(index: FAISSIndex): void {
