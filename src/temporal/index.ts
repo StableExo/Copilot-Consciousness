@@ -7,7 +7,9 @@
  * - Causal relationships between events
  * - Temporal pattern detection
  * - Predictive modeling (when enabled)
+ * - Base fee velocity tracking for dynamic thresholds
  */
 
 export * from './types';
 export * from './awareness';
+export * from './BaseFeeVelocityTracker';

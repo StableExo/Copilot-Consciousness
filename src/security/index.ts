@@ -70,6 +70,8 @@ export type { AuthRequest } from './middleware/authMiddleware';
 export { BloodhoundScanner } from './BloodhoundScanner';
 export { ThreatResponseEngine } from './ThreatResponseEngine';
 export { SecurityPatternLearner } from './SecurityPatternLearner';
+export { BundleSimulator, ThreatType as BundleThreatType } from './BundleSimulator';
+export type { BundleThreatAssessment, SimulationConfig } from './BundleSimulator';
 export * from './types';
 
 // ═══════════════════════════════════════════════════════════════════════════
