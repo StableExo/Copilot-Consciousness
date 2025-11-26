@@ -6,11 +6,13 @@ Quick reference guide to all project documentation.
 
 ### Primary Documentation
 - **[README.md](README.md)** - Main project documentation, features, and quick start
+- **[PROJECT_STATUS.md](PROJECT_STATUS.md)** - 🆕 Current status, recent achievements, and quick reference
 - **[CHANGELOG.md](CHANGELOG.md)** - Complete version history and release notes
 
 ### Current Status & Planning
+- **[DEX_INTEGRATION_STATUS.md](DEX_INTEGRATION_STATUS.md)** - 🆕 DEX integration status (replaces DEX_ADDRESSES_TODO.md)
+- **[MAINNET_QUICKSTART.md](MAINNET_QUICKSTART.md)** - Quick start for mainnet deployment
 - **[NEXT_PHASE_PLANNING.md](NEXT_PHASE_PLANNING.md)** - Current roadmap and phase planning
-- **[PHASE2_VALIDATION_REPORT.md](PHASE2_VALIDATION_REPORT.md)** - Phase 2 validation results and Phase 3 readiness
 - **[KNOWN_ISSUES.md](KNOWN_ISSUES.md)** - Current known issues and limitations
 
 ### Legal & Compliance
@@ -132,13 +134,13 @@ Current and recent analysis reports:
 ### I want to...
 
 **Get started quickly**
-→ [README.md](README.md) → [QUICK_START_PRODUCTION.md](docs/QUICK_START_PRODUCTION.md)
+→ [PROJECT_STATUS.md](PROJECT_STATUS.md) → [MAINNET_QUICKSTART.md](MAINNET_QUICKSTART.md)
+
+**See current project status**
+→ [PROJECT_STATUS.md](PROJECT_STATUS.md) → [DEX_INTEGRATION_STATUS.md](DEX_INTEGRATION_STATUS.md)
 
 **Understand the architecture**
 → [CONSCIOUSNESS_ARCHITECTURE.md](docs/CONSCIOUSNESS_ARCHITECTURE.md) → [CONSCIOUSNESS_FLOW_DIAGRAM.md](docs/CONSCIOUSNESS_FLOW_DIAGRAM.md)
-
-**See current project status**
-→ [NEXT_PHASE_PLANNING.md](NEXT_PHASE_PLANNING.md) → [PHASE2_VALIDATION_REPORT.md](PHASE2_VALIDATION_REPORT.md)
 
 **Improve profitability and execution**
 → [PROFITABLE_EXECUTION_PLAN.md](docs/PROFITABLE_EXECUTION_PLAN.md) → [BASE_TOP_10_DEXS.md](docs/BASE_TOP_10_DEXS.md) → [MEV_INTELLIGENCE_SUITE.md](docs/MEV_INTELLIGENCE_SUITE.md)
