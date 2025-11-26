@@ -87,8 +87,26 @@ See [MCP Configuration Guide](./docs/MCP_CONFIGURATION.md) and [MCP Examples](./
 - **Adaptive Learning**: Improves strategy through outcome-based learning
 - **✅ Pool Detection**: Working on Base network (6+ pools detected)
 - **⚡ Performance**: Optimized scanning (60s → 10s with multicall batching)
+- **🔍 Diagnostic Mode**: Autonomous monitoring with log analysis and parameter tuning
 
 See [Main Runner Documentation](./docs/MAIN_RUNNER.md) for TheWarden's operational details.
+
+### 🔧 Autonomous Monitoring & Diagnostics
+**NEW**: Automated troubleshooting and parameter optimization:
+- **2-Minute Intervals**: Runs TheWarden, stops, analyzes logs, repeats
+- **Issue Detection**: Identifies RPC errors, gas issues, configuration problems
+- **Smart Recommendations**: Suggests specific parameter adjustments
+- **Root Cause Analysis**: Determines if issues are environmental, strategy, or consciousness-related
+- **Auto-Generated Reports**: Creates diagnostic logs and `.env` recommendations
+
+Run diagnostic mode:
+```bash
+./TheWarden --monitor               # Infinite monitoring
+MAX_ITERATIONS=10 ./TheWarden --monitor  # Limited iterations
+npm run start:monitor               # Alternative command
+```
+
+See [Autonomous Monitoring Guide](./docs/AUTONOMOUS_MONITORING.md) for complete documentation.
 
 ### 🧠 ArbitrageConsciousness - The Learning Brain
 - **Pattern Detection**: Identifies temporal, congestion, and profitability patterns
