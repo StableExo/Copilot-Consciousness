@@ -114,7 +114,9 @@ export class DEXRegistry {
         // Base Network (Chain ID: 8453) - High Liquidity DEXes
         // PROFITABLE_EXECUTION_PLAN Phase 1.1: Aggressively lowered liquidity thresholds for maximum pool discovery
         // Previous thresholds were filtering out too many viable pools on Base L2
-        // Phase 2: Drastically reduced for V3 pools since liquidity is in sqrt(x*y) format (10^15-10^18 range typical)
+        // Phase 2: For V3 pools, thresholds are set much lower (10^11–10^12) than the typical liquidity range (10^15–10^18 or higher).
+        // This is intentional to maximize pool discovery on Base L2, where many pools have much smaller liquidity than on mainnet.
+        // Typical V3 pool liquidity is in the 10^15–10^18 range, but these lower thresholds help include smaller, yet viable, pools.
         this.addDEX({
             name: 'Uniswap V3 on Base',
             protocol: 'UniswapV3',
