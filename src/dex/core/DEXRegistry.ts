@@ -237,7 +237,11 @@ export class DEXRegistry {
             chainType: 'EVM',
             network: '8453',
             router: '0xd07379a755A8f11B57610154861D694b2A0f615a',
-            factory: '0xd07379a755A8f11B57610154861D694b2A0f615a', // Using router as factory placeholder
+            // Note: SwapBased documentation doesn't clearly separate factory from router
+            // Using router address as factory placeholder - pool discovery will attempt both
+            factory: '0xd07379a755A8f11B57610154861D694b2A0f615a',
+            // SwapBased appears to be a Uniswap V2 fork, using standard init code hash
+            // If pool discovery fails, this may need to be updated with SwapBased's specific hash
             initCodeHash: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
             priority: 9,
             liquidityThreshold: V2_MIN_LIQUIDITY_THRESHOLD, // 10^15 for V2 style
@@ -250,7 +254,11 @@ export class DEXRegistry {
             chainType: 'EVM',
             network: '8453',
             router: '0x4cf76043B3f97ba06917cBd90F9e3A2AAC1B306e',
-            factory: '0x4cf76043B3f97ba06917cBd90F9e3A2AAC1B306e', // Using router as factory placeholder
+            // Note: RocketSwap documentation doesn't clearly separate factory from router
+            // Using router address as factory placeholder - pool discovery will attempt both
+            factory: '0x4cf76043B3f97ba06917cBd90F9e3A2AAC1B306e',
+            // RocketSwap appears to be a Uniswap V2 fork, using standard init code hash
+            // If pool discovery fails, this may need to be updated with RocketSwap's specific hash
             initCodeHash: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
             priority: 10,
             liquidityThreshold: V2_MIN_LIQUIDITY_THRESHOLD, // 10^15 for V2 style

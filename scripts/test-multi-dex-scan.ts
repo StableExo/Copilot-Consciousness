@@ -7,8 +7,8 @@ import { JsonRpcProvider } from 'ethers';
 import { DEXRegistry } from '../src/dex/core/DEXRegistry';
 import { OptimizedPoolScanner } from '../src/arbitrage/OptimizedPoolScanner';
 
-// Base network RPC
-const BASE_RPC_URL = process.env.BASE_RPC_URL || 'https://mainnet.base.org';
+// Base network RPC - use environment variable or Coinbase's official endpoint as fallback
+const BASE_RPC_URL = process.env.BASE_RPC_URL || 'https://base.llamarpc.com';
 
 // Common tokens on Base
 const WETH = '0x4200000000000000000000000000000000000006';

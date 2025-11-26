@@ -301,7 +301,7 @@ export class OptimizedPoolScanner {
                 edges.push(this.createEdge(poolData, dex, token1, token0));
                 this.updateTokenPairStats(tokenPairStats, pairKey, dex.name);
                 
-                logger.info(
+                logger.debug(
                   `✓ ${dex.name} ${pairKey}: ACCEPTED - fee=${discovery.fee/10000}% liquidity=${poolData.reserve0} (threshold=${threshold})`,
                   'POOLSCAN'
                 );
@@ -468,7 +468,7 @@ export class OptimizedPoolScanner {
               this.updateTokenPairStats(tokenPairStats, pairKey, dex.name);
             }
             
-            logger.info(
+            logger.debug(
               `✓ ${dex.name} ${pairKey}: ACCEPTED - liquidity=${poolData.reserve0} (threshold=${dex.liquidityThreshold})`,
               'POOLSCAN'
             );
