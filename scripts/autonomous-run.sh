@@ -273,6 +273,7 @@ WARDEN_START_TIME=$(date +%s)
 # Track counts incrementally to avoid expensive grep on large logs
 LAST_OPP_COUNT=0
 LAST_ERR_COUNT=0
+CHECK_COUNT=0
 
 while true; do
     if ! kill -0 "$WARDEN_PID" 2>/dev/null; then
