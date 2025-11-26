@@ -69,7 +69,7 @@
     "version": "3",
     "swapGasEstimate": 160000,
     "supported_chains": ["ethereum", "base", "arbitrum", "polygon"],
-    "fee_tiers": [8, 10, 40, 300, 1000]
+    "dynamic_fees": true
   },
   "hashflow": {
     "name": "Hashflow",
