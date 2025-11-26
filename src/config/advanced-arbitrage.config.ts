@@ -60,7 +60,7 @@ export const highPerformanceConfig: AdvancedOrchestratorConfig = {
     ...defaultAdvancedArbitrageConfig.pruning,
     aggressiveness: 'medium', // Changed from 'high' to discover more pools
     minPoolLiquidity: BigInt(50000), // Reduced from 500000 for Base L2
-    maxPriceImpactPerHop: 2.0 // More lenient
+    maxPriceImpactPerHop: 3.0 // More lenient
   },
   cache: {
     ...defaultAdvancedArbitrageConfig.cache,
