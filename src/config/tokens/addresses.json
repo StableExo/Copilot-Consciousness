@@ -116,5 +116,32 @@
       "decimals": 18,
       "symbol": "DAI"
     }
+  },
+  "optimism": {
+    "WETH": {
+      "address": "0x4200000000000000000000000000000000000006",
+      "decimals": 18,
+      "symbol": "WETH"
+    },
+    "USDC": {
+      "address": "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
+      "decimals": 6,
+      "symbol": "USDC"
+    },
+    "USDT": {
+      "address": "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58",
+      "decimals": 6,
+      "symbol": "USDT"
+    },
+    "DAI": {
+      "address": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+      "decimals": 18,
+      "symbol": "DAI"
+    },
+    "OP": {
+      "address": "0x4200000000000000000000000000000000000042",
+      "decimals": 18,
+      "symbol": "OP"
+    }
   }
 }

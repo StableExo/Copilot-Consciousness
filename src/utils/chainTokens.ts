@@ -20,6 +20,7 @@ export interface ChainTokens {
   USDbC?: TokenInfo;
   DAI?: TokenInfo;
   ARB?: TokenInfo;
+  OP?: TokenInfo;
   cbETH?: TokenInfo;
   AERO?: TokenInfo;
   cbBTC?: TokenInfo;
@@ -48,6 +49,10 @@ export function getTokensByChainId(chainId: number): ChainTokens {
     case 137: // Polygon mainnet
     case 80001: // Mumbai testnet
       return tokenAddresses.polygon as ChainTokens;
+    
+    case 10: // Optimism mainnet
+    case 420: // Optimism testnet (Goerli)
+      return tokenAddresses.optimism as ChainTokens;
     
     default:
       // Default to Ethereum
