@@ -54,7 +54,11 @@ export const V3_STYLE_PROTOCOLS = [
   'PancakeSwapV3',  // PancakeSwap V3 concentrated liquidity
   'pancakeswapv3',  // Legacy naming
   'Velodrome',      // Velodrome Slipstream concentrated liquidity
-  'velodrome'       // Legacy naming
+  'velodrome',      // Legacy naming
+  'MaverickV2',     // Maverick V2 dynamic distribution AMM
+  'maverickv2',     // Legacy naming
+  'AlienBase',      // AlienBase (Uniswap V3 fork)
+  'alienbase'       // Legacy naming
 ] as const;
 
 /**

@@ -190,6 +190,73 @@ export class DEXRegistry {
             gasEstimate: 150000
         });
 
+        // Phase 3: Additional DEXes on Base for increased pool discovery
+        this.addDEX({
+            name: 'Balancer on Base',
+            protocol: 'Balancer',
+            chainType: 'EVM',
+            network: '8453',
+            router: '0xBA12222222228d8Ba445958a75a0704d566BF2C8', // Vault address
+            factory: '0x4C32a8a8fDa4E24139B51b456B42290f51d6A1c4', // WeightedPoolFactory
+            initCodeHash: '0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f',
+            priority: 6,
+            liquidityThreshold: V2_MIN_LIQUIDITY_THRESHOLD, // 10^15 for weighted pools
+            gasEstimate: 200000
+        });
+
+        this.addDEX({
+            name: 'Maverick V2 on Base',
+            protocol: 'MaverickV2',
+            chainType: 'EVM',
+            network: '8453',
+            router: '0x5eDEd0d7E76C563FF081Ca01D9d12D6B404Df527',
+            factory: '0x0A7e848Aca42d879EF06507Fca0E7b33A0a63c1e',
+            initCodeHash: undefined, // Maverick uses dynamic distribution AMM, query factory.getPool()
+            priority: 7,
+            liquidityThreshold: V3_LOW_LIQUIDITY_THRESHOLD, // 10^11 for concentrated liquidity
+            gasEstimate: 150000
+        });
+
+        this.addDEX({
+            name: 'AlienBase on Base',
+            protocol: 'AlienBase',
+            chainType: 'EVM',
+            network: '8453',
+            router: '0xB20C411FC84FBB27e78608C24d0056D974ea9411', // SmartRouter
+            factory: '0x0Fd83557b2be93617c9C1C1B6fd549401C74558C',
+            // AlienBase is Uniswap V3 fork, uses V3-style concentrated liquidity
+            initCodeHash: undefined, // V3-style, query factory.getPool()
+            priority: 8,
+            liquidityThreshold: V3_LOW_LIQUIDITY_THRESHOLD, // 10^11 for V3 style
+            gasEstimate: 150000
+        });
+
+        this.addDEX({
+            name: 'SwapBased on Base',
+            protocol: 'SwapBased',
+            chainType: 'EVM',
+            network: '8453',
+            router: '0xd07379a755A8f11B57610154861D694b2A0f615a',
+            factory: '0xd07379a755A8f11B57610154861D694b2A0f615a', // Using router as factory placeholder
+            initCodeHash: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
+            priority: 9,
+            liquidityThreshold: V2_MIN_LIQUIDITY_THRESHOLD, // 10^15 for V2 style
+            gasEstimate: 130000
+        });
+
+        this.addDEX({
+            name: 'RocketSwap on Base',
+            protocol: 'RocketSwap',
+            chainType: 'EVM',
+            network: '8453',
+            router: '0x4cf76043B3f97ba06917cBd90F9e3A2AAC1B306e',
+            factory: '0x4cf76043B3f97ba06917cBd90F9e3A2AAC1B306e', // Using router as factory placeholder
+            initCodeHash: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
+            priority: 10,
+            liquidityThreshold: V2_MIN_LIQUIDITY_THRESHOLD, // 10^15 for V2 style
+            gasEstimate: 130000
+        });
+
         // Low liquidity DEXes on Base - kept for fallback
         this.addDEX({
             name: 'Uniswap V2 on Base',
@@ -199,7 +266,7 @@ export class DEXRegistry {
             router: '0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24',
             factory: '0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6',
             initCodeHash: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
-            priority: 8,
+            priority: 11,
             liquidityThreshold: V2_MIN_LIQUIDITY_THRESHOLD, // 10^15 = 0.001 ETH for V2
             gasEstimate: 150000
         });
@@ -212,7 +279,7 @@ export class DEXRegistry {
             router: '0x804b526e5bf4349819fe2db65349d0825870f8ee',
             factory: '0xc35dadb65012ec5796536bd9864ed8773abc74c4',
             initCodeHash: '0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303',
-            priority: 9,
+            priority: 12,
             liquidityThreshold: V2_MIN_LIQUIDITY_THRESHOLD, // 10^15 = 0.001 ETH for V2
             gasEstimate: 150000
         });
