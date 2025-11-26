@@ -1,4 +1,26 @@
 {
+  "ethereum": {
+    "WETH": {
+      "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "decimals": 18,
+      "symbol": "WETH"
+    },
+    "USDC": {
+      "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "decimals": 6,
+      "symbol": "USDC"
+    },
+    "USDT": {
+      "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "decimals": 6,
+      "symbol": "USDT"
+    },
+    "DAI": {
+      "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "decimals": 18,
+      "symbol": "DAI"
+    }
+  },
   "arbitrum": {
     "WETH": {
       "address": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
@@ -73,48 +95,31 @@
       "symbol": "WSTETH"
     }
   },
-  "ethereum": {
+  "optimism": {
     "WETH": {
-      "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "address": "0x4200000000000000000000000000000000000006",
       "decimals": 18,
       "symbol": "WETH"
     },
     "USDC": {
-      "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "address": "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
       "decimals": 6,
       "symbol": "USDC"
     },
     "USDT": {
-      "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "address": "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58",
       "decimals": 6,
       "symbol": "USDT"
     },
     "DAI": {
-      "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "address": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
       "decimals": 18,
       "symbol": "DAI"
-    }
-  },
-  "polygon": {
-    "WMATIC": {
-      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+    },
+    "OP": {
+      "address": "0x4200000000000000000000000000000000000042",
       "decimals": 18,
-      "symbol": "WMATIC"
-    },
-    "USDC": {
-      "address": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-      "decimals": 6,
-      "symbol": "USDC"
-    },
-    "USDT": {
-      "address": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
-      "decimals": 6,
-      "symbol": "USDT"
-    },
-    "DAI": {
-      "address": "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
-      "decimals": 18,
-      "symbol": "DAI"
+      "symbol": "OP"
     }
   }
 }
