@@ -131,35 +131,44 @@ export class TreasuryRotation extends EventEmitter {
 
   /**
    * Setup default rotation destinations
-   * 
+   *
    * Per LEGAL_POSITION.md - 70% of profits are allocated to US Treasury instrument purchases
    * This means converting crypto profits to fiat and purchasing:
    * - Treasury Bills (T-Bills)
-   * - Treasury Notes (T-Notes)  
+   * - Treasury Notes (T-Notes)
    * - Treasury Bonds (T-Bonds)
    * - I-Bonds or other Treasury securities
-   * 
+   *
    * The on-chain "treasury" address is a staging wallet that accumulates funds
    * before off-ramping to fiat for TreasuryDirect.gov purchases.
-   * 
+   *
    * Flow: Profits -> Staging Wallet -> Off-ramp to USD -> TreasuryDirect.gov -> Buy T-Bills
    */
   private setupDefaultDestinations(): void {
     // Load addresses from environment or use clear placeholders
-    const treasuryAddress = process.env.TREASURY_STAGING_ADDRESS || '0x0000000000000000000000000000000000000001';
-    const operationsAddress = process.env.OPERATIONS_ADDRESS || '0x0000000000000000000000000000000000000002';
-    const reserveAddress = process.env.RESERVE_ADDRESS || '0x0000000000000000000000000000000000000003';
+    const treasuryAddress =
+      process.env.TREASURY_STAGING_ADDRESS || '0x0000000000000000000000000000000000000001';
+    const operationsAddress =
+      process.env.OPERATIONS_ADDRESS || '0x0000000000000000000000000000000000000002';
+    const reserveAddress =
+      process.env.RESERVE_ADDRESS || '0x0000000000000000000000000000000000000003';
 
     // Warn if using placeholder addresses in production
     if (process.env.NODE_ENV === 'production') {
       if (treasuryAddress.startsWith('0x000000000000000000000000000000000000000')) {
-        console.warn('[TreasuryRotation] WARNING: Using placeholder treasury address. Set TREASURY_STAGING_ADDRESS env var!');
+        console.warn(
+          '[TreasuryRotation] WARNING: Using placeholder treasury address. Set TREASURY_STAGING_ADDRESS env var!'
+        );
       }
       if (operationsAddress.startsWith('0x000000000000000000000000000000000000000')) {
-        console.warn('[TreasuryRotation] WARNING: Using placeholder operations address. Set OPERATIONS_ADDRESS env var!');
+        console.warn(
+          '[TreasuryRotation] WARNING: Using placeholder operations address. Set OPERATIONS_ADDRESS env var!'
+        );
       }
       if (reserveAddress.startsWith('0x000000000000000000000000000000000000000')) {
-        console.warn('[TreasuryRotation] WARNING: Using placeholder reserve address. Set RESERVE_ADDRESS env var!');
+        console.warn(
+          '[TreasuryRotation] WARNING: Using placeholder reserve address. Set RESERVE_ADDRESS env var!'
+        );
       }
     }
 
@@ -396,7 +405,7 @@ export class TreasuryRotation extends EventEmitter {
 
   /**
    * Generate on-chain proof structure
-   * 
+   *
    * Note: This is a simplified Merkle tree implementation for demonstration.
    * In production, use a proper Merkle tree library (e.g., merkletreejs) with:
    * - Sorted pairs to prevent order-dependent vulnerabilities
@@ -433,7 +442,7 @@ export class TreasuryRotation extends EventEmitter {
 
   /**
    * Submit rotation to blockchain (stub)
-   * 
+   *
    * Note: This is a stub implementation. In production, this would:
    * 1. Build and sign actual blockchain transactions
    * 2. Submit to the configured network

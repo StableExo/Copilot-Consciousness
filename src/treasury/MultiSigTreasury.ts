@@ -263,9 +263,7 @@ export class MultiSigTreasury extends EventEmitter {
     signer.lastActivity = Date.now();
     this.signers.set(signerId, signer);
 
-    console.log(
-      `[MultiSigTreasury] Signature added: ${signer.name} ${vote}d tx ${txId}`
-    );
+    console.log(`[MultiSigTreasury] Signature added: ${signer.name} ${vote}d tx ${txId}`);
     this.emit('signature-added', { transaction: tx, signature: sig });
 
     // Check if we have enough signatures
@@ -604,7 +602,9 @@ export function createProductionMultiSig(): MultiSigTreasury {
       id: uuidv4(),
       address: `0x${createHash('sha256').update(config.name).digest('hex').slice(0, 40)}`,
       name: config.name,
-      publicKey: `0x${createHash('sha256').update(config.name + 'pubkey').digest('hex')}`,
+      publicKey: `0x${createHash('sha256')
+        .update(config.name + 'pubkey')
+        .digest('hex')}`,
       role: config.role,
       active: true,
     });

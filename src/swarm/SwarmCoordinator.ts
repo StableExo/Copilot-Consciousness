@@ -316,7 +316,7 @@ export class SwarmCoordinator extends EventEmitter {
     const approvalRate = totalWeight > 0 ? approvalWeight / totalWeight : 0;
     const rejectRate = totalWeight > 0 ? rejectWeight / totalWeight : 0;
     const averageConfidence = votes.length > 0 ? totalConfidence / votes.length : 0;
-    
+
     // Consensus is reached if either approval or rejection exceeds threshold
     const consensusReached =
       approvalRate >= this.config.consensusThreshold ||

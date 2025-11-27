@@ -305,7 +305,8 @@ Be ruthless. Find every weakness. Break this bundle.`;
         description: 'High MEV exposure allows sandwich attack on swap transactions',
         severity: bundle.riskAssessment.mevRisk > 0.6 ? 'critical' : 'high',
         probability: bundle.riskAssessment.mevRisk,
-        estimatedLoss: (bundle.expectedProfit * BigInt(Math.floor(bundle.riskAssessment.mevRisk * 100))) / 100n,
+        estimatedLoss:
+          (bundle.expectedProfit * BigInt(Math.floor(bundle.riskAssessment.mevRisk * 100))) / 100n,
         counterMeasure: 'Use Flashbots bundle or private mempool',
       });
     }
@@ -317,7 +318,9 @@ Be ruthless. Find every weakness. Break this bundle.`;
         description: 'Slippage tolerance allows frontrunning',
         severity: 'medium',
         probability: bundle.riskAssessment.slippageRisk * 0.8,
-        estimatedLoss: (bundle.expectedProfit * BigInt(Math.floor(bundle.riskAssessment.slippageRisk * 50))) / 100n,
+        estimatedLoss:
+          (bundle.expectedProfit * BigInt(Math.floor(bundle.riskAssessment.slippageRisk * 50))) /
+          100n,
         counterMeasure: 'Reduce slippage tolerance or use private relay',
       });
     }
@@ -410,9 +413,8 @@ Be ruthless. Find every weakness. Break this bundle.`;
       }
     }
 
-    const counterRate = challenge.attackVectors.length > 0
-      ? effectiveCounters / challenge.attackVectors.length
-      : 1;
+    const counterRate =
+      challenge.attackVectors.length > 0 ? effectiveCounters / challenge.attackVectors.length : 1;
 
     // Determine decision
     let decision: WardenCounter['decision'];
@@ -456,7 +458,7 @@ Be ruthless. Find every weakness. Break this bundle.`;
    */
   async autoCounter(challenge: GrokChallenge): Promise<WardenCounter> {
     const startTime = Date.now();
-    
+
     // Simulate Warden thinking time
     await this.delay(100 + Math.random() * 200);
 
