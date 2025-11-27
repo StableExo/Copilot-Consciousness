@@ -334,28 +334,40 @@ class TheWarden extends EventEmitter {
   async initialize(): Promise<void> {
     logger.info('Initializing arbitrage bot components...');
 
+    // Check if running in offline cache only mode
+    const offlineCacheOnly = process.env.OFFLINE_CACHE_ONLY === 'true';
+
     try {
-      // Verify network connection
-      const network = await this.provider.getNetwork();
-      logger.info(`Connected to network: ${network.name} (chainId: ${network.chainId})`);
+      if (offlineCacheOnly) {
+        logger.info('═══════════════════════════════════════════════════════════');
+        logger.info('  OFFLINE CACHE ONLY MODE - No RPC calls will be made');
+        logger.info('═══════════════════════════════════════════════════════════');
+        logger.info(`Configured chain ID: ${this.config.chainId}`);
+        logger.info(`Wallet address: ${this.wallet.address}`);
+        logger.info('Network connection and balance checks skipped in offline mode');
+      } else {
+        // Verify network connection
+        const network = await this.provider.getNetwork();
+        logger.info(`Connected to network: ${network.name} (chainId: ${network.chainId})`);
 
-      // Validate that the connected network matches the configured chain ID
-      if (Number(network.chainId) !== this.config.chainId) {
-        const errorMsg = `Chain ID mismatch! Configured: ${this.config.chainId}, Connected: ${network.chainId}. Please check your RPC_URL configuration.`;
-        logger.error(errorMsg);
-        throw new Error(errorMsg);
-      }
+        // Validate that the connected network matches the configured chain ID
+        if (Number(network.chainId) !== this.config.chainId) {
+          const errorMsg = `Chain ID mismatch! Configured: ${this.config.chainId}, Connected: ${network.chainId}. Please check your RPC_URL configuration.`;
+          logger.error(errorMsg);
+          throw new Error(errorMsg);
+        }
 
-      // Verify wallet
-      const balance = await this.provider.getBalance(this.wallet.address);
-      logger.info(`Wallet address: ${this.wallet.address}`);
-      logger.info(`Wallet balance: ${formatEther(balance)} ETH`);
+        // Verify wallet
+        const balance = await this.provider.getBalance(this.wallet.address);
+        logger.info(`Wallet address: ${this.wallet.address}`);
+        logger.info(`Wallet balance: ${formatEther(balance)} ETH`);
 
-      // Check token balances for common tokens based on chain
-      await this.checkTokenBalances();
+        // Check token balances for common tokens based on chain
+        await this.checkTokenBalances();
 
-      if (balance === 0n) {
-        logger.warn('WARNING: Wallet balance is 0 - bot will not be able to execute trades');
+        if (balance === 0n) {
+          logger.warn('WARNING: Wallet balance is 0 - bot will not be able to execute trades');
+        }
       }
 
       // Initialize gas components
@@ -366,7 +378,9 @@ class TheWarden extends EventEmitter {
         60000, // 1 minute update interval
         BigInt(50) * BigInt(1e9) // 50 gwei fallback
       );
-      gasOracle.startAutoRefresh();
+      if (!offlineCacheOnly) {
+        gasOracle.startAutoRefresh();
+      }
 
       const gasEstimator = new AdvancedGasEstimator(this.provider, gasOracle);
 
@@ -400,10 +414,16 @@ class TheWarden extends EventEmitter {
       if (preloadSuccess) {
         logger.info('✓ Preloaded pool data loaded successfully - fast startup enabled');
       } else {
-        logger.info(
-          'No preloaded pool data found - will fetch pools from network (slower startup)'
-        );
-        logger.info('Tip: Run "npm run preload:pools" to speed up future startups');
+        if (offlineCacheOnly) {
+          logger.warn(
+            'WARNING: No preloaded pool data found in offline mode. Run "npm run preload:pools" first.'
+          );
+        } else {
+          logger.info(
+            'No preloaded pool data found - will fetch pools from network (slower startup)'
+          );
+          logger.info('Tip: Run "npm run preload:pools" to speed up future startups');
+        }
       }
 
       logger.info(`Configured orchestrator for chain ${this.config.chainId}`);
@@ -584,6 +604,9 @@ class TheWarden extends EventEmitter {
     // Analyze each opportunity (or at least the best ones)
     const topPaths = paths.slice(0, Math.min(3, paths.length));
 
+    // Check if running in offline cache only mode
+    const offlineCacheOnly = process.env.OFFLINE_CACHE_ONLY === 'true';
+
     for (let i = 0; i < topPaths.length; i++) {
       const path = topPaths[i];
 
@@ -593,13 +616,18 @@ class TheWarden extends EventEmitter {
         )} ETH profit`
       );
 
-      // Calculate market metrics from real data
-      const blockNumber = await this.provider.getBlockNumber().catch(() => 0);
-      const gasPrice = await this.provider
-        .getFeeData()
-        .then((f) => f.gasPrice || 0n)
-        .catch(() => 0n);
-      const gasPriceGwei = Number(formatUnits(gasPrice, 'gwei'));
+      // Calculate market metrics - use defaults in offline mode
+      let blockNumber = 0;
+      let gasPriceGwei = 50; // Default 50 gwei in offline mode
+
+      if (!offlineCacheOnly) {
+        blockNumber = await this.provider.getBlockNumber().catch(() => 0);
+        const gasPrice = await this.provider
+          .getFeeData()
+          .then((f) => f.gasPrice || 0n)
+          .catch(() => 0n);
+        gasPriceGwei = Number(formatUnits(gasPrice, 'gwei'));
+      }
 
       // Calculate congestion from gas price (0-1 scale, normalized against 100 gwei)
       const congestion = Math.min(gasPriceGwei / 100, 1.0);

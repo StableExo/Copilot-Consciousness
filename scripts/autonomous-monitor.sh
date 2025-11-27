@@ -24,6 +24,27 @@ RUN_INTERVAL=120  # 2 minutes in seconds
 MAX_ITERATIONS=${MAX_ITERATIONS:-0}  # 0 = infinite
 ITERATION_COUNT=0
 
+# Flags parsed from command line
+DRY_RUN_MODE=false
+OFFLINE_CACHE_ONLY=false
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --dry-run)
+            DRY_RUN_MODE=true
+            shift
+            ;;
+        --offline-cache-only)
+            OFFLINE_CACHE_ONLY=true
+            shift
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
+
 # Color codes
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -80,6 +101,8 @@ echo "════════════════════════�
 echo ""
 echo "  Run Interval: ${RUN_INTERVAL} seconds (2 minutes)"
 echo "  Max Iterations: ${MAX_ITERATIONS} (0 = infinite)"
+echo "  Dry Run Mode: ${DRY_RUN_MODE}"
+echo "  Offline Cache Only: ${OFFLINE_CACHE_ONLY}"
 echo "  Log Directory: ${LOG_DIR}"
 echo ""
 echo "═══════════════════════════════════════════════════════════════"
@@ -97,6 +120,17 @@ cd "$PROJECT_ROOT"
 # Load environment
 set -a
 source .env
+
+# Override environment variables based on flags
+if [ "$DRY_RUN_MODE" = true ]; then
+    export DRY_RUN=true
+    log_info "Dry run mode enabled via command line"
+fi
+
+if [ "$OFFLINE_CACHE_ONLY" = true ]; then
+    export OFFLINE_CACHE_ONLY=true
+    log_info "Offline cache only mode enabled via command line"
+fi
 set +a
 
 # Store PID

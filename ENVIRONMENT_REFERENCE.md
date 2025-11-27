@@ -374,6 +374,7 @@
 | Variable | Purpose | Default | Options |
 |----------|---------|---------|---------|
 | `DRY_RUN` | Simulation mode | `true` | `true`, `false` |
+| `OFFLINE_CACHE_ONLY` | Use only cached pool data, no RPC calls | `false` | `true`, `false` |
 | `USE_NEW_INITIALIZER` | New init system | `false` | `true`, `false` |
 | `ENABLE_ML_PREDICTIONS` | ML predictions | `true` | `true`, `false` |
 | `ENABLE_CROSS_CHAIN` | Cross-chain arb | `true` | `true`, `false` |

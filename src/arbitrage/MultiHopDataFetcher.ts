@@ -233,6 +233,47 @@ export class MultiHopDataFetcher {
       return filteredEdges;
     }
 
+    // Check if offline cache only mode is enabled
+    const offlineCacheOnly = process.env.OFFLINE_CACHE_ONLY === 'true';
+    if (offlineCacheOnly) {
+      // In offline mode, try to load from disk even if stale
+      if (this.preloadedEdges && this.preloadedEdges.length > 0) {
+        logger.info('OFFLINE_CACHE_ONLY mode: Using stale preloaded data', 'DATAFETCH');
+        const tokenSet = new Set(tokens.map((t) => t.toLowerCase()));
+        const filteredEdges = this.preloadedEdges.filter(
+          (edge) =>
+            tokenSet.has(edge.tokenIn.toLowerCase()) && tokenSet.has(edge.tokenOut.toLowerCase())
+        );
+        return filteredEdges;
+      }
+
+      // Try loading from disk
+      const chainId = this.currentChainId;
+      if (chainId) {
+        const pools = await this.poolDataStore.loadFromDisk(chainId);
+        if (pools && pools.length > 0) {
+          this.preloadedEdges = pools;
+          this.preloadedTimestamp = Date.now();
+          logger.info(
+            `OFFLINE_CACHE_ONLY mode: Loaded ${pools.length} pools from disk cache`,
+            'DATAFETCH'
+          );
+          const tokenSet = new Set(tokens.map((t) => t.toLowerCase()));
+          const filteredEdges = pools.filter(
+            (edge) =>
+              tokenSet.has(edge.tokenIn.toLowerCase()) && tokenSet.has(edge.tokenOut.toLowerCase())
+          );
+          return filteredEdges;
+        }
+      }
+
+      logger.warn(
+        'OFFLINE_CACHE_ONLY mode: No cached data available. Run "npm run preload:pools" first.',
+        'DATAFETCH'
+      );
+      return [];
+    }
+
     // If preloaded data is not available or stale, fetch from network
     const edges: PoolEdge[] = [];
 
