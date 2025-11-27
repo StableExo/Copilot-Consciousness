@@ -4,7 +4,7 @@
  * Supports various arbitrage patterns and provides pattern-specific optimizations
  */
 
-import { ArbitragePath, ArbitrageHop } from './types';
+import { ArbitragePath } from './types';
 
 /**
  * Arbitrage pattern types
@@ -314,7 +314,7 @@ export class ArbitragePatterns {
     // Check if all hops involve stablecoin-like tokens
     // This is a simplified check - in production, would check against
     // a list of known stablecoins
-    const stablePatterns = ['USDT', 'USDC', 'DAI', 'BUSD', 'TUSD', 'FRAX'];
+    const _stablePatterns = ['USDT', 'USDC', 'DAI', 'BUSD', 'TUSD', 'FRAX'];
 
     // Check if token symbols contain stable patterns (would need token metadata)
     // For now, check if fees are very low (typical for stable swaps)

@@ -2,7 +2,7 @@
  * Tests for MemoryCore
  */
 
-import { MemoryCore, EmbeddingModel, FAISSIndex } from '../MemoryCore';
+import { MemoryCore } from '../MemoryCore';
 import { AGIMemoryEntry, EmotionalContext } from '../types';
 import { Priority } from '../../types';
 

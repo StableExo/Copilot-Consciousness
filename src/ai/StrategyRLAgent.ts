@@ -24,11 +24,8 @@ import { logger } from '../utils/logger';
 import {
   ExecutionEpisode,
   ExecutionState,
-  ExecutionAction,
-  ExecutionOutcome,
   StrategyParameters,
   UpdatedParameters,
-  MEVContext,
 } from './types';
 
 interface RLAgentConfig {
@@ -275,13 +272,13 @@ export class StrategyRLAgent extends EventEmitter {
     }
 
     // Exploitation: best known action
-    let bestActionKey = '';
+    let _bestActionKey = '';
     let bestQValue = -Infinity;
 
     for (const [actionKey, sa] of stateActions.entries()) {
       if (sa.qValue > bestQValue) {
         bestQValue = sa.qValue;
-        bestActionKey = actionKey;
+        _bestActionKey = actionKey;
       }
     }
 

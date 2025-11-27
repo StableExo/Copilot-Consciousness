@@ -5,7 +5,7 @@
 
 import { ConsciousnessSystem } from '../consciousness';
 import { defaultConfig } from '../config';
-import { Priority } from '../types';
+import type { Priority as _Priority } from '../types';
 import type {
   ProcessInputResult,
   ThinkingResult,

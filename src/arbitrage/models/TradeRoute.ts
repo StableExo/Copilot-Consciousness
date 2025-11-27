@@ -79,7 +79,7 @@ export function createTradeRoute(params: {
     params.inputAmount > 0 ? Math.floor((grossProfit / params.inputAmount) * 10000) : 0;
 
   // Calculate total gas estimate
-  const estimatedGas = params.path.reduce((sum, step) => {
+  const estimatedGas = params.path.reduce((sum, _step) => {
     // Estimate 150k gas per swap step
     return sum + 150000;
   }, 0);

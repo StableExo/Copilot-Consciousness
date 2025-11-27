@@ -3,7 +3,6 @@
  */
 
 import {
-  ArbitrageOpportunity,
   ArbitrageType,
   OpportunityStatus,
   createArbitrageOpportunity,

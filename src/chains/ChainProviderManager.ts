@@ -347,7 +347,7 @@ export class ChainProviderManager {
 
     // Close all connections
     for (const chainProviders of this.providers.values()) {
-      for (const chainProvider of chainProviders) {
+      for (const _chainProvider of chainProviders) {
         // Cleanup logic if needed
       }
     }

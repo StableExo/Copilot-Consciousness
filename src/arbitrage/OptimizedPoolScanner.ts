@@ -546,7 +546,7 @@ export class OptimizedPoolScanner {
       }
 
       return null;
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }

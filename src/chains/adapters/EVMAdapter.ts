@@ -231,7 +231,7 @@ export class EVMAdapter extends ChainAdapter {
 
       const code = await this.provider.getCode(tokenAddress);
       return code !== '0x';
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   }

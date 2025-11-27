@@ -6,7 +6,7 @@
 
 import { PathFinder } from './PathFinder';
 import { ArbitragePath, ArbitrageHop, PathfindingConfig, PoolEdge } from './types';
-import { BridgeManager, BridgeRoute } from '../chains/BridgeManager';
+import { BridgeManager } from '../chains/BridgeManager';
 import { PathfindingConfig as CrossChainPathConfig } from '../config/cross-chain.config';
 
 export interface CrossChainHop extends ArbitrageHop {
@@ -47,7 +47,7 @@ export class CrossChainPathFinder {
   constructor(
     bridgeManager: BridgeManager,
     crossChainConfig: CrossChainPathConfig,
-    pathfindingConfig: PathfindingConfig
+    _pathfindingConfig: PathfindingConfig
   ) {
     this.pathFindersByChain = new Map();
     this.bridgeManager = bridgeManager;
@@ -245,7 +245,7 @@ export class CrossChainPathFinder {
   private async exploreBridgeHops(
     current: QueueItem,
     queue: QueueItem[],
-    startAmount: bigint
+    _startAmount: bigint
   ): Promise<void> {
     // Don't bridge if amount is too small
     const minBridgeAmount = BigInt(10 ** 18); // 1 token minimum
@@ -317,7 +317,7 @@ export class CrossChainPathFinder {
           totalTime: current.totalTime + bridgeRoute.estimatedTime,
           chains: [...current.chains, toChain],
         });
-      } catch (error) {
+      } catch (_error) {
         // Skip this bridge if there's an error
         continue;
       }
@@ -373,7 +373,7 @@ export class CrossChainPathFinder {
    */
   private calculateSlippageImpact(hops: CrossChainHop[]): number {
     let cumulativeSlippage = 1.0;
-    for (const hop of hops) {
+    for (const _hop of hops) {
       // Assume 0.5% slippage per hop (simplified)
       cumulativeSlippage *= 1 - 0.005;
     }
