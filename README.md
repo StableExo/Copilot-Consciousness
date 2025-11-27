@@ -1,28 +1,55 @@
 # AEV - TheWarden
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/badge/node-%5E20.11.1-brightgreen.svg)](https://nodejs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3.3-blue.svg)](https://www.typescriptlang.org/)
-[![Production Status](https://img.shields.io/badge/Production-Phase%203%20Complete-success)]()
-[![Pool Detection](https://img.shields.io/badge/Pool%20Detection-Working%20%E2%9C%85-brightgreen)]()
-[![Performance](https://img.shields.io/badge/Scan%20Time-60s%20%E2%86%92%2010s-blue)]()
-[![Tests](https://img.shields.io/badge/Tests-1103%2F1109%20Passing-brightgreen)]()
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D22.12.0-brightgreen.svg)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://www.typescriptlang.org/)
+[![Production Status](https://img.shields.io/badge/Production-v5.0.0-success)]()
+[![Tests](https://img.shields.io/badge/Tests-1545%20Passing-brightgreen)]()
 [![Code Style](https://img.shields.io/badge/code%20style-prettier-ff69b4.svg)](https://prettier.io/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 **AEV (Autonomous Extracted Value)** - An intelligent autonomous agent system competing with traditional MEV through learning-based value extraction, powered by **TheWarden**.
 
-📚 **[Documentation Index](DOCUMENTATION_INDEX.md)** | 🎯 **[Project Status](PROJECT_STATUS.md)** | 🚀 **[Quick Start](MAINNET_QUICKSTART.md)** | 📊 **[DEX Status](DEX_INTEGRATION_STATUS.md)** | 🎯 **[Aerodrome Integration](docs/AERODROME_INTEGRATION.md)** | 🤝 **[Contributing](CONTRIBUTING.md)** | 🔒 **[Security](SECURITY.md)**
+---
 
-## 🎉 Latest: DEX Management Tools & Aerodrome Ready! 🚀
+## 📚 Quick Navigation
 
-**Status**: Production-Ready (v3.1.0)  
-**New**: DEX management scripts and Aerodrome Finance verification tools  
-**Aerodrome**: ✅ Fully integrated on Base with 0.1-0.4% mispricing opportunities  
-**Tests**: 210/211 unit tests passing (99.5%)  
-**DEX Coverage**: 95 DEXes across 9 chains (16 on Base including Aerodrome)  
-**Quick Start**: `npm run verify:aerodrome` to confirm setup  
-**Latest**: See [Aerodrome Integration](docs/AERODROME_INTEGRATION.md) | [Implementation Summary](AERODROME_IMPLEMENTATION_SUMMARY.md)
+| Getting Started | Documentation | Development |
+|-----------------|---------------|-------------|
+| [🚀 Quick Start](#quick-start---running-thewarden) | [📚 Documentation Index](DOCUMENTATION_INDEX.md) | [🤝 Contributing](CONTRIBUTING.md) |
+| [💻 One-Click Setup](#one-click-development-setup) | [🎯 Project Status](PROJECT_STATUS.md) | [🔒 Security](SECURITY.md) |
+| [📖 Configuration](#configuration) | [📊 DEX Status](DEX_INTEGRATION_STATUS.md) | [⚠️ Known Issues](KNOWN_ISSUES.md) |
+
+---
+
+## 🎉 What's New in v5.0.0
+
+- **Swarm Intelligence**: Parallel Warden instance voting for redundant decision validation ([docs](docs/SWARM_COORDINATION.md))
+- **Red-Team Dashboard**: Real-time transparency feed for ethics auditing ([docs](docs/REDTEAM_DASHBOARD.md))
+- **Tests**: 1545 tests passing with comprehensive coverage
+- **Dependencies**: Reduced deprecation warnings, cleaner install
+
+---
+
+## One-Click Development Setup
+
+```bash
+# Clone and setup in one command
+git clone https://github.com/StableExo/Copilot-Consciousness.git && \
+cd Copilot-Consciousness && \
+nvm install && nvm use && \
+npm install && \
+cp .env.example .env && \
+npm run build && \
+npm test
+
+# Start development
+npm run dev
+```
+
+**Requirements**: [nvm](https://github.com/nvm-sh/nvm) (recommended) or Node.js 22.12.0+, npm 10.9.0+
+
+---
 
 ## Phase 3: Advanced AI & AEV Evolution ✨
 

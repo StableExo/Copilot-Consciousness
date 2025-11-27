@@ -1,8 +1,11 @@
 /**
- * IP Whitelisting and Geolocation Service
+ * IP Whitelisting Service
+ *
+ * Provides IP-based access control with optional geolocation features.
+ * Geolocation is disabled by default for better compatibility.
+ * To enable geolocation, set enableGeolocation=true in the constructor.
  */
 
-import geoip from 'geoip-lite';
 import { Address4, Address6 } from 'ip-address';
 
 export interface IPWhitelistEntry {
@@ -22,15 +25,38 @@ export interface IPCheckResult {
   isVPN?: boolean;
 }
 
+export interface IPWhitelistConfig {
+  vpnDetectionEnabled?: boolean;
+  enableGeolocation?: boolean;
+  allowByDefault?: boolean;
+  /** Optional logger function for geolocation warnings and errors. Defaults to console.warn. */
+  logger?: (message: string) => void;
+}
+
 export class IPWhitelistService {
   private whitelist: Map<string, IPWhitelistEntry>;
   private blockedCountries: Set<string>;
   private vpnDetectionEnabled: boolean;
+  private enableGeolocation: boolean;
+  private allowByDefault: boolean;
+  private logger: (message: string) => void;
+  
+  // Instance-level cache for geoip-lite module to avoid concurrency issues
+  private geoipModule: { lookup: (ip: string) => { country: string; city: string } | null } | null =
+    null;
+  private geoipLoadAttempted: boolean = false;
 
-  constructor(vpnDetectionEnabled: boolean = false) {
+  constructor(config: IPWhitelistConfig | boolean = false) {
+    // Support legacy boolean parameter for backward compatibility
+    const normalizedConfig: IPWhitelistConfig =
+      typeof config === 'boolean' ? { vpnDetectionEnabled: config } : config;
+
     this.whitelist = new Map();
     this.blockedCountries = new Set();
-    this.vpnDetectionEnabled = vpnDetectionEnabled;
+    this.vpnDetectionEnabled = normalizedConfig.vpnDetectionEnabled ?? false;
+    this.enableGeolocation = normalizedConfig.enableGeolocation ?? false;
+    this.allowByDefault = normalizedConfig.allowByDefault ?? true;
+    this.logger = normalizedConfig.logger ?? console.warn.bind(console);
   }
 
   /**
@@ -75,31 +101,12 @@ export class IPWhitelistService {
   }
 
   /**
-   * Check if IP is allowed (whitelist + geolocation + VPN check)
+   * Check if IP is allowed (whitelist + optional geolocation + VPN check)
    */
   checkIP(ip: string): IPCheckResult {
     // Check whitelist first
     if (this.isWhitelisted(ip)) {
       return { allowed: true };
-    }
-
-    // Get geolocation
-    const geo = geoip.lookup(ip);
-
-    if (!geo) {
-      return {
-        allowed: false,
-        reason: 'Unable to determine IP location',
-      };
-    }
-
-    // Check blocked countries
-    if (this.blockedCountries.has(geo.country)) {
-      return {
-        allowed: false,
-        reason: `Access from ${geo.country} is blocked`,
-        country: geo.country,
-      };
     }
 
     // VPN detection (simplified - would integrate with service like IPHub)
@@ -108,15 +115,57 @@ export class IPWhitelistService {
       return {
         allowed: false,
         reason: 'VPN/Proxy detected',
-        country: geo.country,
         isVPN: true,
       };
     }
 
+    // Geolocation-based checks (only if enabled)
+    if (this.enableGeolocation && this.blockedCountries.size > 0) {
+      // Try to load geoip-lite module (cached after first attempt per instance)
+      if (!this.geoipLoadAttempted) {
+        this.geoipLoadAttempted = true;
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
+          this.geoipModule = require('geoip-lite');
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          this.logger(
+            `Geolocation enabled but geoip-lite not available: ${errorMessage}. Install with: npm install geoip-lite`
+          );
+        }
+      }
+
+      if (this.geoipModule) {
+        const geo = this.geoipModule.lookup(ip);
+
+        if (!geo) {
+          return {
+            allowed: false,
+            reason: 'Unable to determine IP location',
+          };
+        }
+
+        // Check blocked countries
+        if (this.blockedCountries.has(geo.country)) {
+          return {
+            allowed: false,
+            reason: `Access from ${geo.country} is blocked`,
+            country: geo.country,
+          };
+        }
+
+        return {
+          allowed: true,
+          country: geo.country,
+          city: geo.city,
+        };
+      }
+    }
+
+    // Default behavior when not whitelisted and geolocation disabled/unavailable
     return {
-      allowed: true,
-      country: geo.country,
-      city: geo.city,
+      allowed: this.allowByDefault,
+      reason: this.allowByDefault ? undefined : 'IP not in whitelist',
     };
   }
 
