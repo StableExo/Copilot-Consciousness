@@ -3,6 +3,9 @@ import { SystemConfig } from '../types';
 // Export addresses configuration
 export * from './addresses';
 
+// Export Zod-based environment schema validation
+export * from './env-schema';
+
 // Export cross-chain configuration
 export * from './cross-chain.config';
 export { default as DEFAULT_CROSS_CHAIN_CONFIG } from './cross-chain.config';
