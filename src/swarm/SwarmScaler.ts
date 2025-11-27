@@ -328,13 +328,23 @@ export class SwarmScaler extends EventEmitter {
 
   /**
    * Perform health checks on all nodes
+   * 
+   * NOTE: This is a simulation for development/testing purposes.
+   * In production, this should be replaced with actual health check logic
+   * (e.g., HTTP health endpoints, gRPC health checks, or process monitoring).
+   * 
+   * To enable real health checks, implement a custom health check function:
+   * - Override this method in a subclass, or
+   * - Emit 'health-check' events and handle externally, or
+   * - Set healthCheckFailureRate to 0 and use external monitoring
    */
   private performHealthChecks(): void {
     const now = Date.now();
     let unhealthyCount = 0;
 
     for (const node of this.nodes.values()) {
-      // Simulate health check with configurable failure rate
+      // SIMULATION: Stochastic health check for testing swarm behavior
+      // In production, replace with actual health check logic (HTTP probe, gRPC, etc.)
       const isHealthy = Math.random() > this.config.healthCheckFailureRate;
 
       if (!isHealthy && node.status === 'ready') {
