@@ -5,6 +5,7 @@
  * - Risk modeling
  * - Real-time sensors
  * - Profit adjustments
+ * - Attack fuzzing
  */
 
 // Models
@@ -15,6 +16,18 @@ export { MEVAwareProfitCalculator } from './models/MEVAwareProfitCalculator';
 export { MempoolCongestionSensor, CongestionWeights } from './sensors/MempoolCongestionSensor';
 export { SearcherDensitySensor, DensityWeights } from './sensors/SearcherDensitySensor';
 export { MEVSensorHub } from './sensors/MEVSensorHub';
+
+// Fuzzing
+export {
+  MEVAttackFuzzer,
+  MEVAttackType,
+  AttackScenario,
+  AttackParameters,
+  FuzzResult,
+  FuzzerConfig,
+  FuzzerStats,
+  DefenseHandler,
+} from './MEVAttackFuzzer';
 
 // Types
 export {

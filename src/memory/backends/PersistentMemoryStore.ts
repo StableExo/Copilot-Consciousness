@@ -72,8 +72,10 @@ export class PersistentMemoryStore extends MemoryStore {
         this.activeBackend = 'sqlite';
       }
     } catch (error) {
-      console.warn('[PersistentMemoryStore] SQLite initialization failed:', 
-        error instanceof Error ? error.message : String(error));
+      console.warn(
+        '[PersistentMemoryStore] SQLite initialization failed:',
+        error instanceof Error ? error.message : String(error)
+      );
       this.sqliteStore = null;
     }
 
@@ -91,8 +93,10 @@ export class PersistentMemoryStore extends MemoryStore {
         this.startSync();
       }
     } catch (error) {
-      console.warn('[PersistentMemoryStore] Redis initialization failed:', 
-        error instanceof Error ? error.message : String(error));
+      console.warn(
+        '[PersistentMemoryStore] Redis initialization failed:',
+        error instanceof Error ? error.message : String(error)
+      );
       this.redisStore = null;
     }
 
@@ -192,7 +196,12 @@ export class PersistentMemoryStore extends MemoryStore {
     const result = store.update(id, updates);
 
     // Update Redis cache if enabled
-    if (result && this.config.enableRedisCache && this.redisStore && this.activeBackend === 'sqlite') {
+    if (
+      result &&
+      this.config.enableRedisCache &&
+      this.redisStore &&
+      this.activeBackend === 'sqlite'
+    ) {
       const fullEntry = store.retrieve(id);
       if (fullEntry) {
         this.redisStore.cacheEntry(fullEntry);
@@ -284,7 +293,8 @@ export class PersistentMemoryStore extends MemoryStore {
   async getStats(): Promise<PersistentMemoryStats> {
     const stats: PersistentMemoryStats = {
       activeBackend: this.activeBackend,
-      fallbackActive: this.activeBackend === 'memory' && (this.sqliteStore !== null || this.redisStore !== null),
+      fallbackActive:
+        this.activeBackend === 'memory' && (this.sqliteStore !== null || this.redisStore !== null),
       totalMemories: this.getSize(),
     };
 

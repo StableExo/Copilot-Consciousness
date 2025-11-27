@@ -91,7 +91,7 @@ describe('XAIProvider', () => {
 
       expect(tools.length).toBeGreaterThanOrEqual(4);
 
-      const toolNames = tools.map(t => t.name);
+      const toolNames = tools.map((t) => t.name);
       expect(toolNames).toContain('analyze_mempool');
       expect(toolNames).toContain('assess_mev_risk');
       expect(toolNames).toContain('get_market_context');
@@ -117,7 +117,7 @@ describe('XAIProvider', () => {
       provider.registerTool(customTool);
       const tools = provider.getRegisteredTools();
 
-      expect(tools.find(t => t.name === 'custom_tool')).toBeDefined();
+      expect(tools.find((t) => t.name === 'custom_tool')).toBeDefined();
     });
 
     it('should overwrite tool with same name', () => {
@@ -145,7 +145,7 @@ describe('XAIProvider', () => {
       provider.registerTool(tool2);
 
       const tools = provider.getRegisteredTools();
-      const testTool = tools.find(t => t.name === 'test_tool');
+      const testTool = tools.find((t) => t.name === 'test_tool');
 
       expect(testTool?.description).toBe('Second version');
     });
@@ -225,7 +225,7 @@ describe('XAIProvider', () => {
   describe('default tools validation', () => {
     it('analyze_mempool tool should have correct structure', () => {
       const tools = provider.getRegisteredTools();
-      const tool = tools.find(t => t.name === 'analyze_mempool');
+      const tool = tools.find((t) => t.name === 'analyze_mempool');
 
       expect(tool).toBeDefined();
       expect(tool?.parameters.properties.chainId).toBeDefined();
@@ -235,7 +235,7 @@ describe('XAIProvider', () => {
 
     it('assess_mev_risk tool should have correct structure', () => {
       const tools = provider.getRegisteredTools();
-      const tool = tools.find(t => t.name === 'assess_mev_risk');
+      const tool = tools.find((t) => t.name === 'assess_mev_risk');
 
       expect(tool).toBeDefined();
       expect(tool?.parameters.properties.opportunityType).toBeDefined();
@@ -245,7 +245,7 @@ describe('XAIProvider', () => {
 
     it('get_market_context tool should have correct structure', () => {
       const tools = provider.getRegisteredTools();
-      const tool = tools.find(t => t.name === 'get_market_context');
+      const tool = tools.find((t) => t.name === 'get_market_context');
 
       expect(tool).toBeDefined();
       expect(tool?.parameters.properties.tokenPair).toBeDefined();
@@ -254,7 +254,7 @@ describe('XAIProvider', () => {
 
     it('recommend_strategy tool should have correct structure', () => {
       const tools = provider.getRegisteredTools();
-      const tool = tools.find(t => t.name === 'recommend_strategy');
+      const tool = tools.find((t) => t.name === 'recommend_strategy');
 
       expect(tool).toBeDefined();
       expect(tool?.parameters.properties.riskTolerance.enum).toContain('medium');
