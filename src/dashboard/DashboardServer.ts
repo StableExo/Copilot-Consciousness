@@ -7,6 +7,8 @@
 
 import express, { Express, Request, Response, NextFunction } from 'express';
 import { createServer, Server as HttpServer } from 'http';
+import path from 'path';
+import fs from 'fs';
 import cors from 'cors';
 import { GasAnalytics } from '../gas/GasAnalytics';
 import { CrossChainAnalytics } from '../chains/CrossChainAnalytics';
@@ -129,30 +131,16 @@ export class DashboardServer {
    * Setup API routes
    */
   private setupRoutes(): void {
-    // Root endpoint
-    this.app.get('/', (req: Request, res: Response) => {
-      res.json({
-        name: 'Arbitrage Bot Dashboard API',
-        version: '1.0.0',
-        status: 'running',
-        endpoints: {
-          health: '/api/health',
-          metrics: '/api/metrics',
-          chartData: '/api/chart-data',
-          trades: '/api/trades/recent',
-          alerts: '/api/alerts',
-          performance: '/api/performance',
-          crossChain: '/api/cross-chain/summary',
-          gas: '/api/gas/analytics',
-        },
-        websocket: {
-          enabled: true,
-          activeConnections: this.wsHandler.getConnectedClientsCount(),
-        },
-      });
-    });
+    // Check for built frontend files
+    const frontendDistPath = path.resolve(__dirname, '../../../frontend/dist');
+    const hasFrontendBuild = fs.existsSync(frontendDistPath);
 
-    // API routes
+    if (hasFrontendBuild) {
+      // Serve static files from built frontend
+      this.app.use(express.static(frontendDistPath));
+    }
+
+    // API routes - must come before the catch-all
     const apiRoutes = createRoutes(
       this.metricsAggregator,
       this.alertSystem,
@@ -160,6 +148,152 @@ export class DashboardServer {
       this.wsHandler
     );
     this.app.use('/api', apiRoutes);
+
+    // Root endpoint - serve dashboard HTML or info page
+    this.app.get('/', (req: Request, res: Response) => {
+      // If frontend build exists and request accepts HTML, serve it
+      if (hasFrontendBuild && req.accepts('html')) {
+        res.sendFile(path.join(frontendDistPath, 'index.html'));
+        return;
+      }
+
+      // Otherwise, serve an informative HTML page
+      const htmlResponse = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TheWarden Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      color: #e0e0e0;
+      padding: 2rem;
+    }
+    .container { max-width: 1000px; margin: 0 auto; }
+    h1 { 
+      font-size: 2.5rem; 
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .status { 
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .status-badge {
+      display: inline-block;
+      background: #00d4ff;
+      color: #1a1a2e;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .card h3 { color: #00d4ff; margin-bottom: 1rem; font-size: 1.1rem; }
+    .endpoint { 
+      display: flex; 
+      justify-content: space-between; 
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .endpoint:last-child { border-bottom: none; }
+    .endpoint a { color: #7b2cbf; text-decoration: none; }
+    .endpoint a:hover { text-decoration: underline; }
+    code {
+      background: rgba(0,0,0,0.3);
+      padding: 0.125rem 0.5rem;
+      border-radius: 4px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.875rem;
+    }
+    .info-box {
+      background: rgba(123, 44, 191, 0.1);
+      border: 1px solid rgba(123, 44, 191, 0.3);
+      border-radius: 8px;
+      padding: 1rem 1.5rem;
+      margin-top: 1rem;
+    }
+    .ws-status { color: #4ade80; }
+    .metric { font-size: 1.5rem; font-weight: 600; color: #00d4ff; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🛡️ TheWarden Dashboard</h1>
+    <p style="margin-bottom: 2rem; opacity: 0.8;">AEV (Autonomous Extracted Value) - Real-Time Analytics</p>
+    
+    <div class="status">
+      <span class="status-badge">● ONLINE</span>
+      <span style="margin-left: 1rem;">System is running and monitoring for opportunities</span>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>📊 API Endpoints</h3>
+        <div class="endpoint"><span>Health Check</span><a href="/api/health">/api/health</a></div>
+        <div class="endpoint"><span>Metrics</span><a href="/api/metrics">/api/metrics</a></div>
+        <div class="endpoint"><span>Performance</span><a href="/api/performance">/api/performance</a></div>
+        <div class="endpoint"><span>Recent Trades</span><a href="/api/trades/recent">/api/trades/recent</a></div>
+        <div class="endpoint"><span>Alerts</span><a href="/api/alerts">/api/alerts</a></div>
+        <div class="endpoint"><span>Gas Analytics</span><a href="/api/gas/analytics">/api/gas/analytics</a></div>
+        <div class="endpoint"><span>Cross-Chain</span><a href="/api/cross-chain/summary">/api/cross-chain/summary</a></div>
+      </div>
+
+      <div class="card">
+        <h3>🔌 WebSocket Connection</h3>
+        <p class="ws-status">● WebSocket Enabled</p>
+        <p style="margin-top: 0.5rem;">Active Connections: <span class="metric">${this.wsHandler.getConnectedClientsCount()}</span></p>
+        <div class="info-box">
+          <p><strong>Connect via:</strong></p>
+          <code>ws://localhost:${this.config.port}</code>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>⚡ Quick Stats</h3>
+        <p>Update Interval: <span class="metric">${this.config.updateInterval}ms</span></p>
+        <p style="margin-top: 0.5rem;">Max Connections: <span class="metric">${this.config.maxConnections}</span></p>
+      </div>
+
+      <div class="card">
+        <h3>🚀 Full Dashboard</h3>
+        <p>For the complete React dashboard with charts and real-time updates:</p>
+        <div class="info-box">
+          <p><strong>Option 1:</strong> Build the frontend</p>
+          <code>cd frontend && npm install && npm run build</code>
+          <p style="margin-top: 1rem;"><strong>Option 2:</strong> Run in development mode</p>
+          <code>cd frontend && npm run dev</code>
+          <p style="margin-top: 0.5rem; opacity: 0.7;">Then visit <a href="http://localhost:3001" style="color: #00d4ff;">http://localhost:3001</a></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h3 style="margin-bottom: 0.5rem;">📖 API Response Format</h3>
+      <p>All API endpoints return JSON. Add <code>Accept: application/json</code> header for programmatic access.</p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+      res.type('html').send(htmlResponse);
+    });
   }
 
   /**

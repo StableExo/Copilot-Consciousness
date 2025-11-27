@@ -356,6 +356,92 @@ find . -name ".DS_Store" -o -name "*.swp" -o -name "*~"
 
 ---
 
+## 12. "Found 0 Paths" - Arbitrage Path Discovery
+
+### Issue Description
+When running TheWarden, you may see log messages like:
+```
+[DEBUG] [Cycle 1] [Chain 8453] Found 0 paths
+```
+
+This indicates that no arbitrage paths were discovered during the scan cycle.
+
+### Root Causes
+
+1. **Liquidity Thresholds Too High**: Pools with liquidity below the configured thresholds are filtered out, reducing the pool graph connectivity.
+
+2. **Insufficient Token Pairs**: Not enough token pairs with connected pools to form triangular arbitrage paths.
+
+3. **Pool Cache Stale or Empty**: Preloaded pool data may be outdated or missing.
+
+### Solution ✅ CONFIGURABLE VIA ENVIRONMENT
+
+**Liquidity thresholds are now configurable via environment variables:**
+
+```bash
+# In your .env file, add lower thresholds to discover more pools:
+MIN_LIQUIDITY_V3=100000000000        # 10^11 (10x lower than default)
+MIN_LIQUIDITY_V3_LOW=10000000000     # 10^10 (10x lower than default)  
+MIN_LIQUIDITY_V2=100000000000000     # 10^14 (10x lower than default)
+```
+
+**Threshold Descriptions**:
+- `MIN_LIQUIDITY_V3`: Uniswap V3-style concentrated liquidity pools (default: 10^12)
+- `MIN_LIQUIDITY_V3_LOW`: Smaller V3 pools on L2 networks (default: 10^11)
+- `MIN_LIQUIDITY_V2`: Uniswap V2-style constant product pools (default: 10^15)
+
+### Diagnostic Steps
+
+1. **Check Pool Count**:
+   ```bash
+   # View preloaded pools
+   cat .pool-cache/pools-8453.json | jq '.pools | length'
+   ```
+
+2. **Reload Pool Cache**:
+   ```bash
+   npm run preload:pools:force
+   ```
+
+3. **Lower Thresholds Gradually**:
+   - Start with 10x lower values
+   - Monitor if more paths are found
+   - Balance between pool discovery and execution risk
+
+### Recommendation
+✅ **Adjust thresholds based on network** - L2 networks like Base often have smaller pools than Ethereum mainnet.
+
+---
+
+## 13. Dashboard Shows JSON Instead of UI
+
+### Issue Description
+When opening `http://localhost:3000` in a browser, you may see raw JSON instead of a dashboard UI.
+
+### Root Cause
+The backend dashboard server was returning JSON API responses at the root endpoint instead of HTML.
+
+### Solution ✅ FIXED
+
+The dashboard server now:
+1. Serves a built-in HTML info page at the root URL
+2. Automatically serves the React frontend if it's been built (`frontend/dist`)
+3. Provides clear instructions for accessing the full React dashboard
+
+**To use the full React dashboard**:
+```bash
+cd frontend
+npm install
+npm run build   # For production
+# OR
+npm run dev     # For development (runs on port 3001)
+```
+
+### Recommendation
+✅ **Build the frontend for the best experience** - The React dashboard provides real-time charts and interactive features.
+
+---
+
 ## Summary Table
 
 | Category | Issue Count | Severity | Action |
@@ -371,6 +457,8 @@ find . -name ".DS_Store" -o -name "*.swp" -o -name "*~"
 | Dependencies | 0 | N/A | ✅ None |
 | Config | 0 | N/A | ✅ None |
 | Repository | 0 | N/A | ✅ None |
+| Found 0 Paths | 1 | Medium | ✅ Configurable |
+| Dashboard UI | 1 | Low | ✅ Fixed |
 
 ---
 
