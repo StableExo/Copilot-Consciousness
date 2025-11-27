@@ -5,16 +5,17 @@
  * This eliminates the need to scan pools on every restart, dramatically reducing startup time.
  */
 
-import { ethers, JsonRpcProvider } from 'ethers';
+// IMPORTANT: Load environment variables BEFORE any other imports
+// This ensures that DEXRegistry and other modules can read env vars during initialization
 import dotenv from 'dotenv';
+dotenv.config();
+
+import { ethers, JsonRpcProvider } from 'ethers';
 import { DEXRegistry } from '../src/dex/core/DEXRegistry';
 import { MultiHopDataFetcher } from '../src/arbitrage/MultiHopDataFetcher';
 import { PoolDataStore } from '../src/arbitrage/PoolDataStore';
 import { getScanTokens, getNetworkName } from '../src/utils/chainTokens';
 import { logger } from '../src/utils/logger';
-
-// Load environment variables
-dotenv.config();
 
 interface PreloadConfig {
   chainIds: number[];
@@ -84,9 +85,9 @@ function loadConfig(): PreloadConfig {
     }
   }
 
-  // Cache duration: 1 hour by default, configurable via env
+  // Cache duration: 1 hour by default, configurable via env (value in minutes)
   const cacheDuration = process.env.POOL_CACHE_DURATION 
-    ? parseInt(process.env.POOL_CACHE_DURATION) * 1000 
+    ? parseInt(process.env.POOL_CACHE_DURATION) * 60 * 1000 
     : 3600000;
 
   return {

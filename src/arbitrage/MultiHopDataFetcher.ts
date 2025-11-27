@@ -100,9 +100,10 @@ export class MultiHopDataFetcher {
     }
     const age = Date.now() - this.preloadedTimestamp;
     const cacheDurationEnv = process.env.POOL_CACHE_DURATION;
+    // POOL_CACHE_DURATION is in minutes
     const maxAge =
       cacheDurationEnv && !isNaN(parseInt(cacheDurationEnv))
-        ? parseInt(cacheDurationEnv) * 1000
+        ? parseInt(cacheDurationEnv) * 60 * 1000
         : 3600000; // 1 hour default
     return age < maxAge;
   }
@@ -331,7 +332,7 @@ export class MultiHopDataFetcher {
 
         if (poolData.reserve0 > threshold) {
           poolsFound++;
-          // Create edge in both directions
+          // Create edge for this token pair direction
           edges.push({
             poolAddress: poolData.poolAddress,
             dexName: dex.name,

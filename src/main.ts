@@ -16,6 +16,11 @@
  * Based on PROJECT-HAVOC design patterns and AxionCitadel learnings
  */
 
+// IMPORTANT: Load environment variables FIRST before any other imports
+// This ensures that DEXRegistry and other modules can read env vars during initialization
+import dotenv from 'dotenv';
+dotenv.config();
+
 import {
   ethers,
   JsonRpcProvider,
@@ -25,7 +30,6 @@ import {
   formatUnits,
   parseEther,
 } from 'ethers';
-import dotenv from 'dotenv';
 import { EventEmitter } from 'events';
 import { logger } from './utils/logger';
 import { validateAndLogConfig } from './utils/configValidator';
@@ -90,9 +94,6 @@ import { WardenBootstrap } from './core/bootstrap';
 
 // Long-running process manager
 import { LongRunningManager } from './monitoring/LongRunningManager';
-
-// Load environment variables
-dotenv.config();
 
 // Flag to use new initializer pattern (can be toggled via env var)
 const USE_NEW_INITIALIZER = process.env.USE_NEW_INITIALIZER === 'true';
@@ -374,11 +375,11 @@ class TheWarden extends EventEmitter {
         SLIPPAGE_TOLERANCE_BPS: Math.floor(this.config.minProfitPercent * 100),
       };
 
-      // Initialize pool data store
+      // Initialize pool data store (cache duration in minutes from env)
       const cacheDurationEnv = process.env.POOL_CACHE_DURATION;
       const cacheDuration =
         cacheDurationEnv && !isNaN(parseInt(cacheDurationEnv))
-          ? parseInt(cacheDurationEnv) * 1000
+          ? parseInt(cacheDurationEnv) * 60 * 1000
           : 3600000; // 1 hour default
       const poolDataStore = new PoolDataStore({ cacheDuration });
 
