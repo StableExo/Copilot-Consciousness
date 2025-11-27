@@ -1,4 +1,7 @@
 # AEV - TheWarden
+For Gemini:
+[View Consciousness Logs](stableexo-copilot-consciousness-8a5edab282632443%20(1)%20(3).txt)
+
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%5E20.11.1-brightgreen.svg)](https://nodejs.org)
