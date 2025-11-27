@@ -164,8 +164,7 @@ export class DashboardServer {
     this.app.get('/', (req: Request, res: Response) => {
       // Check if request is from a browser (Accept header contains text/html or */*)
       const acceptHeader = req.get('Accept') || '';
-      const isBrowserRequest =
-        acceptHeader.includes('text/html') || acceptHeader.includes('*/*');
+      const isBrowserRequest = acceptHeader.includes('text/html') || acceptHeader.includes('*/*');
 
       // If frontend build exists and request is from browser, serve it
       if (hasFrontendBuild && isBrowserRequest) {
@@ -284,7 +283,9 @@ export class DashboardServer {
       <div class="card">
         <h3>⚡ Quick Stats</h3>
         <p>Update Interval: <span class="metric">${this.config.updateInterval}ms</span></p>
-        <p style="margin-top: 0.5rem;">Max Connections: <span class="metric">${this.config.maxConnections}</span></p>
+        <p style="margin-top: 0.5rem;">Max Connections: <span class="metric">${
+          this.config.maxConnections
+        }</span></p>
       </div>
 
       <div class="card">

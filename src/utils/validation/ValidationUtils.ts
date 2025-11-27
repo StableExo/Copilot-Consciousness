@@ -5,7 +5,7 @@
  * for addresses, RPC URLs, and data parsing.
  */
 
-import { ethers, getAddress, isAddress } from 'ethers';
+import { getAddress, isAddress } from 'ethers';
 import { logger } from '../logger';
 
 /**

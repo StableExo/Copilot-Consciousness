@@ -56,6 +56,11 @@ Run in monitoring mode (infinite iterations):
 ./TheWarden --monitor
 ```
 
+Or use npm:
+```bash
+npm run monitor
+```
+
 Or use the diagnostic alias:
 ```bash
 ./TheWarden --diagnostic
@@ -71,6 +76,36 @@ MAX_ITERATIONS=10 ./TheWarden --monitor
 Run for quick test (3 cycles = 6 minutes):
 ```bash
 MAX_ITERATIONS=3 ./TheWarden --monitor
+```
+
+### Dry Run Mode
+
+Run in simulation mode with no real transactions:
+```bash
+npm run monitor -- --dry-run
+```
+
+Or combined with limited iterations:
+```bash
+MAX_ITERATIONS=1 npm run monitor -- --dry-run
+```
+
+### Offline Cache Only Mode
+
+Run using only cached pool data (no RPC calls). This is useful for:
+- Debugging the opportunity detection logic without network access
+- Testing the graph-search algorithm on previously cached data
+- Fast iteration during development
+
+```bash
+npm run monitor -- --dry-run --offline-cache-only
+```
+
+**Note:** You must first run `npm run preload:pools` to cache pool data before using offline mode.
+
+Combined example for debugging:
+```bash
+MAX_ITERATIONS=1 npm run monitor -- --dry-run --offline-cache-only
 ```
 
 ### Stopping

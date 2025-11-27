@@ -10,6 +10,7 @@
     "start:mainnet": "./scripts/launch-mainnet.sh",
     "start:autonomous": "./TheWarden",
     "start:monitor": "./TheWarden --monitor",
+    "monitor": "./TheWarden --monitor",
     "add:dex": "npm run build && node dist/scripts/add-dex.js",
     "preload:pools": "npm run build && node dist/scripts/preload-pools.js",
     "preload:pools:force": "npm run build && node dist/scripts/preload-pools.js --force",

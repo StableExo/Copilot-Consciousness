@@ -121,7 +121,7 @@ function parseBigIntEnv(name: string, defaultValue: bigint): bigint {
 
   try {
     return BigInt(value);
-  } catch (error) {
+  } catch (_error) {
     throw new ConfigValidationError(
       `Invalid bigint value for ${name}: "${value}"\n` +
         `Expected a valid integer that can be converted to BigInt.`
@@ -168,7 +168,7 @@ function validateRpcUrl(url: string): void {
 
   try {
     new URL(url);
-  } catch (error) {
+  } catch (_error) {
     throw new ConfigValidationError(
       `Invalid RPC URL: "${url}"\n` + `URL is not properly formatted.`
     );

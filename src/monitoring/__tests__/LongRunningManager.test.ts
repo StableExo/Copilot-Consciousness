@@ -171,10 +171,7 @@ describe('LongRunningManager', () => {
       });
 
       // Wait for persist interval and the persist event
-      await Promise.race([
-        persistPromise,
-        new Promise((resolve) => setTimeout(resolve, 300)),
-      ]);
+      await Promise.race([persistPromise, new Promise((resolve) => setTimeout(resolve, 300))]);
 
       // Small delay to ensure file write is complete
       await new Promise((resolve) => setTimeout(resolve, 50));
