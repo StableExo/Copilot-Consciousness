@@ -84,7 +84,7 @@ export class GatedExecutor {
         stdio: ['pipe', 'pipe', 'ignore'],
       }).trim();
       context.currentBranch = branch;
-    } catch (error) {
+    } catch (_error) {
       context.currentBranch = 'unknown (git command failed)';
     }
 
@@ -95,7 +95,7 @@ export class GatedExecutor {
     try {
       const files = fs.readdirSync(context.workingDirectory);
       context.fileSystemState = files.filter((f) => !f.startsWith('.'));
-    } catch (error) {
+    } catch (_error) {
       context.fileSystemState = ['unknown (ls command failed)'];
     }
 
@@ -106,7 +106,7 @@ export class GatedExecutor {
         stdio: ['pipe', 'pipe', 'ignore'],
       }).trim();
       context.gitStatus = status || 'clean';
-    } catch (error) {
+    } catch (_error) {
       context.gitStatus = 'unknown (git command failed)';
     }
 
