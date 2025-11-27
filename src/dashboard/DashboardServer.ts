@@ -129,15 +129,26 @@ export class DashboardServer {
 
   /**
    * Setup API routes
+   *
+   * Note: CodeQL may flag this as missing rate-limiting for file system access.
+   * This is a false positive because:
+   * 1. fs.existsSync is called once at startup, not per-request
+   * 2. express.static has built-in caching and security protections
+   * 3. sendFile only serves index.html from a fixed path (no user input)
    */
   private setupRoutes(): void {
-    // Check for built frontend files
+    // Check for built frontend files (done once at startup)
     const frontendDistPath = path.resolve(__dirname, '../../../frontend/dist');
     const hasFrontendBuild = fs.existsSync(frontendDistPath);
 
     if (hasFrontendBuild) {
-      // Serve static files from built frontend
-      this.app.use(express.static(frontendDistPath));
+      // Serve static files from built frontend with security options
+      this.app.use(
+        express.static(frontendDistPath, {
+          dotfiles: 'deny', // Prevent access to hidden files like .env
+          index: false, // Don't auto-serve index.html (we handle it in the root route)
+        })
+      );
     }
 
     // API routes - must come before the catch-all
@@ -151,8 +162,13 @@ export class DashboardServer {
 
     // Root endpoint - serve dashboard HTML or info page
     this.app.get('/', (req: Request, res: Response) => {
-      // If frontend build exists and request accepts HTML, serve it
-      if (hasFrontendBuild && req.accepts('html')) {
+      // Check if request is from a browser (Accept header contains text/html or */*)
+      const acceptHeader = req.get('Accept') || '';
+      const isBrowserRequest =
+        acceptHeader.includes('text/html') || acceptHeader.includes('*/*');
+
+      // If frontend build exists and request is from browser, serve it
+      if (hasFrontendBuild && isBrowserRequest) {
         res.sendFile(path.join(frontendDistPath, 'index.html'));
         return;
       }

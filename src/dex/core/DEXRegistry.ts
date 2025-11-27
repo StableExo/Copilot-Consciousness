@@ -12,9 +12,9 @@ import { DEXConfig, ChainType } from '../types';
 //
 // To find more pools, lower these values. To filter out low-liquidity pools, raise them.
 // Example for more permissive settings in .env:
-//   MIN_LIQUIDITY_V3=100000000000        # 10^11 (100x lower)
-//   MIN_LIQUIDITY_V3_LOW=10000000000     # 10^10 (10x lower)
-//   MIN_LIQUIDITY_V2=100000000000000     # 10^14 (10x lower)
+//   MIN_LIQUIDITY_V3=100000000000        # 10^11 (10x lower than default 10^12)
+//   MIN_LIQUIDITY_V3_LOW=10000000000     # 10^10 (10x lower than default 10^11)
+//   MIN_LIQUIDITY_V2=100000000000000     # 10^14 (10x lower than default 10^15)
 // ═══════════════════════════════════════════════════════════════
 
 // Parse environment variables with fallback defaults
