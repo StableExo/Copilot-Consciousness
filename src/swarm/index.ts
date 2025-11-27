@@ -15,3 +15,12 @@ export {
   WardenEvaluator,
   createProductionSwarm,
 } from './SwarmCoordinator';
+
+export {
+  SwarmScaler,
+  SwarmNode,
+  ScalerConfig,
+  ScaleEvent,
+  ClusterStats,
+  createProductionSwarmScaler,
+} from './SwarmScaler';

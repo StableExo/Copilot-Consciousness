@@ -131,45 +131,67 @@ export class TreasuryRotation extends EventEmitter {
 
   /**
    * Setup default rotation destinations
+   * 
+   * Per LEGAL_POSITION.md - 70% of profits are allocated to US Treasury instrument purchases
+   * This means converting crypto profits to fiat and purchasing:
+   * - Treasury Bills (T-Bills)
+   * - Treasury Notes (T-Notes)  
+   * - Treasury Bonds (T-Bonds)
+   * - I-Bonds or other Treasury securities
+   * 
+   * The on-chain "treasury" address is a staging wallet that accumulates funds
+   * before off-ramping to fiat for TreasuryDirect.gov purchases.
+   * 
+   * Flow: Profits -> Staging Wallet -> Off-ramp to USD -> TreasuryDirect.gov -> Buy T-Bills
    */
   private setupDefaultDestinations(): void {
-    // Main treasury - 70%
+    // Load addresses from environment or use clear placeholders
+    const treasuryAddress = process.env.TREASURY_STAGING_ADDRESS || '0x0000000000000000000000000000000000000001';
+    const operationsAddress = process.env.OPERATIONS_ADDRESS || '0x0000000000000000000000000000000000000002';
+    const reserveAddress = process.env.RESERVE_ADDRESS || '0x0000000000000000000000000000000000000003';
+
+    // Warn if using placeholder addresses in production
+    if (process.env.NODE_ENV === 'production') {
+      if (treasuryAddress.startsWith('0x000000000000000000000000000000000000000')) {
+        console.warn('[TreasuryRotation] WARNING: Using placeholder treasury address. Set TREASURY_STAGING_ADDRESS env var!');
+      }
+      if (operationsAddress.startsWith('0x000000000000000000000000000000000000000')) {
+        console.warn('[TreasuryRotation] WARNING: Using placeholder operations address. Set OPERATIONS_ADDRESS env var!');
+      }
+      if (reserveAddress.startsWith('0x000000000000000000000000000000000000000')) {
+        console.warn('[TreasuryRotation] WARNING: Using placeholder reserve address. Set RESERVE_ADDRESS env var!');
+      }
+    }
+
+    // US Debt-Yeet Fund - 70% (per LEGAL_POSITION.md)
+    // This staging wallet accumulates funds for off-ramping to TreasuryDirect.gov
+    // Actual Treasury purchases are made via TreasuryDirect.gov after fiat conversion
     this.addDestination({
       id: uuidv4(),
-      address: '0x0000000000000000000000000000000000000001', // Placeholder
-      name: 'Main Treasury',
+      address: treasuryAddress,
+      name: 'US Debt-Yeet Fund (TreasuryDirect Staging)',
       percentage: 70,
       type: 'treasury',
       active: true,
     });
 
-    // Operations fund - 15%
+    // Operations fund - 20%
     this.addDestination({
       id: uuidv4(),
-      address: '0x0000000000000000000000000000000000000002', // Placeholder
+      address: operationsAddress,
       name: 'Operations Fund',
-      percentage: 15,
+      percentage: 20,
       type: 'operations',
       active: true,
     });
 
-    // Reserve - 10%
+    // Strategic Reserve - 10%
     this.addDestination({
       id: uuidv4(),
-      address: '0x0000000000000000000000000000000000000003', // Placeholder
+      address: reserveAddress,
       name: 'Strategic Reserve',
       percentage: 10,
       type: 'reserve',
-      active: true,
-    });
-
-    // Burn - 5%
-    this.addDestination({
-      id: uuidv4(),
-      address: '0x000000000000000000000000000000000000dEaD',
-      name: 'Burn Address',
-      percentage: 5,
-      type: 'burn',
       active: true,
     });
   }

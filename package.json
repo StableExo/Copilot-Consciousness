@@ -1,6 +1,6 @@
 {
   "name": "aev-thewarden",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "AEV (Autonomous Extracted Value) - TheWarden: Intelligent autonomous agent competing with MEV through learning-based value extraction",
   "main": "dist/src/main.js",
   "author": "StableExo",
