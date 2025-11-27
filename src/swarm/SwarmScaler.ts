@@ -46,12 +46,13 @@ export interface ScalerConfig {
   minNodes?: number;
   maxNodes?: number;
   initialNodes?: number;
-  scaleUpThreshold?: number; // CPU/load threshold to scale up
-  scaleDownThreshold?: number; // CPU/load threshold to scale down
+  scaleUpThreshold?: number; // Load threshold to scale up (0-1, e.g., 0.75 = 75%)
+  scaleDownThreshold?: number; // Load threshold to scale down (0-1, e.g., 0.25 = 25%)
   healthCheckIntervalMs?: number;
   scaleCheckIntervalMs?: number;
   cooldownMs?: number;
   regions?: string[];
+  healthCheckFailureRate?: number; // Simulated failure rate for testing (0-1)
 }
 
 /**
@@ -109,6 +110,7 @@ export class SwarmScaler extends EventEmitter {
       scaleCheckIntervalMs: config.scaleCheckIntervalMs ?? 60000,
       cooldownMs: config.cooldownMs ?? 300000, // 5 minutes
       regions: config.regions ?? ['us-east', 'us-west', 'eu-west', 'ap-southeast'],
+      healthCheckFailureRate: config.healthCheckFailureRate ?? 0.02, // 2% default
     };
 
     // Initialize evaluators
@@ -332,8 +334,8 @@ export class SwarmScaler extends EventEmitter {
     let unhealthyCount = 0;
 
     for (const node of this.nodes.values()) {
-      // Simulate health check
-      const isHealthy = Math.random() > 0.02; // 2% failure rate
+      // Simulate health check with configurable failure rate
+      const isHealthy = Math.random() > this.config.healthCheckFailureRate;
 
       if (!isHealthy && node.status === 'ready') {
         node.status = 'unhealthy';

@@ -282,9 +282,17 @@ if [ "$DRY_RUN" = true ]; then
 else
     log_info "Starting TheWarden..."
     
-    # Start in background and capture PID
-    ./TheWarden &
-    WARDEN_PID=$!
+    # Check if TheWarden script exists, otherwise use npm start
+    if [ -x "./TheWarden" ]; then
+        # Start using TheWarden script (background with PID capture)
+        ./TheWarden &
+        WARDEN_PID=$!
+    else
+        # Start using npm (background with PID capture)
+        npm start &
+        WARDEN_PID=$!
+    fi
+    
     echo $WARDEN_PID > logs/warden.pid
     
     # Wait a moment for startup
