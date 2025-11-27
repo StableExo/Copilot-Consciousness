@@ -115,6 +115,34 @@ npm run dashboard:dev
 npm run dashboard:server
 ```
 
+### Accessing the Dashboard
+
+When you start TheWarden, the dashboard is available at `http://localhost:3000` (or the port configured in `DASHBOARD_PORT`).
+
+**Option 1: Built-in Info Page**
+Visit `http://localhost:3000` in your browser. You'll see an informative dashboard page showing:
+- System status
+- Available API endpoints
+- WebSocket connection info
+- Instructions for the full React dashboard
+
+**Option 2: Full React Dashboard (Recommended)**
+For the complete interactive dashboard with charts and real-time updates:
+
+```bash
+# Build the frontend (production)
+cd frontend
+npm install
+npm run build
+
+# The backend will automatically serve the built files
+
+# OR run in development mode (hot reload)
+cd frontend
+npm run dev
+# Then visit http://localhost:3001
+```
+
 ### Programmatic Usage
 
 ```typescript

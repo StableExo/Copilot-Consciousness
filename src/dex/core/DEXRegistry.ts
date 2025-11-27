@@ -2,12 +2,40 @@ import { ethers, JsonRpcProvider, parseEther } from 'ethers';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { DEXConfig, ChainType } from '../types';
 
+// ═══════════════════════════════════════════════════════════════
+// CONFIGURABLE LIQUIDITY THRESHOLDS
+// ═══════════════════════════════════════════════════════════════
+// These thresholds can be configured via environment variables:
+// - MIN_LIQUIDITY_V3: Threshold for V3 concentrated liquidity pools (default: 10^12)
+// - MIN_LIQUIDITY_V3_LOW: Lower threshold for smaller V3 pools (default: 10^11)
+// - MIN_LIQUIDITY_V2: Threshold for V2 constant product pools (default: 10^15 = ~0.001 ETH)
+//
+// To find more pools, lower these values. To filter out low-liquidity pools, raise them.
+// Example for more permissive settings in .env:
+//   MIN_LIQUIDITY_V3=100000000000        # 10^11 (10x lower than default 10^12)
+//   MIN_LIQUIDITY_V3_LOW=10000000000     # 10^10 (10x lower than default 10^11)
+//   MIN_LIQUIDITY_V2=100000000000000     # 10^14 (10x lower than default 10^15)
+// ═══════════════════════════════════════════════════════════════
+
+// Parse environment variables with fallback defaults
+const parseEnvBigInt = (envVar: string, defaultValue: bigint): bigint => {
+  const value = process.env[envVar];
+  if (value) {
+    try {
+      return BigInt(value);
+    } catch {
+      console.warn(`Invalid BigInt value for ${envVar}: "${value}", using default`);
+    }
+  }
+  return defaultValue;
+};
+
 // Liquidity threshold constants for Base L2 network
 // V3 pools use concentrated liquidity (L = sqrt(x*y)), values are typically 10^15-10^24.
 // The thresholds below are intentionally set much lower (10^12-10^11) to maximize pool discovery on Base L2, targeting relatively higher liquidity among small pools.
-const V3_MIN_LIQUIDITY_THRESHOLD = BigInt(1000000000000); // 10^12: relatively higher liquidity among small V3 pools on Base L2 (well below typical V3 pool values)
-const V3_LOW_LIQUIDITY_THRESHOLD = BigInt(100000000000); // 10^11: for even smaller V3 pools on Base L2
-const V2_MIN_LIQUIDITY_THRESHOLD = BigInt(1000000000000000); // 10^15 = ~0.001 ETH for V2 pools
+const V3_MIN_LIQUIDITY_THRESHOLD = parseEnvBigInt('MIN_LIQUIDITY_V3', BigInt(1000000000000)); // 10^12: relatively higher liquidity among small V3 pools on Base L2 (well below typical V3 pool values)
+const V3_LOW_LIQUIDITY_THRESHOLD = parseEnvBigInt('MIN_LIQUIDITY_V3_LOW', BigInt(100000000000)); // 10^11: for even smaller V3 pools on Base L2
+const V2_MIN_LIQUIDITY_THRESHOLD = parseEnvBigInt('MIN_LIQUIDITY_V2', BigInt(1000000000000000)); // 10^15 = ~0.001 ETH for V2 pools
 
 const getSolanaRpcEndpoint = (network: string): string => {
   if (network === 'mainnet-beta') {
