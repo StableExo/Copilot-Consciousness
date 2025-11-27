@@ -101,6 +101,9 @@ const USE_NEW_INITIALIZER = process.env.USE_NEW_INITIALIZER === 'true';
 // Flag to use the new bootstrap pattern
 const USE_BOOTSTRAP = process.env.USE_BOOTSTRAP === 'true';
 
+// Default gas price in gwei for offline mode calculations
+const DEFAULT_GAS_PRICE_GWEI = 50;
+
 /**
  * TheWarden Configuration Interface
  */
@@ -618,7 +621,7 @@ class TheWarden extends EventEmitter {
 
       // Calculate market metrics - use defaults in offline mode
       let blockNumber = 0;
-      let gasPriceGwei = 50; // Default 50 gwei in offline mode
+      let gasPriceGwei = DEFAULT_GAS_PRICE_GWEI;
 
       if (!offlineCacheOnly) {
         blockNumber = await this.provider.getBlockNumber().catch(() => 0);

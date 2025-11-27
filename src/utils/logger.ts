@@ -138,12 +138,12 @@ class Logger {
         files.slice(this.config.maxFiles).forEach((file) => {
           try {
             fs.unlinkSync(file.path);
-          } catch (error) {
+          } catch (_error) {
             // Ignore errors during cleanup
           }
         });
       }
-    } catch (error) {
+    } catch (_error) {
       // Ignore errors during cleanup
     }
   }
@@ -184,7 +184,7 @@ class Logger {
       const data = message + '\n';
       fs.appendFileSync(this.currentLogFile, data);
       this.currentLogSize += Buffer.byteLength(data);
-    } catch (error) {
+    } catch (_error) {
       // Silently fail file logging to not disrupt the application
     }
   }

@@ -109,6 +109,17 @@ export class MultiHopDataFetcher {
   }
 
   /**
+   * Filter pool edges to only include pools with the specified tokens
+   */
+  private filterEdgesByTokens(edges: PoolEdge[], tokens: string[]): PoolEdge[] {
+    const tokenSet = new Set(tokens.map((t) => t.toLowerCase()));
+    return edges.filter(
+      (edge) =>
+        tokenSet.has(edge.tokenIn.toLowerCase()) && tokenSet.has(edge.tokenOut.toLowerCase())
+    );
+  }
+
+  /**
    * Get or create provider for a specific network
    */
   private getProvider(network: string): Provider {
@@ -201,11 +212,7 @@ export class MultiHopDataFetcher {
       logger.debug('Using preloaded pool data', 'DATAFETCH');
 
       // Filter preloaded edges to only include pools with tokens we're scanning
-      const tokenSet = new Set(tokens.map((t) => t.toLowerCase()));
-      const filteredEdges = this.preloadedEdges!.filter(
-        (edge) =>
-          tokenSet.has(edge.tokenIn.toLowerCase()) && tokenSet.has(edge.tokenOut.toLowerCase())
-      );
+      const filteredEdges = this.filterEdgesByTokens(this.preloadedEdges!, tokens);
 
       if (filteredEdges.length < this.preloadedEdges!.length) {
         logger.debug(
@@ -239,12 +246,7 @@ export class MultiHopDataFetcher {
       // In offline mode, try to load from disk even if stale
       if (this.preloadedEdges && this.preloadedEdges.length > 0) {
         logger.info('OFFLINE_CACHE_ONLY mode: Using stale preloaded data', 'DATAFETCH');
-        const tokenSet = new Set(tokens.map((t) => t.toLowerCase()));
-        const filteredEdges = this.preloadedEdges.filter(
-          (edge) =>
-            tokenSet.has(edge.tokenIn.toLowerCase()) && tokenSet.has(edge.tokenOut.toLowerCase())
-        );
-        return filteredEdges;
+        return this.filterEdgesByTokens(this.preloadedEdges, tokens);
       }
 
       // Try loading from disk
@@ -258,12 +260,7 @@ export class MultiHopDataFetcher {
             `OFFLINE_CACHE_ONLY mode: Loaded ${pools.length} pools from disk cache`,
             'DATAFETCH'
           );
-          const tokenSet = new Set(tokens.map((t) => t.toLowerCase()));
-          const filteredEdges = pools.filter(
-            (edge) =>
-              tokenSet.has(edge.tokenIn.toLowerCase()) && tokenSet.has(edge.tokenOut.toLowerCase())
-          );
-          return filteredEdges;
+          return this.filterEdgesByTokens(pools, tokens);
         }
       }
 
