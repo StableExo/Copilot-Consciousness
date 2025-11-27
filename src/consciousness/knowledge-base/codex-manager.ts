@@ -419,7 +419,7 @@ export class CodexManager {
     this.updateCallbacks.forEach((callback) => {
       try {
         callback(entry);
-      } catch (error) {
+      } catch (_error) {
         // Ignore callback errors
       }
     });

@@ -285,7 +285,7 @@ export class AIProviderRegistry {
   /**
    * Record successful provider execution
    */
-  private recordSuccess(providerName: string, responseTime: number): void {
+  private recordSuccess(providerName: string, _responseTime: number): void {
     const stats = this.stats.get(providerName);
     if (stats) {
       stats.totalRequests++;

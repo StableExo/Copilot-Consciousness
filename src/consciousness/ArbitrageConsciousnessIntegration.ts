@@ -311,7 +311,7 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
    */
   private async evaluateEthics(
     opportunity: any,
-    decision: CoherentDecision
+    _decision: CoherentDecision
   ): Promise<EthicalEvaluation> {
     const query: EthicalQuery = {
       action: opportunity.type || 'execute_arbitrage',
@@ -361,7 +361,7 @@ export class ArbitrageConsciousnessWithIdentity extends ArbitrageConsciousness {
   private buildFullReasoning(
     decision: CoherentDecision,
     ethics: EthicalEvaluation,
-    opportunity: any
+    _opportunity: any
   ): string[] {
     const reasoning: string[] = [
       '=== IDENTITY CORE ANALYSIS ===',

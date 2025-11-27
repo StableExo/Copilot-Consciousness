@@ -329,7 +329,7 @@ export class OperationalPlaybook {
 
   private calculateAlternativeScore(
     alternative: DecisionAlternative,
-    context: Record<string, unknown>
+    _context: Record<string, unknown>
   ): number {
     // Simple risk-reward scoring
     const riskWeight = 0.4;
@@ -356,7 +356,7 @@ export class OperationalPlaybook {
   private generateReasoning(
     selected: DecisionAlternative,
     alternatives: DecisionAlternative[],
-    context: Record<string, unknown>
+    _context: Record<string, unknown>
   ): string[] {
     const reasoning: string[] = [];
 
@@ -374,7 +374,7 @@ export class OperationalPlaybook {
     return reasoning;
   }
 
-  private scorePlaybook(playbook: PlaybookEntry, context: Record<string, unknown>): number {
+  private scorePlaybook(playbook: PlaybookEntry, _context: Record<string, unknown>): number {
     // Score based on success rate and recency
     const successScore = playbook.successRate * 0.7;
     const recencyScore = playbook.lastUsed
