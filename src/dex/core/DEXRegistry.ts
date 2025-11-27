@@ -10,11 +10,16 @@ import { DEXConfig, ChainType } from '../types';
 // - MIN_LIQUIDITY_V3_LOW: Lower threshold for smaller V3 pools (default: 10^11)
 // - MIN_LIQUIDITY_V2: Threshold for V2 constant product pools (default: 10^15 = ~0.001 ETH)
 //
-// To find more pools, lower these values. To filter out low-liquidity pools, raise them.
-// Example for more permissive settings in .env:
-//   MIN_LIQUIDITY_V3=100000000000        # 10^11 (10x lower than default 10^12)
-//   MIN_LIQUIDITY_V3_LOW=10000000000     # 10^10 (10x lower than default 10^11)
-//   MIN_LIQUIDITY_V2=100000000000000     # 10^14 (10x lower than default 10^15)
+// To find more pools (and potential "bridge" pools for arbitrage triangles), lower these values.
+// To filter out low-liquidity pools, raise them.
+//
+// L2 PIRANHA MODE RECOMMENDED SETTINGS in .env:
+//   MIN_LIQUIDITY_V3=1000000000000       # 10^12 (standard for V3 pools)
+//   MIN_LIQUIDITY_V3_LOW=10000000000     # 10^10 (for smaller V3 pools on L2)
+//   MIN_LIQUIDITY_V2=10000000000000      # 10^13 (~$0.03-$0.05 liquidity - finds bridge pools)
+//
+// NOTE: If you're seeing "Found 0 paths", the MIN_LIQUIDITY_V2 threshold may be
+// filtering out the "bridge" pools needed to complete arbitrage triangles.
 // ═══════════════════════════════════════════════════════════════
 
 // Parse environment variables with fallback defaults
