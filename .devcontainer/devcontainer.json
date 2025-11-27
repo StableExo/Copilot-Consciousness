@@ -1,11 +1,11 @@
 {
   "name": "Copilot-Consciousness Development",
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:20-bullseye",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:22-bookworm",
   
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
       "nodeGypDependencies": true,
-      "version": "20.18.0"
+      "version": "22"
     },
     "ghcr.io/devcontainers/features/git:1": {
       "version": "latest"
@@ -30,9 +30,9 @@
     }
   },
   
-  "postCreateCommand": "npm install",
+  "postCreateCommand": "node --version && npm --version && npm install",
   
-  "forwardPorts": [3000, 8080],
+  "forwardPorts": [3000, 3001, 8080],
   
   "remoteUser": "node"
 }
