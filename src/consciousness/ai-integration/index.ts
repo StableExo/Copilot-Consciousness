@@ -11,3 +11,4 @@ export * from './providers/GeminiProvider';
 export * from './providers/CopilotProvider';
 export * from './providers/OpenAIProvider';
 export * from './providers/LocalProvider';
+export * from './providers/XAIProvider';
