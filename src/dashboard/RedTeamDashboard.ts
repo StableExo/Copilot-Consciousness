@@ -15,7 +15,20 @@
 
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { Server as HttpServer, createServer } from 'http';
+import { timingSafeEqual } from 'crypto';
 import express, { Express, Request, Response, NextFunction } from 'express';
+
+/**
+ * Constant-time string comparison to prevent timing attacks
+ */
+function safeCompare(a: string, b: string): boolean {
+  if (a.length !== b.length) {
+    // Still perform comparison to maintain constant time for same-length strings
+    timingSafeEqual(Buffer.from(a), Buffer.from(a));
+    return false;
+  }
+  return timingSafeEqual(Buffer.from(a), Buffer.from(b));
+}
 
 /**
  * Decision record with full reasoning chain
@@ -176,8 +189,9 @@ export class RedTeamDashboard {
     // Auth middleware (optional)
     if (this.config.enableAuth) {
       this.app.use((req: Request, res: Response, next: NextFunction) => {
-        const token = req.headers.authorization?.replace('Bearer ', '');
-        if (token !== this.config.authToken) {
+        const token = req.headers.authorization?.replace('Bearer ', '') || '';
+        // Use constant-time comparison to prevent timing attacks
+        if (!safeCompare(token, this.config.authToken)) {
           res.status(401).json({ error: 'Unauthorized' });
           return;
         }
@@ -229,7 +243,7 @@ export class RedTeamDashboard {
     this.app.get('/api/ethics', (_req: Request, res: Response) => {
       const ethicsDecisions = this.decisionHistory.filter((d) => d.ethicsEvaluation);
       const coherent = ethicsDecisions.filter((d) => d.ethicsEvaluation?.coherent).length;
-      
+
       res.json({
         totalEthicsEvaluations: ethicsDecisions.length,
         coherentDecisions: coherent,
@@ -248,11 +262,14 @@ export class RedTeamDashboard {
 
     // Get swarm voting summary
     this.app.get('/api/swarm', (_req: Request, res: Response) => {
-      const swarmDecisions = this.decisionHistory.filter((d) => d.swarmVotes && d.swarmVotes.length > 0);
-      
+      const swarmDecisions = this.decisionHistory.filter(
+        (d) => d.swarmVotes && d.swarmVotes.length > 0
+      );
+
       res.json({
         totalSwarmDecisions: swarmDecisions.length,
-        averageParticipation: swarmDecisions.reduce((sum, d) => sum + (d.swarmVotes?.length || 0), 0) / 
+        averageParticipation:
+          swarmDecisions.reduce((sum, d) => sum + (d.swarmVotes?.length || 0), 0) /
           (swarmDecisions.length || 1),
         consensusRate: this.calculateSwarmConsensusRate(),
         recentVotes: swarmDecisions.slice(-10).map((d) => ({
@@ -297,7 +314,10 @@ export class RedTeamDashboard {
         if (params.type) {
           filtered = filtered.filter((d) => d.type === params.type);
         }
-        const paginated = filtered.slice(params.offset || 0, (params.offset || 0) + (params.limit || 100));
+        const paginated = filtered.slice(
+          params.offset || 0,
+          (params.offset || 0) + (params.limit || 100)
+        );
         socket.emit('history', { decisions: paginated, total: filtered.length });
       });
 
@@ -349,7 +369,7 @@ export class RedTeamDashboard {
 
     // Broadcast to specific channels
     this.io.to(decision.type).emit('decision', decision);
-    
+
     if (decision.ethicsEvaluation) {
       this.io.to('ethics').emit('ethics-evaluation', {
         decisionId: decision.id,
@@ -378,15 +398,13 @@ export class RedTeamDashboard {
     }
 
     // Update average confidence
-    this.metrics.averageConfidence = 
+    this.metrics.averageConfidence =
       (this.metrics.averageConfidence * (this.metrics.totalDecisions - 1) + decision.confidence) /
       this.metrics.totalDecisions;
 
     // Update ethics coherence
     if (decision.ethicsEvaluation) {
-      const coherentCount = this.decisionHistory.filter(
-        (d) => d.ethicsEvaluation?.coherent
-      ).length;
+      const coherentCount = this.decisionHistory.filter((d) => d.ethicsEvaluation?.coherent).length;
       const totalEthics = this.decisionHistory.filter((d) => d.ethicsEvaluation).length;
       this.metrics.ethicsCoherence = totalEthics > 0 ? coherentCount / totalEthics : 1.0;
     }

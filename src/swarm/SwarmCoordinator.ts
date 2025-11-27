@@ -122,8 +122,10 @@ export class SwarmCoordinator extends EventEmitter {
 
     this.instances.set(config.id, config);
     this.evaluators.set(config.id, evaluator);
-    
-    console.log(`[SwarmCoordinator] Registered instance: ${config.id} (specialization: ${config.specialization || 'general'})`);
+
+    console.log(
+      `[SwarmCoordinator] Registered instance: ${config.id} (specialization: ${config.specialization || 'general'})`
+    );
     this.emit('instance-registered', config);
   }
 
@@ -161,13 +163,17 @@ export class SwarmCoordinator extends EventEmitter {
    */
   async evaluateOpportunity(opportunity: SwarmOpportunity): Promise<SwarmConsensus> {
     if (!this.isReady()) {
-      throw new Error(`Not enough instances. Need ${this.config.minInstances}, have ${this.instances.size}`);
+      throw new Error(
+        `Not enough instances. Need ${this.config.minInstances}, have ${this.instances.size}`
+      );
     }
 
     const startTime = Date.now();
     this.pendingVotes.set(opportunity.id, []);
 
-    console.log(`[SwarmCoordinator] Evaluating opportunity: ${opportunity.id} (${opportunity.type})`);
+    console.log(
+      `[SwarmCoordinator] Evaluating opportunity: ${opportunity.id} (${opportunity.type})`
+    );
     this.emit('evaluation-started', opportunity);
 
     // Collect votes from all instances in parallel
@@ -195,7 +201,7 @@ export class SwarmCoordinator extends EventEmitter {
       setTimeout(() => resolve('timeout'), this.config.votingTimeoutMs)
     );
 
-    const results = await Promise.race([
+    await Promise.race([
       Promise.all(votePromises),
       timeoutPromise.then(() => {
         console.warn('[SwarmCoordinator] Voting timeout reached');
@@ -216,7 +222,9 @@ export class SwarmCoordinator extends EventEmitter {
       this.consensusHistory = this.consensusHistory.slice(-1000);
     }
 
-    console.log(`[SwarmCoordinator] Consensus: ${consensus.decision} (${(consensus.approvalRate * 100).toFixed(1)}% approval)`);
+    console.log(
+      `[SwarmCoordinator] Consensus: ${consensus.decision} (${(consensus.approvalRate * 100).toFixed(1)}% approval)`
+    );
     this.emit('consensus-reached', consensus);
 
     return consensus;
@@ -290,6 +298,7 @@ export class SwarmCoordinator extends EventEmitter {
     let totalWeight = 0;
     let approvalWeight = 0;
     let totalConfidence = 0;
+    let rejectWeight = 0;
 
     for (const vote of votes) {
       const instance = this.instances.get(vote.instanceId);
@@ -298,14 +307,20 @@ export class SwarmCoordinator extends EventEmitter {
       totalWeight += weight;
       if (vote.vote === 'approve') {
         approvalWeight += weight * vote.confidence;
+      } else if (vote.vote === 'reject') {
+        rejectWeight += weight * vote.confidence;
       }
       totalConfidence += vote.confidence;
     }
 
     const approvalRate = totalWeight > 0 ? approvalWeight / totalWeight : 0;
+    const rejectRate = totalWeight > 0 ? rejectWeight / totalWeight : 0;
     const averageConfidence = votes.length > 0 ? totalConfidence / votes.length : 0;
-    const consensusReached = approvalRate >= this.config.consensusThreshold ||
-                            approvalRate <= (1 - this.config.consensusThreshold);
+    
+    // Consensus is reached if either approval or rejection exceeds threshold
+    const consensusReached =
+      approvalRate >= this.config.consensusThreshold ||
+      rejectRate >= this.config.consensusThreshold;
 
     // Check for ethics veto
     if (this.config.enableEthicsVeto) {
@@ -334,8 +349,10 @@ export class SwarmCoordinator extends EventEmitter {
       decision = 'no-consensus';
     } else if (approvalRate >= this.config.consensusThreshold) {
       decision = 'execute';
-    } else {
+    } else if (rejectRate >= this.config.consensusThreshold) {
       decision = 'reject';
+    } else {
+      decision = 'no-consensus';
     }
 
     // Merge execution params from approving votes
@@ -381,12 +398,15 @@ export class SwarmCoordinator extends EventEmitter {
   } {
     const totalEvaluations = this.consensusHistory.length;
     const consensusCount = this.consensusHistory.filter((c) => c.consensusReached).length;
-    const avgApproval = totalEvaluations > 0
-      ? this.consensusHistory.reduce((sum, c) => sum + c.approvalRate, 0) / totalEvaluations
-      : 0;
-    const avgProcessing = totalEvaluations > 0
-      ? this.consensusHistory.reduce((sum, c) => sum + c.totalProcessingTimeMs, 0) / totalEvaluations
-      : 0;
+    const avgApproval =
+      totalEvaluations > 0
+        ? this.consensusHistory.reduce((sum, c) => sum + c.approvalRate, 0) / totalEvaluations
+        : 0;
+    const avgProcessing =
+      totalEvaluations > 0
+        ? this.consensusHistory.reduce((sum, c) => sum + c.totalProcessingTimeMs, 0) /
+          totalEvaluations
+        : 0;
 
     return {
       instanceCount: this.instances.size,
@@ -404,19 +424,19 @@ export class SwarmCoordinator extends EventEmitter {
     const evaluators = new Map<string, WardenEvaluator>();
 
     // Risk-focused evaluator
-    evaluators.set('risk', async (opportunity, config) => {
+    evaluators.set('risk', async (opportunity, _config) => {
       const riskThreshold = 0.3;
       const approve = opportunity.risk < riskThreshold;
       return {
         vote: approve ? 'approve' : 'reject',
-        confidence: approve ? (1 - opportunity.risk) : opportunity.risk,
+        confidence: approve ? 1 - opportunity.risk : opportunity.risk,
         reasoning: `Risk assessment: ${(opportunity.risk * 100).toFixed(1)}% (threshold: ${(riskThreshold * 100).toFixed(1)}%)`,
         processingTimeMs: Math.random() * 100 + 50,
       };
     });
 
     // Opportunity-focused evaluator
-    evaluators.set('opportunity', async (opportunity, config) => {
+    evaluators.set('opportunity', async (opportunity, _config) => {
       const minValue = 0.01; // 0.01 ETH minimum
       const approve = opportunity.expectedValue >= minValue;
       return {
@@ -428,7 +448,7 @@ export class SwarmCoordinator extends EventEmitter {
     });
 
     // Ethics-focused evaluator
-    evaluators.set('ethics', async (opportunity, config) => {
+    evaluators.set('ethics', async (opportunity, _config) => {
       const unethicalTypes = ['sandwich', 'frontrun'];
       const ethical = !unethicalTypes.includes(opportunity.type);
       return {
@@ -442,12 +462,12 @@ export class SwarmCoordinator extends EventEmitter {
     });
 
     // Speed-focused evaluator
-    evaluators.set('speed', async (opportunity, config) => {
+    evaluators.set('speed', async (opportunity, _config) => {
       const urgencyApproval = {
-        'critical': 0.95,
-        'high': 0.8,
-        'medium': 0.6,
-        'low': 0.4,
+        critical: 0.95,
+        high: 0.8,
+        medium: 0.6,
+        low: 0.4,
       };
       const baseApproval = urgencyApproval[opportunity.urgency];
       const approve = Math.random() < baseApproval;
@@ -460,19 +480,19 @@ export class SwarmCoordinator extends EventEmitter {
     });
 
     // General balanced evaluator
-    evaluators.set('general', async (opportunity, config) => {
+    evaluators.set('general', async (opportunity, _config) => {
       const riskWeight = 0.4;
       const valueWeight = 0.4;
       const urgencyWeight = 0.2;
 
       const urgencyScore = {
-        'critical': 1,
-        'high': 0.75,
-        'medium': 0.5,
-        'low': 0.25,
+        critical: 1,
+        high: 0.75,
+        medium: 0.5,
+        low: 0.25,
       }[opportunity.urgency];
 
-      const score = 
+      const score =
         (1 - opportunity.risk) * riskWeight +
         Math.min(1, opportunity.expectedValue / 0.1) * valueWeight +
         urgencyScore * urgencyWeight;

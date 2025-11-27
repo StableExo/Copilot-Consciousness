@@ -54,7 +54,7 @@ export interface MigrationConfig {
 /**
  * Migration event types
  */
-export type MigrationEventType = 
+export type MigrationEventType =
   | 'migration-started'
   | 'migration-progress'
   | 'migration-completed'
@@ -114,8 +114,10 @@ export class MemoryMigrationService {
       this.sqliteStore = new SQLiteStore(this.config.sqlite);
       console.log('[MemoryMigrationService] SQLite backend available');
     } catch (error) {
-      console.warn('[MemoryMigrationService] SQLite not available:', 
-        error instanceof Error ? error.message : String(error));
+      console.warn(
+        '[MemoryMigrationService] SQLite not available:',
+        error instanceof Error ? error.message : String(error)
+      );
     }
 
     // Initialize Redis
@@ -123,8 +125,10 @@ export class MemoryMigrationService {
       this.redisStore = new RedisStore(this.config.redis);
       console.log('[MemoryMigrationService] Redis backend available');
     } catch (error) {
-      console.warn('[MemoryMigrationService] Redis not available:', 
-        error instanceof Error ? error.message : String(error));
+      console.warn(
+        '[MemoryMigrationService] Redis not available:',
+        error instanceof Error ? error.message : String(error)
+      );
     }
 
     // Auto-migrate if backends are available
@@ -221,7 +225,9 @@ export class MemoryMigrationService {
         break;
     }
 
-    console.log(`[MemoryMigrationService] Failover: ${previousBackend} -> ${this.getActiveBackendName()}`);
+    console.log(
+      `[MemoryMigrationService] Failover: ${previousBackend} -> ${this.getActiveBackendName()}`
+    );
     this.emit('failover', { from: previousBackend, to: this.getActiveBackendName() });
   }
 
@@ -317,7 +323,9 @@ export class MemoryMigrationService {
     };
 
     this.emit('migration-started', this.migrationProgress);
-    console.log(`[MemoryMigrationService] Migration started: ${sourceName} -> ${targetName} (${totalEntries} entries)`);
+    console.log(
+      `[MemoryMigrationService] Migration started: ${sourceName} -> ${targetName} (${totalEntries} entries)`
+    );
 
     // Process in batches
     for (let i = 0; i < entries.length; i += this.config.batchSize) {
@@ -329,8 +337,10 @@ export class MemoryMigrationService {
           this.migrationProgress.migratedEntries++;
         } catch (error) {
           this.migrationProgress.failedEntries++;
-          console.error(`[MemoryMigrationService] Failed to migrate entry ${entry.id}:`, 
-            error instanceof Error ? error.message : String(error));
+          console.error(
+            `[MemoryMigrationService] Failed to migrate entry ${entry.id}:`,
+            error instanceof Error ? error.message : String(error)
+          );
         }
       }
 
@@ -348,7 +358,9 @@ export class MemoryMigrationService {
     } else if (this.migrationProgress.migratedEntries > 0) {
       this.migrationProgress.status = 'completed';
       this.activeStore = target;
-      console.log(`[MemoryMigrationService] Migration completed with ${this.migrationProgress.failedEntries} failed entries`);
+      console.log(
+        `[MemoryMigrationService] Migration completed with ${this.migrationProgress.failedEntries} failed entries`
+      );
     } else {
       this.migrationProgress.status = 'failed';
       this.migrationProgress.errorMessage = 'All entries failed to migrate';
@@ -366,6 +378,11 @@ export class MemoryMigrationService {
 
   /**
    * Migrate a single entry with retry logic
+   * 
+   * Note: Migration creates new IDs in the target store. This is by design:
+   * - Original IDs may conflict with existing entries in the target
+   * - Memory references should be based on content, not IDs
+   * - For ID preservation, use a custom migration with update() instead of store()
    */
   private async migrateEntry(entry: MemoryEntry, target: MemoryStore): Promise<void> {
     let lastError: Error | null = null;
@@ -373,7 +390,9 @@ export class MemoryMigrationService {
     for (let attempt = 0; attempt < this.config.retryAttempts; attempt++) {
       try {
         // Store the entry in target (excluding auto-generated fields)
-        const { id, accessCount, lastAccessed, ...rest } = entry;
+        // Note: This generates a new ID in the target store
+        const { id: _originalId, accessCount: _accessCount, lastAccessed: _lastAccessed, ...rest } =
+          entry;
         target.store(rest);
         return;
       } catch (error) {
@@ -415,7 +434,7 @@ export class MemoryMigrationService {
     }
 
     const lastMigration = this.migrationHistory[this.migrationHistory.length - 1];
-    
+
     switch (lastMigration.sourceBackend) {
       case 'sqlite':
         if (this.sqliteStore) {

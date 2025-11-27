@@ -22,11 +22,14 @@ export interface ToolDefinition {
   description: string;
   parameters: {
     type: 'object';
-    properties: Record<string, {
-      type: string;
-      description: string;
-      enum?: string[];
-    }>;
+    properties: Record<
+      string,
+      {
+        type: string;
+        description: string;
+        enum?: string[];
+      }
+    >;
     required: string[];
   };
 }
@@ -218,7 +221,7 @@ export class XAIProvider extends BaseAIProvider implements AIProvider {
 
       // Add tools if available
       if (tools.length > 0 && xaiOptions?.toolChoice !== 'none') {
-        requestBody.tools = tools.map(tool => ({
+        requestBody.tools = tools.map((tool) => ({
           type: 'function',
           function: tool,
         }));
@@ -230,7 +233,7 @@ export class XAIProvider extends BaseAIProvider implements AIProvider {
       const response = await fetch(`${this.config.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.config.apiKey}`,
+          Authorization: `Bearer ${this.config.apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestBody),
@@ -241,7 +244,7 @@ export class XAIProvider extends BaseAIProvider implements AIProvider {
         throw new Error(`xAI API error: ${response.status} - ${errorText}`);
       }
 
-      const data = await response.json() as {
+      const data = (await response.json()) as {
         choices: Array<{
           message: {
             content: string | null;
@@ -266,8 +269,12 @@ export class XAIProvider extends BaseAIProvider implements AIProvider {
 
       const result: XAIResponse = {
         text: responseText,
-        finishReason: choice.finish_reason === 'stop' ? 'STOP' : 
-                     choice.finish_reason === 'length' ? 'MAX_TOKENS' : 'STOP',
+        finishReason:
+          choice.finish_reason === 'stop'
+            ? 'STOP'
+            : choice.finish_reason === 'length'
+              ? 'MAX_TOKENS'
+              : 'STOP',
         metadata: {
           provider: this.name,
           model: this.config.model,
@@ -293,7 +300,7 @@ export class XAIProvider extends BaseAIProvider implements AIProvider {
     toolExecutors: Map<string, (args: Record<string, unknown>) => Promise<unknown>>,
     options?: XAIGenerateOptions
   ): Promise<XAIResponse> {
-    const response = await this.generate(prompt, options) as XAIResponse;
+    const response = (await this.generate(prompt, options)) as XAIResponse;
 
     if (!response.toolCalls || response.toolCalls.length === 0) {
       return response;
@@ -309,7 +316,9 @@ export class XAIProvider extends BaseAIProvider implements AIProvider {
           const result = await executor(args);
           toolResults.push(`[${toolCall.function.name}]: ${JSON.stringify(result)}`);
         } catch (error) {
-          toolResults.push(`[${toolCall.function.name}]: Error - ${error instanceof Error ? error.message : String(error)}`);
+          toolResults.push(
+            `[${toolCall.function.name}]: Error - ${error instanceof Error ? error.message : String(error)}`
+          );
         }
       }
     }
@@ -340,7 +349,9 @@ Provide:
 4. Confidence level`;
 
     if (context) {
-      return this.generateWithContext(prompt, context, { citadelMode: true }) as Promise<XAIResponse>;
+      return this.generateWithContext(prompt, context, {
+        citadelMode: true,
+      }) as Promise<XAIResponse>;
     }
 
     return this.generate(prompt, { citadelMode: true }) as Promise<XAIResponse>;
@@ -422,13 +433,13 @@ Provide actionable insights for autonomous MEV operations.`,
    */
   private generateFallbackResponse(prompt: string, options?: GenerateOptions): AIResponse {
     const responseText = this.generateSimulatedResponse(prompt, options?.citadelMode);
-    
+
     // Add to conversation history even in simulated mode
     this.conversationHistory.push(
       { role: 'user', content: prompt },
       { role: 'assistant', content: responseText }
     );
-    
+
     return {
       text: responseText,
       finishReason: 'STOP',

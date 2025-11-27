@@ -157,13 +157,38 @@ describe('SwarmCoordinator', () => {
       );
       swarm.registerInstance(
         { id: 'rejector-1', weight: 1.0 },
-        async () => ({ vote: 'reject', confidence: 0.8, reasoning: 'No', processingTimeMs: 50 })
+        async () => ({ vote: 'reject', confidence: 1.0, reasoning: 'No', processingTimeMs: 50 })
       );
       swarm.registerInstance(
         { id: 'rejector-2', weight: 1.0 },
-        async () => ({ vote: 'reject', confidence: 0.8, reasoning: 'No', processingTimeMs: 50 })
+        async () => ({ vote: 'reject', confidence: 1.0, reasoning: 'No', processingTimeMs: 50 })
       );
 
+      // rejectWeight = 2 * 1.0 * 1.0 = 2.0, totalWeight = 3
+      // rejectRate = 2.0 / 3 = 0.667 < 0.7 threshold
+      // This should result in no-consensus since neither side reaches 70%
+      const result = await swarm.evaluateOpportunity(opportunity);
+
+      expect(result.decision).toBe('no-consensus');
+    });
+
+    it('should reject when majority strongly rejects', async () => {
+      // 3 strong rejectors
+      swarm.registerInstance(
+        { id: 'rejector-1', weight: 1.0 },
+        async () => ({ vote: 'reject', confidence: 0.9, reasoning: 'No', processingTimeMs: 50 })
+      );
+      swarm.registerInstance(
+        { id: 'rejector-2', weight: 1.0 },
+        async () => ({ vote: 'reject', confidence: 0.9, reasoning: 'No', processingTimeMs: 50 })
+      );
+      swarm.registerInstance(
+        { id: 'rejector-3', weight: 1.0 },
+        async () => ({ vote: 'reject', confidence: 0.9, reasoning: 'No', processingTimeMs: 50 })
+      );
+
+      // rejectWeight = 3 * 1.0 * 0.9 = 2.7, totalWeight = 3
+      // rejectRate = 2.7 / 3 = 0.9 >= 0.7 threshold
       const result = await swarm.evaluateOpportunity(opportunity);
 
       expect(result.decision).toBe('reject');

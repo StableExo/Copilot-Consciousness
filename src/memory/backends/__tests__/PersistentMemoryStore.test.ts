@@ -302,7 +302,7 @@ describe('PersistentMemoryStore', () => {
         enableRedisCache: false,
         redis: undefined,
       });
-      
+
       // Note: Redis store is still initialized (lazy connect), so this will succeed
       // The test validates that switching to an uninitialized/unavailable backend is possible
       // In production, you would check hasRedis() before switching

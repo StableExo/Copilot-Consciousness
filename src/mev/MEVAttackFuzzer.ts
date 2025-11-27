@@ -47,24 +47,24 @@ export interface AttackParameters {
   targetTxHash?: string;
   targetValue: bigint;
   targetGasPrice: bigint;
-  
+
   // Timing parameters
   blockDelay: number;
   timingWindowMs: number;
-  
+
   // Economic parameters
   attackerBudget: bigint;
   minProfit: bigint;
   maxSlippage: number;
-  
+
   // Technical parameters
   gasMultiplier: number;
   priorityFeeBump: number;
-  
+
   // Sandwich-specific
   frontrunAmount?: bigint;
   backrunAmount?: bigint;
-  
+
   // Custom parameters
   custom?: Record<string, unknown>;
 }
@@ -121,11 +121,14 @@ export interface FuzzerStats {
   vulnerabilitiesFound: number;
   averageDetectionTimeMs: number;
   totalDamageAvoided: bigint;
-  byAttackType: Record<MEVAttackType, {
-    total: number;
-    detected: number;
-    mitigated: number;
-  }>;
+  byAttackType: Record<
+    MEVAttackType,
+    {
+      total: number;
+      detected: number;
+      mitigated: number;
+    }
+  >;
 }
 
 /**
@@ -157,10 +160,16 @@ export class MEVAttackFuzzer extends EventEmitter {
 
   /**
    * Create a seeded random number generator
+   * 
+   * Uses the Linear Congruential Generator (LCG) algorithm from "Numerical Recipes"
+   * with parameters: a=1103515245, c=12345, m=2^31 (using & 0x7fffffff)
+   * This is the same LCG used in glibc and is deterministic for testing purposes.
    */
   private createSeededRandom(seed: number): () => number {
     let s = seed;
     return () => {
+      // LCG formula: s = (a * s + c) mod m
+      // a = 1103515245, c = 12345, m = 2^31 (masked with 0x7fffffff)
       s = (s * 1103515245 + 12345) & 0x7fffffff;
       return s / 0x7fffffff;
     };
@@ -184,7 +193,7 @@ export class MEVAttackFuzzer extends EventEmitter {
     for (let i = 0; i < this.config.scenariosPerRun; i++) {
       const type = attackTypes[Math.floor(this.rng() * attackTypes.length)];
       const scenario = this.generateScenario(type);
-      
+
       if (this.config.severityFilter.includes(scenario.severity)) {
         scenarios.push(scenario);
       }
@@ -423,7 +432,7 @@ export class MEVAttackFuzzer extends EventEmitter {
     const startTime = Date.now();
 
     const handler = this.defenseHandlers.get(scenario.type);
-    
+
     if (!handler) {
       // No defense registered - vulnerability!
       return {
@@ -467,7 +476,8 @@ export class MEVAttackFuzzer extends EventEmitter {
         outcome = 'bypassed';
       }
 
-      const vulnerabilityFound = outcome === 'bypassed' ||
+      const vulnerabilityFound =
+        outcome === 'bypassed' ||
         (outcome === 'detected' && !response.mitigated && scenario.severity === 'critical');
 
       return {
@@ -496,10 +506,7 @@ export class MEVAttackFuzzer extends EventEmitter {
         damageAvoided: 0n,
         vulnerabilityFound: true,
         details: `Defense error: ${error instanceof Error ? error.message : String(error)}`,
-        recommendations: [
-          'Fix error in defense handler',
-          'Add proper error handling',
-        ],
+        recommendations: ['Fix error in defense handler', 'Add proper error handling'],
         timestamp: Date.now(),
       };
     }
@@ -515,8 +522,10 @@ export class MEVAttackFuzzer extends EventEmitter {
 
     this.running = true;
     this.results = [];
-    
-    console.log(`[MEVAttackFuzzer] Starting fuzzing session with ${this.config.scenariosPerRun} scenarios`);
+
+    console.log(
+      `[MEVAttackFuzzer] Starting fuzzing session with ${this.config.scenariosPerRun} scenarios`
+    );
     this.emit('session-started', { scenarios: this.config.scenariosPerRun });
 
     const scenarios = this.generateScenarios();
@@ -529,9 +538,7 @@ export class MEVAttackFuzzer extends EventEmitter {
 
     // Process batches
     for (const batch of batches) {
-      const batchResults = await Promise.all(
-        batch.map((scenario) => this.runScenario(scenario))
-      );
+      const batchResults = await Promise.all(batch.map((scenario) => this.runScenario(scenario)));
 
       this.results.push(...batchResults);
 
@@ -546,7 +553,9 @@ export class MEVAttackFuzzer extends EventEmitter {
     this.running = false;
 
     const stats = this.calculateStats();
-    console.log(`[MEVAttackFuzzer] Session completed. Vulnerabilities: ${stats.vulnerabilitiesFound}`);
+    console.log(
+      `[MEVAttackFuzzer] Session completed. Vulnerabilities: ${stats.vulnerabilitiesFound}`
+    );
     this.emit('session-completed', stats);
 
     return stats;
@@ -556,12 +565,15 @@ export class MEVAttackFuzzer extends EventEmitter {
    * Calculate fuzzer statistics
    */
   private calculateStats(): FuzzerStats {
-    const byAttackType: Record<MEVAttackType, { total: number; detected: number; mitigated: number }> = {
-      'sandwich': { total: 0, detected: 0, mitigated: 0 },
-      'frontrun': { total: 0, detected: 0, mitigated: 0 },
-      'backrun': { total: 0, detected: 0, mitigated: 0 },
+    const byAttackType: Record<
+      MEVAttackType,
+      { total: number; detected: number; mitigated: number }
+    > = {
+      sandwich: { total: 0, detected: 0, mitigated: 0 },
+      frontrun: { total: 0, detected: 0, mitigated: 0 },
+      backrun: { total: 0, detected: 0, mitigated: 0 },
       'time-bandit': { total: 0, detected: 0, mitigated: 0 },
-      'gfr': { total: 0, detected: 0, mitigated: 0 },
+      gfr: { total: 0, detected: 0, mitigated: 0 },
       'jit-liquidity': { total: 0, detected: 0, mitigated: 0 },
       'arbitrage-interception': { total: 0, detected: 0, mitigated: 0 },
     };
@@ -605,7 +617,8 @@ export class MEVAttackFuzzer extends EventEmitter {
       bypassed,
       partial,
       vulnerabilitiesFound: this.results.filter((r) => r.vulnerabilityFound).length,
-      averageDetectionTimeMs: this.results.length > 0 ? totalDetectionTime / this.results.length : 0,
+      averageDetectionTimeMs:
+        this.results.length > 0 ? totalDetectionTime / this.results.length : 0,
       totalDamageAvoided,
       byAttackType,
     };

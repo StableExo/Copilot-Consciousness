@@ -205,7 +205,7 @@ export class TreasuryRotation extends EventEmitter {
    * Validate destination percentages sum to 100
    */
   private validateDestinationPercentages(): void {
-    const activeDestinations = Array.from(this.destinations.values()).filter(d => d.active);
+    const activeDestinations = Array.from(this.destinations.values()).filter((d) => d.active);
     const total = activeDestinations.reduce((sum, d) => sum + d.percentage, 0);
 
     if (total !== 100) {
@@ -240,7 +240,7 @@ export class TreasuryRotation extends EventEmitter {
    */
   private checkRotationTrigger(): void {
     const unrotatedAmount = this.calculateUnrotatedAmount();
-    
+
     if (unrotatedAmount >= this.config.minRotationAmount) {
       this.executeRotation().catch((err) => {
         console.error('[TreasuryRotation] Auto-rotation failed:', err.message);
@@ -274,15 +274,17 @@ export class TreasuryRotation extends EventEmitter {
    */
   async executeRotation(): Promise<RotationTransaction> {
     const unrotatedProfits = this.getUnrotatedProfits();
-    
+
     if (unrotatedProfits.length === 0) {
       throw new Error('No unrotated profits available');
     }
 
     const totalAmount = unrotatedProfits.reduce((sum, p) => sum + p.amount, 0n);
-    
+
     if (totalAmount < this.config.minRotationAmount) {
-      throw new Error(`Rotation amount ${totalAmount} below minimum ${this.config.minRotationAmount}`);
+      throw new Error(
+        `Rotation amount ${totalAmount} below minimum ${this.config.minRotationAmount}`
+      );
     }
 
     // Calculate distributions
@@ -295,7 +297,7 @@ export class TreasuryRotation extends EventEmitter {
     const rotation: RotationTransaction = {
       id: uuidv4(),
       timestamp: Date.now(),
-      profitIds: unrotatedProfits.map(p => p.id),
+      profitIds: unrotatedProfits.map((p) => p.id),
       totalAmount,
       distributions,
       proofHash,
@@ -332,18 +334,16 @@ export class TreasuryRotation extends EventEmitter {
       }
     }
 
-    return Array.from(this.profits.values()).filter(
-      p => !rotatedProfitIds.has(p.id)
-    );
+    return Array.from(this.profits.values()).filter((p) => !rotatedProfitIds.has(p.id));
   }
 
   /**
    * Calculate distributions based on destinations
    */
   private calculateDistributions(totalAmount: bigint): Distribution[] {
-    const activeDestinations = Array.from(this.destinations.values()).filter(d => d.active);
-    
-    return activeDestinations.map(dest => ({
+    const activeDestinations = Array.from(this.destinations.values()).filter((d) => d.active);
+
+    return activeDestinations.map((dest) => ({
       destinationId: dest.id,
       address: dest.address,
       amount: (totalAmount * BigInt(dest.percentage)) / 100n,
@@ -356,12 +356,12 @@ export class TreasuryRotation extends EventEmitter {
    */
   private generateProofHash(distributions: Distribution[], profits: ProfitEntry[]): string {
     const data = JSON.stringify({
-      distributions: distributions.map(d => ({
+      distributions: distributions.map((d) => ({
         address: d.address,
         amount: d.amount.toString(),
         percentage: d.percentage,
       })),
-      profits: profits.map(p => ({
+      profits: profits.map((p) => ({
         id: p.id,
         amount: p.amount.toString(),
         txHash: p.txHash,
@@ -374,18 +374,27 @@ export class TreasuryRotation extends EventEmitter {
 
   /**
    * Generate on-chain proof structure
+   * 
+   * Note: This is a simplified Merkle tree implementation for demonstration.
+   * In production, use a proper Merkle tree library (e.g., merkletreejs) with:
+   * - Sorted pairs to prevent order-dependent vulnerabilities
+   * - Domain separation to prevent leaf/node confusion
+   * - Proper proof verification logic
    */
   private generateOnChainProof(rotation: RotationTransaction): OnChainProof {
-    // Simple merkle tree for distributions
-    const leaves = rotation.distributions.map(d => 
+    // Hash each leaf with a prefix to prevent second preimage attacks
+    const LEAF_PREFIX = Buffer.from('00', 'hex');
+    const NODE_PREFIX = Buffer.from('01', 'hex');
+
+    const leaves = rotation.distributions.map((d) =>
       createHash('sha256')
-        .update(`${d.address}:${d.amount.toString()}`)
+        .update(Buffer.concat([LEAF_PREFIX, Buffer.from(`${d.address}:${d.amount.toString()}`)]))
         .digest('hex')
     );
 
-    // Simple merkle root (in production, use proper merkle tree)
+    // Build merkle root with node prefix
     const merkleRoot = createHash('sha256')
-      .update(leaves.join(''))
+      .update(Buffer.concat([NODE_PREFIX, Buffer.from(leaves.sort().join(''))]))
       .digest('hex');
 
     return {
@@ -394,7 +403,7 @@ export class TreasuryRotation extends EventEmitter {
       distributions: rotation.distributions.map((d, i) => ({
         address: d.address,
         amount: d.amount.toString(),
-        proof: [leaves[i]], // Simplified proof
+        proof: [leaves[i]], // Simplified proof - production would need full path
       })),
       timestamp: rotation.timestamp,
     };
@@ -402,6 +411,11 @@ export class TreasuryRotation extends EventEmitter {
 
   /**
    * Submit rotation to blockchain (stub)
+   * 
+   * Note: This is a stub implementation. In production, this would:
+   * 1. Build and sign actual blockchain transactions
+   * 2. Submit to the configured network
+   * 3. Return the actual transaction hash
    */
   async submitRotation(rotationId: string): Promise<string> {
     const rotation = this.rotations.get(rotationId);
@@ -409,14 +423,17 @@ export class TreasuryRotation extends EventEmitter {
       throw new Error('Rotation not found');
     }
 
-    // In production, this would submit to blockchain
+    // In production, this would submit to blockchain and return actual tx hash
+    // This stub generates a deterministic hash for testing purposes only
     rotation.status = 'submitted';
-    rotation.onChainTxHash = `0x${createHash('sha256').update(rotationId + Date.now()).digest('hex')}`;
-    
+    rotation.onChainTxHash = `0x${createHash('sha256')
+      .update(rotationId + rotation.timestamp.toString())
+      .digest('hex')}`;
+
     this.rotations.set(rotationId, rotation);
     this.emit('rotation-submitted', rotation);
 
-    // Simulate confirmation
+    // Simulate confirmation (in production, this would be event-driven)
     setTimeout(() => {
       rotation.status = 'confirmed';
       this.rotations.set(rotationId, rotation);
@@ -444,21 +461,18 @@ export class TreasuryRotation extends EventEmitter {
     for (const rotation of this.rotations.values()) {
       if (rotation.status === 'confirmed') {
         totalRotated += rotation.totalAmount;
-        
+
         for (const dist of rotation.distributions) {
           const dest = this.destinations.get(dist.destinationId);
           if (dest) {
-            destinationBreakdown[dest.name] = 
-              (destinationBreakdown[dest.name] || 0n) + dist.amount;
+            destinationBreakdown[dest.name] = (destinationBreakdown[dest.name] || 0n) + dist.amount;
           }
         }
       }
     }
 
     const pendingAmount = this.calculateUnrotatedAmount();
-    const rotationRate = totalProfits > 0n 
-      ? Number((totalRotated * 100n) / totalProfits) 
-      : 0;
+    const rotationRate = totalProfits > 0n ? Number((totalRotated * 100n) / totalProfits) : 0;
 
     return {
       totalProfits,
@@ -466,7 +480,8 @@ export class TreasuryRotation extends EventEmitter {
       rotationRate,
       verifiedPercentage: this.profits.size > 0 ? (verifiedCount / this.profits.size) * 100 : 0,
       pendingAmount,
-      rotationCount: Array.from(this.rotations.values()).filter(r => r.status === 'confirmed').length,
+      rotationCount: Array.from(this.rotations.values()).filter((r) => r.status === 'confirmed')
+        .length,
       destinationBreakdown,
     };
   }
@@ -476,8 +491,9 @@ export class TreasuryRotation extends EventEmitter {
    */
   verifyRoutingCompliance(): { compliant: boolean; percentage: number; details: string } {
     const stats = this.getStats();
-    const mainTreasuryDest = Array.from(this.destinations.values())
-      .find(d => d.type === 'treasury');
+    const mainTreasuryDest = Array.from(this.destinations.values()).find(
+      (d) => d.type === 'treasury'
+    );
 
     if (!mainTreasuryDest) {
       return {
@@ -488,9 +504,8 @@ export class TreasuryRotation extends EventEmitter {
     }
 
     const mainTreasuryAmount = stats.destinationBreakdown[mainTreasuryDest.name] || 0n;
-    const percentage = stats.totalRotated > 0n
-      ? Number((mainTreasuryAmount * 100n) / stats.totalRotated)
-      : 0;
+    const percentage =
+      stats.totalRotated > 0n ? Number((mainTreasuryAmount * 100n) / stats.totalRotated) : 0;
 
     return {
       compliant: percentage >= this.config.targetRotationPercentage,
@@ -572,14 +587,14 @@ export class TreasuryRotation extends EventEmitter {
     const stats = this.getStats();
     const trail = {
       exportTimestamp: Date.now(),
-      profits: Array.from(this.profits.values()).map(p => ({
+      profits: Array.from(this.profits.values()).map((p) => ({
         ...p,
         amount: p.amount.toString(),
       })),
-      rotations: Array.from(this.rotations.values()).map(r => ({
+      rotations: Array.from(this.rotations.values()).map((r) => ({
         ...r,
         totalAmount: r.totalAmount.toString(),
-        distributions: r.distributions.map(d => ({
+        distributions: r.distributions.map((d) => ({
           ...d,
           amount: d.amount.toString(),
         })),
