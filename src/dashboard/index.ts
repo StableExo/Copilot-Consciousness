@@ -10,4 +10,14 @@ export { AlertSystem } from './services/AlertSystem';
 export { TimeSeriesDB } from './services/TimeSeriesDB';
 export { WebSocketHandler } from './websocket/WebSocketHandler';
 export { createRoutes } from './routes';
+export {
+  RedTeamDashboard,
+  RedTeamDashboardConfig,
+  DecisionRecord,
+  EthicsEvaluation,
+  ReasoningChain,
+  ReasoningStep,
+  SwarmVote,
+  DashboardMetrics,
+} from './RedTeamDashboard';
 export * from './types';

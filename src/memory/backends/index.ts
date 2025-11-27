@@ -5,6 +5,7 @@
  * - SQLite: Local persistent storage with ACID compliance
  * - Redis: Distributed caching and storage
  * - PersistentMemoryStore: Unified interface with automatic fallback
+ * - MemoryMigrationService: Automatic migration from in-memory to persistent
  */
 
 export { SQLiteStore, SQLiteStoreConfig, SQLiteStats } from './SQLiteStore';
@@ -15,3 +16,11 @@ export {
   PersistentMemoryStats,
   BackendType,
 } from './PersistentMemoryStore';
+export {
+  MemoryMigrationService,
+  MigrationConfig,
+  MigrationProgress,
+  MigrationStatus,
+  MigrationEventType,
+  MigrationEventHandler,
+} from './MemoryMigrationService';
