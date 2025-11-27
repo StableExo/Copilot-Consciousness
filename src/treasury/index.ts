@@ -1,7 +1,7 @@
 /**
  * Treasury Module
  *
- * Provides treasury management and profit rotation functionality.
+ * Provides treasury management, profit rotation, and multi-sig functionality.
  */
 
 export {
@@ -14,3 +14,14 @@ export {
   Distribution,
   OnChainProof,
 } from './TreasuryRotation';
+
+export {
+  MultiSigTreasury,
+  MultiSigConfig,
+  MultiSigStats,
+  Signer,
+  PendingTransaction,
+  TransactionSignature,
+  AddressRotation,
+  createProductionMultiSig,
+} from './MultiSigTreasury';

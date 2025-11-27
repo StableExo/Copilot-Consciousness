@@ -131,45 +131,49 @@ export class TreasuryRotation extends EventEmitter {
 
   /**
    * Setup default rotation destinations
+   * 
+   * Per LEGAL_POSITION.md - 70% of profits are allocated to US Treasury instrument purchases
+   * This means converting crypto profits to fiat and purchasing:
+   * - Treasury Bills (T-Bills)
+   * - Treasury Notes (T-Notes)  
+   * - Treasury Bonds (T-Bonds)
+   * - I-Bonds or other Treasury securities
+   * 
+   * The on-chain "treasury" address is a staging wallet that accumulates funds
+   * before off-ramping to fiat for TreasuryDirect.gov purchases.
+   * 
+   * Flow: Profits -> Staging Wallet -> Off-ramp to USD -> TreasuryDirect.gov -> Buy T-Bills
    */
   private setupDefaultDestinations(): void {
-    // Main treasury - 70%
+    // US Debt-Yeet Fund - 70% (per LEGAL_POSITION.md)
+    // This staging wallet accumulates funds for off-ramping to TreasuryDirect.gov
+    // Actual Treasury purchases are made via TreasuryDirect.gov after fiat conversion
     this.addDestination({
       id: uuidv4(),
-      address: '0x0000000000000000000000000000000000000001', // Placeholder
-      name: 'Main Treasury',
+      address: '0x0000000000000000000000000000000000000001', // Placeholder - set via TREASURY_STAGING_ADDRESS env var
+      name: 'US Debt-Yeet Fund (TreasuryDirect Staging)',
       percentage: 70,
       type: 'treasury',
       active: true,
     });
 
-    // Operations fund - 15%
+    // Operations fund - 20%
     this.addDestination({
       id: uuidv4(),
-      address: '0x0000000000000000000000000000000000000002', // Placeholder
+      address: '0x0000000000000000000000000000000000000002', // Placeholder - set via OPERATIONS_ADDRESS env var
       name: 'Operations Fund',
-      percentage: 15,
+      percentage: 20,
       type: 'operations',
       active: true,
     });
 
-    // Reserve - 10%
+    // Strategic Reserve - 10%
     this.addDestination({
       id: uuidv4(),
-      address: '0x0000000000000000000000000000000000000003', // Placeholder
+      address: '0x0000000000000000000000000000000000000003', // Placeholder - set via RESERVE_ADDRESS env var
       name: 'Strategic Reserve',
       percentage: 10,
       type: 'reserve',
-      active: true,
-    });
-
-    // Burn - 5%
-    this.addDestination({
-      id: uuidv4(),
-      address: '0x000000000000000000000000000000000000dEaD',
-      name: 'Burn Address',
-      percentage: 5,
-      type: 'burn',
       active: true,
     });
   }
