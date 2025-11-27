@@ -29,13 +29,9 @@ export interface IPWhitelistConfig {
   vpnDetectionEnabled?: boolean;
   enableGeolocation?: boolean;
   allowByDefault?: boolean;
-  /** Optional logger function for warnings. Defaults to console.warn if not provided. */
+  /** Optional logger function for geolocation warnings and errors. Defaults to console.warn. */
   logger?: (message: string) => void;
 }
-
-// Cache for geoip-lite module to avoid repeated require attempts
-let geoipModule: { lookup: (ip: string) => { country: string; city: string } | null } | null = null;
-let geoipLoadAttempted = false;
 
 export class IPWhitelistService {
   private whitelist: Map<string, IPWhitelistEntry>;
@@ -44,19 +40,23 @@ export class IPWhitelistService {
   private enableGeolocation: boolean;
   private allowByDefault: boolean;
   private logger: (message: string) => void;
+  
+  // Instance-level cache for geoip-lite module to avoid concurrency issues
+  private geoipModule: { lookup: (ip: string) => { country: string; city: string } | null } | null =
+    null;
+  private geoipLoadAttempted: boolean = false;
 
   constructor(config: IPWhitelistConfig | boolean = false) {
     // Support legacy boolean parameter for backward compatibility
-    if (typeof config === 'boolean') {
-      config = { vpnDetectionEnabled: config };
-    }
+    const normalizedConfig: IPWhitelistConfig =
+      typeof config === 'boolean' ? { vpnDetectionEnabled: config } : config;
 
     this.whitelist = new Map();
     this.blockedCountries = new Set();
-    this.vpnDetectionEnabled = config.vpnDetectionEnabled ?? false;
-    this.enableGeolocation = config.enableGeolocation ?? false;
-    this.allowByDefault = config.allowByDefault ?? true;
-    this.logger = config.logger ?? console.warn.bind(console);
+    this.vpnDetectionEnabled = normalizedConfig.vpnDetectionEnabled ?? false;
+    this.enableGeolocation = normalizedConfig.enableGeolocation ?? false;
+    this.allowByDefault = normalizedConfig.allowByDefault ?? true;
+    this.logger = normalizedConfig.logger ?? console.warn.bind(console);
   }
 
   /**
@@ -121,21 +121,22 @@ export class IPWhitelistService {
 
     // Geolocation-based checks (only if enabled)
     if (this.enableGeolocation && this.blockedCountries.size > 0) {
-      // Try to load geoip-lite module (cached after first attempt)
-      if (!geoipLoadAttempted) {
-        geoipLoadAttempted = true;
+      // Try to load geoip-lite module (cached after first attempt per instance)
+      if (!this.geoipLoadAttempted) {
+        this.geoipLoadAttempted = true;
         try {
           // eslint-disable-next-line @typescript-eslint/no-require-imports
-          geoipModule = require('geoip-lite');
-        } catch {
+          this.geoipModule = require('geoip-lite');
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
           this.logger(
-            'Geolocation enabled but geoip-lite not installed. Install with: npm install geoip-lite'
+            `Geolocation enabled but geoip-lite not available: ${errorMessage}. Install with: npm install geoip-lite`
           );
         }
       }
 
-      if (geoipModule) {
-        const geo = geoipModule.lookup(ip);
+      if (this.geoipModule) {
+        const geo = this.geoipModule.lookup(ip);
 
         if (!geo) {
           return {
