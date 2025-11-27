@@ -21,12 +21,7 @@
 
 import { EventEmitter } from 'events';
 import { logger } from '../utils/logger';
-import {
-  ExecutionEpisode,
-  ExecutionState,
-  StrategyParameters,
-  UpdatedParameters,
-} from './types';
+import { ExecutionEpisode, ExecutionState, StrategyParameters, UpdatedParameters } from './types';
 
 interface RLAgentConfig {
   learningRate: number;
