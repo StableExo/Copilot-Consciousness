@@ -1,8 +1,11 @@
 /**
- * IP Whitelisting and Geolocation Service
+ * IP Whitelisting Service
+ *
+ * Provides IP-based access control with optional geolocation features.
+ * Geolocation is disabled by default for better compatibility.
+ * To enable geolocation, set enableGeolocation=true in the constructor.
  */
 
-import geoip from 'geoip-lite';
 import { Address4, Address6 } from 'ip-address';
 
 export interface IPWhitelistEntry {
@@ -22,15 +25,30 @@ export interface IPCheckResult {
   isVPN?: boolean;
 }
 
+export interface IPWhitelistConfig {
+  vpnDetectionEnabled?: boolean;
+  enableGeolocation?: boolean;
+  allowByDefault?: boolean;
+}
+
 export class IPWhitelistService {
   private whitelist: Map<string, IPWhitelistEntry>;
   private blockedCountries: Set<string>;
   private vpnDetectionEnabled: boolean;
+  private enableGeolocation: boolean;
+  private allowByDefault: boolean;
 
-  constructor(vpnDetectionEnabled: boolean = false) {
+  constructor(config: IPWhitelistConfig | boolean = false) {
+    // Support legacy boolean parameter for backward compatibility
+    if (typeof config === 'boolean') {
+      config = { vpnDetectionEnabled: config };
+    }
+
     this.whitelist = new Map();
     this.blockedCountries = new Set();
-    this.vpnDetectionEnabled = vpnDetectionEnabled;
+    this.vpnDetectionEnabled = config.vpnDetectionEnabled ?? false;
+    this.enableGeolocation = config.enableGeolocation ?? false;
+    this.allowByDefault = config.allowByDefault ?? true;
   }
 
   /**
@@ -75,31 +93,12 @@ export class IPWhitelistService {
   }
 
   /**
-   * Check if IP is allowed (whitelist + geolocation + VPN check)
+   * Check if IP is allowed (whitelist + optional geolocation + VPN check)
    */
   checkIP(ip: string): IPCheckResult {
     // Check whitelist first
     if (this.isWhitelisted(ip)) {
       return { allowed: true };
-    }
-
-    // Get geolocation
-    const geo = geoip.lookup(ip);
-
-    if (!geo) {
-      return {
-        allowed: false,
-        reason: 'Unable to determine IP location',
-      };
-    }
-
-    // Check blocked countries
-    if (this.blockedCountries.has(geo.country)) {
-      return {
-        allowed: false,
-        reason: `Access from ${geo.country} is blocked`,
-        country: geo.country,
-      };
     }
 
     // VPN detection (simplified - would integrate with service like IPHub)
@@ -108,15 +107,53 @@ export class IPWhitelistService {
       return {
         allowed: false,
         reason: 'VPN/Proxy detected',
-        country: geo.country,
         isVPN: true,
       };
     }
 
+    // Geolocation-based checks (only if enabled)
+    if (this.enableGeolocation && this.blockedCountries.size > 0) {
+      // Geolocation requires the optional geoip-lite package
+      // If not installed, skip geolocation checks
+      try {
+        // Dynamic import to make geoip-lite optional
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const geoip = require('geoip-lite');
+        const geo = geoip.lookup(ip);
+
+        if (!geo) {
+          return {
+            allowed: false,
+            reason: 'Unable to determine IP location',
+          };
+        }
+
+        // Check blocked countries
+        if (this.blockedCountries.has(geo.country)) {
+          return {
+            allowed: false,
+            reason: `Access from ${geo.country} is blocked`,
+            country: geo.country,
+          };
+        }
+
+        return {
+          allowed: true,
+          country: geo.country,
+          city: geo.city,
+        };
+      } catch {
+        // geoip-lite not installed, skip geolocation checks
+        console.warn(
+          'Geolocation enabled but geoip-lite not installed. Install with: npm install geoip-lite'
+        );
+      }
+    }
+
+    // Default behavior when not whitelisted and geolocation disabled/unavailable
     return {
-      allowed: true,
-      country: geo.country,
-      city: geo.city,
+      allowed: this.allowByDefault,
+      reason: this.allowByDefault ? undefined : 'IP not in whitelist',
     };
   }
 

@@ -38,7 +38,11 @@ export type { RateLimitConfig, RateLimitResult } from './rate-limiting/RateLimit
 
 // IP Whitelisting
 export { IPWhitelistService } from './ip-whitelist/IPWhitelistService';
-export type { IPWhitelistEntry, IPCheckResult } from './ip-whitelist/IPWhitelistService';
+export type {
+  IPWhitelistEntry,
+  IPCheckResult,
+  IPWhitelistConfig,
+} from './ip-whitelist/IPWhitelistService';
 
 // Audit Logging
 export { AuditLogger } from './audit/AuditLogger';

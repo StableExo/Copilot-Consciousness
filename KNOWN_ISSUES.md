@@ -23,7 +23,6 @@ After thorough analysis of the codebase, all identified "issues" are either:
 When running `npm install`, you may see deprecation warnings like:
 ```
 npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory.
-npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
 npm warn deprecated lodash.isequal@4.5.0: This package is deprecated.
 npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
 npm warn deprecated yaeti@0.0.6: Package no longer supported.
@@ -35,22 +34,25 @@ These warnings are for **transitive dependencies** (dependencies of our dependen
 
 | Deprecated Package | Source | Reason |
 |-------------------|--------|--------|
-| `inflight@1.0.6` | `geoip-lite` → `rimraf` → `glob` | geoip-lite@1.4.10 is the latest; no fix available |
-| `rimraf@2.7.1` | `geoip-lite` | Same as above |
-| `glob@7.2.3` | Multiple (jest, geoip-lite, etc.) | Jest 29.x uses this internally |
+| `inflight@1.0.6` | `jest` internal deps | Jest 29.x uses this internally |
+| `glob@7.2.3` | `jest`, `hardhat/mocha` | Testing frameworks use older glob |
 | `glob@8.1.0` | `hardhat` → `mocha` | Hardhat 2.x uses mocha which uses this |
 | `yaeti@0.0.6` | `alchemy-sdk` → `websocket` | alchemy-sdk@3.6.5 is the latest |
 | `lodash.isequal@4.5.0` | `@nomicfoundation/hardhat-ethers` | Internal to hardhat tooling |
 
-### Why We Can't Fix These
+### What We Fixed ✅
+
+1. **Removed `geoip-lite`** - Eliminated rimraf@2.7.1 and reduced glob warnings
+   - Made geolocation optional in `IPWhitelistService`
+   - IP whitelisting still works, geolocation available via `npm install geoip-lite`
+
+2. **Added `@uniswap/v3-staker` override** - Upgraded to 1.0.2 to fix deprecation
+
+### Why Remaining Warnings Can't Be Fixed
 
 1. **Transitive dependencies**: These packages are required by packages we depend on, not by us directly
-2. **No upstream updates**: The parent packages (geoip-lite, alchemy-sdk) are at their latest versions
+2. **No upstream updates**: The parent packages (alchemy-sdk, jest, hardhat) are at their latest versions
 3. **Override risk**: Forcing newer versions could break functionality
-
-### What We Did Fix ✅
-
-Added `"@uniswap/v3-staker": "1.0.2"` to package.json overrides to resolve that deprecation warning.
 
 ### Recommendation
 ✅ **Safe to ignore** - These are informational warnings about transitive dependencies. They don't affect production functionality, and the packages work correctly despite deprecation notices.
