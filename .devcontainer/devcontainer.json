@@ -30,7 +30,9 @@
     }
   },
   
-  "postCreateCommand": "node --version && npm --version && npm install",
+  "postCreateCommand": "echo '🚀 Setting up Copilot-Consciousness environment...' && npm install -g npm@latest && echo '📦 Node version:' && node --version && echo '📦 NPM version:' && npm --version && npm install && echo '✅ Environment ready!'",
+  
+  "postStartCommand": "echo '🔍 Verifying environment...' && node --version && npm --version",
   
   "forwardPorts": [3000, 3001, 8080],
   
