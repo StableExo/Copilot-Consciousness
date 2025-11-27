@@ -62,7 +62,7 @@ describe('XAIProvider', () => {
       const response = await provider.generate('Test prompt');
 
       expect(response.text).toContain('[xAI Grok - Simulated]');
-      expect(response.text).toContain('XAI_PROD_API_KEY');
+      expect(response.text).toContain('xAI API key');
       expect(response.finishReason).toBe('STOP');
       expect(response.metadata?.provider).toBe('xai');
       expect(response.metadata?.model).toBe('simulated');

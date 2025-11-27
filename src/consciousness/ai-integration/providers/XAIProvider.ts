@@ -448,7 +448,7 @@ Provide actionable insights for autonomous MEV operations.`,
     const prefix = citadelMode ? '[xAI Grok Citadel Mode - Simulated]' : '[xAI Grok - Simulated]';
 
     const note = !this.isConfigured()
-      ? ' Note: Configure XAI_PROD_API_KEY to use actual xAI Grok API.'
+      ? ' Note: Configure your xAI API key to use actual Grok API.'
       : '';
 
     if (citadelMode) {

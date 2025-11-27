@@ -130,8 +130,8 @@ export class PersistentMemoryStore extends MemoryStore {
     if (this.redisStore.isConnected()) {
       const sqliteMemories = this.sqliteStore.search({});
       for (const memory of sqliteMemories) {
-        // This will update the in-memory map which Redis uses
-        this.redisStore['memories'].set(memory.id, memory);
+        // Use the public cache method
+        this.redisStore.cacheEntry(memory);
       }
     }
   }
@@ -161,7 +161,7 @@ export class PersistentMemoryStore extends MemoryStore {
     if (this.config.enableRedisCache && this.redisStore && this.activeBackend === 'sqlite') {
       const fullEntry = store.retrieve(id);
       if (fullEntry) {
-        this.redisStore['memories'].set(id, fullEntry);
+        this.redisStore.cacheEntry(fullEntry);
       }
     }
 
@@ -195,7 +195,7 @@ export class PersistentMemoryStore extends MemoryStore {
     if (result && this.config.enableRedisCache && this.redisStore && this.activeBackend === 'sqlite') {
       const fullEntry = store.retrieve(id);
       if (fullEntry) {
-        this.redisStore['memories'].set(id, fullEntry);
+        this.redisStore.cacheEntry(fullEntry);
       }
     }
 
@@ -211,7 +211,7 @@ export class PersistentMemoryStore extends MemoryStore {
 
     // Remove from Redis cache if enabled
     if (result && this.config.enableRedisCache && this.redisStore) {
-      this.redisStore['memories'].delete(id);
+      this.redisStore.uncacheEntry(id);
     }
 
     return result;

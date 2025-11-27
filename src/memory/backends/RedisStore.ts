@@ -486,6 +486,20 @@ export class RedisStore extends MemoryStore {
   }
 
   /**
+   * Cache an entry in local memory (for external sync purposes)
+   */
+  cacheEntry(entry: MemoryEntry): void {
+    this.memories.set(entry.id, entry);
+  }
+
+  /**
+   * Remove an entry from local cache
+   */
+  uncacheEntry(id: UUID): void {
+    this.memories.delete(id);
+  }
+
+  /**
    * Close Redis connection
    */
   async close(): Promise<void> {

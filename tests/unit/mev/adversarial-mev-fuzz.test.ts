@@ -169,7 +169,8 @@ describe('Adversarial MEV Fuzz Tests', () => {
   beforeEach(() => {
     riskModel = new MEVRiskModel();
     profitCalculator = new MEVAwareProfitCalculator();
-    fuzzer = new MEVFuzzer(Date.now() % 10000);
+    // Use fixed seed for reproducible tests
+    fuzzer = new MEVFuzzer(42);
   });
 
   describe('Risk Model Invariants', () => {
@@ -479,11 +480,11 @@ describe('Adversarial MEV Fuzz Tests', () => {
         maxConsecutiveErrors: 10,
       });
 
-      // Set initial capital
-      emergencyStop.updateCapital(BigInt(10000000000000000000n)); // 10 ETH
+      // Set initial capital - 10 ETH
+      emergencyStop.updateCapital(10000000000000000000n);
 
-      // Simulate 6% loss from MEV attacks
-      emergencyStop.updateCapital(BigInt(9400000000000000000n)); // 9.4 ETH
+      // Simulate 6% loss from MEV attacks - 9.4 ETH
+      emergencyStop.updateCapital(9400000000000000000n);
 
       // Should trigger stop due to > 5% loss
       // Wait a tick for async stop trigger
