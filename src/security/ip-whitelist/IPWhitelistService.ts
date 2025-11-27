@@ -29,7 +29,13 @@ export interface IPWhitelistConfig {
   vpnDetectionEnabled?: boolean;
   enableGeolocation?: boolean;
   allowByDefault?: boolean;
+  /** Optional logger function for warnings. Defaults to console.warn if not provided. */
+  logger?: (message: string) => void;
 }
+
+// Cache for geoip-lite module to avoid repeated require attempts
+let geoipModule: { lookup: (ip: string) => { country: string; city: string } | null } | null = null;
+let geoipLoadAttempted = false;
 
 export class IPWhitelistService {
   private whitelist: Map<string, IPWhitelistEntry>;
@@ -37,6 +43,7 @@ export class IPWhitelistService {
   private vpnDetectionEnabled: boolean;
   private enableGeolocation: boolean;
   private allowByDefault: boolean;
+  private logger: (message: string) => void;
 
   constructor(config: IPWhitelistConfig | boolean = false) {
     // Support legacy boolean parameter for backward compatibility
@@ -49,6 +56,7 @@ export class IPWhitelistService {
     this.vpnDetectionEnabled = config.vpnDetectionEnabled ?? false;
     this.enableGeolocation = config.enableGeolocation ?? false;
     this.allowByDefault = config.allowByDefault ?? true;
+    this.logger = config.logger ?? console.warn.bind(console);
   }
 
   /**
@@ -113,13 +121,21 @@ export class IPWhitelistService {
 
     // Geolocation-based checks (only if enabled)
     if (this.enableGeolocation && this.blockedCountries.size > 0) {
-      // Geolocation requires the optional geoip-lite package
-      // If not installed, skip geolocation checks
-      try {
-        // Dynamic import to make geoip-lite optional
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const geoip = require('geoip-lite');
-        const geo = geoip.lookup(ip);
+      // Try to load geoip-lite module (cached after first attempt)
+      if (!geoipLoadAttempted) {
+        geoipLoadAttempted = true;
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
+          geoipModule = require('geoip-lite');
+        } catch {
+          this.logger(
+            'Geolocation enabled but geoip-lite not installed. Install with: npm install geoip-lite'
+          );
+        }
+      }
+
+      if (geoipModule) {
+        const geo = geoipModule.lookup(ip);
 
         if (!geo) {
           return {
@@ -142,11 +158,6 @@ export class IPWhitelistService {
           country: geo.country,
           city: geo.city,
         };
-      } catch {
-        // geoip-lite not installed, skip geolocation checks
-        console.warn(
-          'Geolocation enabled but geoip-lite not installed. Install with: npm install geoip-lite'
-        );
       }
     }
 
