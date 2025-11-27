@@ -34,12 +34,19 @@ const privateKey = z
 /**
  * API key validation (non-empty, no placeholder values)
  */
+const placeholderPatterns = ['your', 'replace', 'enter', 'insert', 'api-key-here', 'xxx', 'placeholder'];
 const apiKey = z
   .string()
   .min(10, { message: 'API key too short' })
-  .refine((val) => !val.toLowerCase().includes('your'), {
-    message: 'Placeholder value detected - replace with real API key',
-  });
+  .refine(
+    (val) => {
+      const lower = val.toLowerCase();
+      return !placeholderPatterns.some((pattern) => lower.includes(pattern));
+    },
+    {
+      message: 'Placeholder value detected - replace with real API key',
+    }
+  );
 
 /**
  * Boolean string validation
@@ -309,7 +316,7 @@ export const LoggingConfigSchema = z.object({
  * Security Configuration Schema
  */
 export const SecurityConfigSchema = z.object({
-  JWT_SECRET: z.string().min(32, { message: 'JWT secret must be at least 32 characters' }),
+  JWT_SECRET: z.string().min(64, { message: 'JWT secret must be at least 64 characters for production security' }),
   SECRETS_ENCRYPTION_KEY: z
     .string()
     .length(64, { message: 'Must be 64 hex characters (32 bytes)' }),
@@ -400,7 +407,7 @@ export const EnvConfigSchema = z
     SCAN_CHAINS: z.string().optional(),
 
     // Security Configuration
-    JWT_SECRET: z.string().min(32, { message: 'JWT secret must be at least 32 characters' }),
+    JWT_SECRET: z.string().min(64, { message: 'JWT secret must be at least 64 characters for production security' }),
     SECRETS_ENCRYPTION_KEY: z
       .string()
       .length(64, { message: 'Must be 64 hex characters (32 bytes)' }),

@@ -222,7 +222,7 @@ describe('EnvSchema', () => {
 
         const result = validateEnvSection(SecurityConfigSchema, env);
         expect(result.success).toBe(false);
-        expect(result.errorMessages?.some((msg) => msg.includes('32 characters'))).toBe(true);
+        expect(result.errorMessages?.some((msg) => msg.includes('64 characters'))).toBe(true);
       });
 
       it('should reject wrong length encryption keys', () => {
