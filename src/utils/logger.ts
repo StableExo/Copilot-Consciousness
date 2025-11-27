@@ -59,8 +59,8 @@ class Logger {
       level: process.env.LOG_LEVEL
         ? this.parseLogLevel(process.env.LOG_LEVEL)
         : process.env.NODE_ENV === 'production'
-        ? LogLevel.INFO
-        : LogLevel.DEBUG,
+          ? LogLevel.INFO
+          : LogLevel.DEBUG,
       enableColors: process.env.LOG_COLORS !== 'false',
       enableFileLogging: process.env.LOG_FILE === 'true',
       logDir: process.env.LOG_DIR || './logs',

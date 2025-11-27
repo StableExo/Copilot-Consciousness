@@ -364,7 +364,9 @@ export class BundleSimulator extends EventEmitter {
     // Limit cache size
     if (this.mempoolCache.size > this.config.mempoolSampleSize) {
       const firstKey = this.mempoolCache.keys().next().value;
-      this.mempoolCache.delete(firstKey);
+      if (firstKey !== undefined) {
+        this.mempoolCache.delete(firstKey);
+      }
     }
   }
 

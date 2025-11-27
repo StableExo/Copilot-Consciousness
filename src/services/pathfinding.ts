@@ -18,7 +18,7 @@ interface PathfindingConfig {
 class PathfindingService {
   private app: express.Application;
   private config: PathfindingConfig;
-  private rabbitmqConnection?: amqp.Connection;
+  private rabbitmqConnection?: amqp.ChannelModel;
   private rabbitmqChannel?: amqp.Channel;
   private redis?: Redis;
   private isRunning = false;

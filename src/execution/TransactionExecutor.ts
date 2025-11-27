@@ -598,10 +598,10 @@ export class TransactionExecutor {
       details === undefined
         ? undefined
         : details instanceof Error
-        ? { name: details.name, message: details.message, stack: details.stack }
-        : typeof details === 'object' && details !== null
-        ? (details as Record<string, unknown>)
-        : { value: details };
+          ? { name: details.name, message: details.message, stack: details.stack }
+          : typeof details === 'object' && details !== null
+            ? (details as Record<string, unknown>)
+            : { value: details };
 
     return {
       success: false,
