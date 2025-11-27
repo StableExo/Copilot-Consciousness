@@ -116,7 +116,9 @@ describe('EnvSchema', () => {
       // Use the specific section schema for API keys
       const result = validateEnvSection(ApiKeysSchema, env);
       expect(result.success).toBe(false);
-      expect(result.errorMessages?.some((msg) => msg.toLowerCase().includes('placeholder'))).toBe(true);
+      expect(result.errorMessages?.some((msg) => msg.toLowerCase().includes('placeholder'))).toBe(
+        true
+      );
     });
   });
 

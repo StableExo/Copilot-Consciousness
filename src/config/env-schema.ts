@@ -310,7 +310,9 @@ export const LoggingConfigSchema = z.object({
  */
 export const SecurityConfigSchema = z.object({
   JWT_SECRET: z.string().min(32, { message: 'JWT secret must be at least 32 characters' }),
-  SECRETS_ENCRYPTION_KEY: z.string().length(64, { message: 'Must be 64 hex characters (32 bytes)' }),
+  SECRETS_ENCRYPTION_KEY: z
+    .string()
+    .length(64, { message: 'Must be 64 hex characters (32 bytes)' }),
   AUDIT_ENCRYPTION_KEY: z.string().length(64, { message: 'Must be 64 hex characters (32 bytes)' }),
   MULTI_SIG_ADDRESS: ethereumAddress.optional(),
   MULTI_SIG_THRESHOLD: numericString({ min: 1 }).optional(),
@@ -352,102 +354,108 @@ export const CircuitBreakerConfigSchema = z.object({
  * Uses passthrough to allow additional fields while validating known fields.
  * This avoids TypeScript depth limits from merging many schemas.
  */
-export const EnvConfigSchema = z.object({
-  // RPC Configuration
-  ETHEREUM_RPC_URL: httpUrl.optional(),
-  MAINNET_RPC_URL: httpUrl.optional(),
-  POLYGON_RPC_URL: httpUrl.optional(),
-  ARBITRUM_RPC_URL: httpUrl.optional(),
-  OPTIMISM_RPC_URL: httpUrl.optional(),
-  BASE_RPC_URL: httpUrl,
-  BSC_RPC_URL: httpUrl.optional(),
-  L2_RPC_URL: httpUrl.optional(),
-  RPC_URL: httpUrl.optional(),
-  SOLANA_RPC_URL: httpUrl.optional(),
-  ETHEREUM_RPC_URL_BACKUP: httpUrl.optional(),
-  ARBITRUM_RPC_URL_BACKUP: httpUrl.optional(),
-  POLYGON_RPC_URL_BACKUP: httpUrl.optional(),
-  OPTIMISM_RPC_URL_BACKUP: httpUrl.optional(),
-  BASE_RPC_URL_BACKUP: httpUrl.optional(),
-  BASE_RPC_URL_BACKUP_2: httpUrl.optional(),
-  BASE_RPC_URL_BACKUP_3: httpUrl.optional(),
-  INFURA_WS_URL: wsUrl.optional(),
-  ALCHEMY_WS_URL: wsUrl.optional(),
-  SOLANA_WS_URL: wsUrl.optional(),
-  GOERLI_RPC_URL: httpUrl.optional(),
-  BASE_SEPOLIA_RPC_URL: httpUrl.optional(),
+export const EnvConfigSchema = z
+  .object({
+    // RPC Configuration
+    ETHEREUM_RPC_URL: httpUrl.optional(),
+    MAINNET_RPC_URL: httpUrl.optional(),
+    POLYGON_RPC_URL: httpUrl.optional(),
+    ARBITRUM_RPC_URL: httpUrl.optional(),
+    OPTIMISM_RPC_URL: httpUrl.optional(),
+    BASE_RPC_URL: httpUrl,
+    BSC_RPC_URL: httpUrl.optional(),
+    L2_RPC_URL: httpUrl.optional(),
+    RPC_URL: httpUrl.optional(),
+    SOLANA_RPC_URL: httpUrl.optional(),
+    ETHEREUM_RPC_URL_BACKUP: httpUrl.optional(),
+    ARBITRUM_RPC_URL_BACKUP: httpUrl.optional(),
+    POLYGON_RPC_URL_BACKUP: httpUrl.optional(),
+    OPTIMISM_RPC_URL_BACKUP: httpUrl.optional(),
+    BASE_RPC_URL_BACKUP: httpUrl.optional(),
+    BASE_RPC_URL_BACKUP_2: httpUrl.optional(),
+    BASE_RPC_URL_BACKUP_3: httpUrl.optional(),
+    INFURA_WS_URL: wsUrl.optional(),
+    ALCHEMY_WS_URL: wsUrl.optional(),
+    SOLANA_WS_URL: wsUrl.optional(),
+    GOERLI_RPC_URL: httpUrl.optional(),
+    BASE_SEPOLIA_RPC_URL: httpUrl.optional(),
 
-  // Wallet Configuration
-  WALLET_PRIVATE_KEY: z.union([privateKey, z.literal('ask_operator')]),
+    // Wallet Configuration
+    WALLET_PRIVATE_KEY: z.union([privateKey, z.literal('ask_operator')]),
 
-  // API Keys
-  ALCHEMY_API_KEY: apiKey.optional(),
-  INFURA_API_KEY: apiKey.optional(),
-  ETHERSCAN_API_KEY: apiKey.optional(),
-  POLYGONSCAN_API_KEY: apiKey.optional(),
-  ARBISCAN_API_KEY: apiKey.optional(),
-  OPTIMISTIC_ETHERSCAN_API_KEY: apiKey.optional(),
-  BASESCAN_API_KEY: apiKey.optional(),
+    // API Keys
+    ALCHEMY_API_KEY: apiKey.optional(),
+    INFURA_API_KEY: apiKey.optional(),
+    ETHERSCAN_API_KEY: apiKey.optional(),
+    POLYGONSCAN_API_KEY: apiKey.optional(),
+    ARBISCAN_API_KEY: apiKey.optional(),
+    OPTIMISTIC_ETHERSCAN_API_KEY: apiKey.optional(),
+    BASESCAN_API_KEY: apiKey.optional(),
 
-  // Runtime Configuration
-  NODE_ENV: z.enum(['development', 'production', 'test']),
-  PORT: numericString({ min: 1, max: 65535 }).optional(),
-  DRY_RUN: booleanString.optional(),
-  CHAIN_ID: numericString({ min: 1 }).optional(),
-  SCAN_CHAINS: z.string().optional(),
+    // Runtime Configuration
+    NODE_ENV: z.enum(['development', 'production', 'test']),
+    PORT: numericString({ min: 1, max: 65535 }).optional(),
+    DRY_RUN: booleanString.optional(),
+    CHAIN_ID: numericString({ min: 1 }).optional(),
+    SCAN_CHAINS: z.string().optional(),
 
-  // Security Configuration
-  JWT_SECRET: z.string().min(32, { message: 'JWT secret must be at least 32 characters' }),
-  SECRETS_ENCRYPTION_KEY: z.string().length(64, { message: 'Must be 64 hex characters (32 bytes)' }),
-  AUDIT_ENCRYPTION_KEY: z.string().length(64, { message: 'Must be 64 hex characters (32 bytes)' }),
-  MULTI_SIG_ADDRESS: ethereumAddress.optional(),
-  MULTI_SIG_THRESHOLD: numericString({ min: 1 }).optional(),
-  CORS_ORIGIN: z.string().optional(),
+    // Security Configuration
+    JWT_SECRET: z.string().min(32, { message: 'JWT secret must be at least 32 characters' }),
+    SECRETS_ENCRYPTION_KEY: z
+      .string()
+      .length(64, { message: 'Must be 64 hex characters (32 bytes)' }),
+    AUDIT_ENCRYPTION_KEY: z
+      .string()
+      .length(64, { message: 'Must be 64 hex characters (32 bytes)' }),
+    MULTI_SIG_ADDRESS: ethereumAddress.optional(),
+    MULTI_SIG_THRESHOLD: numericString({ min: 1 }).optional(),
+    CORS_ORIGIN: z.string().optional(),
 
-  // Performance Configuration
-  SCAN_INTERVAL: numericString({ min: 100, max: 60000 }).optional(),
-  CONCURRENCY: numericString({ min: 1, max: 100 }).optional(),
-  TARGET_THROUGHPUT: numericString({ min: 1 }).optional(),
-  MIN_PROFIT_THRESHOLD: numericString({ min: 0 }).optional(),
-  MIN_PROFIT_PERCENT: numericString({ min: 0, max: 100 }).optional(),
-  MIN_PROFIT_ABSOLUTE: numericString({ min: 0 }).optional(),
-  MAX_SLIPPAGE: numericString({ min: 0, max: 1 }).optional(),
-  MAX_SLIPPAGE_PERCENT: numericString({ min: 0, max: 100 }).optional(),
-  MAX_GAS_PRICE: numericString({ min: 1 }).optional(),
-  MAX_GAS_COST_PERCENTAGE: numericString({ min: 0, max: 100 }).optional(),
+    // Performance Configuration
+    SCAN_INTERVAL: numericString({ min: 100, max: 60000 }).optional(),
+    CONCURRENCY: numericString({ min: 1, max: 100 }).optional(),
+    TARGET_THROUGHPUT: numericString({ min: 1 }).optional(),
+    MIN_PROFIT_THRESHOLD: numericString({ min: 0 }).optional(),
+    MIN_PROFIT_PERCENT: numericString({ min: 0, max: 100 }).optional(),
+    MIN_PROFIT_ABSOLUTE: numericString({ min: 0 }).optional(),
+    MAX_SLIPPAGE: numericString({ min: 0, max: 1 }).optional(),
+    MAX_SLIPPAGE_PERCENT: numericString({ min: 0, max: 100 }).optional(),
+    MAX_GAS_PRICE: numericString({ min: 1 }).optional(),
+    MAX_GAS_COST_PERCENTAGE: numericString({ min: 0, max: 100 }).optional(),
 
-  // Feature Flags
-  ENABLE_ML_PREDICTIONS: booleanString.optional(),
-  ENABLE_CROSS_CHAIN: booleanString.optional(),
-  ENABLE_LAYER2: booleanString.optional(),
-  ENABLE_UNISWAP_V2: booleanString.optional(),
-  ENABLE_UNISWAP_V3: booleanString.optional(),
-  ENABLE_SUSHISWAP: booleanString.optional(),
-  ENABLE_PANCAKESWAP: booleanString.optional(),
-  ENABLE_CURVE: booleanString.optional(),
-  ENABLE_BALANCER: booleanString.optional(),
-  ENABLE_PRIVATE_RPC: booleanString.optional(),
+    // Feature Flags
+    ENABLE_ML_PREDICTIONS: booleanString.optional(),
+    ENABLE_CROSS_CHAIN: booleanString.optional(),
+    ENABLE_LAYER2: booleanString.optional(),
+    ENABLE_UNISWAP_V2: booleanString.optional(),
+    ENABLE_UNISWAP_V3: booleanString.optional(),
+    ENABLE_SUSHISWAP: booleanString.optional(),
+    ENABLE_PANCAKESWAP: booleanString.optional(),
+    ENABLE_CURVE: booleanString.optional(),
+    ENABLE_BALANCER: booleanString.optional(),
+    ENABLE_PRIVATE_RPC: booleanString.optional(),
 
-  // Logging Configuration
-  ENABLE_LOGGING: booleanString.optional(),
-  LOG_LEVEL: z.enum(['error', 'warn', 'info', 'debug', 'trace']).optional(),
-  LOG_FORMAT: z.enum(['json', 'pretty']).optional(),
-  LOG_FILE_PATH: z.string().optional(),
-  LOG_FILE: booleanString.optional(),
-  LOG_DIR: z.string().optional(),
-  LOG_COLORS: booleanString.optional(),
-  LOG_MAX_FILES: numericString({ min: 1 }).optional(),
-  DEBUG: booleanString.optional(),
-  PINO_PRETTY_ENABLED: booleanString.optional(),
+    // Logging Configuration
+    ENABLE_LOGGING: booleanString.optional(),
+    LOG_LEVEL: z.enum(['error', 'warn', 'info', 'debug', 'trace']).optional(),
+    LOG_FORMAT: z.enum(['json', 'pretty']).optional(),
+    LOG_FILE_PATH: z.string().optional(),
+    LOG_FILE: booleanString.optional(),
+    LOG_DIR: z.string().optional(),
+    LOG_COLORS: booleanString.optional(),
+    LOG_MAX_FILES: numericString({ min: 1 }).optional(),
+    DEBUG: booleanString.optional(),
+    PINO_PRETTY_ENABLED: booleanString.optional(),
 
-  // AI Configuration
-  GEMINI_API_KEY: apiKey.optional(),
-  GEMINI_MODEL: z.string().optional(),
-  GEMINI_CITADEL_MODE: booleanString.optional(),
-  OPENAI_API_KEY: apiKey.optional(),
-  OPENAI_MODEL: z.string().optional(),
-  AI_CITADEL_MODE_ENABLED: booleanString.optional(),
-}).passthrough(); // Allow additional fields from process.env
+    // AI Configuration
+    GEMINI_API_KEY: apiKey.optional(),
+    GEMINI_MODEL: z.string().optional(),
+    GEMINI_CITADEL_MODE: booleanString.optional(),
+    OPENAI_API_KEY: apiKey.optional(),
+    OPENAI_MODEL: z.string().optional(),
+    AI_CITADEL_MODE_ENABLED: booleanString.optional(),
+  })
+  .passthrough(); // Allow additional fields from process.env
 
 /**
  * Type inference for environment configuration
@@ -484,7 +492,9 @@ export interface EnvValidationResult {
  * console.log('Base RPC:', result.data.BASE_RPC_URL);
  * ```
  */
-export function validateEnv(env: Record<string, string | undefined> = process.env): EnvValidationResult {
+export function validateEnv(
+  env: Record<string, string | undefined> = process.env
+): EnvValidationResult {
   const result = EnvConfigSchema.safeParse(env);
 
   if (result.success) {
@@ -521,7 +531,9 @@ export function validateEnv(env: Record<string, string | undefined> = process.en
  * const config = validateEnvOrThrow();
  * ```
  */
-export function validateEnvOrThrow(env: Record<string, string | undefined> = process.env): EnvConfig {
+export function validateEnvOrThrow(
+  env: Record<string, string | undefined> = process.env
+): EnvConfig {
   const result = validateEnv(env);
 
   if (!result.success) {
