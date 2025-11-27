@@ -340,6 +340,13 @@ export class ProfitabilityCalculator {
     return totalGasUnits * this.gasPrice;
   }
 
+  // Slippage calculation constants
+  // These caps prevent unrealistic slippage values from filtering out all paths
+  // Particularly important for V3 pools where reserve0 is liquidity (L), not actual reserves
+  private static readonly MAX_SLIPPAGE_PER_HOP = 0.1; // 10% max per hop
+  private static readonly MAX_TOTAL_SLIPPAGE = 0.2; // 20% max total
+  private static readonly DEFAULT_HOP_SLIPPAGE = 0.001; // 0.1% fallback
+
   /**
    * Calculate cumulative slippage impact across hops
    */
@@ -354,22 +361,22 @@ export class ProfitabilityCalculator {
       if (hop.reserve0 && hop.reserve0 > BigInt(0)) {
         // Price impact = amountIn / reserve0
         // This is a simplified model; more sophisticated models exist
-        // NOTE: For V3 pools, reserve0 is liquidity (L), not actual reserves
-        // This can lead to incorrect impact calculations for V3 pools
         const impact = Number((hop.amountIn * BigInt(10000)) / hop.reserve0) / 10000;
-        // Cap individual hop slippage at 10% to handle V3 liquidity vs V2 reserve differences
-        hopSlippage = Math.min(impact, 0.1);
+        // Cap individual hop slippage to prevent unrealistic values
+        // This is especially important for V3 pools where reserve0 is liquidity (L),
+        // not actual token reserves, which can produce exaggerated impact values
+        hopSlippage = Math.min(impact, ProfitabilityCalculator.MAX_SLIPPAGE_PER_HOP);
       } else {
         // Fallback to base slippage if reserves not available
-        hopSlippage = 0.001; // 0.1% base slippage per hop
+        hopSlippage = ProfitabilityCalculator.DEFAULT_HOP_SLIPPAGE;
       }
 
       // Compound slippage across hops
       cumulativeSlippage = cumulativeSlippage + hopSlippage + cumulativeSlippage * hopSlippage;
     }
 
-    // Cap total slippage at 20% to ensure reasonable profit calculations
-    return Math.min(cumulativeSlippage, 0.2);
+    // Cap total slippage to ensure reasonable profit calculations
+    return Math.min(cumulativeSlippage, ProfitabilityCalculator.MAX_TOTAL_SLIPPAGE);
   }
 
   /**
