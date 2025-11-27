@@ -14,7 +14,7 @@ export class AlertSystem extends EventEmitter {
   private config: AlertConfig;
   private alerts: Alert[];
   private maxAlertHistory: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   private emailService?: any; // Will be implemented with nodemailer
   private lastMetrics?: DashboardMetrics;
 

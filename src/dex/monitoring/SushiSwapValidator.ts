@@ -122,7 +122,6 @@ export class SushiSwapValidator extends BaseValidator {
   }
 
   private async checkKeyPairs(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     sushiswap: unknown,
     components: ComponentStatus[],
     errors: string[]

@@ -107,7 +107,6 @@ export class CurveValidator extends BaseValidator {
   }
 
   private async checkKeyPools(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     curve: unknown,
     components: ComponentStatus[],
     errors: string[]

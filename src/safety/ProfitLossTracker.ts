@@ -218,8 +218,8 @@ export class ProfitLossTracker extends EventEmitter {
       this.totalGrossLoss > BigInt(0)
         ? Number(this.totalGrossProfit) / Number(this.totalGrossLoss)
         : this.totalGrossProfit > BigInt(0)
-        ? Number.POSITIVE_INFINITY
-        : 0;
+          ? Number.POSITIVE_INFINITY
+          : 0;
 
     // Calculate debt allocation
     const debtAllocation = this.calculateDebtAllocation(totalNetProfit);

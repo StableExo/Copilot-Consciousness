@@ -75,9 +75,8 @@ describe('ConsciousnessSystem Typed Methods', () => {
 
   describe('solveCosmicProblem', () => {
     it('should return CosmicProblemResult with expected structure', async () => {
-      const result: CosmicProblemResult = await consciousness.solveCosmicProblem(
-        'test cosmic problem'
-      );
+      const result: CosmicProblemResult =
+        await consciousness.solveCosmicProblem('test cosmic problem');
 
       expect(result).toBeDefined();
       expect(typeof result.eventId).toBe('string');

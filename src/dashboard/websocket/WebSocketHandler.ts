@@ -192,7 +192,7 @@ export class WebSocketHandler {
   /**
    * Broadcast event to all connected clients
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   broadcast(eventType: string, data: any): void {
     this.io.emit(eventType, data);
   }
