@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: consul
+  namespace: arbitrage-bot
+spec:
+  serviceName: consul-service
+  replicas: 3
+  selector:
+    matchLabels:
+      app: consul
+  template:
+    metadata:
+      labels:
+        app: consul
+    spec:
+      containers:
+      - name: consul
+        image: consul:1.16
+        args:
+        - agent
+        - -server
+        - -bootstrap-expect=3
+        - -ui
+        - -client=0.0.0.0
+        - -bind=0.0.0.0
+        - -datacenter=arbitrage-dc
+        ports:
+        - containerPort: 8500
+          name: http
+        - containerPort: 8600
+          name: dns
+        - containerPort: 8301
+          name: serf-lan
+        - containerPort: 8302
+          name: serf-wan
+        volumeMounts:
+        - name: consul-data
+          mountPath: /consul/data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          exec:
+            command:
+            - consul
+            - members
+          initialDelaySeconds: 30
+          periodSeconds: 10
+  volumeClaimTemplates:
+  - metadata:
+      name: consul-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consul-service
+  namespace: arbitrage-bot
+spec:
+  selector:
+    app: consul
+  ports:
+  - name: http
+    port: 8500
+    targetPort: 8500
+  - name: dns
+    port: 8600
+    targetPort: 8600
+  clusterIP: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consul-ui
+  namespace: arbitrage-bot
+spec:
+  selector:
+    app: consul
+  ports:
+  - name: http
+    port: 8500
+    targetPort: 8500
+  type: LoadBalancer

@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+
+# Environment files
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+
+# Cache
+.cache/
+.eslintcache
+.parcel-cache/
+
+# Hardhat
+cache/
+artifacts/
+typechain/
+typechain-types/
+
+# Pool cache
+.pool-cache/
+
+# Memory system
+.memory/**/*.js
+.memory/**/*.d.ts
+
+# Generated files
+abis/generated/
+
+# Markdown in docs (to preserve custom formatting)
+# docs/**/*.md
+
+# Configuration that should maintain specific formatting
+hardhat.config.ts
+ecosystem.config.json

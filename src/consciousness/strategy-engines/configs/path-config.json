@@ -1,0 +1,30 @@
+{
+  "maxPathLength": 10,
+  "maxPathsToExplore": 1000,
+  "explorationStrategy": "breadth-first",
+  "pruningEnabled": true,
+  "cyclicDetection": true,
+  "optimizationCriteria": ["cost", "time", "risk"],
+  "pathValidation": {
+    "validateConstraints": true,
+    "validateFeasibility": true,
+    "validateOptimality": false
+  },
+  "scoring": {
+    "costWeight": 0.4,
+    "timeWeight": 0.3,
+    "riskWeight": 0.3
+  },
+  "pruning": {
+    "maxCostThreshold": 1000,
+    "maxTimeThreshold": 100,
+    "maxRiskThreshold": 0.8,
+    "minScoreThreshold": 0.3
+  },
+  "exploration": {
+    "depthFirstMaxDepth": 15,
+    "breadthFirstMaxWidth": 100,
+    "bestFirstBeamWidth": 50,
+    "aStarHeuristic": "euclidean"
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "uniswapV3": {
+    "name": "Uniswap V3",
+    "type": "concentrated_liquidity",
+    "version": "3",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["arbitrum", "ethereum", "polygon", "base", "optimism"],
+    "fee_tiers": [100, 500, 3000, 10000]
+  },
+  "sushiswap": {
+    "name": "SushiSwap",
+    "type": "constant_product",
+    "version": "2",
+    "swapGasEstimate": 120000,
+    "supported_chains": ["arbitrum", "ethereum", "polygon", "base"],
+    "fee": 3000
+  },
+  "sushiswapV3": {
+    "name": "SushiSwap V3",
+    "type": "concentrated_liquidity",
+    "version": "3",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["base", "arbitrum", "ethereum"],
+    "fee_tiers": [100, 500, 3000, 10000]
+  },
+  "aerodrome": {
+    "name": "Aerodrome",
+    "type": "concentrated_liquidity",
+    "version": "2",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["base"],
+    "fee_tiers": [100, 500, 3000, 10000]
+  },
+  "velodrome": {
+    "name": "Velodrome",
+    "type": "concentrated_liquidity",
+    "version": "2",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["optimism", "base"],
+    "fee_tiers": [100, 500, 3000, 10000]
+  },
+  "dopex": {
+    "name": "Dopex V2",
+    "type": "concentrated_liquidity",
+    "version": "2",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["base", "arbitrum"],
+    "fee_tiers": [100, 500, 3000, 10000]
+  },
+  "lynex": {
+    "name": "Lynex",
+    "type": "concentrated_liquidity",
+    "version": "2",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["linea"],
+    "fee_tiers": [100, 500, 3000, 10000]
+  },
+  "pancakeswapV3": {
+    "name": "PancakeSwap V3",
+    "type": "concentrated_liquidity",
+    "version": "3",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["base", "zkSync", "ethereum"],
+    "fee_tiers": [100, 500, 2500, 10000]
+  },
+  "syncswap": {
+    "name": "SyncSwap",
+    "type": "constant_product",
+    "version": "2",
+    "swapGasEstimate": 130000,
+    "supported_chains": ["zkSync"],
+    "fee": 3000
+  },
+  "skydrome": {
+    "name": "Skydrome",
+    "type": "concentrated_liquidity",
+    "version": "2",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["scroll"],
+    "fee_tiers": [100, 500, 3000, 10000]
+  },
+  "ambient": {
+    "name": "Ambient Finance",
+    "type": "concentrated_liquidity",
+    "version": "1",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["scroll", "ethereum"],
+    "fee_tiers": [100, 500, 3000, 10000]
+  },
+  "aperture": {
+    "name": "Aperture Finance",
+    "type": "concentrated_liquidity",
+    "version": "3",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["manta"],
+    "fee_tiers": [100, 500, 3000, 10000]
+  },
+  "quickswapV3": {
+    "name": "QuickSwap V3",
+    "type": "concentrated_liquidity",
+    "version": "3",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["polygon", "manta"],
+    "fee_tiers": [100, 500, 3000, 10000]
+  },
+  "kim": {
+    "name": "Kim",
+    "type": "concentrated_liquidity",
+    "version": "4",
+    "swapGasEstimate": 150000,
+    "supported_chains": ["mode"],
+    "fee_tiers": [100, 500, 3000, 10000]
+  },
+  "aaveV3": {
+    "name": "Aave V3",
+    "type": "lending_protocol",
+    "version": "3",
+    "flashLoanGasEstimate": 200000,
+    "supported_chains": ["arbitrum", "polygon", "base", "optimism"],
+    "flashLoanFee": 9
+  }
+}

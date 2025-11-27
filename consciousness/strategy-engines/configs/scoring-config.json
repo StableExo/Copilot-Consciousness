@@ -1,0 +1,42 @@
+{
+  "criteria": {
+    "value": {
+      "weight": 0.3,
+      "type": "maximize"
+    },
+    "cost": {
+      "weight": 0.2,
+      "type": "minimize"
+    },
+    "risk": {
+      "weight": 0.25,
+      "type": "minimize"
+    },
+    "time": {
+      "weight": 0.15,
+      "type": "minimize"
+    },
+    "complexity": {
+      "weight": 0.1,
+      "type": "minimize"
+    }
+  },
+  "scoringMethod": "weighted-sum",
+  "normalization": true,
+  "riskAdjustment": {
+    "enabled": true,
+    "riskFreeRate": 0.02,
+    "riskPremium": 0.05,
+    "volatilityFactor": 1.0
+  },
+  "ranking": {
+    "method": "score",
+    "ties": "average",
+    "minimumScore": 0.5
+  },
+  "evaluation": {
+    "multiCriteria": true,
+    "sensitivityAnalysis": false,
+    "confidenceInterval": 0.95
+  }
+}

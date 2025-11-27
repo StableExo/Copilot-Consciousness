@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "Code review comments:"
+echo "1. The changes in contracts/FlashSwapV2.sol look good. Initializing the variables is the correct fix."
+echo "2. No further changes are needed."

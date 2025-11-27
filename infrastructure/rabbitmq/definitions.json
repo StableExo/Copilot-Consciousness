@@ -1,0 +1,97 @@
+{
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "dlx",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false
+    }
+  ],
+  "queues": [
+    {
+      "name": "opportunities",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-max-length": 100000,
+        "x-message-ttl": 300000,
+        "x-dead-letter-exchange": "dlx",
+        "x-dead-letter-routing-key": "opportunities.dead"
+      }
+    },
+    {
+      "name": "paths",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-max-length": 50000,
+        "x-dead-letter-exchange": "dlx",
+        "x-dead-letter-routing-key": "paths.dead"
+      }
+    },
+    {
+      "name": "executions",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-max-length": 10000
+      }
+    },
+    {
+      "name": "ml_requests",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false
+    },
+    {
+      "name": "ml_responses",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false
+    },
+    {
+      "name": "alerts",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false
+    },
+    {
+      "name": "opportunities.dead",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false
+    },
+    {
+      "name": "paths.dead",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false
+    }
+  ],
+  "bindings": [
+    {
+      "source": "dlx",
+      "vhost": "/",
+      "destination": "opportunities.dead",
+      "destination_type": "queue",
+      "routing_key": "opportunities.dead"
+    },
+    {
+      "source": "dlx",
+      "vhost": "/",
+      "destination": "paths.dead",
+      "destination_type": "queue",
+      "routing_key": "paths.dead"
+    }
+  ]
+}

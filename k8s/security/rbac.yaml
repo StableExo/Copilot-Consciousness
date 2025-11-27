@@ -1,0 +1,126 @@
+---
+# Service Account for Scanner
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: scanner-sa
+  namespace: arbitrage-bot
+
+---
+# Service Account for Pathfinding
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pathfinding-sa
+  namespace: arbitrage-bot
+
+---
+# Service Account for Execution
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: execution-sa
+  namespace: arbitrage-bot
+
+---
+# Service Account for Dashboard
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dashboard-sa
+  namespace: arbitrage-bot
+
+---
+# Role for Scanner - minimal permissions
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: scanner-role
+  namespace: arbitrage-bot
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get"]
+  resourceNames: ["rpc-secrets"]
+
+---
+# RoleBinding for Scanner
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: scanner-rolebinding
+  namespace: arbitrage-bot
+subjects:
+- kind: ServiceAccount
+  name: scanner-sa
+roleRef:
+  kind: Role
+  name: scanner-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Role for Execution - needs wallet secrets
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: execution-role
+  namespace: arbitrage-bot
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get"]
+  resourceNames: ["wallet-secret", "rpc-secrets"]
+
+---
+# RoleBinding for Execution
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: execution-rolebinding
+  namespace: arbitrage-bot
+subjects:
+- kind: ServiceAccount
+  name: execution-sa
+roleRef:
+  kind: Role
+  name: execution-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Role for Dashboard - read-only
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dashboard-role
+  namespace: arbitrage-bot
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get", "list"]
+
+---
+# RoleBinding for Dashboard
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dashboard-rolebinding
+  namespace: arbitrage-bot
+subjects:
+- kind: ServiceAccount
+  name: dashboard-sa
+roleRef:
+  kind: Role
+  name: dashboard-role
+  apiGroup: rbac.authorization.k8s.io

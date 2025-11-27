@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# ═══════════════════════════════════════════════════════════════
+# TheWarden - Main Entry Point
+# ═══════════════════════════════════════════════════════════════
+# The singular autonomous entry point for TheWarden on mainnet.
+# This script consolidates all entry points into one unified command.
+# ═══════════════════════════════════════════════════════════════
+
+# Determine the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Check for monitoring/diagnostic mode
+if [[ "$1" == "--monitor" ]] || [[ "$1" == "--diagnostic" ]]; then
+    shift  # Remove the flag from arguments
+    # Execute the autonomous monitoring script
+    exec "$SCRIPT_DIR/scripts/autonomous-monitor.sh" "$@"
+else
+    # Execute the autonomous runner script (normal mode)
+    exec "$SCRIPT_DIR/scripts/autonomous-run.sh" "$@"
+fi

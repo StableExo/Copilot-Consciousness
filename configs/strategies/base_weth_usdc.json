@@ -1,0 +1,107 @@
+{
+  "network": {
+    "name": "Base",
+    "chainId": 8453,
+    "rpcUrl": "${BASE_RPC_URL}",
+    "explorerUrl": "https://basescan.org"
+  },
+  "tokens": {
+    "WETH": {
+      "address": "0x4200000000000000000000000000000000000006",
+      "decimals": 18,
+      "symbol": "WETH"
+    },
+    "USDC": {
+      "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "decimals": 6,
+      "symbol": "USDC"
+    }
+  },
+  "targetPools": [
+    {
+      "name": "Uniswap V3 WETH/USDC 0.05%",
+      "address": "0xd0b53D9277642d899DF5C87A3966A349A798F224",
+      "dex": "uniswap_v3",
+      "token0": "WETH",
+      "token1": "USDC",
+      "fee": 500,
+      "priority": 1
+    },
+    {
+      "name": "Uniswap V3 WETH/USDC 0.3%",
+      "address": "0x4c36388bE6F416A29C8d8Eee81C771cE6bE14B18",
+      "dex": "uniswap_v3",
+      "token0": "WETH",
+      "token1": "USDC",
+      "fee": 3000,
+      "priority": 2
+    },
+    {
+      "name": "Aerodrome WETH/USDC",
+      "address": "0xcDAC0d6c6C59727a65F871236188350531885C43",
+      "dex": "aerodrome",
+      "token0": "WETH",
+      "token1": "USDC",
+      "fee": 500,
+      "priority": 3,
+      "enabled": true
+    }
+  ],
+  "contracts": {
+    "flashSwapV2": "${FLASHSWAP_V2_ADDRESS}",
+    "uniswapV3Router": "0x2626664c2603336E57B271c5C0b26F421741e481",
+    "aaveV3Pool": "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+    "aaveAddressProvider": "0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D"
+  },
+  "strategy": {
+    "minProfitThresholdEth": 0.0005,
+    "minProfitThresholdUsd": 1.0,
+    "maxSlippageBps": 50,
+    "maxGasPriceGwei": 0.05,
+    "cycleIntervalMs": 12000,
+    "stopOnFirstExecution": false,
+    "maxConcurrentCycles": 1,
+    "cycleTimeoutMs": 60000
+  },
+  "execution": {
+    "requireSimulation": true,
+    "maxGasLimit": 1000000,
+    "simulationTimeout": 10000,
+    "maxConcurrentTx": 1,
+    "txRetryAttempts": 3,
+    "txRetryDelayMs": 5000,
+    "enableFlashLoans": true,
+    "enableMultiDex": true
+  },
+  "mevProtection": {
+    "enabled": true,
+    "riskThreshold": 0.2,
+    "riskParams": {
+      "baseRisk": 0.001,
+      "valueSensitivity": 0.12,
+      "congestionFactor": 0.25,
+      "searcherDensityFactor": 0.20
+    },
+    "adaptiveThreshold": true,
+    "bundleSubmission": false
+  },
+  "gasOptimization": {
+    "estimationSafetyMargin": 1.2,
+    "priorityFeeStrategy": "dynamic",
+    "maxPriorityFeeGwei": 0.01,
+    "baseFeeMultiplier": 1.1
+  },
+  "monitoring": {
+    "mevSensorUpdateIntervalMs": 10000,
+    "poolScanIntervalMs": 5000,
+    "enableDetailedLogging": true,
+    "enablePerformanceMetrics": true
+  },
+  "consciousness": {
+    "enableMemoryIntegration": true,
+    "enableLearning": true,
+    "enablePatternDetection": true,
+    "memoryRetentionDays": 30,
+    "learningRate": 0.05
+  }
+}

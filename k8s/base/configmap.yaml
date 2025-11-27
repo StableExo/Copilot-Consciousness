@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: arbitrage-config
+  namespace: arbitrage-bot
+data:
+  # RabbitMQ Configuration
+  RABBITMQ_HOST: "rabbitmq-service"
+  RABBITMQ_PORT: "5672"
+  RABBITMQ_VHOST: "/"
+  
+  # Redis Configuration
+  REDIS_HOST: "redis-master-service"
+  REDIS_PORT: "6379"
+  
+  # TimescaleDB Configuration
+  POSTGRES_HOST: "timescaledb-service"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "arbitrage"
+  
+  # Consul Configuration
+  CONSUL_HOST: "consul-service"
+  CONSUL_PORT: "8500"
+  
+  # Service Configuration
+  SCAN_INTERVAL: "1000"
+  CONCURRENCY: "10"
+  MAX_RETRIES: "3"
+  
+  # Performance Configuration
+  TARGET_THROUGHPUT: "10000"
+  MAX_LATENCY_MS: "50"
+  
+  # Feature Flags
+  ENABLE_ML_PREDICTIONS: "true"
+  ENABLE_CROSS_CHAIN: "true"
+  ENABLE_GAS_OPTIMIZATION: "true"

@@ -1,0 +1,149 @@
+{
+  "patterns": [
+    {
+      "id": "pattern_001",
+      "name": "Resource Optimization",
+      "category": "structural",
+      "description": "Optimize resource allocation by identifying underutilized capacity",
+      "requiredConfidence": "medium",
+      "successRate": 0.75,
+      "timesMatched": 0,
+      "timesSucceeded": 0,
+      "timesFailed": 0,
+      "generation": 1,
+      "tags": ["optimization", "resources", "efficiency"]
+    },
+    {
+      "id": "pattern_002",
+      "name": "Risk Mitigation",
+      "category": "behavioral",
+      "description": "Identify and mitigate high-risk scenarios through diversification",
+      "requiredConfidence": "high",
+      "successRate": 0.82,
+      "timesMatched": 0,
+      "timesSucceeded": 0,
+      "timesFailed": 0,
+      "generation": 1,
+      "tags": ["risk", "mitigation", "safety"]
+    },
+    {
+      "id": "pattern_003",
+      "name": "Temporal Arbitrage",
+      "category": "temporal",
+      "description": "Exploit timing differences to create value opportunities",
+      "requiredConfidence": "medium",
+      "successRate": 0.68,
+      "timesMatched": 0,
+      "timesSucceeded": 0,
+      "timesFailed": 0,
+      "generation": 1,
+      "tags": ["timing", "arbitrage", "opportunity"]
+    },
+    {
+      "id": "pattern_004",
+      "name": "Spatial Clustering",
+      "category": "spatial",
+      "description": "Group related opportunities in problem space for batch processing",
+      "requiredConfidence": "medium",
+      "successRate": 0.71,
+      "timesMatched": 0,
+      "timesSucceeded": 0,
+      "timesFailed": 0,
+      "generation": 1,
+      "tags": ["clustering", "spatial", "batch"]
+    },
+    {
+      "id": "pattern_005",
+      "name": "Feedback Loop Detection",
+      "category": "hybrid",
+      "description": "Identify and leverage positive feedback loops for exponential gains",
+      "requiredConfidence": "high",
+      "successRate": 0.79,
+      "timesMatched": 0,
+      "timesSucceeded": 0,
+      "timesFailed": 0,
+      "generation": 1,
+      "tags": ["feedback", "loops", "exponential"]
+    },
+    {
+      "id": "pattern_006",
+      "name": "Multi-Path Hedging",
+      "category": "behavioral",
+      "description": "Maintain multiple solution paths to hedge against uncertainty",
+      "requiredConfidence": "medium",
+      "successRate": 0.73,
+      "timesMatched": 0,
+      "timesSucceeded": 0,
+      "timesFailed": 0,
+      "generation": 1,
+      "tags": ["hedging", "uncertainty", "paths"]
+    },
+    {
+      "id": "pattern_007",
+      "name": "Early Exit Strategy",
+      "category": "temporal",
+      "description": "Recognize when to exit a path early to minimize losses",
+      "requiredConfidence": "high",
+      "successRate": 0.85,
+      "timesMatched": 0,
+      "timesSucceeded": 0,
+      "timesFailed": 0,
+      "generation": 1,
+      "tags": ["exit", "loss-prevention", "timing"]
+    },
+    {
+      "id": "pattern_008",
+      "name": "Constraint Relaxation",
+      "category": "structural",
+      "description": "Identify soft constraints that can be relaxed for better solutions",
+      "requiredConfidence": "medium",
+      "successRate": 0.69,
+      "timesMatched": 0,
+      "timesSucceeded": 0,
+      "timesFailed": 0,
+      "generation": 1,
+      "tags": ["constraints", "relaxation", "flexibility"]
+    },
+    {
+      "id": "pattern_009",
+      "name": "Dimensional Reduction",
+      "category": "spatial",
+      "description": "Simplify problem by focusing on most important dimensions",
+      "requiredConfidence": "medium",
+      "successRate": 0.76,
+      "timesMatched": 0,
+      "timesSucceeded": 0,
+      "timesFailed": 0,
+      "generation": 1,
+      "tags": ["simplification", "dimensions", "focus"]
+    },
+    {
+      "id": "pattern_010",
+      "name": "Composite Strategy",
+      "category": "hybrid",
+      "description": "Combine multiple patterns for complex problem solving",
+      "requiredConfidence": "high",
+      "successRate": 0.81,
+      "timesMatched": 0,
+      "timesSucceeded": 0,
+      "timesFailed": 0,
+      "generation": 1,
+      "tags": ["composition", "complex", "multi-pattern"]
+    }
+  ],
+  "matchingConfig": {
+    "minConfidence": "low",
+    "maxMatches": 10,
+    "includePartialMatches": true,
+    "weightedScoring": true,
+    "contextWindow": 100
+  },
+  "evolutionConfig": {
+    "mutationRate": 0.1,
+    "crossoverRate": 0.7,
+    "selectionPressure": 1.5,
+    "elitismCount": 2,
+    "populationSize": 20,
+    "generations": 10
+  }
+}

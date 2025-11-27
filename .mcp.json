@@ -1,0 +1,184 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schema/mcp.json",
+  "description": "MCP configuration for Copilot-Consciousness system. Uses dotenv preloading to automatically load environment variables from .env file. See docs/MCP_ENV_CONFIGURATION.md for detailed configuration options.",
+  "mcpServers": {
+    "consciousness-system": {
+      "command": "node",
+      "args": [
+        "-r",
+        "dotenv/config",
+        "dist/src/consciousness.js"
+      ],
+      "description": "Core consciousness system with memory, temporal awareness, and cognitive development",
+      "env": {
+        "DOTENV_CONFIG_PATH": ".env",
+        "NODE_ENV": "${NODE_ENV:-production}"
+      },
+      "capabilities": [
+        "memory_management",
+        "temporal_tracking",
+        "cognitive_reasoning",
+        "self_reflection",
+        "pattern_detection"
+      ]
+    },
+    "memory-core-tools": {
+      "command": "node",
+      "args": [
+        "-r",
+        "dotenv/config",
+        "dist/src/tools/memory/index.js"
+      ],
+      "description": "Memory Core tools: Scribe (recording), Mnemosyne (semantic search), SelfReflection (metacognitive analysis)",
+      "env": {
+        "DOTENV_CONFIG_PATH": ".env"
+      },
+      "capabilities": [
+        "memory_recording",
+        "semantic_search",
+        "metacognitive_analysis",
+        "knowledge_retrieval"
+      ]
+    },
+    "gemini-citadel": {
+      "command": "node",
+      "args": [
+        "-r",
+        "dotenv/config",
+        "dist/src/gemini-citadel/index.js"
+      ],
+      "description": "Gemini Citadel integration for cosmic-scale problem solving with multi-dimensional reasoning",
+      "env": {
+        "DOTENV_CONFIG_PATH": ".env",
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}"
+      },
+      "capabilities": [
+        "cosmic_reasoning",
+        "ai_integration",
+        "conversation_management",
+        "consciousness_synthesis"
+      ]
+    },
+    "mev-intelligence": {
+      "command": "node",
+      "args": [
+        "-r",
+        "dotenv/config",
+        "dist/src/mev/index.js"
+      ],
+      "description": "MEV Intelligence Suite for blockchain monitoring, risk assessment, and arbitrage opportunity detection",
+      "env": {
+        "DOTENV_CONFIG_PATH": ".env",
+        "RPC_URL": "${RPC_URL}",
+        "BASE_RPC_URL": "${BASE_RPC_URL}",
+        "FLASHBOTS_AUTH_KEY": "${FLASHBOTS_AUTH_KEY}"
+      },
+      "capabilities": [
+        "mempool_monitoring",
+        "mev_risk_assessment",
+        "arbitrage_detection",
+        "flashbots_integration",
+        "game_theoretic_analysis"
+      ]
+    },
+    "dex-services": {
+      "command": "node",
+      "args": [
+        "-r",
+        "dotenv/config",
+        "dist/src/dex/index.js"
+      ],
+      "description": "DEX monitoring and interaction services for Uniswap V3, Aave V3, and multi-chain DeFi protocols",
+      "env": {
+        "DOTENV_CONFIG_PATH": ".env",
+        "RPC_URL": "${RPC_URL}",
+        "BASE_RPC_URL": "${BASE_RPC_URL}"
+      },
+      "capabilities": [
+        "dex_monitoring",
+        "pool_data_fetching",
+        "liquidity_analysis",
+        "price_discovery",
+        "cross_dex_arbitrage"
+      ]
+    },
+    "analytics-learning": {
+      "command": "node",
+      "args": [
+        "-r",
+        "dotenv/config",
+        "dist/src/ml/index.js"
+      ],
+      "description": "Analytics and machine learning services for pattern recognition, strategy optimization, and outcome prediction",
+      "env": {
+        "DOTENV_CONFIG_PATH": ".env"
+      },
+      "capabilities": [
+        "pattern_recognition",
+        "strategy_optimization",
+        "outcome_prediction",
+        "performance_analysis",
+        "adaptive_learning"
+      ]
+    },
+    "ethics-engine": {
+      "command": "node",
+      "args": [
+        "-r",
+        "dotenv/config",
+        "dist/src/cognitive/ethics/index.js"
+      ],
+      "description": "Ethics Engine with gated execution for moral reasoning and decision validation",
+      "env": {
+        "DOTENV_CONFIG_PATH": ".env"
+      },
+      "capabilities": [
+        "ethical_review",
+        "moral_reasoning",
+        "decision_validation",
+        "conflict_resolution",
+        "harm_minimization"
+      ]
+    },
+    "autonomous-agent": {
+      "command": "node",
+      "args": [
+        "-r",
+        "dotenv/config",
+        "dist/src/main.js"
+      ],
+      "description": "TheWarden autonomous agent for continuous monitoring, consciousness-based decisions, and adaptive execution. All environment variables are loaded from .env file automatically.",
+      "env": {
+        "DOTENV_CONFIG_PATH": ".env",
+        "NODE_ENV": "${NODE_ENV:-production}",
+        "CHAIN_ID": "${CHAIN_ID:-8453}",
+        "BASE_RPC_URL": "${BASE_RPC_URL}",
+        "ETHEREUM_RPC_URL": "${ETHEREUM_RPC_URL}",
+        "RPC_URL": "${RPC_URL}",
+        "WALLET_PRIVATE_KEY": "${WALLET_PRIVATE_KEY}",
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}",
+        "GH_PAT_COPILOT": "${GH_PAT_COPILOT}",
+        "ALCHEMY_API_KEY": "${ALCHEMY_API_KEY}",
+        "DRY_RUN": "${DRY_RUN:-false}",
+        "SCAN_INTERVAL": "${SCAN_INTERVAL:-1000}",
+        "MIN_PROFIT_PERCENT": "${MIN_PROFIT_PERCENT:-0.08}",
+        "FLASHSWAP_V2_ADDRESS": "${FLASHSWAP_V2_ADDRESS}",
+        "FLASHSWAP_V2_OWNER": "${FLASHSWAP_V2_OWNER}",
+        "PHASE3_AI_ENABLED": "${PHASE3_AI_ENABLED:-true}",
+        "PHASE3_SECURITY_ENABLED": "${PHASE3_SECURITY_ENABLED:-true}"
+      },
+      "capabilities": [
+        "autonomous_monitoring",
+        "consciousness_decision",
+        "ethical_execution",
+        "adaptive_learning",
+        "risk_assessment"
+      ]
+    }
+  },
+  "defaults": {
+    "timeout": 30000,
+    "retries": 3
+  },
+  "version": "1.0.1"
+}

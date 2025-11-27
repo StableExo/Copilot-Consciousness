@@ -1,0 +1,321 @@
+
+services:
+  # Message Queue - RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: arbitrage-rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: arbitrage
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-changeme}
+      RABBITMQ_DEFAULT_VHOST: /
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./infrastructure/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./infrastructure/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - arbitrage-network
+
+  # Distributed Cache - Redis Cluster
+  redis-master:
+    image: redis:7-alpine
+    container_name: arbitrage-redis-master
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-changeme}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_master_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - arbitrage-network
+
+  redis-replica:
+    image: redis:7-alpine
+    container_name: arbitrage-redis-replica
+    command: redis-server --appendonly yes --slaveof redis-master 6379 --masterauth ${REDIS_PASSWORD:-changeme} --requirepass ${REDIS_PASSWORD:-changeme}
+    depends_on:
+      - redis-master
+    volumes:
+      - redis_replica_data:/data
+    networks:
+      - arbitrage-network
+
+  # Time-Series Database - TimescaleDB
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    container_name: arbitrage-timescaledb
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: arbitrage
+      POSTGRES_USER: arbitrage
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      TIMESCALEDB_TELEMETRY: "off"
+    volumes:
+      - timescaledb_data:/var/lib/postgresql/data
+      - ./infrastructure/timescaledb/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arbitrage"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - arbitrage-network
+
+  # Service Discovery - Consul
+  consul:
+    image: consul:1.16
+    container_name: arbitrage-consul
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+    command: agent -server -ui -bootstrap-expect=1 -client=0.0.0.0
+    volumes:
+      - consul_data:/consul/data
+    healthcheck:
+      test: ["CMD", "consul", "members"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - arbitrage-network
+
+  # Monitoring - Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: arbitrage-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./k8s/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - arbitrage-network
+
+  # Monitoring - Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: arbitrage-grafana
+    ports:
+      - "3010:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_INSTALL_PLUGINS: grafana-clock-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./k8s/monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+    depends_on:
+      - prometheus
+    networks:
+      - arbitrage-network
+
+  # Tracing - Jaeger
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: arbitrage-jaeger
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14268:14268"
+      - "14250:14250"
+      - "9411:9411"
+    environment:
+      COLLECTOR_ZIPKIN_HOST_PORT: :9411
+    networks:
+      - arbitrage-network
+
+  # Scanner Service
+  scanner:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.scanner
+    container_name: arbitrage-scanner
+    environment:
+      NODE_ENV: development
+      RABBITMQ_URL: amqp://arbitrage:${RABBITMQ_PASSWORD:-changeme}@rabbitmq:5672
+      REDIS_URL: redis://:${REDIS_PASSWORD:-changeme}@redis-master:6379
+      CONSUL_URL: http://consul:8500
+    depends_on:
+      - rabbitmq
+      - redis-master
+      - consul
+    networks:
+      - arbitrage-network
+    restart: unless-stopped
+
+  # Pathfinding Service
+  pathfinding:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.pathfinding
+    container_name: arbitrage-pathfinding
+    environment:
+      NODE_ENV: development
+      RABBITMQ_URL: amqp://arbitrage:${RABBITMQ_PASSWORD:-changeme}@rabbitmq:5672
+      REDIS_URL: redis://:${REDIS_PASSWORD:-changeme}@redis-master:6379
+      CONSUL_URL: http://consul:8500
+    depends_on:
+      - rabbitmq
+      - redis-master
+      - consul
+    networks:
+      - arbitrage-network
+    restart: unless-stopped
+
+  # ML Service
+  ml:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.ml
+    container_name: arbitrage-ml
+    environment:
+      NODE_ENV: development
+      RABBITMQ_URL: amqp://arbitrage:${RABBITMQ_PASSWORD:-changeme}@rabbitmq:5672
+      REDIS_URL: redis://:${REDIS_PASSWORD:-changeme}@redis-master:6379
+      CONSUL_URL: http://consul:8500
+    depends_on:
+      - rabbitmq
+      - redis-master
+      - consul
+    networks:
+      - arbitrage-network
+    restart: unless-stopped
+
+  # Execution Service
+  execution:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.execution
+    container_name: arbitrage-execution
+    environment:
+      NODE_ENV: development
+      RABBITMQ_URL: amqp://arbitrage:${RABBITMQ_PASSWORD:-changeme}@rabbitmq:5672
+      REDIS_URL: redis://:${REDIS_PASSWORD:-changeme}@redis-master:6379
+      CONSUL_URL: http://consul:8500
+      DATABASE_URL: postgresql://arbitrage:${POSTGRES_PASSWORD:-changeme}@timescaledb:5432/arbitrage
+    depends_on:
+      - rabbitmq
+      - redis-master
+      - consul
+      - timescaledb
+    networks:
+      - arbitrage-network
+    restart: unless-stopped
+
+  # Analytics Service
+  analytics:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.analytics
+    container_name: arbitrage-analytics
+    environment:
+      NODE_ENV: development
+      RABBITMQ_URL: amqp://arbitrage:${RABBITMQ_PASSWORD:-changeme}@rabbitmq:5672
+      REDIS_URL: redis://:${REDIS_PASSWORD:-changeme}@redis-master:6379
+      CONSUL_URL: http://consul:8500
+      DATABASE_URL: postgresql://arbitrage:${POSTGRES_PASSWORD:-changeme}@timescaledb:5432/arbitrage
+    depends_on:
+      - rabbitmq
+      - redis-master
+      - consul
+      - timescaledb
+    networks:
+      - arbitrage-network
+    restart: unless-stopped
+
+  # Bridge Service
+  bridge:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.bridge
+    container_name: arbitrage-bridge
+    environment:
+      NODE_ENV: development
+      RABBITMQ_URL: amqp://arbitrage:${RABBITMQ_PASSWORD:-changeme}@rabbitmq:5672
+      REDIS_URL: redis://:${REDIS_PASSWORD:-changeme}@redis-master:6379
+      CONSUL_URL: http://consul:8500
+    depends_on:
+      - rabbitmq
+      - redis-master
+      - consul
+    networks:
+      - arbitrage-network
+    restart: unless-stopped
+
+  # Dashboard Service
+  dashboard:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dashboard
+    container_name: arbitrage-dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      RABBITMQ_URL: amqp://arbitrage:${RABBITMQ_PASSWORD:-changeme}@rabbitmq:5672
+      REDIS_URL: redis://:${REDIS_PASSWORD:-changeme}@redis-master:6379
+      CONSUL_URL: http://consul:8500
+      DATABASE_URL: postgresql://arbitrage:${POSTGRES_PASSWORD:-changeme}@timescaledb:5432/arbitrage
+    depends_on:
+      - rabbitmq
+      - redis-master
+      - consul
+      - timescaledb
+    networks:
+      - arbitrage-network
+    restart: unless-stopped
+
+  # Nginx Load Balancer & API Gateway
+  nginx:
+    image: nginx:alpine
+    container_name: arbitrage-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./infrastructure/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - dashboard
+      - scanner
+      - pathfinding
+      - ml
+      - execution
+      - analytics
+      - bridge
+    networks:
+      - arbitrage-network
+    restart: unless-stopped
+
+networks:
+  arbitrage-network:
+    driver: bridge
+
+volumes:
+  rabbitmq_data:
+  redis_master_data:
+  redis_replica_data:
+  timescaledb_data:
+  consul_data:
+  prometheus_data:
+  grafana_data:
