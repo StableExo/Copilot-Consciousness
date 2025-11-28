@@ -11,7 +11,7 @@
  */
 
 import { ethers, Provider, Interface } from 'ethers';
-import { type PublicClient, type Address, encodeFunctionData, decodeFunctionResult, type Abi } from 'viem';
+import { type PublicClient, type Address } from 'viem';
 
 export interface MulticallRequest {
   target: string;
@@ -220,7 +220,10 @@ export class ViemMulticallBatcher {
         args: [formattedCalls],
       });
 
-      const returnData = result.result as readonly { success: boolean; returnData: `0x${string}` }[];
+      const returnData = result.result as readonly {
+        success: boolean;
+        returnData: `0x${string}`;
+      }[];
       return returnData.map((r) => ({
         success: r.success,
         returnData: r.returnData,

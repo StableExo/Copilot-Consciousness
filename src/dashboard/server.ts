@@ -95,7 +95,7 @@ if (typeof process !== 'undefined' && process.argv[1]) {
   const thisFile = process.argv[1];
   const isDistMain = thisFile.includes('/dist/') && thisFile.endsWith('server.js');
   const isSrcMain = thisFile.endsWith('server.ts') && !thisFile.includes('__tests__');
-  
+
   if (isDistMain || isSrcMain) {
     main().catch((error) => {
       console.error('Fatal error:', error);

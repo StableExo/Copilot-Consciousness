@@ -27,9 +27,7 @@ export function createContract<TAbi extends Abi>(
   return viemGetContract({
     address,
     abi,
-    client: walletClient
-      ? { public: publicClient, wallet: walletClient }
-      : publicClient,
+    client: walletClient ? { public: publicClient, wallet: walletClient } : publicClient,
   });
 }
 
@@ -280,14 +278,17 @@ export async function getTokenInfo(
   const nameResult = results[2];
 
   return {
-    symbol: symbolResult.status === 'success' && typeof symbolResult.result === 'string'
-      ? symbolResult.result
-      : 'UNKNOWN',
-    decimals: decimalsResult.status === 'success' && typeof decimalsResult.result === 'number'
-      ? decimalsResult.result
-      : 18,
-    name: nameResult.status === 'success' && typeof nameResult.result === 'string'
-      ? nameResult.result
-      : 'Unknown Token',
+    symbol:
+      symbolResult.status === 'success' && typeof symbolResult.result === 'string'
+        ? symbolResult.result
+        : 'UNKNOWN',
+    decimals:
+      decimalsResult.status === 'success' && typeof decimalsResult.result === 'number'
+        ? decimalsResult.result
+        : 18,
+    name:
+      nameResult.status === 'success' && typeof nameResult.result === 'string'
+        ? nameResult.result
+        : 'Unknown Token',
   };
 }

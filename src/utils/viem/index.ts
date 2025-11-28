@@ -207,15 +207,7 @@ export {
 };
 
 // Re-export viem types for convenience
-export type {
-  PublicClient,
-  WalletClient,
-  Chain,
-  Transport,
-  Account,
-  Address,
-  Hex,
-};
+export type { PublicClient, WalletClient, Chain, Transport, Account, Address, Hex };
 
 // Re-export chain definitions
 export {

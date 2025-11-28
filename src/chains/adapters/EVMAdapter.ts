@@ -6,12 +6,7 @@
  * Migrated to viem as part of Phase 2.2 module migration
  */
 
-import {
-  type PublicClient,
-  type WalletClient,
-  type Address,
-  zeroAddress,
-} from 'viem';
+import { type PublicClient, type WalletClient, type Address, zeroAddress } from 'viem';
 import { ChainAdapter, TokenBalance, SwapEstimate, SwapParams, TokenPrice } from './ChainAdapter';
 import { ERC20_ABI } from '../../utils/viem/contracts';
 
@@ -111,18 +106,20 @@ export class EVMAdapter extends ChainAdapter {
       const path = [tokenIn, tokenOut] as readonly Address[];
 
       // Use viem to estimate gas for swap
-      const gasEstimate = await this.publicClient.estimateContractGas({
-        address: dexAddress as Address,
-        abi: UNISWAP_V2_ROUTER_ABI,
-        functionName: 'swapExactTokensForTokens',
-        args: [
-          amountIn,
-          0n, // Min amount out (0 for estimation)
-          path,
-          zeroAddress, // Recipient
-          BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour deadline
-        ],
-      }).catch(() => 150000n); // Default fallback
+      const gasEstimate = await this.publicClient
+        .estimateContractGas({
+          address: dexAddress as Address,
+          abi: UNISWAP_V2_ROUTER_ABI,
+          functionName: 'swapExactTokensForTokens',
+          args: [
+            amountIn,
+            0n, // Min amount out (0 for estimation)
+            path,
+            zeroAddress, // Recipient
+            BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour deadline
+          ],
+        })
+        .catch(() => 150000n); // Default fallback
 
       return Number(gasEstimate);
     } catch (error) {
@@ -219,12 +216,12 @@ export class EVMAdapter extends ChainAdapter {
       const path = [tokenIn, tokenOut] as readonly Address[];
 
       // Get amounts out using viem readContract
-      const amounts = await this.publicClient.readContract({
+      const amounts = (await this.publicClient.readContract({
         address: dexAddress as Address,
         abi: UNISWAP_V2_ROUTER_ABI,
         functionName: 'getAmountsOut',
         args: [amountIn, path],
-      }) as readonly bigint[];
+      })) as readonly bigint[];
       const amountOut = amounts[amounts.length - 1];
 
       // Estimate gas
@@ -240,7 +237,7 @@ export class EVMAdapter extends ChainAdapter {
         gasEstimate,
         gasCost,
         priceImpact,
-        route: path as unknown as string[],
+        route: Array.from(path).map((addr) => addr as string),
       };
     } catch (error) {
       throw new Error(`Swap estimation failed: ${error}`);

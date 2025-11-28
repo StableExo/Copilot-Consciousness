@@ -217,7 +217,9 @@ export class PoolDataFetcher {
         return null;
       }
 
-      const sqrtPriceX96 = (slot0 as readonly [bigint, number, number, number, number, number, boolean])[0];
+      const sqrtPriceX96 = (
+        slot0 as readonly [bigint, number, number, number, number, number, boolean]
+      )[0];
 
       // Calculate reserves from liquidity and sqrt price
       const { reserve0, reserve1 } = await this.calculateReserves(
