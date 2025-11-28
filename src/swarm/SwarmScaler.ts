@@ -230,9 +230,7 @@ export class SwarmScaler extends EventEmitter {
     // Register with a coordinator
     this.registerNodeWithCoordinator(node);
 
-    console.log(
-      `[SwarmScaler] Node ${instanceId} ready (${specialization}, ${region})`
-    );
+    console.log(`[SwarmScaler] Node ${instanceId} ready (${specialization}, ${region})`);
     this.emit('node-created', node);
 
     return node;
@@ -328,11 +326,11 @@ export class SwarmScaler extends EventEmitter {
 
   /**
    * Perform health checks on all nodes
-   * 
+   *
    * NOTE: This is a simulation for development/testing purposes.
    * In production, this should be replaced with actual health check logic
    * (e.g., HTTP health endpoints, gRPC health checks, or process monitoring).
-   * 
+   *
    * To enable real health checks, implement a custom health check function:
    * - Override this method in a subclass, or
    * - Emit 'health-check' events and handle externally, or
@@ -370,9 +368,7 @@ export class SwarmScaler extends EventEmitter {
    * Replace unhealthy nodes
    */
   private async replaceUnhealthyNodes(): Promise<void> {
-    const unhealthyNodes = Array.from(this.nodes.values()).filter(
-      (n) => n.status === 'unhealthy'
-    );
+    const unhealthyNodes = Array.from(this.nodes.values()).filter((n) => n.status === 'unhealthy');
 
     for (const node of unhealthyNodes) {
       // Remove unhealthy node
@@ -381,8 +377,12 @@ export class SwarmScaler extends EventEmitter {
       // Create replacement
       await this.createNode(node.specialization, node.region);
 
-      this.recordScaleEvent('node-recovery', this.nodes.size, this.nodes.size, 
-        `Replaced unhealthy node ${node.instanceId}`);
+      this.recordScaleEvent(
+        'node-recovery',
+        this.nodes.size,
+        this.nodes.size,
+        `Replaced unhealthy node ${node.instanceId}`
+      );
     }
   }
 

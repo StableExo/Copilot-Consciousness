@@ -246,7 +246,7 @@ export class EventDrivenTrigger extends EventEmitter {
    * return [token0, token1, commonBaseTokens...];
    * ```
    */
-  private async getTokensFromPool(poolAddress: string): Promise<string[]> {
+  private async getTokensFromPool(_poolAddress: string): Promise<string[]> {
     // Return a default set of common tokens
     // This enables the system to find arbitrage paths involving these tokens
     return [

@@ -152,7 +152,7 @@ export class HistoricalAnalyzer {
     const anomalies: Insight[] = [];
     const threshold = sensitivity * stdDev;
 
-    timeSeries.dataPoints.forEach((dp, index) => {
+    timeSeries.dataPoints.forEach((dp, _index) => {
       const deviation = Math.abs(dp.value - mean);
 
       if (deviation > threshold) {

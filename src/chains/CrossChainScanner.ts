@@ -132,7 +132,7 @@ export class CrossChainScanner extends EventEmitter {
     for (const [chainId, adapter] of this.adapters.entries()) {
       if (typeof chainId === 'number' && adapter.chainType === 'EVM') {
         try {
-          const evmAdapter = adapter as EVMAdapter;
+          const _evmAdapter = adapter as EVMAdapter;
           const provider = this.providerManager.getProvider(chainId);
           if (provider) {
             const network = await provider.getNetwork();

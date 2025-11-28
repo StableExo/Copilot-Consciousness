@@ -25,23 +25,23 @@ export interface DecisionTranscript {
   timestamp: number;
   bundleId: string;
   bundleType: 'arbitrage' | 'liquidation' | 'mev' | 'other';
-  
+
   // Reasoning chain
   reasoning: ReasoningStep[];
-  
+
   // Ethics evaluation
   ethicsVote: EthicsVote;
-  
+
   // Swarm consensus (if applicable)
   swarmVotes?: SwarmVoteRecord[];
-  
+
   // Outcome
   decision: 'execute' | 'reject' | 'defer';
   confidence: number;
-  
+
   // Execution details (if executed)
   execution?: ExecutionRecord;
-  
+
   // Proofs
   proofHash: string;
   merkleRoot: string;

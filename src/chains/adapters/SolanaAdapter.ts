@@ -4,7 +4,7 @@
  * Handles Solana-specific operations including SPL token interactions
  */
 
-import { Connection, PublicKey, Transaction, Keypair } from '@solana/web3.js';
+import { Connection, PublicKey, Keypair } from '@solana/web3.js';
 import { ChainAdapter, TokenBalance, SwapEstimate, SwapParams, TokenPrice } from './ChainAdapter';
 
 export class SolanaAdapter extends ChainAdapter {
@@ -57,7 +57,7 @@ export class SolanaAdapter extends ChainAdapter {
       }
 
       // Parse first token account
-      const accountInfo = tokenAccounts.value[0].account;
+      const _accountInfo = tokenAccounts.value[0].account;
       // Simplified - in production would parse account data properly
       return {
         token: tokenAddress,
@@ -73,10 +73,10 @@ export class SolanaAdapter extends ChainAdapter {
    * Estimate gas cost for a swap (compute units for Solana)
    */
   async estimateSwapGas(
-    tokenIn: string,
-    tokenOut: string,
-    amountIn: bigint,
-    dexAddress: string
+    _tokenIn: string,
+    _tokenOut: string,
+    _amountIn: bigint,
+    _dexAddress: string
   ): Promise<number> {
     // Solana uses compute units, typical swap uses ~100k-200k
     return 150000;
@@ -89,7 +89,7 @@ export class SolanaAdapter extends ChainAdapter {
    * with Solana DEX SDKs like Jupiter or Raydium. The interface is defined to support
    * the architecture, but actual execution requires DEX-specific SDK integration.
    */
-  async executeSwap(params: SwapParams, dexAddress: string): Promise<string> {
+  async executeSwap(params: SwapParams, _dexAddress: string): Promise<string> {
     if (!this.wallet) {
       throw new Error('Wallet not configured for swap execution');
     }
@@ -205,7 +205,7 @@ export class SolanaAdapter extends ChainAdapter {
       const pubKey = new PublicKey(tokenAddress);
       const accountInfo = await this.connection.getAccountInfo(pubKey);
       return accountInfo !== null;
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   }

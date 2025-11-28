@@ -142,7 +142,7 @@ describe('TriangularArbEngine', () => {
       ];
 
       // Don't build pair map manually
-      const opportunities = engine.findOpportunities(pools, '0xWETH', 1);
+      const _opportunities = engine.findOpportunities(pools, '0xWETH', 1);
 
       // Should have built pair map automatically
       const stats = engine.getStatistics();

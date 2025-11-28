@@ -249,7 +249,7 @@ export class ArbitrageConsciousness extends EventEmitter {
 
     // Add learning example to LearningEngine
     if (execution.execution.success) {
-      const learningSession = this.learningEngine.startSession(
+      const _learningSession = this.learningEngine.startSession(
         'arbitrage_optimization',
         LearningMode.REINFORCEMENT
       );
@@ -273,7 +273,7 @@ export class ArbitrageConsciousness extends EventEmitter {
     }
 
     // Assess risk for this execution
-    const riskAssessment = this.riskAssessor.assess(
+    const _riskAssessment = this.riskAssessor.assess(
       `execution_${execution.cycleNumber}`,
       'arbitrage_execution',
       {
@@ -430,7 +430,7 @@ export class ArbitrageConsciousness extends EventEmitter {
     const profits = successfulExecutions.map((e) => e.execution.actualProfit || 0);
     const avgProfit = profits.reduce((a, b) => a + b, 0) / profits.length;
     const variance = profits.reduce((a, b) => a + Math.pow(b - avgProfit, 2), 0) / profits.length;
-    const stdDev = Math.sqrt(variance);
+    const _stdDev = Math.sqrt(variance);
 
     // Check if profitability is improving over time
     const recentProfits = successfulExecutions.slice(-20).map((e) => e.execution.actualProfit || 0);

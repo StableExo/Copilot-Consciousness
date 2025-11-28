@@ -321,7 +321,7 @@ export class ArbitrageOrchestrator {
   private async evaluateQuickPath(
     tokens: string[],
     startAmount: bigint,
-    poolAddress: string
+    _poolAddress: string
   ): Promise<ArbitragePath[]> {
     // For now, delegate to standard findOpportunities
     // In a production system, this could be optimized to only evaluate

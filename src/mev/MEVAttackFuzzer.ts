@@ -160,7 +160,7 @@ export class MEVAttackFuzzer extends EventEmitter {
 
   /**
    * Create a seeded random number generator
-   * 
+   *
    * Uses the Linear Congruential Generator (LCG) algorithm from "Numerical Recipes"
    * with parameters: a=1103515245, c=12345, m=2^31 (using & 0x7fffffff)
    * This is the same LCG used in glibc and is deterministic for testing purposes.

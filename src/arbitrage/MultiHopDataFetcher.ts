@@ -16,7 +16,7 @@ import {
 } from 'ethers';
 import { DEXRegistry } from '../dex/core/DEXRegistry';
 import { DEXConfig } from '../dex/types';
-import { PoolEdge, Token } from './types';
+import { PoolEdge } from './types';
 import { logger } from '../utils/logger';
 import { UNISWAP_V3_FEE_TIERS, V3_LIQUIDITY_SCALE_FACTOR, isV3StyleProtocol } from './constants';
 import { PoolDataStore } from './PoolDataStore';
@@ -441,7 +441,7 @@ export class MultiHopDataFetcher {
                 return poolAddress;
               }
             }
-          } catch (error) {
+          } catch (_error) {
             // Continue to next fee tier if this one fails
             continue;
           }
@@ -464,7 +464,7 @@ export class MultiHopDataFetcher {
       }
 
       return null;
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }
@@ -491,7 +491,7 @@ export class MultiHopDataFetcher {
 
         // Get liquidity and price
         const liquidity = await contract.liquidity();
-        const slot0 = await contract.slot0();
+        const _slot0 = await contract.slot0();
 
         // For V3, we use liquidity (L) as a proxy for pool size
         // Note: This is a simplified approximation. In V3, L = sqrt(x * y) where x and y are token amounts
@@ -527,7 +527,7 @@ export class MultiHopDataFetcher {
         reserve0: BigInt(reserves.reserve0.toString()),
         reserve1: BigInt(reserves.reserve1.toString()),
       };
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }

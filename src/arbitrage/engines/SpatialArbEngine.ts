@@ -11,7 +11,6 @@
 import {
   ArbitrageOpportunity,
   ArbitrageType,
-  OpportunityStatus,
   createArbitrageOpportunity,
   PathStep,
   createPathStep,
@@ -119,7 +118,7 @@ export class SpatialArbEngine {
     const poolGroups = this.groupPoolsByPair(pools);
 
     // Analyze each group for price differentials
-    for (const [pairKey, pairPools] of Object.entries(poolGroups)) {
+    for (const [_pairKey, pairPools] of Object.entries(poolGroups)) {
       if (pairPools.length < 2) {
         continue; // Need at least 2 pools for spatial arb
       }

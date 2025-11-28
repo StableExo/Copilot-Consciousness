@@ -5,7 +5,7 @@
  * along with DFS and BFS strategies for different scenarios
  */
 
-import { Token, PoolEdge, ArbitragePath, ArbitrageHop, PathfindingConfig } from './types';
+import { PoolEdge, ArbitragePath, ArbitrageHop, PathfindingConfig } from './types';
 import { PathFinder } from './PathFinder';
 
 /**

@@ -4,7 +4,7 @@
  * Provides text-based visualization of arbitrage opportunities and metrics
  */
 
-import { ArbitragePath, ArbitrageHop, ProfitabilityResult } from './types';
+import { ArbitragePath, ProfitabilityResult } from './types';
 
 export class ArbitrageVisualizer {
   /**

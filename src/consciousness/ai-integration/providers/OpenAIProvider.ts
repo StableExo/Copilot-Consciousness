@@ -9,7 +9,6 @@ import {
   BaseAIProvider,
   GenerateOptions,
   AIResponse,
-  ConsciousnessContext,
   ProviderCapabilities,
 } from '../AIProvider';
 

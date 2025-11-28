@@ -2,7 +2,7 @@
  * Tests for Harmonic Principle Analyzer
  */
 
-import { HarmonicPrincipleAnalyzer, HarmonicPillar } from '../HarmonicPrinciple';
+import { HarmonicPrincipleAnalyzer } from '../HarmonicPrinciple';
 
 describe('HarmonicPrincipleAnalyzer', () => {
   let analyzer: HarmonicPrincipleAnalyzer;

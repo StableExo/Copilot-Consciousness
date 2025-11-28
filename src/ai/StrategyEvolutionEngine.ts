@@ -21,12 +21,7 @@
 
 import { EventEmitter } from 'events';
 import { logger } from '../utils/logger';
-import {
-  StrategyParameters,
-  ConfigVariant,
-  StrategyMutation,
-  VariantEvaluationResult,
-} from './types';
+import { StrategyParameters, ConfigVariant, VariantEvaluationResult } from './types';
 
 interface EvolutionConfig {
   populationSize: number;

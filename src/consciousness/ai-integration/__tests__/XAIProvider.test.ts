@@ -4,7 +4,7 @@
  * Tests for xAI Grok integration with tool-calling support.
  */
 
-import { XAIProvider, XAIGenerateOptions, ToolDefinition } from '../providers/XAIProvider';
+import { XAIProvider, ToolDefinition } from '../providers/XAIProvider';
 
 describe('XAIProvider', () => {
   let provider: XAIProvider;

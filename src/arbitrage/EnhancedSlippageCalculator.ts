@@ -5,7 +5,7 @@
  * for accurate output predictions across different AMM types
  */
 
-import { ArbitrageHop, PoolEdge } from './types';
+import { ArbitrageHop } from './types';
 
 /**
  * AMM curve types

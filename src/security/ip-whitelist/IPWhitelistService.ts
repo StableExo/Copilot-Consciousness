@@ -40,7 +40,7 @@ export class IPWhitelistService {
   private enableGeolocation: boolean;
   private allowByDefault: boolean;
   private logger: (message: string) => void;
-  
+
   // Instance-level cache for geoip-lite module to avoid concurrency issues
   private geoipModule: { lookup: (ip: string) => { country: string; city: string } | null } | null =
     null;

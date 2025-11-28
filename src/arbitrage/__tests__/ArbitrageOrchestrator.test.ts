@@ -1,7 +1,6 @@
 import { ArbitrageOrchestrator } from '../ArbitrageOrchestrator';
 import { DEXRegistry } from '../../dex/core/DEXRegistry';
 import { PathfindingConfig } from '../types';
-import { MultiHopDataFetcher } from '../MultiHopDataFetcher';
 
 // Mock the MultiHopDataFetcher to avoid actual network calls
 jest.mock('../MultiHopDataFetcher', () => {

@@ -378,7 +378,7 @@ export class MemoryMigrationService {
 
   /**
    * Migrate a single entry with retry logic
-   * 
+   *
    * Note: Migration creates new IDs in the target store. This is by design:
    * - Original IDs may conflict with existing entries in the target
    * - Memory references should be based on content, not IDs
@@ -391,8 +391,12 @@ export class MemoryMigrationService {
       try {
         // Store the entry in target (excluding auto-generated fields)
         // Note: This generates a new ID in the target store
-        const { id: _originalId, accessCount: _accessCount, lastAccessed: _lastAccessed, ...rest } =
-          entry;
+        const {
+          id: _originalId,
+          accessCount: _accessCount,
+          lastAccessed: _lastAccessed,
+          ...rest
+        } = entry;
         target.store(rest);
         return;
       } catch (error) {

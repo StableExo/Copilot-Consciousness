@@ -390,7 +390,7 @@ export class ProfitabilityCalculator {
   /**
    * Calculate price impact for a specific hop
    */
-  calculatePriceImpact(amountIn: bigint, reserve0: bigint, reserve1: bigint): number {
+  calculatePriceImpact(amountIn: bigint, reserve0: bigint, _reserve1: bigint): number {
     if (reserve0 === BigInt(0)) {
       return 1.0; // 100% impact if no liquidity
     }

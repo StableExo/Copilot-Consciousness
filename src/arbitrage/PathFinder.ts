@@ -5,12 +5,12 @@
  * across multiple DEXs and token pairs
  */
 
-import { Token, PoolEdge, ArbitragePath, ArbitrageHop, PathfindingConfig } from './types';
+import { PoolEdge, ArbitragePath, ArbitrageHop, PathfindingConfig } from './types';
 
 /**
  * Graph node representing a token
  */
-interface GraphNode {
+interface _GraphNode {
   token: string;
   distance: bigint;
   predecessor: { edge: PoolEdge; node: string } | null;

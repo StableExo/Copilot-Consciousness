@@ -11,7 +11,7 @@ import { AdvancedPathFinder, PathfindingStrategy, PathfindingMetrics } from './A
 import { PathPruner, PruningConfig, PruningStats } from './PathPruner';
 import { PathCache, CacheConfig, CacheStats } from './PathCache';
 import { EnhancedSlippageCalculator, SlippageConfig } from './EnhancedSlippageCalculator';
-import { ArbitragePatterns, PatternAnalysis } from './ArbitragePatterns';
+import { ArbitragePatterns } from './ArbitragePatterns';
 import { ProfitabilityCalculator } from './ProfitabilityCalculator';
 import { MultiHopDataFetcher } from './MultiHopDataFetcher';
 import { ArbitragePath, PathfindingConfig, PoolEdge } from './types';
@@ -392,7 +392,7 @@ export class AdvancedOrchestrator {
 
   private async reEvaluateCachedPaths(
     cachedPaths: ArbitragePath[],
-    startAmount: bigint
+    _startAmount: bigint
   ): Promise<ArbitragePath[]> {
     // Would need to re-fetch current prices and recalculate
     // For now, return cached paths that still meet threshold

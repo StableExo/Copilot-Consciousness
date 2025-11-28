@@ -129,7 +129,7 @@ export class MemoryConsolidator {
     let associationsBuilt = 0;
 
     // Phase 1: Consolidate qualifying memories
-    for (const [id, memory] of this.memories.entries()) {
+    for (const [_id, memory] of this.memories.entries()) {
       // Skip if not in target types
       if (!effectiveCriteria.types.includes(memory.type)) {
         continue;
@@ -188,7 +188,7 @@ export class MemoryConsolidator {
   reinforceMemories(threshold: number): number {
     let reinforced = 0;
 
-    for (const [id, memory] of this.memories.entries()) {
+    for (const [_id, memory] of this.memories.entries()) {
       if (memory.importance >= threshold) {
         // Increase importance (with diminishing returns)
         const boost = (1.0 - memory.importance) * 0.1;
