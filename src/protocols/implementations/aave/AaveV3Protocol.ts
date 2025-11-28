@@ -41,11 +41,11 @@ export class AaveV3Protocol extends BaseProtocol {
     };
   }
 
-  async executeSwap(params: SwapParams): Promise<string> {
+  async executeSwap(_params: SwapParams): Promise<string> {
     throw new Error('Aave does not support swaps - use flash loan functionality');
   }
 
-  async getPool(token0: string, token1: string, fee?: number): Promise<PoolInfo> {
+  async getPool(token0: string, token1: string, _fee?: number): Promise<PoolInfo> {
     // Aave doesn't have traditional pools
     return {
       address: this.metadata.factory,

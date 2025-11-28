@@ -370,7 +370,7 @@ export class RiskAssessor {
         }, 0);
 
         const weightedSum = factorAssessments.reduce((sum, fa) => {
-          const factor = this.factors.get(fa.factorId);
+          const _factor = this.factors.get(fa.factorId);
           return sum + fa.contribution;
         }, 0);
 

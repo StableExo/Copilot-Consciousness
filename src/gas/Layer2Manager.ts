@@ -4,7 +4,9 @@
  * Integrates with Arbitrum, Optimism, and Base for cheaper execution
  */
 
-import { ethers, JsonRpcProvider } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
+// ethers namespace reserved for utilities
+import type { ethers as _ethers } from 'ethers';
 import { ArbitragePath } from '../arbitrage/types';
 import { GasPriceOracle } from './GasPriceOracle';
 
@@ -157,7 +159,7 @@ export class Layer2Manager {
   /**
    * Calculate bridge cost for moving assets to a chain
    */
-  calculateBridgeCost(chain: SupportedChain, amount: bigint): bigint {
+  calculateBridgeCost(chain: SupportedChain, _amount: bigint): bigint {
     const config = this.chains.get(chain);
     if (!config || chain === 'mainnet') {
       return BigInt(0);

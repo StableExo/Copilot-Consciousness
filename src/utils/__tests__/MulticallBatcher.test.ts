@@ -20,6 +20,13 @@ describe('MulticallBatcher', () => {
     batcher = new MulticallBatcher(provider);
   });
 
+  afterEach(() => {
+    // Destroy provider to prevent test leaks
+    if (provider && 'destroy' in provider) {
+      (provider as JsonRpcProvider).destroy();
+    }
+  });
+
   describe('initialization', () => {
     it('should initialize with default parameters', () => {
       expect(batcher).toBeDefined();

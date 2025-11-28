@@ -14,7 +14,9 @@
  * Based on: https://buildernet.org/docs/architecture
  */
 
-import { ethers, keccak256, toUtf8Bytes, JsonRpcProvider } from 'ethers';
+import { keccak256, toUtf8Bytes, JsonRpcProvider } from 'ethers';
+// ethers namespace reserved for utilities
+import type { ethers as _ethers } from 'ethers';
 import { logger } from '../../utils/logger';
 
 /**

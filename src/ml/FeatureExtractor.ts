@@ -54,7 +54,7 @@ export class FeatureExtractor {
 
     // Sort by timestamp
     const sortedHistory = [...priceHistory].sort((a, b) => a.timestamp - b.timestamp);
-    const latestPoint = sortedHistory[sortedHistory.length - 1];
+    const _latestPoint = sortedHistory[sortedHistory.length - 1];
 
     // Extract different feature types
     const momentumFeatures = this.extractMomentumFeatures(sortedHistory, currentTime);

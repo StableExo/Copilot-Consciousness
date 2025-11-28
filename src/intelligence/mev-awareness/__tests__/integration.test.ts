@@ -11,7 +11,7 @@ import {
   MempoolCongestion,
   SearcherDensity,
 } from '../index';
-import { Provider, JsonRpcProvider } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
 
 describe('MEV Awareness Intelligence Layer', () => {
   describe('Module Exports', () => {
@@ -105,11 +105,18 @@ describe('MEV Awareness Intelligence Layer', () => {
   });
 
   describe('Integration - Sensor System', () => {
-    let provider: Provider;
+    let provider: JsonRpcProvider;
 
     beforeEach(() => {
       // Create a mock provider for testing
       provider = new JsonRpcProvider();
+    });
+
+    afterEach(() => {
+      // Destroy provider to prevent test leaks
+      if (provider) {
+        provider.destroy();
+      }
     });
 
     it('should create MempoolCongestion sensor', () => {

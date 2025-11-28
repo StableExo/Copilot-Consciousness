@@ -192,7 +192,7 @@ export class TransactionBuilder {
     path: ArbitragePath,
     strategy: GasStrategy = 'normal',
     attempt: number = 1,
-    maxAttempts: number = 3
+    _maxAttempts: number = 3
   ): Promise<Transaction> {
     const tx = await this.buildTransaction(path, strategy);
 
@@ -219,7 +219,7 @@ export class TransactionBuilder {
    */
   private async estimateGasLimit(
     path: ArbitragePath,
-    options: BuildTransactionOptions
+    _options: BuildTransactionOptions
   ): Promise<bigint> {
     try {
       // Use totalGasCost from path as baseline

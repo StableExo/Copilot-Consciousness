@@ -27,8 +27,9 @@ import {
   Condition,
   Action,
 } from './types/pattern';
-import { Opportunity } from './types/opportunity';
-import { Path } from './types/path';
+// Note: Opportunity and Path types are imported for future pattern composition features
+import type { Opportunity as _Opportunity } from './types/opportunity';
+import type { Path as _Path } from './types/path';
 
 /**
  * Pattern recognition statistics
@@ -187,7 +188,7 @@ export class PatternRecognitionEngine {
         } else {
           failedConditions.push(condition.id);
         }
-      } catch (error) {
+      } catch (_error) {
         failedConditions.push(condition.id);
       }
     }
@@ -310,7 +311,7 @@ export class PatternRecognitionEngine {
    * Evolve patterns using genetic algorithm
    */
   evolvePatterns(config: Partial<PatternEvolutionConfig> = {}): Pattern[] {
-    const evolutionConfig: Required<PatternEvolutionConfig> = {
+    const _evolutionConfig: Required<PatternEvolutionConfig> = {
       mutationRate: config.mutationRate || 0.1,
       crossoverRate: config.crossoverRate || 0.7,
       selectionPressure: config.selectionPressure || 1.5,

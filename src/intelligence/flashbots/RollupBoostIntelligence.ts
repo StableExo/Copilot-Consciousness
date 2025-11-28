@@ -14,7 +14,9 @@
  * Based on: https://rollup-boost.flashbots.net/
  */
 
-import { ethers, JsonRpcProvider } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
+// ethers namespace reserved for utilities
+import type { ethers as _ethers } from 'ethers';
 import { logger } from '../../utils/logger';
 
 /**

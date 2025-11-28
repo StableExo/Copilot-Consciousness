@@ -11,23 +11,31 @@
  * 50+ tests covering unit, integration, and end-to-end scenarios
  */
 
-import { ethers, Wallet, providers } from 'ethers';
+// Reserved imports for future integration expansion
+import type { ethers as _ethers, Wallet as _Wallet, providers as _providers } from 'ethers';
 import { ExecutionPipeline } from '../../ExecutionPipeline';
-import { TransactionExecutor } from '../../TransactionExecutor';
+// TransactionExecutor reserved for advanced execution tests
+import type { TransactionExecutor as _TransactionExecutor } from '../../TransactionExecutor';
 import { SystemHealthMonitor, MonitoredComponent } from '../../../monitoring/SystemHealthMonitor';
 import { ErrorRecovery } from '../../../recovery/ErrorRecovery';
-import { NonceManager } from '../../NonceManager';
-import { AdvancedGasEstimator } from '../../../gas/AdvancedGasEstimator';
-import { GasPriceOracle } from '../../../gas/GasPriceOracle';
+// NonceManager, AdvancedGasEstimator, GasPriceOracle reserved for integration tests
+import type { NonceManager as _NonceManager } from '../../NonceManager';
+import type { AdvancedGasEstimator as _AdvancedGasEstimator } from '../../../gas/AdvancedGasEstimator';
+import type { GasPriceOracle as _GasPriceOracle } from '../../../gas/GasPriceOracle';
 import {
   ExecutionState,
   ExecutionContext,
   HealthStatus,
-  RecoveryStrategy,
-  TransactionStatus,
   ExecutionPriority,
 } from '../../../types/ExecutionTypes';
-import { ArbitrageOpportunity, ArbitrageConfig } from '../../../types/definitions';
+// RecoveryStrategy, TransactionStatus reserved for recovery tests
+import type {
+  RecoveryStrategy as _RecoveryStrategy,
+  TransactionStatus as _TransactionStatus,
+} from '../../../types/ExecutionTypes';
+import { ArbitrageOpportunity } from '../../../types/definitions';
+// ArbitrageConfig reserved for config tests
+import type { ArbitrageConfig as _ArbitrageConfig } from '../../../types/definitions';
 import { ArbitragePath } from '../../../arbitrage/types';
 
 // Mock logger to avoid console spam during tests
@@ -248,7 +256,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           slippageImpact: 0.01,
         };
 
-        const result = await pipeline.execute(mockOpportunity, mockPath, 3);
+        const _result = await pipeline.execute(mockOpportunity, mockPath, 3);
 
         expect(attemptCount).toBe(2);
       });
@@ -515,7 +523,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
           resyncNonce: jest.fn().mockResolvedValue(undefined),
         } as any;
 
-        const result = await recovery.recover(context, error, mockNonceManager);
+        const _result = await recovery.recover(context, error, mockNonceManager);
 
         expect(mockNonceManager.resyncNonce).toHaveBeenCalled();
       });
@@ -675,9 +683,9 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
     describe('Pipeline + Recovery Integration', () => {
       it('should trigger recovery on stage failure', async () => {
         const pipeline = new ExecutionPipeline();
-        const recovery = new ErrorRecovery();
+        const _recovery = new ErrorRecovery();
 
-        const recoveryTriggered = false;
+        const _recoveryTriggered = false;
 
         pipeline.registerStage(ExecutionState.DETECTING, async () => ({
           success: false,
@@ -786,7 +794,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
 
     it('should handle execution with retry and recovery', async () => {
       const pipeline = new ExecutionPipeline();
-      const recovery = new ErrorRecovery();
+      const _recovery = new ErrorRecovery();
 
       let attemptCount = 0;
 
@@ -845,7 +853,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
         slippageImpact: 0.01,
       };
 
-      const result = await pipeline.execute(mockOpportunity, mockPath, 3);
+      const _result = await pipeline.execute(mockOpportunity, mockPath, 3);
 
       expect(attemptCount).toBe(2);
     });

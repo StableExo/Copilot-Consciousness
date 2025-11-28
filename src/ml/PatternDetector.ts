@@ -5,7 +5,9 @@
  * chain patterns, sequence patterns, and opportunity clusters.
  */
 
-import { Pattern, PatternConditions, TrainingRecord } from './types';
+import { Pattern, TrainingRecord } from './types';
+// PatternConditions reserved for advanced pattern matching
+import type { PatternConditions as _PatternConditions } from './types';
 import { ArbitragePath } from '../arbitrage/types';
 
 export interface PatternStats {

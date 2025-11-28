@@ -18,7 +18,12 @@ import { GroundZeroRegistry, getGroundZeroRegistry } from './GroundZeroRegistry'
 import { CategoryManager } from './CategoryManager';
 import { LayerStackManager } from './LayerStack';
 import { WebManager } from './WebManager';
-import { Entity, PowerDifferential, ThreatAssessment, InterventionDecision } from './types/Entity';
+import { Entity } from './types/Entity';
+import type {
+  PowerDifferential as _PowerDifferential,
+  ThreatAssessment as _ThreatAssessment,
+  InterventionDecision as _InterventionDecision,
+} from './types/Entity';
 import { GroundZeroImprint, GroundZeroCategory } from './types/GroundZeroImprint';
 import { Category, CategoryDomain, CategoryQuery } from './types/Category';
 import { Layer, LayerQuery, createLayer } from './types/Layer';
@@ -216,7 +221,7 @@ export class IdentityCore extends EventEmitter {
       const domain = this.getCategoryDomain(categoryId);
       const foundational = this.isCategoryFoundational(categoryId);
 
-      const category = this.categoryManager.registerCategory(
+      const _category = this.categoryManager.registerCategory(
         categoryId,
         name,
         description,
@@ -638,9 +643,9 @@ export class IdentityCore extends EventEmitter {
    */
   private arePrinciplesContradictory(p1: string, p2: string): boolean {
     // Simple heuristic - look for negations
-    const negations = ['not', "don't", 'never', 'avoid', 'reject'];
-    const p1Lower = p1.toLowerCase();
-    const p2Lower = p2.toLowerCase();
+    const _negations = ['not', "don't", 'never', 'avoid', 'reject'];
+    const _p1Lower = p1.toLowerCase();
+    const _p2Lower = p2.toLowerCase();
 
     // Check if one contains negation of key terms in the other
     // This is a simplified check - real contradiction detection is more complex
@@ -676,7 +681,7 @@ export class IdentityCore extends EventEmitter {
    */
   private gatherPrinciples(
     categories: number[],
-    context: DecisionContext
+    _context: DecisionContext
   ): Array<{ category: number; principle: string; weight: number }> {
     const principles: Array<{ category: number; principle: string; weight: number }> = [];
 
@@ -752,7 +757,7 @@ export class IdentityCore extends EventEmitter {
   private evaluateAction(
     principles: Array<{ category: number; principle: string; weight: number }>,
     webs: Web[],
-    context: DecisionContext
+    _context: DecisionContext
   ): boolean {
     // Default: no action unless principles support it
     let actionScore = 0;
@@ -794,7 +799,7 @@ export class IdentityCore extends EventEmitter {
   private calculateConfidence(
     principles: Array<{ category: number; principle: string; weight: number }>,
     webs: Web[],
-    context: DecisionContext
+    _context: DecisionContext
   ): number {
     if (principles.length === 0) {
       return 0.3; // Low confidence with no principles
@@ -819,8 +824,8 @@ export class IdentityCore extends EventEmitter {
   private verifyCoherence(
     shouldAct: boolean,
     principles: Array<{ category: number; principle: string; weight: number }>,
-    webs: Web[],
-    context: DecisionContext
+    _webs: Web[],
+    _context: DecisionContext
   ): boolean {
     // Check Category 192 (meta-cognitive) principles
     const metaCognitive = principles.filter(

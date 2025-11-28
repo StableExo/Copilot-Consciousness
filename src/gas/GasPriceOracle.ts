@@ -9,7 +9,9 @@
 
 import axios from 'axios';
 import { type PublicClient } from 'viem';
-import { createViemPublicClient, getChain, CHAIN_MAP } from '../utils/viem';
+import { createViemPublicClient } from '../utils/viem';
+// getChain and CHAIN_MAP reserved for multi-chain features
+import { getChain as _getChain, CHAIN_MAP as _CHAIN_MAP } from '../utils/viem';
 
 export interface GasPrice {
   gasPrice: bigint; // Legacy gas price (for non-EIP-1559)
@@ -217,7 +219,7 @@ export class GasPriceOracle {
         if (gasPrice) {
           break;
         }
-      } catch (error) {
+      } catch (_error) {
         // Continue to next source
         continue;
       }
@@ -294,7 +296,7 @@ export class GasPriceOracle {
           timestamp: Date.now(),
         };
       }
-    } catch (error) {
+    } catch (_error) {
       // Fail silently, will try next source
     }
 

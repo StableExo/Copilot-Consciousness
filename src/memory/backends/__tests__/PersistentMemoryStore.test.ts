@@ -15,7 +15,7 @@ describe('PersistentMemoryStore', () => {
 
   beforeEach(() => {
     // Clean up test database
-    const testDir = path.dirname(testDbPath);
+    const _testDir = path.dirname(testDbPath);
     if (fs.existsSync(testDbPath)) {
       fs.unlinkSync(testDbPath);
     }

@@ -196,7 +196,7 @@ export function getWebsBetweenCategories(
 /**
  * Check if web conditions are met
  */
-export function areWebConditionsMet(web: Web, context: Record<string, unknown>): boolean {
+export function areWebConditionsMet(web: Web, _context: Record<string, unknown>): boolean {
   if (!web.conditions || web.conditions.length === 0) {
     return true; // No conditions = always applicable
   }

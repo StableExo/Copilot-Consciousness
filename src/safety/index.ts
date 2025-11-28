@@ -53,7 +53,9 @@ import { CircuitBreaker, CircuitBreakerConfig } from './CircuitBreaker';
 import { EmergencyStop, EmergencyStopConfig } from './EmergencyStop';
 import { PositionSizeManager, PositionSizeConfig } from './PositionSizeManager';
 import { ProfitLossTracker, TradeRecord } from './ProfitLossTracker';
-import { AlertSystem, AlertType, AlertSeverity, AlertSystemConfig } from './AlertSystem';
+import { AlertSystem, AlertType, AlertSystemConfig } from './AlertSystem';
+// AlertSeverity reserved for alert filtering
+import type { AlertSeverity as _AlertSeverity } from './AlertSystem';
 import { logger } from '../utils/logger';
 
 export interface ProductionSafetyConfig {

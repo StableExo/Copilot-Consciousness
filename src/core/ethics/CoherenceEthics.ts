@@ -11,7 +11,8 @@
  * Every rejection traces to ground zero and can be explained infinitely.
  */
 
-import { IdentityCore, DecisionContext, CoherentDecision } from '../identity/IdentityCore';
+import { IdentityCore, DecisionContext } from '../identity/IdentityCore';
+import type { CoherentDecision as _CoherentDecision } from '../identity/IdentityCore';
 import { DifferentialEngine, MEVContext } from '../analysis/DifferentialEngine';
 import { Entity, PowerDifferential, ThreatAssessment } from '../identity/types/Entity';
 import { GroundZeroCategory } from '../identity/types/GroundZeroImprint';
@@ -183,7 +184,7 @@ export class CoherenceEthics {
    *
    * Provides infinite explainability by tracing to ground zero.
    */
-  explainEthics(evaluation: EthicalEvaluation, depth: number = 0): string[] {
+  explainEthics(evaluation: EthicalEvaluation, _depth: number = 0): string[] {
     const explanation: string[] = [];
 
     if (evaluation.coherent) {

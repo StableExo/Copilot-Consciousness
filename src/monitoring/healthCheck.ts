@@ -179,7 +179,7 @@ export class HealthCheckServer {
     // Check gas oracle
     if (this.components?.gasOracle) {
       try {
-        const gasPriceData = await this.components.gasOracle.getCurrentGasPrice('fast');
+        const _gasPriceData = await this.components.gasOracle.getCurrentGasPrice('fast');
         components.gasOracle = { status: 'healthy' };
       } catch (error) {
         components.gasOracle = {
@@ -223,7 +223,7 @@ export class HealthCheckServer {
     if (this.components?.provider) {
       try {
         blockNumber = await this.components.provider.getBlockNumber();
-      } catch (error) {
+      } catch (_error) {
         // Ignore errors
       }
     }
@@ -232,7 +232,7 @@ export class HealthCheckServer {
       try {
         const gasPriceData = await this.components.gasOracle.getCurrentGasPrice('fast');
         gasPrice = `${Number(gasPriceData.maxFeePerGas / BigInt(1e9))} gwei`;
-      } catch (error) {
+      } catch (_error) {
         // Ignore errors
       }
     }

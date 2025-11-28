@@ -7,7 +7,9 @@
 
 import Redis from 'ioredis';
 import { MemoryEntry, MemoryStore, MemoryQuery } from '../../consciousness/memory/types';
-import { MemoryType, Priority, UUID } from '../../types';
+import { MemoryType, UUID } from '../../types';
+// Priority reserved for priority-based memory features
+import type { Priority as _Priority } from '../../types';
 import { generateUUID } from '../../utils/uuid';
 
 export interface RedisStoreConfig {

@@ -228,7 +228,7 @@ export function detectCycle(graph: Graph): string[] | null {
         if (dfs(edge.to)) return true;
       } else if (recStack.has(edge.to)) {
         // Found a cycle
-        const cycleStart = path.indexOf(edge.to);
+        const _cycleStart = path.indexOf(edge.to);
         return true;
       }
     }

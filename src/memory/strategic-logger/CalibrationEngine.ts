@@ -8,7 +8,9 @@
  * based on historical performance data.
  */
 
-import { BlackBoxLogger, OperationalLog, LogQuery } from './BlackBoxLogger';
+import { BlackBoxLogger, LogQuery } from './BlackBoxLogger';
+// OperationalLog reserved for log analysis features
+import type { OperationalLog as _OperationalLog } from './BlackBoxLogger';
 
 export interface CalibrationParams {
   name: string;
@@ -127,17 +129,17 @@ export class CalibrationEngine {
       return null;
     }
 
-    // Calculate current metric value
-    let currentMetricValue = 0;
+    // Calculate current metric value (used for future gradient optimization)
+    let _currentMetricValue = 0;
     switch (targetMetric) {
       case 'successRate':
-        currentMetricValue = currentPerformance.successRate;
+        _currentMetricValue = currentPerformance.successRate;
         break;
       case 'profit':
-        currentMetricValue = currentPerformance.avgProfit;
+        _currentMetricValue = currentPerformance.avgProfit;
         break;
       case 'gasCost':
-        currentMetricValue = currentPerformance.avgGasCost;
+        _currentMetricValue = currentPerformance.avgGasCost;
         break;
     }
 

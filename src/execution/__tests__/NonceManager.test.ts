@@ -8,7 +8,7 @@ import { NonceManager, NonceError } from '../NonceManager';
 describe('NonceManager', () => {
   let provider: JsonRpcProvider;
   let wallet: Wallet;
-  let nonceManager: NonceManager;
+  let _nonceManager: NonceManager;
 
   beforeEach(async () => {
     // Create a mock provider
@@ -20,6 +20,10 @@ describe('NonceManager', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+    // Destroy provider to prevent test leaks
+    if (provider) {
+      provider.destroy();
+    }
   });
 
   describe('constructor and create', () => {

@@ -16,8 +16,11 @@ import {
   PriceForecast,
   VolatilityForecast,
   Pattern,
-  InferenceRequest,
-  InferenceResponse,
+} from './types';
+// InferenceRequest, InferenceResponse reserved for advanced inference features
+import type {
+  InferenceRequest as _InferenceRequest,
+  InferenceResponse as _InferenceResponse,
 } from './types';
 import { ArbitragePath } from '../arbitrage/types';
 
@@ -216,7 +219,7 @@ export class MLOrchestrator extends EventEmitter {
   /**
    * Predict future prices
    */
-  async predictPrices(path: ArbitragePath): Promise<PriceForecast[]> {
+  async predictPrices(_path: ArbitragePath): Promise<PriceForecast[]> {
     if (!this.modelsLoaded.lstm) {
       return this.getDefaultPriceForecasts();
     }
@@ -245,7 +248,7 @@ export class MLOrchestrator extends EventEmitter {
     }
 
     // Extract path features
-    const pathFeatures = this.featureExtractor.extractPathFeatures(path);
+    const _pathFeatures = this.featureExtractor.extractPathFeatures(path);
 
     // In production, this would call the Random Forest model
     // For now, use a simple heuristic
@@ -269,7 +272,7 @@ export class MLOrchestrator extends EventEmitter {
   /**
    * Predict volatility
    */
-  async predictVolatility(path: ArbitragePath): Promise<VolatilityForecast> {
+  async predictVolatility(_path: ArbitragePath): Promise<VolatilityForecast> {
     if (!this.modelsLoaded.volatility) {
       return this.getDefaultVolatilityForecast();
     }

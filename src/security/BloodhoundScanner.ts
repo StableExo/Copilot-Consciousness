@@ -322,7 +322,7 @@ export class BloodhoundScanner extends EventEmitter {
 
     // Context analysis
     const contextBefore = fullText.substring(Math.max(0, matchIndex - 50), matchIndex);
-    const contextAfter = fullText.substring(
+    const _contextAfter = fullText.substring(
       matchIndex + matchedValue.length,
       matchIndex + matchedValue.length + 50
     );

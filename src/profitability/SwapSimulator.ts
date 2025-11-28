@@ -63,7 +63,7 @@ class SwapSimulator {
   }
 
   private performSwap(options: SwapOptions): SwapResult {
-    const { fromToken, toToken, amount, dex } = options;
+    const { fromToken: _fromToken, toToken: _toToken, amount, dex } = options;
     let expectedReturn = 0;
     let fees = 0;
 

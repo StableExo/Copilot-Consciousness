@@ -1,6 +1,6 @@
 // src/profitability/TradeValidator.ts
 
-class TradeValidator {
+class _TradeValidator {
   private maxSlippage: number;
   private acceptedGasCost: number;
 

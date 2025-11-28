@@ -114,7 +114,7 @@ export class SecurityMiddleware {
       };
 
       next();
-    } catch (error) {
+    } catch (_error) {
       res.status(500).json({ error: 'Authentication error' });
     }
   };

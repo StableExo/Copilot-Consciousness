@@ -4,7 +4,9 @@
  * Validates decision outcome tracking and analysis capabilities
  */
 
-import { StrategicBlackBoxLogger, DecisionOutcome, TradeOutcome } from '../StrategicBlackBoxLogger';
+import { StrategicBlackBoxLogger, DecisionOutcome } from '../StrategicBlackBoxLogger';
+// TradeOutcome reserved for trade outcome tests
+import type { TradeOutcome as _TradeOutcome } from '../StrategicBlackBoxLogger';
 import * as fs from 'fs';
 import * as path from 'path';
 

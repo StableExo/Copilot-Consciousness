@@ -7,7 +7,12 @@
 
 import { EventEmitter } from 'events';
 import { getMLConfig, MLConfig } from '../../config/ml.config';
-import { ModelMetadata, ModelPerformance, ModelAlert, TrainingRecord } from '../types';
+import { ModelAlert, TrainingRecord } from '../types';
+// ModelMetadata, ModelPerformance reserved for model management features
+import type {
+  ModelMetadata as _ModelMetadata,
+  ModelPerformance as _ModelPerformance,
+} from '../types';
 
 export interface TrainingConfig {
   schedule: {

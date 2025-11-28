@@ -528,7 +528,9 @@ export class CognitiveCoordinator {
     };
   }
 
-  private async getOperationalPlaybookInsight(_context: OpportunityContext): Promise<ModuleInsight> {
+  private async getOperationalPlaybookInsight(
+    _context: OpportunityContext
+  ): Promise<ModuleInsight> {
     const confidence = 0.75;
     return {
       moduleName: 'operationalPlaybook',

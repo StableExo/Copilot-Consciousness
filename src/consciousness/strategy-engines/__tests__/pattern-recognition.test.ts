@@ -29,7 +29,7 @@ describe('PatternRecognitionEngine', () => {
         id: 'action_1',
         type: 'test',
         description: 'Test action',
-        execute: async (context: any) => ({ success: true }),
+        execute: async (_context: any) => ({ success: true }),
       },
     ],
     successRate: 0.75,
@@ -215,7 +215,7 @@ describe('PatternRecognitionEngine', () => {
         {
           id: 'cond_2',
           description: 'Failing condition',
-          evaluate: (context: any) => false, // Always fails
+          evaluate: (_context: any) => false, // Always fails
           weight: 0.5,
         },
       ];
@@ -313,7 +313,7 @@ describe('PatternRecognitionEngine', () => {
           {
             id: 'cond_1',
             description: 'Test condition',
-            evaluate: (context: any) => true,
+            evaluate: (_context: any) => true,
             weight: 1.0,
           },
         ],

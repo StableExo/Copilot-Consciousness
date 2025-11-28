@@ -29,6 +29,13 @@ describe('PrivateRPCManager', () => {
     });
   });
 
+  afterEach(() => {
+    // Destroy provider to prevent test leaks
+    if (provider) {
+      provider.destroy();
+    }
+  });
+
   describe('Configuration', () => {
     it('should initialize with empty relays', () => {
       expect(manager.getStats().size).toBe(0);

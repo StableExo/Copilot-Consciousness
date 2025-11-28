@@ -258,7 +258,7 @@ export class EmergencyStop extends EventEmitter {
   /**
    * Record an error for monitoring
    */
-  recordError(error: Error): void {
+  recordError(_error: Error): void {
     this.consecutiveErrors++;
 
     logger.debug(

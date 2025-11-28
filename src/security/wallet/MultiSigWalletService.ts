@@ -69,7 +69,7 @@ export class MultiSigWalletService {
     to: string,
     value: string,
     data: string,
-    description?: string
+    _description?: string
   ): Promise<TransactionProposal> {
     const safe = new ethers.Contract(this.config.safeAddress, this.SAFE_ABI, this.provider);
 
@@ -227,7 +227,7 @@ export class MultiSigWalletService {
    * Get transaction hash for signing
    */
   private async getTransactionHash(proposal: TransactionProposal): Promise<string> {
-    const safe = new ethers.Contract(this.config.safeAddress, this.SAFE_ABI, this.provider);
+    const _safe = new ethers.Contract(this.config.safeAddress, this.SAFE_ABI, this.provider);
 
     const domain = {
       verifyingContract: this.config.safeAddress,

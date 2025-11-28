@@ -178,10 +178,10 @@ export class BundleSimulator extends EventEmitter {
     if (!bundleTx.to) return 0;
 
     // Check mempool for competing transactions to same contract
-    let competingTxCount = 0;
+    let _competingTxCount = 0;
     for (const [, pendingTx] of this.mempoolCache) {
       if (pendingTx.to === bundleTx.to) {
-        competingTxCount++;
+        _competingTxCount++;
 
         // Higher gas price = higher frontrun risk
         const ourGasPrice = BigInt(bundleTx.gasPrice || bundleTx.maxFeePerGas || 0n);

@@ -5,7 +5,7 @@
  */
 
 import { SpatialReasoningEngine } from '../spatial-reasoning';
-import { ProblemSpace, Node, ConstraintType, Constraint } from '../types/problem-space';
+import { ProblemSpace } from '../types/problem-space';
 import { OpportunityType } from '../types/opportunity';
 
 describe('SpatialReasoningEngine', () => {

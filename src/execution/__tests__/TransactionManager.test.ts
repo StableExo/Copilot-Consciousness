@@ -5,7 +5,9 @@
  */
 
 import { Provider } from 'ethers';
-import { TransactionManager, TransactionState, TransactionOptions } from '../TransactionManager';
+import { TransactionManager, TransactionState } from '../TransactionManager';
+// TransactionOptions reserved for advanced transaction tests
+import type { TransactionOptions as _TransactionOptions } from '../TransactionManager';
 import { NonceManager } from '../NonceManager';
 
 describe('TransactionManager', () => {

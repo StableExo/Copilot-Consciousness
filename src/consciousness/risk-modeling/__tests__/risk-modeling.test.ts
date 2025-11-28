@@ -125,7 +125,7 @@ describe('Risk Modeling', () => {
     it('should not trigger during cooldown', () => {
       const manager = new ThresholdManager();
 
-      const threshold = manager.defineThreshold(
+      const _threshold = manager.defineThreshold(
         'Test',
         'metric1',
         0.5,

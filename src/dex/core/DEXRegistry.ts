@@ -1,6 +1,10 @@
-import { ethers, JsonRpcProvider, parseEther } from 'ethers';
+import { JsonRpcProvider, parseEther } from 'ethers';
+// ethers namespace reserved for advanced utilities
+import type { ethers as _ethers } from 'ethers';
 import { Connection, PublicKey } from '@solana/web3.js';
-import { DEXConfig, ChainType } from '../types';
+import { DEXConfig } from '../types';
+// ChainType reserved for multi-chain detection features
+import type { ChainType as _ChainType } from '../types';
 
 // ═══════════════════════════════════════════════════════════════
 // CONFIGURABLE LIQUIDITY THRESHOLDS
@@ -1489,7 +1493,7 @@ export class DEXRegistry {
             return false;
           }
         }
-      } catch (error) {
+      } catch (_error) {
         return false;
       }
     }

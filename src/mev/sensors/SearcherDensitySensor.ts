@@ -8,7 +8,9 @@
  * 3. Bot clustering (unique high-gas addresses)
  */
 
-import { Provider, ethers, getAddress, TransactionResponse } from 'ethers';
+import { Provider, getAddress, TransactionResponse } from 'ethers';
+// ethers namespace reserved for utilities
+import type { ethers as _ethers } from 'ethers';
 import { SensorReading } from '../types/TransactionType';
 
 export interface DensityWeights {
@@ -54,7 +56,7 @@ export class SearcherDensitySensor {
     for (const addr of contracts) {
       try {
         this.mevContracts.add(getAddress(addr));
-      } catch (error) {
+      } catch (_error) {
         console.warn(`Invalid MEV contract address ignored: ${addr}`);
       }
     }
