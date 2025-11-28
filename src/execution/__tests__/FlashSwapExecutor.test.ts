@@ -15,7 +15,10 @@ import {
 import type { SwapStep as _SwapStep } from '../FlashSwapExecutor';
 import { ArbitrageType } from '../../arbitrage/models';
 // ArbitrageOpportunity, OpportunityStatus reserved for opportunity tests
-import type { ArbitrageOpportunity as _ArbitrageOpportunity, OpportunityStatus as _OpportunityStatus } from '../../arbitrage/models';
+import type {
+  ArbitrageOpportunity as _ArbitrageOpportunity,
+  OpportunityStatus as _OpportunityStatus,
+} from '../../arbitrage/models';
 import { createArbitrageOpportunity, createPathStep } from '../../arbitrage/models';
 
 describe('FlashSwapExecutor', () => {

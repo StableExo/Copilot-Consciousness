@@ -221,7 +221,7 @@ export class GasAnalytics {
       return BigInt(0);
     }
 
-    const actualAverage =
+    const _actualAverage =
       this.executions.reduce((sum, exec) => sum + exec.gasCost, BigInt(0)) /
       BigInt(this.executions.length);
 

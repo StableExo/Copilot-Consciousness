@@ -10,9 +10,15 @@
  * on unprofitable or reverting transactions.
  */
 
-import { Interface, JsonRpcProvider, ethers } from 'ethers';
-import { ArbitragePath, ArbitrageHop } from '../arbitrage/types';
-import { GasPriceOracle, GasPrice } from './GasPriceOracle';
+import { Interface, JsonRpcProvider } from 'ethers';
+// ethers namespace reserved for utilities
+import type { ethers as _ethers } from 'ethers';
+import { ArbitragePath } from '../arbitrage/types';
+// ArbitrageHop reserved for hop-level estimation
+import type { ArbitrageHop as _ArbitrageHop } from '../arbitrage/types';
+import { GasPriceOracle } from './GasPriceOracle';
+// GasPrice reserved for price estimation features
+import type { GasPrice as _GasPrice } from './GasPriceOracle';
 
 /**
  * Per-DEX gas estimate configuration

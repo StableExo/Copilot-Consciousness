@@ -21,14 +21,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import {
-  JsonRpcProvider,
-  Wallet,
-  Contract,
-  formatEther,
-  formatUnits,
-  parseEther,
-} from 'ethers';
+import { JsonRpcProvider, Wallet, Contract, formatEther, formatUnits, parseEther } from 'ethers';
 // ethers namespace reserved for utilities
 import type { ethers as _ethers } from 'ethers';
 import { EventEmitter } from 'events';
