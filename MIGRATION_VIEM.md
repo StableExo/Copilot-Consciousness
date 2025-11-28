@@ -130,16 +130,19 @@ Supported chains with their IDs:
 - [x] Create migration documentation
 
 ### Module Migration
-- [ ] `src/chains/ChainProviderManager.ts`
-- [ ] `src/chains/adapters/EVMAdapter.ts`
+- [x] `src/chains/ChainProviderManager.ts`
+- [x] `src/chains/adapters/EVMAdapter.ts`
+- [x] `src/chains/CrossChainScanner.ts`
 - [ ] `src/execution/TransactionManager.ts`
 - [ ] `src/execution/TransactionExecutor.ts`
 - [ ] `src/execution/FlashSwapExecutor.ts`
 - [ ] `src/execution/NonceManager.ts`
 - [ ] `src/arbitrage/OptimizedPoolScanner.ts`
 - [ ] `src/arbitrage/MultiHopDataFetcher.ts`
-- [ ] `src/services/PoolDataFetcher.ts`
-- [ ] `src/gas/GasPriceOracle.ts`
+- [x] `src/services/PoolDataFetcher.ts`
+- [x] `src/services/BaseArbitrageRunner.ts` (updated for viem compatibility)
+- [x] `src/gas/GasPriceOracle.ts`
+- [ ] `src/utils/MulticallBatcher.ts`
 - [ ] Other modules
 
 ## Rollback Procedure
