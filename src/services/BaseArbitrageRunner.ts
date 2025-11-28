@@ -6,10 +6,14 @@
  * - MEV-aware execution timing
  * - Graceful shutdown and error handling
  * - Integration with consciousness memory system
+ *
+ * Updated to support both viem and ethers for backward compatibility
  */
 
 import { EventEmitter } from 'events';
-import { ethers, JsonRpcProvider, Provider, formatEther } from 'ethers';
+import { ethers, JsonRpcProvider, formatEther } from 'ethers';
+import { type PublicClient } from 'viem';
+import { createViemPublicClient } from '../utils/viem';
 import { ProfitCalculator, TransactionType } from '../mev/profit_calculator/ProfitCalculator';
 import { MEVSensorHub } from '../mev/sensors/MEVSensorHub';
 import { NonceManager } from '../execution/NonceManager';
@@ -111,7 +115,8 @@ interface OpportunityResult {
 
 export class BaseArbitrageRunner extends EventEmitter {
   private config: BaseArbitrageConfig;
-  private provider: Provider;
+  private provider: JsonRpcProvider;
+  private publicClient: PublicClient;
   private wallet: ethers.Wallet;
   private nonceManager: NonceManager | null = null;
   private simulationService: SimulationService | null = null;
@@ -141,6 +146,9 @@ export class BaseArbitrageRunner extends EventEmitter {
     // Initialize provider and wallet
     this.provider = new JsonRpcProvider(config.rpcUrl);
     this.wallet = new ethers.Wallet(config.privateKey, this.provider);
+
+    // Initialize viem public client for viem-based components
+    this.publicClient = createViemPublicClient(config.chainId, config.rpcUrl);
 
     // Initialize MEV components
     this.profitCalculator = new ProfitCalculator();
@@ -200,7 +208,7 @@ export class BaseArbitrageRunner extends EventEmitter {
 
     // Initialize pool data fetcher for real on-chain data
     this.poolDataFetcher = new PoolDataFetcher({
-      provider: this.provider,
+      publicClient: this.publicClient,
       cacheDurationMs: 12000, // Cache for 12 seconds (1 block on Base)
     });
     console.log('[BaseArbitrageRunner] ✓ PoolDataFetcher initialized');

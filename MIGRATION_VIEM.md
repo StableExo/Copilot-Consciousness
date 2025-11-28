@@ -130,16 +130,19 @@ Supported chains with their IDs:
 - [x] Create migration documentation
 
 ### Module Migration
-- [ ] `src/chains/ChainProviderManager.ts`
-- [ ] `src/chains/adapters/EVMAdapter.ts`
-- [ ] `src/execution/TransactionManager.ts`
-- [ ] `src/execution/TransactionExecutor.ts`
-- [ ] `src/execution/FlashSwapExecutor.ts`
-- [ ] `src/execution/NonceManager.ts`
+- [x] `src/chains/ChainProviderManager.ts`
+- [x] `src/chains/adapters/EVMAdapter.ts`
+- [x] `src/chains/CrossChainScanner.ts`
+- [~] `src/execution/TransactionManager.ts` (requires ethers.js, documented for coexistence)
+- [~] `src/execution/TransactionExecutor.ts` (requires ethers.js, documented for coexistence)
+- [~] `src/execution/FlashSwapExecutor.ts` (requires ethers.js, documented for coexistence)
+- [~] `src/execution/NonceManager.ts` (requires ethers.js AbstractSigner, documented for coexistence)
 - [ ] `src/arbitrage/OptimizedPoolScanner.ts`
 - [ ] `src/arbitrage/MultiHopDataFetcher.ts`
-- [ ] `src/services/PoolDataFetcher.ts`
-- [ ] `src/gas/GasPriceOracle.ts`
+- [x] `src/services/PoolDataFetcher.ts`
+- [x] `src/services/BaseArbitrageRunner.ts` (updated for viem compatibility)
+- [x] `src/gas/GasPriceOracle.ts`
+- [x] `src/utils/MulticallBatcher.ts` (added ViemMulticallBatcher class)
 - [ ] Other modules
 
 ## Rollback Procedure
@@ -190,6 +193,17 @@ During the migration period, both libraries will coexist. The migration is desig
 2. Existing code will be migrated module by module
 3. ethers.js will remain for backward compatibility until full migration
 4. Both libraries work with the same ABI format
+
+### Modules Requiring ethers.js
+
+Some modules are deeply integrated with ethers.js's Signer abstraction and will continue to use ethers.js:
+
+- `src/execution/NonceManager.ts` - Extends ethers.js AbstractSigner for nonce management
+- `src/execution/TransactionManager.ts` - Uses ethers Provider for transaction handling
+- `src/execution/TransactionExecutor.ts` - Uses ethers for transaction building and encoding
+- `src/execution/FlashSwapExecutor.ts` - Uses ethers for flash swap execution
+
+These modules can coexist with viem-based code. For new functionality, consider using viem's WalletClient directly.
 
 ## Benefits
 

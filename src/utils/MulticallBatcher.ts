@@ -6,9 +6,12 @@
  *
  * This is especially important for pool scanning where we check 60+ pools,
  * reducing scan time from 60+ seconds to under 10 seconds.
+ *
+ * Migrated to support both viem and ethers for backward compatibility
  */
 
 import { ethers, Provider, Interface } from 'ethers';
+import { type PublicClient, type Address } from 'viem';
 
 export interface MulticallRequest {
   target: string;
@@ -28,6 +31,38 @@ export interface MulticallResult {
 const MULTICALL3_ABI = [
   'function aggregate3(tuple(address target, bool allowFailure, bytes callData)[] calls) public payable returns (tuple(bool success, bytes returnData)[] returnData)',
 ];
+
+/**
+ * Multicall3 ABI for viem
+ */
+const MULTICALL3_VIEM_ABI = [
+  {
+    inputs: [
+      {
+        components: [
+          { name: 'target', type: 'address' },
+          { name: 'allowFailure', type: 'bool' },
+          { name: 'callData', type: 'bytes' },
+        ],
+        name: 'calls',
+        type: 'tuple[]',
+      },
+    ],
+    name: 'aggregate3',
+    outputs: [
+      {
+        components: [
+          { name: 'success', type: 'bool' },
+          { name: 'returnData', type: 'bytes' },
+        ],
+        name: 'returnData',
+        type: 'tuple[]',
+      },
+    ],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+] as const;
 
 /**
  * Default Multicall3 address (same on most chains)
@@ -129,6 +164,90 @@ export class MulticallBatcher {
    */
   static decodeResult(contractInterface: Interface, functionName: string, data: string): any {
     return contractInterface.decodeFunctionResult(functionName, data);
+  }
+}
+
+/**
+ * Viem-based MulticallBatcher for use with viem PublicClient
+ */
+export class ViemMulticallBatcher {
+  private publicClient: PublicClient;
+  private multicallAddress: Address;
+  private batchSize: number;
+
+  constructor(
+    publicClient: PublicClient,
+    multicallAddress: Address = MULTICALL3_ADDRESS as Address,
+    batchSize: number = 100
+  ) {
+    this.publicClient = publicClient;
+    this.multicallAddress = multicallAddress;
+    this.batchSize = batchSize;
+  }
+
+  /**
+   * Execute multiple contract calls in a single RPC request using viem
+   */
+  async executeBatch(calls: MulticallRequest[]): Promise<MulticallResult[]> {
+    if (calls.length === 0) {
+      return [];
+    }
+
+    // If calls exceed batch size, split into multiple batches
+    if (calls.length > this.batchSize) {
+      const results: MulticallResult[] = [];
+      for (let i = 0; i < calls.length; i += this.batchSize) {
+        const batch = calls.slice(i, i + this.batchSize);
+        const batchResults = await this.executeBatch(batch);
+        results.push(...batchResults);
+      }
+      return results;
+    }
+
+    // Format calls for viem multicall
+    const formattedCalls = calls.map((call) => ({
+      target: call.target as Address,
+      allowFailure: call.allowFailure ?? true,
+      callData: call.callData as `0x${string}`,
+    }));
+
+    try {
+      // Use viem's simulateContract for read-only multicall
+      const result = await this.publicClient.simulateContract({
+        address: this.multicallAddress,
+        abi: MULTICALL3_VIEM_ABI,
+        functionName: 'aggregate3',
+        args: [formattedCalls],
+      });
+
+      const returnData = result.result as readonly {
+        success: boolean;
+        returnData: `0x${string}`;
+      }[];
+      return returnData.map((r) => ({
+        success: r.success,
+        returnData: r.returnData,
+      }));
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error('[ViemMulticallBatcher] Batch execution failed:', message);
+      return calls.map(() => ({
+        success: false,
+        returnData: '0x',
+      }));
+    }
+  }
+
+  /**
+   * Check if multicall contract is available on this network
+   */
+  async isAvailable(): Promise<boolean> {
+    try {
+      const bytecode = await this.publicClient.getCode({ address: this.multicallAddress });
+      return bytecode !== undefined && bytecode !== '0x';
+    } catch {
+      return false;
+    }
   }
 }
 

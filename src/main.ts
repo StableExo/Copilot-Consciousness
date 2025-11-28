@@ -1805,7 +1805,7 @@ if (typeof process !== 'undefined' && process.argv[1]) {
   // Check if this is the main entry point
   const isDistMain = thisFile.includes('/dist/') && thisFile.endsWith('main.js');
   const isSrcMain = thisFile.endsWith('src/main.ts') && !thisFile.includes('__tests__');
-  
+
   if (isDistMain || isSrcMain) {
     main().catch((error) => {
       logger.error(`Fatal error in main: ${error}`);

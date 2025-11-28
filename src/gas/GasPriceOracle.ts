@@ -3,10 +3,13 @@
  *
  * Fetches gas prices from multiple sources with EIP-1559 support
  * Now supports multi-chain gas price tracking
+ *
+ * Migrated to viem as part of Phase 2.2 module migration
  */
 
 import axios from 'axios';
-import { JsonRpcProvider } from 'ethers';
+import { type PublicClient } from 'viem';
+import { createViemPublicClient, getChain, CHAIN_MAP } from '../utils/viem';
 
 export interface GasPrice {
   gasPrice: bigint; // Legacy gas price (for non-EIP-1559)
@@ -25,7 +28,8 @@ interface GasPriceCache {
 }
 
 export class GasPriceOracle {
-  private provider: JsonRpcProvider;
+  private publicClient: PublicClient;
+  private chainId: number;
   private etherscanApiKey?: string;
   private cache: GasPriceCache;
   private refreshInterval: number;
@@ -33,12 +37,20 @@ export class GasPriceOracle {
   private fallbackGasPrice: bigint;
 
   constructor(
-    providerUrl: string,
+    providerUrlOrChainId: string | number,
     etherscanApiKey?: string,
     refreshInterval: number = 12000, // 12 seconds
     fallbackGasPrice: bigint = BigInt(50) * BigInt(10 ** 9) // 50 gwei
   ) {
-    this.provider = new JsonRpcProvider(providerUrl);
+    // Support both URL (legacy) and chainId (new) patterns
+    if (typeof providerUrlOrChainId === 'number') {
+      this.chainId = providerUrlOrChainId;
+      this.publicClient = createViemPublicClient(providerUrlOrChainId);
+    } else {
+      // Legacy URL-based constructor - detect chainId from URL or default to 1 (Ethereum)
+      this.chainId = this.detectChainIdFromUrl(providerUrlOrChainId);
+      this.publicClient = createViemPublicClient(this.chainId, providerUrlOrChainId);
+    }
     this.etherscanApiKey = etherscanApiKey;
     this.refreshInterval = refreshInterval;
     this.fallbackGasPrice = fallbackGasPrice;
@@ -46,6 +58,25 @@ export class GasPriceOracle {
       prices: [],
       lastUpdate: 0,
     };
+  }
+
+  /**
+   * Detect chain ID from RPC URL (best effort)
+   */
+  private detectChainIdFromUrl(url: string): number {
+    const urlLower = url.toLowerCase();
+    if (urlLower.includes('base')) return 8453;
+    if (urlLower.includes('arbitrum') || urlLower.includes('arb')) return 42161;
+    if (urlLower.includes('optimism') || urlLower.includes('opt')) return 10;
+    if (urlLower.includes('polygon') || urlLower.includes('matic')) return 137;
+    if (urlLower.includes('bsc') || urlLower.includes('bnb')) return 56;
+    if (urlLower.includes('avalanche') || urlLower.includes('avax')) return 43114;
+    if (urlLower.includes('linea')) return 59144;
+    if (urlLower.includes('zksync')) return 324;
+    if (urlLower.includes('scroll')) return 534352;
+    if (urlLower.includes('manta')) return 169;
+    if (urlLower.includes('mode')) return 34443;
+    return 1; // Default to Ethereum mainnet
   }
 
   /**
@@ -95,15 +126,13 @@ export class GasPriceOracle {
    */
   async getEIP1559Fees(): Promise<{ baseFee: bigint; priorityFee: bigint }> {
     try {
-      // Get current base fee from latest block
-      const block = await this.provider.getBlock('latest');
-      const baseFee = block?.baseFeePerGas ? BigInt(block.baseFeePerGas.toString()) : BigInt(0);
+      // Get current base fee from latest block using viem
+      const block = await this.publicClient.getBlock({ blockTag: 'latest' });
+      const baseFee = block?.baseFeePerGas ?? 0n;
 
-      // Get recommended priority fee
-      const feeData = await this.provider.getFeeData();
-      const priorityFee = feeData.maxPriorityFeePerGas
-        ? BigInt(feeData.maxPriorityFeePerGas.toString())
-        : BigInt(2) * BigInt(10 ** 9); // 2 gwei default
+      // Get recommended priority fee using viem
+      const feeData = await this.publicClient.estimateFeesPerGas();
+      const priorityFee = feeData.maxPriorityFeePerGas ?? BigInt(2) * BigInt(10 ** 9); // 2 gwei default
 
       return {
         baseFee,
@@ -208,20 +237,18 @@ export class GasPriceOracle {
   }
 
   /**
-   * Fetch gas price from Ethereum node
+   * Fetch gas price from Ethereum node using viem
    */
   private async fetchFromNode(): Promise<GasPrice> {
-    const feeData = await this.provider.getFeeData();
-    const block = await this.provider.getBlock('latest');
+    // Use viem's estimateFeesPerGas for EIP-1559 fees
+    const feeData = await this.publicClient.estimateFeesPerGas();
+    const block = await this.publicClient.getBlock({ blockTag: 'latest' });
 
-    const baseFee = block?.baseFeePerGas ? BigInt(block.baseFeePerGas.toString()) : BigInt(0);
-    const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas
-      ? BigInt(feeData.maxPriorityFeePerGas.toString())
-      : BigInt(2) * BigInt(10 ** 9);
-    const maxFeePerGas = feeData.maxFeePerGas
-      ? BigInt(feeData.maxFeePerGas.toString())
-      : baseFee * BigInt(2) + maxPriorityFeePerGas;
-    const gasPrice = feeData.gasPrice ? BigInt(feeData.gasPrice.toString()) : maxFeePerGas;
+    const baseFee = block?.baseFeePerGas ?? 0n;
+    const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? BigInt(2) * BigInt(10 ** 9);
+    const maxFeePerGas = feeData.maxFeePerGas ?? baseFee * 2n + maxPriorityFeePerGas;
+    // For legacy gas price, use maxFeePerGas as a reasonable estimate
+    const gasPrice = await this.publicClient.getGasPrice().catch(() => maxFeePerGas);
 
     return {
       gasPrice,

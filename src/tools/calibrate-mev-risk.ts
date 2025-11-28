@@ -131,7 +131,7 @@ if (typeof process !== 'undefined' && process.argv[1]) {
   const thisFile = process.argv[1];
   const isDistMain = thisFile.includes('/dist/') && thisFile.endsWith('calibrate-mev-risk.js');
   const isSrcMain = thisFile.endsWith('calibrate-mev-risk.ts') && !thisFile.includes('__tests__');
-  
+
   if (isDistMain || isSrcMain) {
     const logPath = process.argv[2] || 'logs/strategy-decisions.csv';
     const outputPath = process.argv[3] || 'mev-risk-calibration.json';

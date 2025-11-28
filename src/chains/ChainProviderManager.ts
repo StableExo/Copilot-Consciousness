@@ -3,11 +3,15 @@
  *
  * Manages provider connections for all supported chains with health monitoring,
  * automatic failover, and connection pooling
+ *
+ * Migrated to viem as part of Phase 2.2 module migration
+ * Now supports both viem PublicClient and legacy ethers JsonRpcProvider for backward compatibility
  */
 
-import { JsonRpcProvider } from 'ethers';
+import { type PublicClient } from 'viem';
 import { Connection, ConnectionConfig } from '@solana/web3.js';
 import { ChainConfig } from '../config/cross-chain.config';
+import { createViemPublicClient, getChain, CHAIN_MAP } from '../utils/viem';
 
 export interface ProviderHealth {
   chainId: number | string;
@@ -20,10 +24,11 @@ export interface ProviderHealth {
 
 export interface ChainProvider {
   chainId: number | string;
-  provider: JsonRpcProvider | Connection;
+  provider: PublicClient | Connection;
   config: ChainConfig;
   health: ProviderHealth;
   type: 'EVM' | 'Solana';
+  rpcUrl?: string; // Store RPC URL for reference
 }
 
 export class ChainProviderManager {
@@ -53,19 +58,18 @@ export class ChainProviderManager {
       const chainProviders: ChainProvider[] = [];
 
       if (config.type === 'EVM') {
-        // Initialize multiple providers for failover
+        // Initialize multiple viem clients for failover
         for (const rpcUrl of config.rpcUrls) {
           try {
-            const provider = new JsonRpcProvider(
-              rpcUrl,
-              typeof config.chainId === 'number' ? config.chainId : undefined
-            );
+            const chainId = typeof config.chainId === 'number' ? config.chainId : 1;
+            const publicClient = createViemPublicClient(chainId, rpcUrl);
 
             chainProviders.push({
               chainId: config.chainId,
-              provider,
+              provider: publicClient,
               config,
               type: 'EVM',
+              rpcUrl,
               health: {
                 chainId: config.chainId,
                 isHealthy: true,
@@ -114,9 +118,9 @@ export class ChainProviderManager {
   }
 
   /**
-   * Get a healthy provider for a specific chain
+   * Get a healthy viem public client for a specific chain
    */
-  getProvider(chainId: number | string): JsonRpcProvider | null {
+  getProvider(chainId: number | string): PublicClient | null {
     const chainProviders = this.providers.get(chainId);
     if (!chainProviders || chainProviders.length === 0) {
       return null;
@@ -131,12 +135,19 @@ export class ChainProviderManager {
     // Find first healthy provider
     const healthyProvider = evmProviders.find((cp) => cp.health.isHealthy);
     if (healthyProvider) {
-      return healthyProvider.provider as JsonRpcProvider;
+      return healthyProvider.provider as PublicClient;
     }
 
     // If no healthy provider, return first one and mark for health check
     console.warn(`No healthy provider for chain ${chainId}, using fallback`);
-    return evmProviders[0].provider as JsonRpcProvider;
+    return evmProviders[0].provider as PublicClient;
+  }
+
+  /**
+   * Get a viem public client (alias for getProvider for clarity)
+   */
+  getPublicClient(chainId: number | string): PublicClient | null {
+    return this.getProvider(chainId);
   }
 
   /**
@@ -213,15 +224,15 @@ export class ChainProviderManager {
 
     try {
       if (chainProvider.type === 'EVM') {
-        const provider = chainProvider.provider as JsonRpcProvider;
+        const publicClient = chainProvider.provider as PublicClient;
         const blockNumber = await Promise.race([
-          provider.getBlockNumber(),
-          new Promise<number>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000)),
+          publicClient.getBlockNumber(),
+          new Promise<bigint>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000)),
         ]);
 
         chainProvider.health.isHealthy = true;
         chainProvider.health.latency = Date.now() - startTime;
-        chainProvider.health.blockHeight = blockNumber;
+        chainProvider.health.blockHeight = Number(blockNumber);
         chainProvider.health.errorCount = 0;
       } else if (chainProvider.type === 'Solana') {
         const connection = chainProvider.provider as Connection;
