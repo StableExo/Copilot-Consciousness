@@ -90,11 +90,18 @@ async function main(): Promise<void> {
 }
 
 // Run the server
-if (require.main === module) {
-  main().catch((error) => {
-    console.error('Fatal error:', error);
-    process.exit(1);
-  });
+// Uses process.argv detection that works in both ESM and when tested with Jest
+if (typeof process !== 'undefined' && process.argv[1]) {
+  const thisFile = process.argv[1];
+  const isDistMain = thisFile.includes('/dist/') && thisFile.endsWith('server.js');
+  const isSrcMain = thisFile.endsWith('server.ts') && !thisFile.includes('__tests__');
+  
+  if (isDistMain || isSrcMain) {
+    main().catch((error) => {
+      console.error('Fatal error:', error);
+      process.exit(1);
+    });
+  }
 }
 
 export { main };

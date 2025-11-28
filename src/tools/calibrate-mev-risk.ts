@@ -125,18 +125,25 @@ export async function calibrateMEVRisk(
 
 /**
  * CLI entry point
+ * Uses process.argv detection that works in both ESM and when tested with Jest
  */
-if (require.main === module) {
-  const logPath = process.argv[2] || 'logs/strategy-decisions.csv';
-  const outputPath = process.argv[3] || 'mev-risk-calibration.json';
+if (typeof process !== 'undefined' && process.argv[1]) {
+  const thisFile = process.argv[1];
+  const isDistMain = thisFile.includes('/dist/') && thisFile.endsWith('calibrate-mev-risk.js');
+  const isSrcMain = thisFile.endsWith('calibrate-mev-risk.ts') && !thisFile.includes('__tests__');
+  
+  if (isDistMain || isSrcMain) {
+    const logPath = process.argv[2] || 'logs/strategy-decisions.csv';
+    const outputPath = process.argv[3] || 'mev-risk-calibration.json';
 
-  calibrateMEVRisk(logPath, outputPath)
-    .then(() => {
-      console.log('\nCalibration complete!');
-      process.exit(0);
-    })
-    .catch((error) => {
-      console.error('Calibration failed:', error);
-      process.exit(1);
-    });
+    calibrateMEVRisk(logPath, outputPath)
+      .then(() => {
+        console.log('\nCalibration complete!');
+        process.exit(0);
+      })
+      .catch((error) => {
+        console.error('Calibration failed:', error);
+        process.exit(1);
+      });
+  }
 }

@@ -1,4 +1,5 @@
-module.exports = {
+/** @type {import('jest').Config} */
+const config = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   roots: ['<rootDir>/src', '<rootDir>/consciousness', '<rootDir>/tests'],
@@ -18,3 +19,5 @@ module.exports = {
     }]
   }
 };
+
+module.exports = config;
