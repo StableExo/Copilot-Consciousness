@@ -40,9 +40,6 @@ import {
   manta,
   mode,
 } from 'viem/chains';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 /**
  * Chain configuration map from chainId to viem Chain object
@@ -108,12 +105,9 @@ export function getRpcUrl(chainId: number): string {
     return process.env[envKey]!;
   }
 
-  // Fallback to generic ETHEREUM_RPC_URL for mainnet
-  if (chainId === 1 && process.env.ETHEREUM_RPC_URL) {
-    return process.env.ETHEREUM_RPC_URL;
-  }
-
-  throw new Error(`No RPC URL configured for chain ${chainId}. Set ${envKey} in your .env file`);
+  throw new Error(
+    `No RPC URL configured for chain ${chainId}. Set ${envKey || `an RPC URL for chain ${chainId}`} in your .env file`
+  );
 }
 
 /**

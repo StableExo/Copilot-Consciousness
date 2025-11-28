@@ -274,9 +274,20 @@ export async function getTokenInfo(
     ],
   });
 
+  // Handle multicall results with proper status checking
+  const symbolResult = results[0];
+  const decimalsResult = results[1];
+  const nameResult = results[2];
+
   return {
-    symbol: (results[0].result as string) || 'UNKNOWN',
-    decimals: (results[1].result as number) || 18,
-    name: (results[2].result as string) || 'Unknown Token',
+    symbol: symbolResult.status === 'success' && typeof symbolResult.result === 'string'
+      ? symbolResult.result
+      : 'UNKNOWN',
+    decimals: decimalsResult.status === 'success' && typeof decimalsResult.result === 'number'
+      ? decimalsResult.result
+      : 18,
+    name: nameResult.status === 'success' && typeof nameResult.result === 'string'
+      ? nameResult.result
+      : 'Unknown Token',
   };
 }
