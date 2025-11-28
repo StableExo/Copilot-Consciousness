@@ -49,8 +49,8 @@ echo "   Node.js: $CURRENT_NODE"
 echo "   npm: $CURRENT_NPM"
 echo ""
 
-# Check if version matches requirement
-if [[ ! "$CURRENT_NODE" =~ ^v$REQUIRED_NODE_VERSION ]]; then
+# Check if version matches requirement (matches v22.x.x pattern)
+if [[ ! "$CURRENT_NODE" =~ ^v${REQUIRED_NODE_VERSION}\. ]]; then
     echo -e "${RED}Warning: Node.js version mismatch!${NC}"
     echo "   Required: v$REQUIRED_NODE_VERSION.x"
     echo "   Current: $CURRENT_NODE"

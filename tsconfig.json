@@ -14,9 +14,7 @@
     "declarationMap": true,
     "sourceMap": true,
     "moduleResolution": "bundler",
-    "types": ["node"],
-    "allowImportingTsExtensions": false,
-    "noEmit": false
+    "types": ["node"]
   },
   "include": [
     "src/**/*",

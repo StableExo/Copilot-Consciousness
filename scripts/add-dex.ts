@@ -1,4 +1,6 @@
 #!/usr/bin/env node --import tsx
+// Note: The --import flag requires Node.js 18.19.0+
+// This project requires Node.js >= 22.12.0 (see .nvmrc and package.json engines)
 
 /**
  * Add DEX Script
