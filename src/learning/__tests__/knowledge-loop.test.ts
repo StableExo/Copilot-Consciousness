@@ -5,7 +5,8 @@
 
 import { KnowledgeLoop } from '../index';
 import * as fs from 'fs/promises';
-import * as path from 'path';
+// path reserved for path utilities
+import * as _path from 'path';
 
 const TEST_DIR = '/tmp/knowledge-loop-test';
 
@@ -16,7 +17,7 @@ describe('Strategic Knowledge Loop', () => {
     // Clean up test directory
     try {
       await fs.rm(TEST_DIR, { recursive: true });
-    } catch (error) {
+    } catch (_error) {
       // Directory doesn't exist, that's fine
     }
 
@@ -30,7 +31,7 @@ describe('Strategic Knowledge Loop', () => {
     // Clean up
     try {
       await fs.rm(TEST_DIR, { recursive: true });
-    } catch (error) {
+    } catch (_error) {
       // Ignore cleanup errors
     }
   });

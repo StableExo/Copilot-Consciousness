@@ -18,7 +18,10 @@ import {
   Pattern,
 } from './types';
 // InferenceRequest, InferenceResponse reserved for advanced inference features
-import type { InferenceRequest as _InferenceRequest, InferenceResponse as _InferenceResponse } from './types';
+import type {
+  InferenceRequest as _InferenceRequest,
+  InferenceResponse as _InferenceResponse,
+} from './types';
 import { ArbitragePath } from '../arbitrage/types';
 
 export interface OrchestratorStats {

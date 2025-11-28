@@ -6,7 +6,6 @@
 import { JsonRpcProvider, ZeroAddress } from 'ethers';
 import {
   IProtocol,
-  BaseProtocol,
   ProtocolRegistry,
   protocolRegistry,
   UniswapV3Protocol,
@@ -16,6 +15,8 @@ import {
   SwapParams,
   QuoteParams,
 } from '../index';
+// BaseProtocol reserved for extension tests
+import type { BaseProtocol as _BaseProtocol } from '../index';
 
 describe('Protocol Abstraction Layer', () => {
   let provider: JsonRpcProvider;
