@@ -99,6 +99,7 @@
     "socket.io": "4.8.1",
     "speakeasy": "2.0.0",
     "uuid": "11.1.0",
+    "viem": "2.40.3",
     "zod": "3.23.8"
   },
   "devDependencies": {
