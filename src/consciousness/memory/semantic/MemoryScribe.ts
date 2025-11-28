@@ -20,6 +20,16 @@ import {
 } from './types';
 
 /**
+ * Task ID format constants
+ * Format: YYYYMMDDHHmmss_mmm (14 digits + underscore + 3 digits)
+ */
+const TASK_ID_DIGITS = 14;
+const TASK_ID_MILLIS_DIGITS = 3;
+const MEMORY_FILE_PATTERN = new RegExp(
+  `^\\d{${TASK_ID_DIGITS}}(_\\d{${TASK_ID_MILLIS_DIGITS}})?\\.md$`
+);
+
+/**
  * Default configuration for the memory scribe
  */
 const DEFAULT_CONFIG: SemanticMemoryConfig = {
@@ -237,6 +247,25 @@ export class MemoryScribe {
         }
       }
 
+      // Parse timestamp from taskId (format: YYYYMMDDHHmmss_mmm)
+      const timestampMatch = taskId.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})_(\d{3})$/);
+      let timestamp: number;
+      if (timestampMatch) {
+        const [, year, month, day, hours, minutes, seconds, millis] = timestampMatch;
+        timestamp = Date.UTC(
+          parseInt(year),
+          parseInt(month) - 1,
+          parseInt(day),
+          parseInt(hours),
+          parseInt(minutes),
+          parseInt(seconds),
+          parseInt(millis)
+        );
+      } else {
+        // Fallback to file modification time for backward compatibility
+        timestamp = stat.mtimeMs;
+      }
+
       return {
         taskId,
         objective: objectiveMatch ? objectiveMatch[1].trim() : '',
@@ -245,7 +274,7 @@ export class MemoryScribe {
         keyLearnings: keyLearningsMatch ? keyLearningsMatch[1].trim() : '',
         artifactsChanged: artifactsMatch ? artifactsMatch[1].trim() : '',
         relatedMemories,
-        timestamp: stat.mtimeMs,
+        timestamp,
         metadata,
       };
     } catch {
@@ -264,8 +293,7 @@ export class MemoryScribe {
     }
 
     const files = fs.readdirSync(this.config.memoryDir);
-    // Match both old format (14 digits) and new format (14 digits + underscore + 3 digits)
-    const memoryFiles = files.filter((f) => f.match(/^\d{14}(_\d{3})?\.md$/));
+    const memoryFiles = files.filter((f) => MEMORY_FILE_PATTERN.test(f));
 
     for (const file of memoryFiles) {
       const taskId = file.replace('.md', '');

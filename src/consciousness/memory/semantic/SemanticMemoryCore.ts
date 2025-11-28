@@ -452,8 +452,9 @@ export class SemanticMemoryCore {
       for (const listener of listeners) {
         try {
           listener(event);
-        } catch (error) {
-          console.error('[SemanticMemoryCore] Event listener error:', error);
+        } catch {
+          // Silently catch listener errors to prevent cascading failures
+          // Consumers should handle their own error cases in callbacks
         }
       }
     }

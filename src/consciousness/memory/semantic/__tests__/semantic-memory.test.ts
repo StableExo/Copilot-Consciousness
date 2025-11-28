@@ -7,12 +7,13 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 import { MemoryScribe } from '../MemoryScribe';
 import { SemanticMemoryCore } from '../SemanticMemoryCore';
 import { SemanticMemoryEventType } from '../types';
 
-// Use a temporary directory for tests
-const TEST_MEMORY_DIR = path.join('/tmp', 'test-semantic-memory');
+// Use a temporary directory for tests (cross-platform compatible)
+const TEST_MEMORY_DIR = path.join(os.tmpdir(), 'test-semantic-memory');
 
 describe('MemoryScribe', () => {
   let scribe: MemoryScribe;
