@@ -3,29 +3,81 @@
  *
  * Fetches reserve data, prices, and liquidity from Uniswap V3 and other DEX pools
  * on Base network. Provides real-time data for arbitrage opportunity detection.
+ *
+ * Migrated to viem as part of Phase 2.2 module migration
  */
 
-import { Provider, ethers, parseEther, parseUnits } from 'ethers';
+import { type PublicClient, type Address, parseEther, parseUnits } from 'viem';
 import { PoolInfo } from './MultiDexPathBuilder';
 
 /**
- * Uniswap V3 Pool interface (minimal)
+ * Uniswap V3 Pool ABI (minimal)
  */
 const UNISWAP_V3_POOL_ABI = [
-  'function token0() external view returns (address)',
-  'function token1() external view returns (address)',
-  'function fee() external view returns (uint24)',
-  'function liquidity() external view returns (uint128)',
-  'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
-];
+  {
+    inputs: [],
+    name: 'token0',
+    outputs: [{ name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'token1',
+    outputs: [{ name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'fee',
+    outputs: [{ name: '', type: 'uint24' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'liquidity',
+    outputs: [{ name: '', type: 'uint128' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'slot0',
+    outputs: [
+      { name: 'sqrtPriceX96', type: 'uint160' },
+      { name: 'tick', type: 'int24' },
+      { name: 'observationIndex', type: 'uint16' },
+      { name: 'observationCardinality', type: 'uint16' },
+      { name: 'observationCardinalityNext', type: 'uint16' },
+      { name: 'feeProtocol', type: 'uint8' },
+      { name: 'unlocked', type: 'bool' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+] as const;
 
 /**
- * ERC20 interface for decimals
+ * ERC20 ABI for decimals
  */
 const ERC20_ABI = [
-  'function decimals() external view returns (uint8)',
-  'function symbol() external view returns (string)',
-];
+  {
+    inputs: [],
+    name: 'decimals',
+    outputs: [{ name: '', type: 'uint8' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'symbol',
+    outputs: [{ name: '', type: 'string' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+] as const;
 
 /**
  * Pool configuration for fetching
@@ -43,8 +95,8 @@ export interface PoolConfig {
  * PoolDataFetcher configuration
  */
 export interface PoolDataFetcherConfig {
-  /** Provider for blockchain calls */
-  provider: Provider;
+  /** PublicClient for blockchain calls */
+  publicClient: PublicClient;
   /** Cache duration in milliseconds */
   cacheDurationMs?: number;
 }
@@ -121,28 +173,58 @@ export class PoolDataFetcher {
         return cached.data;
       }
 
-      // Fetch from contract
-      const poolContract = new ethers.Contract(
-        poolConfig.address,
-        UNISWAP_V3_POOL_ABI,
-        this.config.provider
-      );
+      const poolAddress = poolConfig.address as Address;
 
-      // Fetch pool data in parallel
-      const [token0, token1, fee, liquidity, slot0] = await Promise.all([
-        poolContract.token0(),
-        poolContract.token1(),
-        poolContract.fee(),
-        poolContract.liquidity(),
-        poolContract.slot0(),
-      ]);
+      // Fetch pool data in parallel using viem multicall
+      const results = await this.config.publicClient.multicall({
+        contracts: [
+          {
+            address: poolAddress,
+            abi: UNISWAP_V3_POOL_ABI,
+            functionName: 'token0',
+          },
+          {
+            address: poolAddress,
+            abi: UNISWAP_V3_POOL_ABI,
+            functionName: 'token1',
+          },
+          {
+            address: poolAddress,
+            abi: UNISWAP_V3_POOL_ABI,
+            functionName: 'fee',
+          },
+          {
+            address: poolAddress,
+            abi: UNISWAP_V3_POOL_ABI,
+            functionName: 'liquidity',
+          },
+          {
+            address: poolAddress,
+            abi: UNISWAP_V3_POOL_ABI,
+            functionName: 'slot0',
+          },
+        ],
+      });
+
+      // Extract results
+      const token0 = results[0].status === 'success' ? (results[0].result as Address) : null;
+      const token1 = results[1].status === 'success' ? (results[1].result as Address) : null;
+      const fee = results[2].status === 'success' ? (results[2].result as number) : null;
+      const liquidity = results[3].status === 'success' ? (results[3].result as bigint) : null;
+      const slot0 = results[4].status === 'success' ? results[4].result : null;
+
+      if (!token0 || !token1 || fee === null || liquidity === null || !slot0) {
+        return null;
+      }
+
+      const sqrtPriceX96 = (slot0 as readonly [bigint, number, number, number, number, number, boolean])[0];
 
       // Calculate reserves from liquidity and sqrt price
       const { reserve0, reserve1 } = await this.calculateReserves(
         token0,
         token1,
         liquidity,
-        slot0.sqrtPriceX96
+        sqrtPriceX96
       );
 
       const poolInfo: PoolInfo = {
@@ -152,7 +234,7 @@ export class PoolDataFetcher {
         reserve0: reserve0.toString(),
         reserve1: reserve1.toString(),
         dex: poolConfig.dex,
-        fee: fee.toNumber(),
+        fee: Number(fee),
       };
 
       // Update cache
@@ -162,8 +244,9 @@ export class PoolDataFetcher {
       });
 
       return poolInfo;
-    } catch (error: any) {
-      console.error(`[PoolDataFetcher] Error fetching pool ${poolConfig.address}:`, error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`[PoolDataFetcher] Error fetching pool ${poolConfig.address}:`, message);
       return null;
     }
   }
@@ -179,20 +262,30 @@ export class PoolDataFetcher {
    * For actual trading, use the pool's swap simulation.
    */
   private async calculateReserves(
-    token0: string,
-    token1: string,
+    token0: Address,
+    token1: Address,
     liquidity: bigint,
     sqrtPriceX96: bigint
   ): Promise<{ reserve0: bigint; reserve1: bigint }> {
     try {
-      // Get token decimals for proper scaling
-      const token0Contract = new ethers.Contract(token0, ERC20_ABI, this.config.provider);
-      const token1Contract = new ethers.Contract(token1, ERC20_ABI, this.config.provider);
+      // Get token decimals for proper scaling using viem multicall
+      const results = await this.config.publicClient.multicall({
+        contracts: [
+          {
+            address: token0,
+            abi: ERC20_ABI,
+            functionName: 'decimals',
+          },
+          {
+            address: token1,
+            abi: ERC20_ABI,
+            functionName: 'decimals',
+          },
+        ],
+      });
 
-      const [decimals0, decimals1] = await Promise.all([
-        token0Contract.decimals(),
-        token1Contract.decimals(),
-      ]);
+      const decimals0 = results[0].status === 'success' ? (results[0].result as number) : 18;
+      const _decimals1 = results[1].status === 'success' ? (results[1].result as number) : 18;
 
       // Simplified reserve calculation
       // reserve0 ≈ L / sqrt(P)
@@ -200,15 +293,16 @@ export class PoolDataFetcher {
 
       // Convert sqrtPriceX96 to a usable price
       const Q96 = 2n ** 96n;
-      const price = (sqrtPriceX96 * sqrtPriceX96) / Q96 / Q96;
+      const _price = (sqrtPriceX96 * sqrtPriceX96) / Q96 / Q96;
 
       // Approximate reserves (this is simplified; real V3 math is more complex)
       const reserve0 = (liquidity * parseUnits('1', decimals0)) / sqrtPriceX96;
       const reserve1 = (liquidity * sqrtPriceX96) / Q96;
 
       return { reserve0, reserve1 };
-    } catch (error: any) {
-      console.warn('[PoolDataFetcher] Error calculating reserves, using defaults:', error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn('[PoolDataFetcher] Error calculating reserves, using defaults:', message);
       // Return non-zero defaults to avoid division by zero
       return {
         reserve0: parseEther('100'),

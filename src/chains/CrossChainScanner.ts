@@ -133,16 +133,17 @@ export class CrossChainScanner extends EventEmitter {
       if (typeof chainId === 'number' && adapter.chainType === 'EVM') {
         try {
           const _evmAdapter = adapter as EVMAdapter;
-          const provider = this.providerManager.getProvider(chainId);
-          if (provider) {
-            const network = await provider.getNetwork();
-            if (Number(network.chainId) !== chainId) {
+          const publicClient = this.providerManager.getProvider(chainId);
+          if (publicClient) {
+            // viem clients have chain info directly
+            const clientChainId = publicClient.chain?.id;
+            if (clientChainId && clientChainId !== chainId) {
               console.error(
-                `⚠️ PROVIDER MISMATCH: Expected chain ${chainId} but provider is connected to chain ${network.chainId}`
+                `⚠️ PROVIDER MISMATCH: Expected chain ${chainId} but provider is connected to chain ${clientChainId}`
               );
               this.emit('providerMismatch', {
                 expectedChainId: chainId,
-                actualChainId: network.chainId,
+                actualChainId: clientChainId,
                 timestamp: Date.now(),
               });
               allValid = false;
