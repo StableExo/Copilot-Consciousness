@@ -395,7 +395,7 @@ export class CognitiveCoordinator {
   }
 
   // Individual module insight gatherers
-  private async getLearningEngineInsight(context: OpportunityContext): Promise<ModuleInsight> {
+  private async getLearningEngineInsight(_context: OpportunityContext): Promise<ModuleInsight> {
     // Analyze based on learning history
     const confidence = 0.7;
     return {
@@ -408,7 +408,7 @@ export class CognitiveCoordinator {
     };
   }
 
-  private async getPatternTrackerInsight(context: OpportunityContext): Promise<ModuleInsight> {
+  private async getPatternTrackerInsight(_context: OpportunityContext): Promise<ModuleInsight> {
     const confidence = 0.75;
     return {
       moduleName: 'patternTracker',
@@ -420,7 +420,7 @@ export class CognitiveCoordinator {
     };
   }
 
-  private async getHistoricalAnalyzerInsight(context: OpportunityContext): Promise<ModuleInsight> {
+  private async getHistoricalAnalyzerInsight(_context: OpportunityContext): Promise<ModuleInsight> {
     const confidence = 0.8;
     return {
       moduleName: 'historicalAnalyzer',
@@ -432,7 +432,7 @@ export class CognitiveCoordinator {
     };
   }
 
-  private async getSpatialReasoningInsight(context: OpportunityContext): Promise<ModuleInsight> {
+  private async getSpatialReasoningInsight(_context: OpportunityContext): Promise<ModuleInsight> {
     const confidence = 0.7;
     return {
       moduleName: 'spatialReasoning',
@@ -444,7 +444,7 @@ export class CognitiveCoordinator {
     };
   }
 
-  private async getMultiPathExplorerInsight(context: OpportunityContext): Promise<ModuleInsight> {
+  private async getMultiPathExplorerInsight(_context: OpportunityContext): Promise<ModuleInsight> {
     const confidence = 0.65;
     return {
       moduleName: 'multiPathExplorer',
@@ -456,7 +456,7 @@ export class CognitiveCoordinator {
     };
   }
 
-  private async getOpportunityScorerInsight(context: OpportunityContext): Promise<ModuleInsight> {
+  private async getOpportunityScorerInsight(_context: OpportunityContext): Promise<ModuleInsight> {
     const confidence = 0.85;
     return {
       moduleName: 'opportunityScorer',
@@ -468,7 +468,7 @@ export class CognitiveCoordinator {
     };
   }
 
-  private async getPatternRecognitionInsight(context: OpportunityContext): Promise<ModuleInsight> {
+  private async getPatternRecognitionInsight(_context: OpportunityContext): Promise<ModuleInsight> {
     const confidence = 0.8;
     return {
       moduleName: 'patternRecognition',
@@ -480,7 +480,7 @@ export class CognitiveCoordinator {
     };
   }
 
-  private async getRiskAssessorInsight(context: OpportunityContext): Promise<ModuleInsight> {
+  private async getRiskAssessorInsight(_context: OpportunityContext): Promise<ModuleInsight> {
     const confidence = 0.75;
     return {
       moduleName: 'riskAssessor',
@@ -492,7 +492,7 @@ export class CognitiveCoordinator {
     };
   }
 
-  private async getRiskCalibratorInsight(context: OpportunityContext): Promise<ModuleInsight> {
+  private async getRiskCalibratorInsight(_context: OpportunityContext): Promise<ModuleInsight> {
     const confidence = 0.7;
     return {
       moduleName: 'riskCalibrator',
@@ -504,7 +504,7 @@ export class CognitiveCoordinator {
     };
   }
 
-  private async getThresholdManagerInsight(context: OpportunityContext): Promise<ModuleInsight> {
+  private async getThresholdManagerInsight(_context: OpportunityContext): Promise<ModuleInsight> {
     const confidence = 0.8;
     return {
       moduleName: 'thresholdManager',
@@ -516,7 +516,7 @@ export class CognitiveCoordinator {
     };
   }
 
-  private async getAutonomousGoalsInsight(context: OpportunityContext): Promise<ModuleInsight> {
+  private async getAutonomousGoalsInsight(_context: OpportunityContext): Promise<ModuleInsight> {
     const confidence = 0.85;
     return {
       moduleName: 'autonomousGoals',
@@ -528,7 +528,7 @@ export class CognitiveCoordinator {
     };
   }
 
-  private async getOperationalPlaybookInsight(context: OpportunityContext): Promise<ModuleInsight> {
+  private async getOperationalPlaybookInsight(_context: OpportunityContext): Promise<ModuleInsight> {
     const confidence = 0.75;
     return {
       moduleName: 'operationalPlaybook',
@@ -541,7 +541,7 @@ export class CognitiveCoordinator {
   }
 
   private async getArchitecturalPrinciplesInsight(
-    context: OpportunityContext
+    _context: OpportunityContext
   ): Promise<ModuleInsight> {
     const confidence = 0.7;
     return {
@@ -554,7 +554,7 @@ export class CognitiveCoordinator {
     };
   }
 
-  private async getEvolutionTrackerInsight(context: OpportunityContext): Promise<ModuleInsight> {
+  private async getEvolutionTrackerInsight(_context: OpportunityContext): Promise<ModuleInsight> {
     const confidence = 0.65;
     return {
       moduleName: 'evolutionTracker',

@@ -10,7 +10,7 @@ import {
   ArbitrageType,
   OpportunityStatus,
 } from '../../arbitrage/models/ArbitrageOpportunity';
-import { ethers } from 'ethers';
+import type { Provider } from 'ethers';
 
 describe('MultiDexPathBuilder', () => {
   let pathBuilder: MultiDexPathBuilder;

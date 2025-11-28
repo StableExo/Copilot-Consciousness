@@ -409,7 +409,7 @@ export async function batchFetchPoolData(
         reserve0,
         reserve1,
       });
-    } catch (error) {
+    } catch (_error) {
       // Failed to decode, skip this pool
       continue;
     }

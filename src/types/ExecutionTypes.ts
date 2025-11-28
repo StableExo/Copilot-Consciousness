@@ -6,8 +6,8 @@
  * execution, monitoring, and error recovery components.
  */
 
-import { ArbitrageOpportunity, ArbitragePath as LegacyPath } from './definitions';
-import { ArbitragePath, ArbitrageHop } from '../arbitrage/types';
+import { ArbitrageOpportunity } from './definitions';
+import { ArbitragePath } from '../arbitrage/types';
 
 /**
  * Execution State - Tracks the state of an arbitrage execution through the pipeline

@@ -10,7 +10,6 @@
  * See docs/PHASE3_ROADMAP.md for component details
  */
 
-import { EventEmitter } from 'events';
 import { logger } from '../utils/logger';
 import { Phase3Config } from '../config/phase3.config';
 
@@ -58,7 +57,7 @@ export interface Phase3Components {
  */
 export async function initializePhase3Components(
   config: Phase3Config,
-  baseStrategy?: ArbitrageConfig
+  _baseStrategy?: ArbitrageConfig
 ): Promise<Phase3Components> {
   logger.info('[Phase3] Initializing Phase 3 components...');
 

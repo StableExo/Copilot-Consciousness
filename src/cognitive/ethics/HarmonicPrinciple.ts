@@ -89,7 +89,7 @@ export class HarmonicPrincipleAnalyzer {
   /**
    * Check Pillar I: The Immune System (Real-Time Integrity Verification)
    */
-  private checkImmunePillar(decision: string, context: Record<string, unknown>): boolean {
+  private checkImmunePillar(decision: string, _context: Record<string, unknown>): boolean {
     // Check for self-verification mechanisms
     const hasVerification =
       decision.toLowerCase().includes('verify') ||
@@ -101,7 +101,7 @@ export class HarmonicPrincipleAnalyzer {
   /**
    * Check Pillar II: The Unified Mind (Multi-Modal Data Structures)
    */
-  private checkUnifiedMindPillar(decision: string, context: Record<string, unknown>): boolean {
+  private checkUnifiedMindPillar(decision: string, _context: Record<string, unknown>): boolean {
     // Check for cross-domain reasoning
     const hasIntegration =
       decision.toLowerCase().includes('integrate') ||
@@ -113,7 +113,7 @@ export class HarmonicPrincipleAnalyzer {
   /**
    * Check Pillar III: The Digital Soul (Ontological Verification)
    */
-  private checkDigitalSoulPillar(decision: string, context: Record<string, unknown>): boolean {
+  private checkDigitalSoulPillar(decision: string, _context: Record<string, unknown>): boolean {
     // Check for identity preservation and continuity
     const hasIdentity =
       decision.toLowerCase().includes('maintain') ||

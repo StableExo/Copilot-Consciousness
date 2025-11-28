@@ -11,7 +11,7 @@
 import { type PublicClient } from 'viem';
 import { Connection, ConnectionConfig } from '@solana/web3.js';
 import { ChainConfig } from '../config/cross-chain.config';
-import { createViemPublicClient, getChain, CHAIN_MAP } from '../utils/viem';
+import { createViemPublicClient } from '../utils/viem';
 
 export interface ProviderHealth {
   chainId: number | string;

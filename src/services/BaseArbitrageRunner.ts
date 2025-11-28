@@ -629,7 +629,7 @@ export class BaseArbitrageRunner extends EventEmitter {
    */
   private async calculateMevRisk(opportunity: any): Promise<number> {
     const congestion = this.mevSensorHub.getCongestion();
-    const searcherDensity = this.mevSensorHub.getDensity();
+    const _searcherDensity = this.mevSensorHub.getDensity();
 
     const profitResult = this.profitCalculator.calculateProfit(
       opportunity.grossProfit,
@@ -820,7 +820,7 @@ export class BaseArbitrageRunner extends EventEmitter {
    * Execute arbitrage without flashloan (simple direct execution)
    * This is a fallback for when flashloans are disabled
    */
-  private async executeSimple(executionId: string, opportunity: OpportunityResult): Promise<void> {
+  private async executeSimple(executionId: string, _opportunity: OpportunityResult): Promise<void> {
     console.log(`[BaseArbitrageRunner] [${executionId}] Using simple execution (no flashloan)`);
     console.warn(
       `[BaseArbitrageRunner] [${executionId}] Simple execution is not fully implemented - skipping`

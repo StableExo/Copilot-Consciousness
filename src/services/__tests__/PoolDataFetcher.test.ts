@@ -5,7 +5,7 @@
  */
 
 import { PoolDataFetcher, PoolConfig } from '../PoolDataFetcher';
-import { ethers } from 'ethers';
+import type { Provider } from 'ethers';
 
 describe('PoolDataFetcher', () => {
   let fetcher: PoolDataFetcher;

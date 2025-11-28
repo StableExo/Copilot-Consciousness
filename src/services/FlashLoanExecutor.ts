@@ -18,7 +18,7 @@ let FlashSwapV2Artifact: any;
 try {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   FlashSwapV2Artifact = require('../../artifacts/contracts/FlashSwapV2.sol/FlashSwapV2.json');
-} catch (error) {
+} catch (_error) {
   // Artifact not found - contracts haven't been compiled
   // This is OK for testing/development without deploying contracts
   console.warn(
