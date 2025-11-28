@@ -1,4 +1,4 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env node --import tsx
 
 /**
  * Add DEX Script
@@ -235,9 +235,16 @@ async function main() {
 }
 
 // Run script
-if (require.main === module) {
-  main().catch(error => {
-    console.error('\n❌ Fatal error:', error instanceof Error ? error.message : String(error));
-    process.exit(1);
-  });
+// Uses process.argv detection that works in both ESM and when tested with Jest
+if (typeof process !== 'undefined' && process.argv[1]) {
+  const thisFile = process.argv[1];
+  const isDistMain = thisFile.includes('/dist/') && thisFile.endsWith('add-dex.js');
+  const isSrcMain = thisFile.endsWith('add-dex.ts') && !thisFile.includes('__tests__');
+  
+  if (isDistMain || isSrcMain) {
+    main().catch(error => {
+      console.error('\n❌ Fatal error:', error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    });
+  }
 }

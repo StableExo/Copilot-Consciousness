@@ -1799,9 +1799,17 @@ async function main() {
 export { TheWarden, EnhancedTheWarden, WardenBootstrap, WardenConfig, loadConfig };
 
 // Run if executed directly
-if (require.main === module) {
-  main().catch((error) => {
-    logger.error(`Fatal error in main: ${error}`);
-    process.exit(1);
-  });
+// Uses process.argv detection that works in both ESM and when tested with Jest
+if (typeof process !== 'undefined' && process.argv[1]) {
+  const thisFile = process.argv[1];
+  // Check if this is the main entry point
+  const isDistMain = thisFile.includes('/dist/') && thisFile.endsWith('main.js');
+  const isSrcMain = thisFile.endsWith('src/main.ts') && !thisFile.includes('__tests__');
+  
+  if (isDistMain || isSrcMain) {
+    main().catch((error) => {
+      logger.error(`Fatal error in main: ${error}`);
+      process.exit(1);
+    });
+  }
 }
