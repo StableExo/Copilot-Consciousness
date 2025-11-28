@@ -2,14 +2,14 @@
 
 class OpportunityDetector {
   // Method to detect spatial arbitrage opportunities
-  detectSpatialArbitrage(poolData: any[]): any {
+  detectSpatialArbitrage(_poolData: any[]): any {
     // Logic to analyze pool data and find spatial arbitrage opportunities
     // Placeholder for implementation
     return [];
   }
 
   // Method to detect triangular arbitrage opportunities
-  detectTriangularArbitrage(poolData: any[]): any {
+  detectTriangularArbitrage(_poolData: any[]): any {
     // Logic to analyze pool data and find triangular arbitrage opportunities
     // Placeholder for implementation
     return [];

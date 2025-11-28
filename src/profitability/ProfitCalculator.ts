@@ -6,19 +6,19 @@ class ProfitCalculator {
   }
 
   // Validate the opportunity
-  validateOpportunity(opportunity: ArbitrageOpportunity): boolean {
+  validateOpportunity(_opportunity: ArbitrageOpportunity): boolean {
     // Logic to validate the given opportunity
     return true; // Placeholder return
   }
 
   // Simulate a swap
-  simulateSwap(amount: bigint, fromCurrency: string, toCurrency: string): bigint {
+  simulateSwap(amount: bigint, _fromCurrency: string, _toCurrency: string): bigint {
     // Logic for simulating a swap between currencies
     return (amount * BigInt(102)) / BigInt(100); // Placeholder logic
   }
 
   // Estimate gas fees
-  estimateGas(transaction: any): Promise<bigint> {
+  estimateGas(_transaction: any): Promise<bigint> {
     // Logic to estimate gas
     return Promise.resolve(BigInt(1000000000000000)); // Placeholder value for gas estimation
   }

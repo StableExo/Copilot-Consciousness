@@ -29,7 +29,10 @@ import {
   ExecutionPriority,
 } from '../../../types/ExecutionTypes';
 // RecoveryStrategy, TransactionStatus reserved for recovery tests
-import type { RecoveryStrategy as _RecoveryStrategy, TransactionStatus as _TransactionStatus } from '../../../types/ExecutionTypes';
+import type {
+  RecoveryStrategy as _RecoveryStrategy,
+  TransactionStatus as _TransactionStatus,
+} from '../../../types/ExecutionTypes';
 import { ArbitrageOpportunity } from '../../../types/definitions';
 // ArbitrageConfig reserved for config tests
 import type { ArbitrageConfig as _ArbitrageConfig } from '../../../types/definitions';
