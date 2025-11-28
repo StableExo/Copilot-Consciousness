@@ -663,7 +663,7 @@ export class MEVAttackFuzzer extends EventEmitter {
     });
 
     // Frontrun defense
-    this.registerDefense('frontrun', async (scenario) => {
+    this.registerDefense('frontrun', async (_scenario) => {
       await this.delay(30 + Math.random() * 50);
       return {
         detected: true,
@@ -674,7 +674,7 @@ export class MEVAttackFuzzer extends EventEmitter {
     });
 
     // Backrun defense
-    this.registerDefense('backrun', async (scenario) => {
+    this.registerDefense('backrun', async (_scenario) => {
       await this.delay(20 + Math.random() * 40);
       return {
         detected: true,
@@ -698,7 +698,7 @@ export class MEVAttackFuzzer extends EventEmitter {
     });
 
     // GFR defense
-    this.registerDefense('gfr', async (scenario) => {
+    this.registerDefense('gfr', async (_scenario) => {
       await this.delay(80 + Math.random() * 120);
       return {
         detected: true,
@@ -709,7 +709,7 @@ export class MEVAttackFuzzer extends EventEmitter {
     });
 
     // JIT liquidity defense
-    this.registerDefense('jit-liquidity', async (scenario) => {
+    this.registerDefense('jit-liquidity', async (_scenario) => {
       await this.delay(40 + Math.random() * 60);
       return {
         detected: true,
@@ -720,7 +720,7 @@ export class MEVAttackFuzzer extends EventEmitter {
     });
 
     // Arbitrage interception defense
-    this.registerDefense('arbitrage-interception', async (scenario) => {
+    this.registerDefense('arbitrage-interception', async (_scenario) => {
       await this.delay(60 + Math.random() * 80);
       return {
         detected: true,

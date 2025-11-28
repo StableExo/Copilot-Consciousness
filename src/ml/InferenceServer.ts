@@ -250,7 +250,7 @@ export class InferenceServer extends EventEmitter {
       const batch = this.requestQueue.splice(0, batchSize);
 
       // Process batch in parallel
-      const results = await Promise.allSettled(
+      const _results = await Promise.allSettled(
         batch.map(async (item) => {
           const startTime = Date.now();
 
@@ -296,7 +296,7 @@ export class InferenceServer extends EventEmitter {
   /**
    * Internal prediction logic
    */
-  private async predictInternal(path: ArbitragePath, features: any): Promise<MLPredictions> {
+  private async predictInternal(_path: ArbitragePath, _features: any): Promise<MLPredictions> {
     // Check latency target
     const startTime = Date.now();
 

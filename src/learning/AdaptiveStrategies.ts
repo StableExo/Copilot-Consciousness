@@ -74,7 +74,7 @@ export class AdaptiveStrategies {
       reasoning: string;
     }> = [];
 
-    for (const [id, strategy] of this.strategies) {
+    for (const [_id, strategy] of this.strategies) {
       const score = this.scoreStrategy(strategy, currentConditions, memories);
       const reasoning = this.generateReasoning(strategy, currentConditions, score);
 

@@ -383,7 +383,7 @@ export class PersistentMemoryStore extends MemoryStore {
     let imported = 0;
 
     for (const memory of memories) {
-      const { id, accessCount, lastAccessed, ...rest } = memory;
+      const { id: _id, accessCount: _accessCount, lastAccessed: _lastAccessed, ...rest } = memory;
       this.store(rest);
       imported++;
     }
