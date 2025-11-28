@@ -5,7 +5,7 @@
  */
 
 import { MultiPathExplorer } from '../multi-path-explorer';
-import { ProblemSpace, Node, Transition } from '../types/problem-space';
+import { ProblemSpace, Node } from '../types/problem-space';
 import { PathStatus } from '../types/path';
 
 describe('MultiPathExplorer', () => {

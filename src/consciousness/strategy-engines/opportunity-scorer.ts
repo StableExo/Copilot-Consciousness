@@ -27,7 +27,6 @@ import {
   rankByScore,
   riskAdjustedScore,
   ScoringCriterion,
-  ScoringMethod,
 } from './utils/scorer';
 
 /**
