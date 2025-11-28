@@ -157,7 +157,7 @@ export class MultiSigTreasury extends EventEmitter {
   /**
    * Remove a signer (requires multi-sig approval)
    */
-  async removeSigner(signerId: string, requesterId: string): Promise<string> {
+  async removeSigner(signerId: string, _requesterId: string): Promise<string> {
     const signer = this.signers.get(signerId);
     if (!signer) {
       throw new Error('Signer not found');

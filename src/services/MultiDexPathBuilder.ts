@@ -10,7 +10,7 @@
  * - FlashLoanExecutor for execution
  */
 
-import { ethers, Provider } from 'ethers';
+import { Provider } from 'ethers';
 import { SpatialArbEngine, PoolState } from '../arbitrage/engines/SpatialArbEngine';
 import { TriangularArbEngine } from '../arbitrage/engines/TriangularArbEngine';
 import { ArbitrageOpportunity, ArbitrageType } from '../arbitrage/models/ArbitrageOpportunity';

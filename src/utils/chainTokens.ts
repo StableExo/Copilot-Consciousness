@@ -69,7 +69,7 @@ export function getScanTokens(chainId: number): string[] {
 
   // Dynamically include all available tokens for the chain
   // This ensures we don't miss any configured tokens
-  for (const [symbol, tokenInfo] of Object.entries(tokens)) {
+  for (const [_symbol, tokenInfo] of Object.entries(tokens)) {
     if (tokenInfo && tokenInfo.address) {
       addresses.push(tokenInfo.address);
     }

@@ -11,7 +11,7 @@
  * - Clear logging of simulation results and failures
  */
 
-import { ethers, Contract } from 'ethers';
+import { Contract } from 'ethers';
 
 export interface SimulationConfig {
   requireSimulation: boolean;

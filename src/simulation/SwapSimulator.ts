@@ -3,7 +3,7 @@
  *
  * A TypeScript port of the v1.10 SwapSimulator from PROJECT-HAVOC.
  */
-import { Contract, ethers, isAddress, Provider, ZeroAddress } from 'ethers';
+import { Contract, isAddress, Provider, ZeroAddress } from 'ethers';
 import { logger } from '../utils/logger';
 import { IQUOTERV2_ABI, DODOV1V2_POOL_ABI } from '../abis/SwapSimulatorABIs';
 import { Token, PoolState } from '../types/definitions';
@@ -46,7 +46,7 @@ export class SwapSimulator {
           DODOV1V2_POOL_ABI,
           this.provider
         );
-      } catch (error: unknown) {
+      } catch (_error: unknown) {
         this.dodoPoolContractCache[lowerCaseAddress] = null;
       }
     }
@@ -131,7 +131,7 @@ export class SwapSimulator {
     tokenIn: Token,
     amountIn: bigint
   ): Promise<SwapSimulationResult> {
-    const { reserve0, reserve1, token0, token1 } = poolState;
+    const { reserve0, reserve1, token0, token1: _token1 } = poolState;
     if (reserve0 <= 0n || reserve1 <= 0n)
       return { success: false, amountOut: null, error: 'Zero reserves' };
     const [reserveIn, reserveOut] =

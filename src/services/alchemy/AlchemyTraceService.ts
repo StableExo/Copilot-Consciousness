@@ -69,7 +69,7 @@ export class AlchemyTraceService {
               failureReason = callError.message || 'Unknown error';
             }
           }
-        } catch (traceError) {
+        } catch (_traceError) {
           failureReason = 'Unable to determine failure reason';
         }
       }

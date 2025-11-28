@@ -1,7 +1,6 @@
 import { RPCProvider } from '../infrastructure/RPCProvider';
 import { MemorySystem } from '../consciousness/memory';
 import { TemporalAwareness } from '../temporal';
-import { EventType } from '../types';
 
 export class BlockchainPerceptionStream {
   private rpcProvider: RPCProvider;
