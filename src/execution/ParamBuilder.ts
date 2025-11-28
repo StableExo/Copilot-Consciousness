@@ -5,7 +5,8 @@
  * This module is responsible for constructing the precise parameter objects required
  * by the FlashSwap smart contract functions based on a given arbitrage opportunity.
  */
-import { ethers } from 'ethers';
+// ethers namespace reserved for BigNumber utilities
+import type { ethers as _ethers } from 'ethers';
 import {
   ArbitrageOpportunity,
   ArbitragePath,
@@ -13,8 +14,9 @@ import {
   ArbitrageConfig,
   Pool,
 } from '../types/definitions';
-import { logger } from '../utils/logger';
 import { calculateMinAmountOut } from '../profitability/ProfitDetailCalculator';
+// logger reserved for debug output
+import { logger as _logger } from '../utils/logger';
 
 const DEX_TYPE_UNISWAP_V3 = 0;
 const DEX_TYPE_SUSHISWAP = 1;

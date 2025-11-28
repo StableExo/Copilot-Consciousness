@@ -238,9 +238,9 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
       name: 'ArbitrageOrchestrator',
       checkHealth: async () => {
         try {
-          const stats = this.baseOrchestrator.getStats();
+          const _stats = this.baseOrchestrator.getStats();
           return HealthStatus.HEALTHY;
-        } catch (error) {
+        } catch (_error) {
           return HealthStatus.UNHEALTHY;
         }
       },
@@ -263,7 +263,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
           if (errorRate > 0.5) return HealthStatus.CRITICAL;
           if (errorRate > 0.2) return HealthStatus.DEGRADED;
           return HealthStatus.HEALTHY;
-        } catch (error) {
+        } catch (_error) {
           return HealthStatus.UNHEALTHY;
         }
       },
@@ -296,7 +296,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
           if (successRate < 0.5) return HealthStatus.CRITICAL;
           if (successRate < 0.7) return HealthStatus.DEGRADED;
           return HealthStatus.HEALTHY;
-        } catch (error) {
+        } catch (_error) {
           return HealthStatus.UNHEALTHY;
         }
       },
@@ -348,7 +348,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
     this.healthMonitor.stop();
 
     // Cancel active executions
-    for (const [id, context] of this.activeExecutions) {
+    for (const [id, _context] of this.activeExecutions) {
       this.pipeline.cancelExecution(id);
     }
 

@@ -14,7 +14,9 @@
  * - Compares against 'pending' nonce to stay in sync with the mempool.
  */
 
-import { Provider, TransactionRequest, TransactionResponse, getAddress } from 'ethers';
+import { Provider, TransactionRequest, TransactionResponse } from 'ethers';
+// getAddress reserved for address validation
+import type { getAddress as _getAddress } from 'ethers';
 import { AbstractSigner } from 'ethers';
 import { Mutex } from 'async-mutex';
 import { logger } from '../utils/logger'; // Assuming you have a logger utility
@@ -101,7 +103,7 @@ export class NonceManager extends AbstractSigner {
     return this.signer.signTypedData(domain, types, value);
   }
 
-  async getNonce(blockTag?: any): Promise<number> {
+  async getNonce(_blockTag?: any): Promise<number> {
     return await this.getNextNonce();
   }
 

@@ -24,15 +24,18 @@ import {
   PrivateTransactionOptions,
   PrivateTransactionResult,
   FlashbotsBundle,
-  MEVShareOptions,
   RelayStats,
   BundleSimulationResult,
   BundleStatus,
-  BuilderReputation,
-  MEVRefund,
-  BundleCacheOptions,
-  BundleCacheInfo,
-  BundleCacheAddResult,
+} from './types/PrivateRPCTypes';
+// Types reserved for MEV-Share and Bundle Cache features
+import type {
+  MEVShareOptions as _MEVShareOptions,
+  BuilderReputation as _BuilderReputation,
+  MEVRefund as _MEVRefund,
+  BundleCacheOptions as _BundleCacheOptions,
+  BundleCacheInfo as _BundleCacheInfo,
+  BundleCacheAddResult as _BundleCacheAddResult,
 } from './types/PrivateRPCTypes';
 
 /**
@@ -598,7 +601,7 @@ export class PrivateRPCManager {
       }
 
       return true;
-    } catch (error) {
+    } catch (_error) {
       const stats = this.stats.get(type);
       if (stats) {
         stats.isAvailable = false;

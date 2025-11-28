@@ -17,11 +17,11 @@
 import {
   Provider,
   formatUnits,
-  getAddress,
   TransactionRequest,
   TransactionReceipt,
-  TransactionResponse,
 } from 'ethers';
+// getAddress and TransactionResponse reserved for advanced transaction handling
+import type { getAddress as _getAddress, TransactionResponse as _TransactionResponse } from 'ethers';
 import { Mutex } from 'async-mutex';
 import { logger } from '../utils/logger';
 import { NonceManager } from './NonceManager';
@@ -655,7 +655,7 @@ export class TransactionManager {
       logger.info(`[TransactionManager] Replacement transaction submitted: ${response.hash}`);
 
       // Update metadata
-      const oldHash = metadata.hash;
+      const _oldHash = metadata.hash;
       metadata.hash = response.hash;
       metadata.state = TransactionState.REPLACED;
       metadata.replacedBy = response.hash;

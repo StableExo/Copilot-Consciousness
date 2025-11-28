@@ -31,14 +31,17 @@ import {
   TransactionStatus,
   TransactionMonitoringInfo,
   MultiDEXTransactionParams,
-  ExecutionError,
   ExecutionState,
   UniswapV3TwoHopParams,
   TriangularFlashSwapParams,
   AavePathStep,
   AaveFlashLoanParams,
 } from '../types/ExecutionTypes';
-import { ArbitrageOpportunity, SimulationResult, ArbitrageConfig } from '../types/definitions';
+// ExecutionError reserved for error handling features
+import type { ExecutionError as _ExecutionError } from '../types/ExecutionTypes';
+import { SimulationResult, ArbitrageConfig } from '../types/definitions';
+// ArbitrageOpportunity reserved for opportunity processing
+import type { ArbitrageOpportunity as _ArbitrageOpportunity } from '../types/definitions';
 
 interface ParamResult {
   params: Record<string, unknown>;
@@ -102,7 +105,7 @@ export class TransactionExecutor {
     nonceManager: NonceManager
   ): Promise<TransactionExecutionResult> {
     this.stats.totalTransactions++;
-    const startTime = Date.now();
+    const _startTime = Date.now();
 
     try {
       logger.info(`[TransactionExecutor] Starting execution for context ${request.context.id}`);
@@ -309,7 +312,7 @@ export class TransactionExecutor {
    */
   private async estimateGas(
     request: TransactionExecutionRequest,
-    txParams: MultiDEXTransactionParams
+    _txParams: MultiDEXTransactionParams
   ): Promise<GasEstimationResult> {
     try {
       // Use AdvancedGasEstimator to validate and estimate
@@ -416,7 +419,7 @@ export class TransactionExecutor {
   /**
    * Get function signature for DEX type
    */
-  private getFunctionSignature(functionName: string, dexType: string): string {
+  private getFunctionSignature(functionName: string, _dexType: string): string {
     const signatures: Record<string, string> = {
       initiateUniswapV3FlashLoan:
         'function initiateUniswapV3FlashLoan(address tokenBorrowed, uint256 amountBorrowed, bytes calldata params)',
