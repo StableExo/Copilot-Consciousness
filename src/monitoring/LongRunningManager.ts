@@ -10,7 +10,8 @@
  */
 
 import { EventEmitter } from 'events';
-import * as fs from 'fs';
+// fs reserved for sync file operations
+import * as _fs from 'fs';
 import * as fsPromises from 'fs/promises';
 import * as path from 'path';
 import { logger } from '../utils/logger';
@@ -372,7 +373,7 @@ export class LongRunningManager extends EventEmitter {
     const memUsage = process.memoryUsage();
     const heapUsedMB = memUsage.heapUsed / 1024 / 1024;
     const heapTotalMB = memUsage.heapTotal / 1024 / 1024;
-    const rssMB = memUsage.rss / 1024 / 1024;
+    const _rssMB = memUsage.rss / 1024 / 1024;
 
     // Create snapshot
     const snapshot: MemorySnapshot = {

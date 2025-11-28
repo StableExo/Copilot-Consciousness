@@ -37,7 +37,7 @@ export class JWTService {
   verifyToken(token: string): JWTPayload {
     try {
       return jwt.verify(token, this.config.jwtSecret) as JWTPayload;
-    } catch (error) {
+    } catch (_error) {
       throw new Error('Invalid or expired token');
     }
   }

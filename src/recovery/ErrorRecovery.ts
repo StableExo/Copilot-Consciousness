@@ -20,8 +20,9 @@ import {
   RecoveryAction,
   RecoveryResult,
   ExecutionState,
-  TransactionStatus,
 } from '../types/ExecutionTypes';
+// TransactionStatus reserved for transaction state tracking
+import type { TransactionStatus as _TransactionStatus } from '../types/ExecutionTypes';
 
 /**
  * Error Recovery Configuration

@@ -6,7 +6,9 @@
  */
 
 import { EventEmitter } from 'events';
-import { BacktestResult, TrainingRecord, EnhancedArbitragePath } from '../types';
+import { BacktestResult, TrainingRecord } from '../types';
+// EnhancedArbitragePath reserved for ML-enhanced backtesting
+import type { EnhancedArbitragePath as _EnhancedArbitragePath } from '../types';
 import { ArbitragePath } from '../../arbitrage/types';
 import { MLOrchestrator } from '../MLOrchestrator';
 

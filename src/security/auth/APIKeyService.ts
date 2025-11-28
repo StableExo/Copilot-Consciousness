@@ -79,7 +79,7 @@ export class APIKeyService {
    * Revoke API key
    */
   revokeAPIKey(keyId: string): boolean {
-    for (const [hash, apiKey] of this.keys.entries()) {
+    for (const [_hash, apiKey] of this.keys.entries()) {
       if (apiKey.id === keyId) {
         apiKey.isActive = false;
         return true;
@@ -96,7 +96,7 @@ export class APIKeyService {
 
     for (const apiKey of this.keys.values()) {
       if (apiKey.userId === userId) {
-        const { key, keyHash, ...safeKey } = apiKey;
+        const { key: _key, keyHash: _keyHash, ...safeKey } = apiKey;
         userKeys.push(safeKey);
       }
     }

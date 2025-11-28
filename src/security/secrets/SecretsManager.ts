@@ -197,7 +197,7 @@ export class SecretsManager {
     try {
       const result = await this.vaultClient.read(`secret/data/${key}`);
       return result.data.data.value || null;
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }

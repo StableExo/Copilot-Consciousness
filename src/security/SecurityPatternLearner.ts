@@ -21,14 +21,9 @@
  */
 
 import { EventEmitter } from 'events';
-import {
-  SecurityIncident,
-  MitigationSuggestion,
-  SecurityPattern,
-  ThreatEvent,
-  ThreatType,
-  ResponseAction,
-} from './types';
+import { SecurityIncident, MitigationSuggestion, SecurityPattern, ThreatType } from './types';
+// ThreatEvent, ResponseAction reserved for threat response features
+import type { ThreatEvent as _ThreatEvent, ResponseAction as _ResponseAction } from './types';
 
 interface PatternLearnerConfig {
   minOccurrencesForPattern: number;
