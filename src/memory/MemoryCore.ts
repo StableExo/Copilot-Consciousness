@@ -320,7 +320,9 @@ class MemoryCore {
       }
       fs.writeFileSync(filepath, JSON.stringify(data, null, 2));
       return true;
-    } catch {
+    } catch (error) {
+      // Log error for debugging - memory export failures are significant
+      console.error('[MemoryCore] Export failed:', error);
       return false;
     }
   }

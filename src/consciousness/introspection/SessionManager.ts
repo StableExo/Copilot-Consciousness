@@ -537,8 +537,9 @@ export class SessionManager {
       for (const profile of data) {
         this.collaborators.set(profile.id, profile);
       }
-    } catch {
-      // Start fresh if parsing fails
+    } catch (error) {
+      // Log warning but start fresh - corrupted collaborator data shouldn't break session
+      console.warn('[SessionManager] Failed to load collaborators, starting fresh:', error);
     }
   }
 

@@ -106,7 +106,7 @@ describe('SessionManager', () => {
       const collaborator = sessionManager.getCollaborator('NewCollaborator');
       expect(collaborator).toBeDefined();
       expect(collaborator?.name).toBe('NewCollaborator');
-      // interactionCount is 2: 1 from creation + 1 from startSession update
+      // Count includes initial creation (1) plus startSession interaction update
       expect(collaborator?.interactionCount).toBeGreaterThanOrEqual(1);
     });
   });
