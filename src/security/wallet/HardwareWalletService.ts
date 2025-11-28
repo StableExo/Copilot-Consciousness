@@ -3,7 +3,9 @@
  * Ledger and Trezor integration for cold storage signing
  */
 
-import { ethers, getAddress, TransactionRequest } from 'ethers';
+import { TransactionRequest } from 'ethers';
+// ethers and getAddress reserved for wallet utilities
+import type { ethers as _ethers, getAddress as _getAddress } from 'ethers';
 
 export enum HardwareWalletType {
   LEDGER = 'LEDGER',
@@ -122,7 +124,7 @@ export class HardwareWalletService {
   /**
    * Sign with Ledger
    */
-  private async signWithLedger(transaction: TransactionRequest): Promise<SignedTransaction> {
+  private async signWithLedger(_transaction: TransactionRequest): Promise<SignedTransaction> {
     // Placeholder - actual implementation
     // const serializedTx = ethers.utils.serializeTransaction(transaction);
     // const signature = await eth.signTransaction(
@@ -136,7 +138,7 @@ export class HardwareWalletService {
   /**
    * Sign with Trezor
    */
-  private async signWithTrezor(transaction: TransactionRequest): Promise<SignedTransaction> {
+  private async signWithTrezor(_transaction: TransactionRequest): Promise<SignedTransaction> {
     // Placeholder - actual implementation
     // const result = await TrezorConnect.ethereumSignTransaction({
     //   path: this.config.derivationPath!,
@@ -176,7 +178,7 @@ export class HardwareWalletService {
   /**
    * Sign message with Ledger
    */
-  private async signMessageLedger(message: string): Promise<string> {
+  private async signMessageLedger(_message: string): Promise<string> {
     // Placeholder - actual implementation
     // const signature = await eth.signPersonalMessage(
     //   this.config.derivationPath!,
@@ -189,7 +191,7 @@ export class HardwareWalletService {
   /**
    * Sign message with Trezor
    */
-  private async signMessageTrezor(message: string): Promise<string> {
+  private async signMessageTrezor(_message: string): Promise<string> {
     // Placeholder - actual implementation
     // const result = await TrezorConnect.ethereumSignMessage({
     //   path: this.config.derivationPath!,
@@ -226,7 +228,7 @@ export class HardwareWalletService {
   /**
    * Get multiple addresses (for account selection)
    */
-  async getAddresses(count: number = 5, offset: number = 0): Promise<string[]> {
+  async getAddresses(_count: number = 5, _offset: number = 0): Promise<string[]> {
     // Placeholder - would derive multiple addresses
     throw new Error('Address derivation requires hardware access');
   }

@@ -13,7 +13,8 @@
  * - Protection from copycat bots
  */
 
-import { ethers } from 'ethers';
+// ethers namespace reserved for transaction types
+import type { ethers as _ethers } from 'ethers';
 
 /**
  * Supported private relay types

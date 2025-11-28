@@ -10,7 +10,9 @@
  * Based on Flashbots documentation: https://docs.flashbots.net/
  */
 
-import { ethers, formatEther, JsonRpcProvider } from 'ethers';
+import { formatEther, JsonRpcProvider } from 'ethers';
+// ethers namespace reserved for utilities
+import type { ethers as _ethers } from 'ethers';
 import { logger } from '../../utils/logger';
 import {
   BuilderReputation,

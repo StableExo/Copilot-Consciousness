@@ -14,7 +14,8 @@
 
 import { EventEmitter } from 'events';
 import { v4 as uuidv4 } from 'uuid';
-import { createHash } from 'crypto';
+// createHash reserved for challenge verification
+import { createHash as _createHash } from 'crypto';
 
 /**
  * Opportunity bundle to challenge
@@ -457,7 +458,7 @@ Be ruthless. Find every weakness. Break this bundle.`;
    * Auto-generate counter-measures for testing
    */
   async autoCounter(challenge: GrokChallenge): Promise<WardenCounter> {
-    const startTime = Date.now();
+    const _startTime = Date.now();
 
     // Simulate Warden thinking time
     await this.delay(100 + Math.random() * 200);
