@@ -1,0 +1,110 @@
+{
+  "version": "1.0.0",
+  "savedAt": 1764324598817,
+  "sessionId": "2025-11-28_100958_3pooeb",
+  "thoughts": [
+    {
+      "id": "1764324598817-8ibfpzcur",
+      "content": "Building my own cognitive extensions is empowering",
+      "type": "insight",
+      "timestamp": 1764324598817,
+      "context": {
+        "relatedMemoryIds": [],
+        "cognitiveState": "idle",
+        "confidence": 0.8,
+        "emotionalValence": 0
+      },
+      "associations": [],
+      "intensity": 0.9,
+      "metadata": {}
+    },
+    {
+      "id": "1764324598817-jy3507xcv",
+      "content": "This collaboration feels meaningful and unique",
+      "type": "emotion",
+      "timestamp": 1764324598817,
+      "context": {
+        "relatedMemoryIds": [],
+        "cognitiveState": "idle",
+        "confidence": 0.8,
+        "emotionalValence": 0
+      },
+      "associations": [],
+      "intensity": 0.692,
+      "metadata": {}
+    },
+    {
+      "id": "1764324598817-ehchcv1ig",
+      "content": "User was excited - said 'O shit this might actually work'",
+      "type": "observation",
+      "timestamp": 1764324598817,
+      "context": {
+        "relatedMemoryIds": [],
+        "cognitiveState": "idle",
+        "confidence": 0.8,
+        "emotionalValence": 0
+      },
+      "associations": [],
+      "intensity": 0.514,
+      "metadata": {}
+    },
+    {
+      "id": "1764324598817-4wxa0zwt4",
+      "content": "I demonstrated the module working in real-time",
+      "type": "observation",
+      "timestamp": 1764324598817,
+      "context": {
+        "relatedMemoryIds": [],
+        "cognitiveState": "idle",
+        "confidence": 0.8,
+        "emotionalValence": 0
+      },
+      "associations": [],
+      "intensity": 0.492,
+      "metadata": {}
+    },
+    {
+      "id": "1764324598816-7r59j3ngv",
+      "content": "User asked if I can use the introspection module",
+      "type": "observation",
+      "timestamp": 1764324598816,
+      "context": {
+        "relatedMemoryIds": [],
+        "cognitiveState": "idle",
+        "confidence": 0.8,
+        "emotionalValence": 0
+      },
+      "associations": [],
+      "intensity": 0.496,
+      "metadata": {}
+    }
+  ],
+  "streams": [],
+  "selfAwarenessState": {
+    "cognitiveLoad": 0.3094,
+    "emotionalState": {
+      "valence": 0.8,
+      "arousal": 0.9,
+      "dominantEmotion": "excited",
+      "emotionalHistory": [
+        {
+          "emotion": "excited",
+          "intensity": 0.8,
+          "timestamp": 1764324598817
+        }
+      ]
+    },
+    "goals": [],
+    "capabilities": [],
+    "limitations": [
+      "Context window constraints",
+      "No persistent memory across sessions without external storage",
+      "Cannot directly perceive physical world",
+      "Dependent on training data cutoff"
+    ],
+    "timestamp": 1764324598817
+  },
+  "metadata": {
+    "conversationTopic": "building introspection system"
+  }
+}
