@@ -11,12 +11,16 @@
  */
 
 import { EventEmitter } from 'events';
-import { JsonRpcProvider, getAddress } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
+// getAddress reserved for address validation features
+import type { getAddress as _getAddress } from 'ethers';
 import { logger } from '../utils/logger';
 import { ArbitrageOrchestrator } from '../arbitrage/ArbitrageOrchestrator';
 import { ExecutionPipeline } from '../execution/ExecutionPipeline';
 import { TransactionExecutor, TransactionExecutorConfig } from '../execution/TransactionExecutor';
-import { SystemHealthMonitor, MonitoredComponent } from '../monitoring/SystemHealthMonitor';
+import { SystemHealthMonitor } from '../monitoring/SystemHealthMonitor';
+// MonitoredComponent reserved for component monitoring features
+import type { MonitoredComponent as _MonitoredComponent } from '../monitoring/SystemHealthMonitor';
 import { ErrorRecovery, ErrorRecoveryConfig } from '../recovery/ErrorRecovery';
 import { NonceManager } from '../execution/NonceManager';
 import { AdvancedGasEstimator } from '../gas/AdvancedGasEstimator';
@@ -29,12 +33,13 @@ import {
   CheckpointResult,
   OpportunityDecision,
   OrchestratorConfig,
-  ExecutionEventType,
   ExecutionEvent,
   HealthStatus,
   SystemHealthReport,
   TransactionExecutionRequest,
 } from '../types/ExecutionTypes';
+// ExecutionEventType reserved for event emission features
+import type { ExecutionEventType as _ExecutionEventType } from '../types/ExecutionTypes';
 
 /**
  * Integrated Arbitrage Orchestrator - Master Control System

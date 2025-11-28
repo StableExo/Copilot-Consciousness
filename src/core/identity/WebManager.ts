@@ -13,12 +13,12 @@ import {
   WebValidationResult,
   createWeb,
   validateWeb,
-  getWebsFromCategory,
-  getWebsToCategory,
   getWebsBetweenCategories,
   areWebConditionsMet,
   calculateWebDensity,
 } from './types/Web';
+// Note: getWebsFromCategory and getWebsToCategory are re-exported for external use
+export { getWebsFromCategory, getWebsToCategory } from './types/Web';
 
 /**
  * Manager for web connections between categories

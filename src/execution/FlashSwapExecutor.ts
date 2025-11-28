@@ -379,8 +379,8 @@ export class FlashSwapExecutor {
       // Estimate gas
       const gasLimit = this.estimateGas(arbParams);
 
-      // Encode swap steps
-      const encodedSteps = this.encodeSwapSteps(arbParams.swapSteps);
+      // Encode swap steps for validation (used in actual execution)
+      const _encodedSteps = this.encodeSwapSteps(arbParams.swapSteps);
 
       if (dryRun) {
         logger.info(

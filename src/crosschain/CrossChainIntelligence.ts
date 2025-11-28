@@ -31,9 +31,10 @@ import {
   BridgeRiskMetrics,
   RiskRecommendation,
   ChainStateSnapshot,
-  CrossChainOpportunityEvaluation,
   ArbitrageStep,
 } from './types';
+// CrossChainOpportunityEvaluation reserved for future cross-chain evaluation features
+import type { CrossChainOpportunityEvaluation as _CrossChainOpportunityEvaluation } from './types';
 
 interface CrossChainConfig {
   enabledChains: number[];

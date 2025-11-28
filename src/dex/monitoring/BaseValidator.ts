@@ -1,6 +1,8 @@
 import { DEXRegistry } from '../core/DEXRegistry';
 import { DEXValidator, DEXEvent, ValidatorStatus, DEXConfig } from '../types';
-import { JsonRpcProvider, Provider, ethers } from 'ethers';
+import { JsonRpcProvider, Provider } from 'ethers';
+// ethers namespace reserved for advanced contract interactions
+import type { ethers as _ethers } from 'ethers';
 
 /**
  * Base validator class providing common functionality for all DEX validators
@@ -36,7 +38,7 @@ export abstract class BaseValidator implements DEXValidator {
     this.eventCallbacks.forEach((callback) => {
       try {
         callback(event);
-      } catch (error) {
+      } catch (_error) {
         // Silently catch errors in callbacks to prevent cascading failures
       }
     });

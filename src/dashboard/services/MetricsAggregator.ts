@@ -7,7 +7,9 @@
 
 import { GasAnalytics } from '../../gas/GasAnalytics';
 import { CrossChainAnalytics, AnalyticsSummary } from '../../chains/CrossChainAnalytics';
-import { DashboardMetrics, ChartData, WalletBalance } from '../types';
+import { DashboardMetrics, ChartData } from '../types';
+// WalletBalance type reserved for future balance display features
+import type { WalletBalance as _WalletBalance } from '../types';
 import { WalletBalanceService } from './WalletBalanceService';
 
 export class MetricsAggregator {

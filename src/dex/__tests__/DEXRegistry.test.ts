@@ -22,7 +22,7 @@ describe('DEXRegistry', () => {
 
   beforeEach(() => {
     getCodeMock = jest.fn().mockResolvedValue('0x123');
-    const mockProvider = {
+    const _mockProvider = {
       getCode: getCodeMock,
     };
     // In ethers v6, JsonRpcProvider is exported directly, so we mock the whole module

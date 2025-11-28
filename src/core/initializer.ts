@@ -303,7 +303,7 @@ function initializeHealthMonitor(
         try {
           await provider.getBlockNumber();
           return HealthStatus.HEALTHY;
-        } catch (error) {
+        } catch (_error) {
           return HealthStatus.UNHEALTHY;
         }
       },

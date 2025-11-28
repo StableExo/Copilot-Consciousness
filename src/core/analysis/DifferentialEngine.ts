@@ -392,14 +392,14 @@ export class DifferentialEngine {
     vulnerableEntity: Entity
   ): number {
     const selfVsThreat = this.analyze(selfEntity, threatEntity);
-    const threatVsVulnerable = this.analyze(threatEntity, vulnerableEntity);
+    const _threatVsVulnerable = this.analyze(threatEntity, vulnerableEntity);
 
     // Effectiveness is based on:
     // 1. Self power vs threat
     // 2. How much threat dominates vulnerable
 
-    const powerToNeutralize = Math.abs(selfVsThreat.overallDifferential);
-    const protectionNeeded = Math.abs(threatVsVulnerable.overallDifferential);
+    const _powerToNeutralize = Math.abs(selfVsThreat.overallDifferential);
+    const _protectionNeeded = Math.abs(_threatVsVulnerable.overallDifferential);
 
     // If self can overpower threat, very effective
     if (selfVsThreat.overallDifferential > 0.3) {
@@ -421,7 +421,7 @@ export class DifferentialEngine {
   private determineInterventionMethod(
     selfEntity: Entity,
     threatEntity: Entity,
-    vulnerableEntity: Entity
+    _vulnerableEntity: Entity
   ): 'protect_vulnerable' | 'neutralize_threat' | 'separate_entities' {
     const selfVsThreat = this.analyze(selfEntity, threatEntity);
 
