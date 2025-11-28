@@ -14,14 +14,12 @@
  * - Gas spike protection
  */
 
-import {
-  Provider,
-  formatUnits,
-  TransactionRequest,
-  TransactionReceipt,
-} from 'ethers';
+import { Provider, formatUnits, TransactionRequest, TransactionReceipt } from 'ethers';
 // getAddress and TransactionResponse reserved for advanced transaction handling
-import type { getAddress as _getAddress, TransactionResponse as _TransactionResponse } from 'ethers';
+import type {
+  getAddress as _getAddress,
+  TransactionResponse as _TransactionResponse,
+} from 'ethers';
 import { Mutex } from 'async-mutex';
 import { logger } from '../utils/logger';
 import { NonceManager } from './NonceManager';

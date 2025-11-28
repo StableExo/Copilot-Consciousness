@@ -8,11 +8,14 @@ import { Provider, Signer, parseEther } from 'ethers';
 import {
   FlashSwapExecutor,
   SwapProtocol,
-  SwapStep,
   ArbParams,
   FlashSwapExecutorConfig,
 } from '../FlashSwapExecutor';
-import { ArbitrageOpportunity, ArbitrageType, OpportunityStatus } from '../../arbitrage/models';
+// SwapStep reserved for step construction tests
+import type { SwapStep as _SwapStep } from '../FlashSwapExecutor';
+import { ArbitrageType } from '../../arbitrage/models';
+// ArbitrageOpportunity, OpportunityStatus reserved for opportunity tests
+import type { ArbitrageOpportunity as _ArbitrageOpportunity, OpportunityStatus as _OpportunityStatus } from '../../arbitrage/models';
 import { createArbitrageOpportunity, createPathStep } from '../../arbitrage/models';
 
 describe('FlashSwapExecutor', () => {

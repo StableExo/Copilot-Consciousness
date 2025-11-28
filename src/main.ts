@@ -22,7 +22,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import {
-  ethers,
   JsonRpcProvider,
   Wallet,
   Contract,
@@ -30,6 +29,8 @@ import {
   formatUnits,
   parseEther,
 } from 'ethers';
+// ethers namespace reserved for utilities
+import type { ethers as _ethers } from 'ethers';
 import { EventEmitter } from 'events';
 import { logger } from './utils/logger';
 import { validateAndLogConfig } from './utils/configValidator';
@@ -59,12 +60,9 @@ import { DashboardServer } from './dashboard/DashboardServer';
 import { GasAnalytics } from './gas/GasAnalytics';
 import { CrossChainAnalytics } from './chains/CrossChainAnalytics';
 import { DashboardConfig } from './dashboard/types';
-import {
-  getScanTokens,
-  getTokensByChainId,
-  formatTokenList,
-  getNetworkName,
-} from './utils/chainTokens';
+import { getScanTokens, getTokensByChainId, getNetworkName } from './utils/chainTokens';
+// formatTokenList reserved for token display features
+import { formatTokenList as _formatTokenList } from './utils/chainTokens';
 import { ArbitrageConsciousness } from './consciousness/ArbitrageConsciousness';
 import {
   CognitiveCoordinator,
@@ -87,7 +85,9 @@ import {
   Phase3Components,
   getPhase3Status,
 } from './core/Phase3Initializer';
-import { extractOpportunityFeatures, featuresToArray } from './ai/featureExtraction';
+import { extractOpportunityFeatures } from './ai/featureExtraction';
+// featuresToArray reserved for ML features
+import { featuresToArray as _featuresToArray } from './ai/featureExtraction';
 
 // Bootstrap module (refactored initialization)
 import { WardenBootstrap } from './core/bootstrap';
@@ -240,7 +240,8 @@ function loadConfig(): WardenConfig {
  * @param chainId - The blockchain network chain ID
  * @returns The RPC URL for the chain, or undefined if not configured
  */
-function getRpcUrlForChain(chainId: number): string | undefined {
+// Reserved for multi-chain RPC configuration
+function _getRpcUrlForChain(chainId: number): string | undefined {
   switch (chainId) {
     case 8453: // Base mainnet
     case 84532: // Base testnet
@@ -513,7 +514,7 @@ class TheWarden extends EventEmitter {
           try {
             await this.provider.getBlockNumber();
             return HealthStatus.HEALTHY;
-          } catch (error) {
+          } catch (_error) {
             return HealthStatus.UNHEALTHY;
           }
         },
@@ -591,7 +592,7 @@ class TheWarden extends EventEmitter {
    */
   private async analyzeWithConsciousness(
     paths: ArbitragePath[],
-    cycleNumber: number
+    _cycleNumber: number
   ): Promise<void> {
     if (!this.consciousness || !this.cognitiveCoordinator || !this.emergenceDetector) {
       logger.warn('Consciousness coordination not initialized, skipping analysis');

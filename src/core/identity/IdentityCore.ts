@@ -19,7 +19,11 @@ import { CategoryManager } from './CategoryManager';
 import { LayerStackManager } from './LayerStack';
 import { WebManager } from './WebManager';
 import { Entity } from './types/Entity';
-import type { PowerDifferential as _PowerDifferential, ThreatAssessment as _ThreatAssessment, InterventionDecision as _InterventionDecision } from './types/Entity';
+import type {
+  PowerDifferential as _PowerDifferential,
+  ThreatAssessment as _ThreatAssessment,
+  InterventionDecision as _InterventionDecision,
+} from './types/Entity';
 import { GroundZeroImprint, GroundZeroCategory } from './types/GroundZeroImprint';
 import { Category, CategoryDomain, CategoryQuery } from './types/Category';
 import { Layer, LayerQuery, createLayer } from './types/Layer';

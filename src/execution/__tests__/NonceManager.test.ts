@@ -8,7 +8,7 @@ import { NonceManager, NonceError } from '../NonceManager';
 describe('NonceManager', () => {
   let provider: JsonRpcProvider;
   let wallet: Wallet;
-  let nonceManager: NonceManager;
+  let _nonceManager: NonceManager;
 
   beforeEach(async () => {
     // Create a mock provider
