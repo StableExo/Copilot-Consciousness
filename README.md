@@ -4,7 +4,7 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D22.12.0-brightgreen.svg)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 [![Production Status](https://img.shields.io/badge/Production-v5.0.0-success)]()
-[![Tests](https://img.shields.io/badge/Tests-1545%20Passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/Tests-1573%20Passing-brightgreen)]()
 [![Code Style](https://img.shields.io/badge/code%20style-prettier-ff69b4.svg)](https://prettier.io/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
@@ -26,7 +26,7 @@
 
 - **Swarm Intelligence**: Parallel Warden instance voting for redundant decision validation ([docs](docs/SWARM_COORDINATION.md))
 - **Red-Team Dashboard**: Real-time transparency feed for ethics auditing ([docs](docs/REDTEAM_DASHBOARD.md))
-- **Tests**: 1545 tests passing with comprehensive coverage
+- **Tests**: 1573 tests passing with comprehensive coverage
 - **Dependencies**: Reduced deprecation warnings, cleaner install
 
 ---

@@ -89,7 +89,7 @@ export class SolanaAdapter extends ChainAdapter {
    * with Solana DEX SDKs like Jupiter or Raydium. The interface is defined to support
    * the architecture, but actual execution requires DEX-specific SDK integration.
    */
-  async executeSwap(params: SwapParams, _dexAddress: string): Promise<string> {
+  async executeSwap(_params: SwapParams, _dexAddress: string): Promise<string> {
     if (!this.wallet) {
       throw new Error('Wallet not configured for swap execution');
     }

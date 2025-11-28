@@ -65,7 +65,7 @@ export class EthicalReviewGate {
    * @param context - Additional context for the review
    * @returns EthicalReviewResult with approval status and rationale
    */
-  preExecutionReview(plan: string | Plan, context: EthicalContext = {}): EthicalReviewResult {
+  preExecutionReview(plan: string | Plan, _context: EthicalContext = {}): EthicalReviewResult {
     console.log('--- [ETHICAL REVIEW GATE] Running Pre-Execution Review ---');
 
     // Normalize plan to string

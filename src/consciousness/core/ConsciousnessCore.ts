@@ -48,7 +48,7 @@ export class ConsciousnessCore {
     // Event handling logic
     try {
       callback(event);
-    } catch (error) {
+    } catch (_error) {
       // Handle callback errors
     }
   }
