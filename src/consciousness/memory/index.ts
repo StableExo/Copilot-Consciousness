@@ -9,8 +9,18 @@
  * - Episodic memory (event-based)
  * - Semantic memory (knowledge-based)
  * - Procedural memory (skill-based)
+ *
+ * Additionally, the semantic memory subsystem provides:
+ * - Structured memory entries (inspired by AGI Memory Core)
+ * - Keyword and semantic search
+ * - Memory relationships and associations
+ *
+ * @see ./semantic for the AGI-inspired semantic memory system
  */
 
 export * from './types';
 export * from './store';
 export * from './system';
+
+// Export semantic memory system
+export * from './semantic';
