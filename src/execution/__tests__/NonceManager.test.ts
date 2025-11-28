@@ -20,6 +20,10 @@ describe('NonceManager', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+    // Destroy provider to prevent test leaks
+    if (provider) {
+      provider.destroy();
+    }
   });
 
   describe('constructor and create', () => {

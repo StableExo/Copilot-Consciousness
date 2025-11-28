@@ -25,6 +25,13 @@ describe('Protocol Abstraction Layer', () => {
     provider = new JsonRpcProvider();
   });
 
+  afterEach(() => {
+    // Destroy provider to prevent test leaks
+    if (provider) {
+      provider.destroy();
+    }
+  });
+
   describe('Protocol Registry', () => {
     it('should export ProtocolRegistry class', () => {
       expect(ProtocolRegistry).toBeDefined();
