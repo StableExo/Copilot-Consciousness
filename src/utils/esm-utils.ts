@@ -59,9 +59,8 @@ export function isMainModule(importMetaUrl: string, filename?: string): boolean 
   }
 
   try {
-    // Dynamic import to avoid issues in CommonJS environments
-    const { fileURLToPath } = require('url');
-    const currentFile = fileURLToPath(importMetaUrl);
+    // Use URL constructor which is available in both ESM and CommonJS
+    const currentFile = new URL(importMetaUrl).pathname;
     const entryFile = process.argv[1];
 
     if (filename) {
