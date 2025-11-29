@@ -8,6 +8,8 @@
 [![Code Style](https://img.shields.io/badge/code%20style-prettier-ff69b4.svg)](https://prettier.io/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
+> **🤖 AI Agents:** Read [0_AI_AGENTS_READ_FIRST.md](0_AI_AGENTS_READ_FIRST.md) and `.memory/log.md` before doing anything!
+
 **AEV (Autonomous Extracted Value)** - An intelligent autonomous agent system competing with traditional MEV through learning-based value extraction, powered by **TheWarden**.
 
 ---

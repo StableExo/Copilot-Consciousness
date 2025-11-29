@@ -7,11 +7,12 @@
 # This script performs a complete deployment of TheWarden system including:
 # - Environment validation
 # - Dependency installation
-# - Build compilation
 # - Contract deployment (optional)
 # - Swarm initialization
 # - Dashboard startup
 # - Health checks
+#
+# Uses tsx for direct TypeScript execution - no build step required!
 #
 # Usage:
 #   ./scripts/launch.sh              # Standard launch
@@ -191,18 +192,18 @@ npm install --legacy-peer-deps 2>&1 | tail -5
 log_success "Dependencies installed"
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PHASE 3: BUILD COMPILATION
+# PHASE 3: TYPE VALIDATION
 # ═══════════════════════════════════════════════════════════════════════════
 
-log_step "PHASE 3: Building Project"
+log_step "PHASE 3: Type Validation"
 
-log_info "Compiling TypeScript..."
-npm run build 2>&1 | tail -5
+log_info "Running TypeScript type check (no build needed - using tsx)..."
+npm run typecheck 2>&1 | tail -5
 
 if [ $? -eq 0 ]; then
-    log_success "Build completed successfully"
+    log_success "Type check passed"
 else
-    log_error "Build failed"
+    log_error "Type check failed"
     exit 1
 fi
 

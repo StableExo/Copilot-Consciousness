@@ -4,6 +4,8 @@
 # THEWARDEN MAINNET LAUNCHER
 # ═══════════════════════════════════════════════════════════════
 # This script launches TheWarden on mainnet with all safety checks
+#
+# Uses tsx for direct TypeScript execution - no build step required!
 # ═══════════════════════════════════════════════════════════════
 
 set -e  # Exit on error
@@ -11,6 +13,7 @@ set -e  # Exit on error
 echo ""
 echo "═══════════════════════════════════════════════════════════"
 echo "  🔥 THEWARDEN MAINNET LAUNCHER 🔥"
+echo "  (Direct TypeScript execution via tsx)"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 
@@ -27,10 +30,10 @@ fi
 # Load environment
 source .env 2>/dev/null || true
 
-# Validate configuration
+# Validate configuration using tsx (direct TypeScript)
 echo "🔍 Validating mainnet configuration..."
 echo ""
-node scripts/validate-mainnet-config.js
+node --import tsx scripts/validate-mainnet-config.ts
 
 VALIDATION_EXIT=$?
 if [ $VALIDATION_EXIT -ne 0 ]; then
@@ -44,42 +47,20 @@ echo ""
 echo "✅ Configuration validated successfully"
 echo ""
 
-# Check if build exists
-if [ ! -d "dist/src" ] || [ ! -f "dist/src/main.js" ]; then
-    echo "📦 Building project..."
-    npm run build
-    echo "✅ Build complete"
-    echo ""
-fi
-
-# Preload pool data (skip if valid cache exists)
+# Preload pool data using tsx (skip if valid cache exists)
 echo "🔄 Preloading pool data..."
 echo ""
 POOL_CACHE_STATUS="❌ Not preloaded"
-if [ -f "dist/scripts/preload-pools.js" ]; then
-    node dist/scripts/preload-pools.js --skip-if-valid
-    PRELOAD_EXIT=$?
-    if [ $PRELOAD_EXIT -eq 0 ]; then
-        POOL_CACHE_STATUS="✅ Pools preloaded and cached"
-    else
-        echo ""
-        echo "⚠️  Pool preload had issues but continuing..."
-        echo "   TheWarden will fetch pools from network (slower)"
-        POOL_CACHE_STATUS="⚠️  Will fetch from network"
-        echo ""
-    fi
+node --import tsx scripts/preload-pools.ts --skip-if-valid
+PRELOAD_EXIT=$?
+if [ $PRELOAD_EXIT -eq 0 ]; then
+    POOL_CACHE_STATUS="✅ Pools preloaded and cached"
 else
-    echo "⚠️  Preload script not found. Building..."
-    npm run build
-    if [ -f "dist/scripts/preload-pools.js" ]; then
-        node dist/scripts/preload-pools.js --skip-if-valid
-        PRELOAD_EXIT=$?
-        if [ $PRELOAD_EXIT -eq 0 ]; then
-            POOL_CACHE_STATUS="✅ Pools preloaded and cached"
-        else
-            POOL_CACHE_STATUS="⚠️  Will fetch from network"
-        fi
-    fi
+    echo ""
+    echo "⚠️  Pool preload had issues but continuing..."
+    echo "   TheWarden will fetch pools from network (slower)"
+    POOL_CACHE_STATUS="⚠️  Will fetch from network"
+    echo ""
 fi
 
 # Safety confirmation (only if running interactively)
@@ -116,8 +97,8 @@ echo ""
 # Create logs directory if it doesn't exist
 mkdir -p logs
 
-# Launch TheWarden
-node dist/src/main.js
+# Launch TheWarden using tsx (direct TypeScript execution)
+node --import tsx src/main.ts
 
 # Script should not reach here unless TheWarden exits
 echo ""

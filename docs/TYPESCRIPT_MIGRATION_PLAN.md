@@ -303,19 +303,21 @@ The following changes have been started:
 ## Remaining Work
 
 ### High Priority
-- [ ] Convert `scripts/validate-mainnet-config.js` to `.ts`
-- [ ] Convert `scripts/verify-private-key.js` to `.ts`
-- [ ] Update `scripts/autonomous-monitor.sh` to use tsx
+- [x] Convert `scripts/validate-mainnet-config.js` to `.ts` ✅ **COMPLETED**
+- [x] Convert `scripts/verify-private-key.js` to `.ts` ✅ **COMPLETED**
+- [x] Update `scripts/autonomous-monitor.sh` to use tsx ✅ **COMPLETED**
+- [x] Update `scripts/launch-mainnet.sh` to use tsx ✅ **COMPLETED**
+- [x] Update `scripts/launch.sh` to use tsx ✅ **COMPLETED**
 - [ ] Test full autonomous execution with tsx
 
 ### Medium Priority
-- [ ] Convert `scripts/verify-arbitrum-dexs.js` to `.ts`
-- [ ] Convert `scripts/verify-network-dexs.js` to `.ts`
+- [x] Convert `scripts/verify-arbitrum-dexs.js` to `.ts` ✅ **COMPLETED**
+- [x] Convert `scripts/verify-network-dexs.js` to `.ts` ✅ **COMPLETED**
 - [ ] Update Jest configuration for ESM/tsx
 - [ ] Review and update CI/CD workflows
 
 ### Low Priority
-- [ ] Remove `dist/` from repository
+- [x] Remove `dist/` from repository (already in `.gitignore`) ✅ **COMPLETED**
 - [ ] Update all documentation
 - [ ] Add migration notes to CHANGELOG.md
 
