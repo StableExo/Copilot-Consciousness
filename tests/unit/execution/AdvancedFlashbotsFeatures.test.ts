@@ -8,7 +8,7 @@ import { PrivateRelayType } from '../../../src/execution/types/PrivateRPCTypes';
 
 describe('Advanced Flashbots Features', () => {
   let provider: JsonRpcProvider;
-  let wallet: Wallet;
+  let wallet: any;
   let manager: PrivateRPCManager;
 
   beforeEach(() => {

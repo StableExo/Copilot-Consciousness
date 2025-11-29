@@ -35,7 +35,7 @@ describe('MemoryMigrationService', () => {
   describe('storage operations', () => {
     it('should store entries', () => {
       const id = service.store({
-        type: MemoryType.EXPERIENCE,
+        type: MemoryType.EPISODIC,
         content: { test: 'data' },
         timestamp: Date.now(),
         priority: Priority.MEDIUM,

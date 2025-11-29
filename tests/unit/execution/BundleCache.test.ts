@@ -10,7 +10,7 @@ import { PrivacyLevel } from '../../../src/execution/types/PrivateRPCTypes';
 
 describe('Bundle Cache API', () => {
   let provider: JsonRpcProvider;
-  let signer: Wallet;
+  let signer: any;
   let privateRPC: PrivateRPCManager;
 
   beforeEach(() => {

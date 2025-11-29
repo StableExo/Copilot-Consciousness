@@ -414,7 +414,7 @@ describe('Adversarial MEV Fuzz Tests', () => {
       safetyManager = new ProductionSafetyManager({
         circuitBreaker: {
           failureThreshold: 3,
-          resetTimeout: 1000,
+          cooldownPeriod: 1000,
         },
         emergencyStop: {
           maxCapitalLossPercentage: 10,
@@ -452,7 +452,7 @@ describe('Adversarial MEV Fuzz Tests', () => {
     it('should detect and respond to sandwich attack patterns', () => {
       const circuitBreaker = new CircuitBreaker({
         failureThreshold: 2,
-        resetTimeout: 1000,
+        cooldownPeriod: 1000,
       });
 
       // Record pattern of sandwich attacks

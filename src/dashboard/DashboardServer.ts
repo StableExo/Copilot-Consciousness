@@ -8,7 +8,11 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import { createServer, Server as HttpServer } from 'http';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import fs from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import cors from 'cors';
 import { GasAnalytics } from '../gas/GasAnalytics';
 import { CrossChainAnalytics } from '../chains/CrossChainAnalytics';
