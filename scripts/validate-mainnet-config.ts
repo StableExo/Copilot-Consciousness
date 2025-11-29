@@ -2,13 +2,11 @@
 
 /**
  * Mainnet Configuration Validator
- * 
+ *
  * Validates that all required configuration is present for mainnet deployment
  */
 
-const dotenv = require('dotenv');
-const fs = require('fs');
-const path = require('path');
+import dotenv from 'dotenv';
 
 // Load environment
 dotenv.config();
@@ -20,38 +18,53 @@ console.log('══════════════════════�
 let hasErrors = false;
 let hasWarnings = false;
 
+interface ConfigCheck {
+  value: string | undefined;
+  required: boolean;
+  expected?: string | string[];
+  validateFunc?: (val: string) => boolean;
+  message: string;
+}
+
 // Check critical configuration
-const checks = {
-  'NODE_ENV': {
+const checks: Record<string, ConfigCheck> = {
+  NODE_ENV: {
     value: process.env.NODE_ENV,
     required: true,
     expected: 'production',
-    message: 'Must be "production" for mainnet'
+    message: 'Must be "production" for mainnet',
   },
-  'DRY_RUN': {
+  DRY_RUN: {
     value: process.env.DRY_RUN,
     required: true,
     expected: 'false',
-    message: 'Must be "false" to enable live trading'
+    message: 'Must be "false" to enable live trading',
   },
-  'CHAIN_ID': {
+  CHAIN_ID: {
     value: process.env.CHAIN_ID,
     required: true,
     expected: ['8453', '1', '137', '42161', '10'],
-    message: 'Valid mainnet chain ID (8453=Base, 1=Ethereum, etc.)'
+    message: 'Valid mainnet chain ID (8453=Base, 1=Ethereum, etc.)',
   },
   'RPC_URL or BASE_RPC_URL': {
     value: process.env.RPC_URL || process.env.BASE_RPC_URL,
     required: true,
-    validateFunc: (val) => val && !val.includes('YOUR-API-KEY') && val.startsWith('http'),
-    message: 'Valid RPC URL (must not contain placeholder)'
+    validateFunc: (val: string) =>
+      val !== undefined &&
+      !val.includes('YOUR-API-KEY') &&
+      val.startsWith('http'),
+    message: 'Valid RPC URL (must not contain placeholder)',
   },
-  'WALLET_PRIVATE_KEY': {
+  WALLET_PRIVATE_KEY: {
     value: process.env.WALLET_PRIVATE_KEY,
     required: true,
-    validateFunc: (val) => val && val.startsWith('0x') && val.length === 66 && !val.includes('YOUR'),
-    message: 'Valid private key (0x + 64 hex chars, no placeholder)'
-  }
+    validateFunc: (val: string) =>
+      val !== undefined &&
+      val.startsWith('0x') &&
+      val.length === 66 &&
+      !val.includes('YOUR'),
+    message: 'Valid private key (0x + 64 hex chars, no placeholder)',
+  },
 };
 
 console.log('🔍 Checking Configuration...\n');
@@ -60,41 +73,45 @@ for (const [name, check] of Object.entries(checks)) {
   const isSet = check.value !== undefined && check.value !== '';
   const symbol = isSet ? '✓' : '✗';
   const status = isSet ? 'SET' : 'MISSING';
-  
+
   if (!isSet && check.required) {
     console.log(`${symbol} ${name}: ${status} ❌`);
     console.log(`   Required: ${check.message}\n`);
     hasErrors = true;
     continue;
   }
-  
+
   if (!isSet) {
     console.log(`${symbol} ${name}: ${status} (optional)\n`);
     continue;
   }
-  
+
   // Validate value if check exists
   let isValid = true;
   if (check.expected) {
     if (Array.isArray(check.expected)) {
-      isValid = check.expected.includes(check.value);
+      isValid = check.expected.includes(check.value!);
     } else {
       isValid = check.value === check.expected;
     }
   }
-  
+
   if (check.validateFunc) {
-    isValid = check.validateFunc(check.value);
+    isValid = check.validateFunc(check.value!);
   }
-  
+
   if (!isValid) {
     console.log(`${symbol} ${name}: ${check.value} ⚠️`);
     console.log(`   Warning: ${check.message}\n`);
     hasWarnings = true;
   } else {
-    const displayValue = name.includes('PRIVATE_KEY') 
-      ? check.value.substring(0, 6) + '...' + check.value.substring(check.value.length - 4)
-      : (name.includes('RPC') ? check.value.substring(0, 40) + '...' : check.value);
+    const displayValue = name.includes('PRIVATE_KEY')
+      ? check.value!.substring(0, 6) +
+        '...' +
+        check.value!.substring(check.value!.length - 4)
+      : name.includes('RPC')
+        ? check.value!.substring(0, 40) + '...'
+        : check.value;
     console.log(`${symbol} ${name}: ${displayValue} ✅\n`);
   }
 }
@@ -124,7 +141,9 @@ if (hasErrors) {
 
 if (hasWarnings) {
   console.log('⚠️  CONFIGURATION WARNINGS');
-  console.log('   Review warnings above. Configuration may work but verify carefully.');
+  console.log(
+    '   Review warnings above. Configuration may work but verify carefully.'
+  );
   console.log('═══════════════════════════════════════════════════════════\n');
   process.exit(0);
 }
@@ -137,6 +156,6 @@ console.log('══════════════════════�
 // Show the command to run
 console.log('🔥 To start TheWarden on mainnet:\n');
 console.log('   npm start\n');
-console.log('   Or: node dist/src/main.js\n');
+console.log('   Or: node --import tsx src/main.ts\n');
 
 process.exit(0);

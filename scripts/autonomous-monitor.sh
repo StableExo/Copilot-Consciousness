@@ -5,6 +5,8 @@
 # ═══════════════════════════════════════════════════════════════
 # This script runs TheWarden in 2-minute intervals, analyzes logs,
 # and provides diagnostic insights and parameter adjustment suggestions
+#
+# Uses tsx for direct TypeScript execution - no build step required!
 # ═══════════════════════════════════════════════════════════════
 
 set -euo pipefail
@@ -97,6 +99,7 @@ trap cleanup SIGINT SIGTERM SIGHUP
 # Banner
 echo "═══════════════════════════════════════════════════════════════"
 echo "  TheWarden - Autonomous Monitoring & Diagnostics"
+echo "  (Direct TypeScript execution via tsx)"
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
 echo "  Run Interval: ${RUN_INTERVAL} seconds (2 minutes)"
@@ -350,14 +353,11 @@ while true; do
     log "Will run for ${RUN_INTERVAL} seconds..."
     log "Iteration log: ${ITERATION_LOG}"
     
-    # Check if build exists (only rebuild if missing, not on every iteration)
-    if [ ! -f "$PROJECT_ROOT/dist/src/main.js" ]; then
-        log_warn "Build not found. Building project..."
-        npm run build
-    fi
+    # No build needed - tsx runs TypeScript directly!
+    log_info "Using tsx for direct TypeScript execution - no build step required"
     
-    # Run TheWarden in background
-    timeout ${RUN_INTERVAL}s node "$PROJECT_ROOT/dist/src/main.js" > "$ITERATION_LOG" 2>&1 || true
+    # Run TheWarden using tsx (direct TypeScript execution)
+    timeout ${RUN_INTERVAL}s node --import tsx "$PROJECT_ROOT/src/main.ts" > "$ITERATION_LOG" 2>&1 || true
     
     # Copy to main log for backward compatibility
     cp "$ITERATION_LOG" "$WARDEN_LOG"
