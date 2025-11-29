@@ -19,13 +19,11 @@
  *   MIN_PROFIT_THRESHOLD - Minimum profit in USD (default: 1.0)
  */
 
-import { ethers, JsonRpcProvider, parseEther } from 'ethers';
-import dotenv from 'dotenv';
+import { parseEther } from 'viem';
+import { createViemPublicClient } from '../src/utils/viem';
 import { DEXRegistry } from '../src/dex/core/DEXRegistry';
 import { OptimizedPoolScanner } from '../src/arbitrage/OptimizedPoolScanner';
 import { PoolEdge } from '../src/arbitrage/types';
-
-dotenv.config();
 
 // Base network tokens
 const BASE_TOKENS = {
@@ -244,13 +242,11 @@ async function main() {
   
   console.log(`RPC: ${process.env.BASE_RPC_URL}`);
   
-  // Initialize components
-  const provider = new JsonRpcProvider(
-    process.env.BASE_RPC_URL
-  );
+  // Initialize components with viem
+  const publicClient = createViemPublicClient(8453, process.env.BASE_RPC_URL);
   
   const registry = new DEXRegistry();
-  const scanner = new OptimizedPoolScanner(registry, provider, 8453);
+  const scanner = new OptimizedPoolScanner(registry, publicClient, 8453);
   
   const tokens = Object.values(BASE_TOKENS);
   

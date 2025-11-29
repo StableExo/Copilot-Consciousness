@@ -9,7 +9,7 @@
  * 4. End-to-End Dry Run
  */
 
-import { ethers, JsonRpcProvider } from 'ethers';
+import { createViemPublicClient } from '../src/utils/viem';
 // NOTE: Bun automatically loads .env files
 import { ArbitrageConsciousness } from '../src/consciousness/ArbitrageConsciousness';
 import { CognitiveCoordinator, OpportunityContext } from '../src/consciousness/coordination/CognitiveCoordinator';
@@ -58,13 +58,13 @@ async function validateOpportunityDetection(): Promise<void> {
       return;
     }
 
-    const rpcUrl = process.env.BASE_RPC_URL || process.env.RPC_URL;
+    const rpcUrl = process.env.BASE_RPC_URL || process.env.RPC_URL!;
     console.log(`RPC: ${rpcUrl}\n`);
 
-    // Initialize components
-    const provider = new JsonRpcProvider(rpcUrl);
+    // Initialize components with viem
+    const publicClient = createViemPublicClient(8453, rpcUrl);
     const registry = new DEXRegistry();
-    const scanner = new OptimizedPoolScanner(registry, provider, 8453);
+    const scanner = new OptimizedPoolScanner(registry, publicClient, 8453);
 
     // Test with a smaller token set for speed
     const tokens = [
@@ -233,12 +233,12 @@ async function validateEndToEnd(): Promise<void> {
       return;
     }
 
-    const rpcUrl = process.env.BASE_RPC_URL || process.env.RPC_URL;
+    const rpcUrl = process.env.BASE_RPC_URL || process.env.RPC_URL!;
 
-    // Initialize all components
-    const provider = new JsonRpcProvider(rpcUrl);
+    // Initialize all components with viem
+    const publicClient = createViemPublicClient(8453, rpcUrl);
     const registry = new DEXRegistry();
-    const scanner = new OptimizedPoolScanner(registry, provider, 8453);
+    const scanner = new OptimizedPoolScanner(registry, publicClient, 8453);
     const consciousness = new ArbitrageConsciousness(0.05, 1000);
     const modules = consciousness.getModules();
     const coordinator = new CognitiveCoordinator(modules);

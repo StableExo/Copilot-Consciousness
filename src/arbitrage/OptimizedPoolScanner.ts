@@ -9,23 +9,29 @@
  * 5. Smart filtering: Skip invalid token pairs early
  *
  * Expected performance: 60+ pool scan in under 10 seconds (down from 60+ seconds)
+ *
+ * Migrated to viem for improved type safety and performance.
  */
 
 import {
-  Contract,
-  Interface,
-  Provider,
-  ZeroAddress,
+  type PublicClient,
+  type Address,
+  type Hex,
+  zeroAddress,
   getCreate2Address,
   keccak256,
-  solidityPacked,
-} from 'ethers';
+  encodePacked,
+  encodeAbiParameters,
+  parseAbiParameters,
+  decodeFunctionResult,
+  encodeFunctionData,
+} from 'viem';
 import { DEXRegistry } from '../dex/core/DEXRegistry';
 import { DEXConfig } from '../dex/types';
 import { PoolEdge } from './types';
 import { logger } from '../utils/logger';
 import { UNISWAP_V3_FEE_TIERS, V3_LIQUIDITY_SCALE_FACTOR, isV3StyleProtocol } from './constants';
-import { MulticallBatcher, MulticallRequest, batchFetchPoolData } from '../utils/MulticallBatcher';
+import { ViemMulticallBatcher, MulticallRequest } from '../utils/MulticallBatcher';
 
 /**
  * Cached pool data with embedded timestamp
@@ -48,17 +54,92 @@ interface V3PoolDiscovery {
   exists: boolean;
 }
 
+/**
+ * V3 Factory ABI for getPool function
+ */
+const V3_FACTORY_ABI = [
+  {
+    inputs: [
+      { name: 'tokenA', type: 'address' },
+      { name: 'tokenB', type: 'address' },
+      { name: 'fee', type: 'uint24' },
+    ],
+    name: 'getPool',
+    outputs: [{ name: 'pool', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+] as const;
+
+/**
+ * Pool ABI for token0 check (existence verification)
+ */
+const POOL_TOKEN_ABI = [
+  {
+    inputs: [],
+    name: 'token0',
+    outputs: [{ name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'token1',
+    outputs: [{ name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'liquidity',
+    outputs: [{ name: '', type: 'uint128' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+] as const;
+
+/**
+ * V2 Pool ABI for getReserves
+ */
+const V2_POOL_ABI = [
+  {
+    inputs: [],
+    name: 'token0',
+    outputs: [{ name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'token1',
+    outputs: [{ name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'getReserves',
+    outputs: [
+      { name: 'reserve0', type: 'uint112' },
+      { name: 'reserve1', type: 'uint112' },
+      { name: 'blockTimestampLast', type: 'uint32' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+] as const;
+
 export class OptimizedPoolScanner {
   private registry: DEXRegistry;
-  private provider: Provider;
+  private publicClient: PublicClient;
   private poolCache: Map<string, CachedPoolData>;
   private cacheTTL: number = 60000; // 1 minute default TTL
   private currentChainId?: number;
-  private multicallBatcher?: MulticallBatcher;
+  private multicallBatcher?: ViemMulticallBatcher;
 
-  constructor(registry: DEXRegistry, provider: Provider, chainId?: number) {
+  constructor(registry: DEXRegistry, publicClient: PublicClient, chainId?: number) {
     this.registry = registry;
-    this.provider = provider;
+    this.publicClient = publicClient;
     this.poolCache = new Map();
     this.currentChainId = chainId;
   }
@@ -73,9 +154,9 @@ export class OptimizedPoolScanner {
   /**
    * Initialize multicall batcher
    */
-  private async getMulticallBatcher(): Promise<MulticallBatcher | null> {
+  private async getMulticallBatcher(): Promise<ViemMulticallBatcher | null> {
     if (!this.multicallBatcher) {
-      this.multicallBatcher = new MulticallBatcher(this.provider);
+      this.multicallBatcher = new ViemMulticallBatcher(this.publicClient);
       const available = await this.multicallBatcher.isAvailable();
       if (!available) {
         logger.warn(
@@ -104,27 +185,29 @@ export class OptimizedPoolScanner {
     const [tokenA, tokenB] =
       token0.toLowerCase() < token1.toLowerCase() ? [token0, token1] : [token1, token0];
 
-    const factoryInterface = new Interface([
-      'function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)',
-    ]);
-
     if (!batcher) {
-      // Fallback: Check fee tiers sequentially
+      // Fallback: Check fee tiers sequentially using viem readContract
       logger.warn(
         `Multicall3 not available on chain ${this.currentChainId || 'unknown'}. ` +
           `Falling back to sequential RPC calls (slower performance expected).`,
         'POOLSCAN'
       );
-      const factoryContract = new Contract(factory, factoryInterface, this.provider);
+      
       for (const fee of UNISWAP_V3_FEE_TIERS) {
         try {
-          const poolAddress = await factoryContract.getPool(tokenA, tokenB, fee);
-          if (poolAddress && poolAddress !== ZeroAddress) {
-            const code = await this.provider.getCode(poolAddress);
+          const poolAddress = await this.publicClient.readContract({
+            address: factory as Address,
+            abi: V3_FACTORY_ABI,
+            functionName: 'getPool',
+            args: [tokenA as Address, tokenB as Address, fee],
+          });
+          
+          if (poolAddress && poolAddress !== zeroAddress) {
+            const code = await this.publicClient.getCode({ address: poolAddress });
             discoveries.push({
               address: poolAddress,
               fee,
-              exists: code !== '0x',
+              exists: code !== undefined && code !== '0x',
             });
           }
         } catch {
@@ -137,7 +220,11 @@ export class OptimizedPoolScanner {
     // Optimized: Batch all fee tier checks into one multicall
     const calls: MulticallRequest[] = UNISWAP_V3_FEE_TIERS.map((fee) => ({
       target: factory,
-      callData: factoryInterface.encodeFunctionData('getPool', [tokenA, tokenB, fee]),
+      callData: encodeFunctionData({
+        abi: V3_FACTORY_ABI,
+        functionName: 'getPool',
+        args: [tokenA as Address, tokenB as Address, fee],
+      }),
       allowFailure: true,
     }));
 
@@ -149,11 +236,12 @@ export class OptimizedPoolScanner {
       const result = results[i];
       if (result.success) {
         try {
-          const poolAddress = factoryInterface.decodeFunctionResult(
-            'getPool',
-            result.returnData
-          )[0];
-          if (poolAddress && poolAddress !== ZeroAddress) {
+          const poolAddress = decodeFunctionResult({
+            abi: V3_FACTORY_ABI,
+            functionName: 'getPool',
+            data: result.returnData as Hex,
+          });
+          if (poolAddress && poolAddress !== zeroAddress) {
             poolsToCheck.push({ address: poolAddress, fee: UNISWAP_V3_FEE_TIERS[i] });
           }
         } catch {
@@ -164,11 +252,12 @@ export class OptimizedPoolScanner {
 
     // Batch pool existence checks
     if (poolsToCheck.length > 0) {
-      const poolInterface = new Interface(['function token0() external view returns (address)']);
-
       const existenceCalls: MulticallRequest[] = poolsToCheck.map(({ address }) => ({
         target: address,
-        callData: poolInterface.encodeFunctionData('token0', []),
+        callData: encodeFunctionData({
+          abi: POOL_TOKEN_ABI,
+          functionName: 'token0',
+        }),
         allowFailure: true,
       }));
 
@@ -531,22 +620,166 @@ export class OptimizedPoolScanner {
     reserve1: bigint;
   } | null> {
     try {
-      // Use batch fetch helper
-      const batchResults = await batchFetchPoolData(this.provider, [poolAddress], isV3);
-      const result = batchResults.get(poolAddress);
-
-      if (result) {
-        return {
-          poolAddress,
-          token0: result.token0,
-          token1: result.token1,
-          reserve0: result.reserve0,
-          reserve1: result.reserve1,
-        };
+      // Use viem multicall for batched fetching
+      const batcher = await this.getMulticallBatcher();
+      
+      if (!batcher) {
+        // Fallback to individual reads
+        return this.fetchPoolDataDirect(poolAddress, isV3);
       }
 
-      return null;
+      const poolAbi = isV3 ? POOL_TOKEN_ABI : V2_POOL_ABI;
+      
+      // Build calls
+      const calls: MulticallRequest[] = [
+        {
+          target: poolAddress,
+          callData: encodeFunctionData({
+            abi: poolAbi,
+            functionName: 'token0',
+          }),
+          allowFailure: true,
+        },
+        {
+          target: poolAddress,
+          callData: encodeFunctionData({
+            abi: poolAbi,
+            functionName: 'token1',
+          }),
+          allowFailure: true,
+        },
+      ];
+
+      if (isV3) {
+        calls.push({
+          target: poolAddress,
+          callData: encodeFunctionData({
+            abi: POOL_TOKEN_ABI,
+            functionName: 'liquidity',
+          }),
+          allowFailure: true,
+        });
+      } else {
+        calls.push({
+          target: poolAddress,
+          callData: encodeFunctionData({
+            abi: V2_POOL_ABI,
+            functionName: 'getReserves',
+          }),
+          allowFailure: true,
+        });
+      }
+
+      const results = await batcher.executeBatch(calls);
+
+      // All calls must succeed
+      if (!results[0].success || !results[1].success || !results[2].success) {
+        return null;
+      }
+
+      const fetchedToken0 = decodeFunctionResult({
+        abi: poolAbi,
+        functionName: 'token0',
+        data: results[0].returnData as Hex,
+      }) as Address;
+
+      const fetchedToken1 = decodeFunctionResult({
+        abi: poolAbi,
+        functionName: 'token1',
+        data: results[1].returnData as Hex,
+      }) as Address;
+
+      let reserve0: bigint;
+      let reserve1: bigint;
+
+      if (isV3) {
+        const liquidity = decodeFunctionResult({
+          abi: POOL_TOKEN_ABI,
+          functionName: 'liquidity',
+          data: results[2].returnData as Hex,
+        }) as bigint;
+        reserve0 = liquidity;
+        reserve1 = liquidity;
+      } else {
+        const reserves = decodeFunctionResult({
+          abi: V2_POOL_ABI,
+          functionName: 'getReserves',
+          data: results[2].returnData as Hex,
+        }) as [bigint, bigint, number];
+        reserve0 = reserves[0];
+        reserve1 = reserves[1];
+      }
+
+      return {
+        poolAddress,
+        token0: fetchedToken0,
+        token1: fetchedToken1,
+        reserve0,
+        reserve1,
+      };
     } catch (_error) {
+      return null;
+    }
+  }
+
+  /**
+   * Fetch pool data directly using viem readContract (fallback)
+   */
+  private async fetchPoolDataDirect(
+    poolAddress: string,
+    isV3: boolean
+  ): Promise<{
+    poolAddress: string;
+    token0: string;
+    token1: string;
+    reserve0: bigint;
+    reserve1: bigint;
+  } | null> {
+    try {
+      const poolAbi = isV3 ? POOL_TOKEN_ABI : V2_POOL_ABI;
+
+      const [token0, token1] = await Promise.all([
+        this.publicClient.readContract({
+          address: poolAddress as Address,
+          abi: poolAbi,
+          functionName: 'token0',
+        }),
+        this.publicClient.readContract({
+          address: poolAddress as Address,
+          abi: poolAbi,
+          functionName: 'token1',
+        }),
+      ]);
+
+      let reserve0: bigint;
+      let reserve1: bigint;
+
+      if (isV3) {
+        const liquidity = await this.publicClient.readContract({
+          address: poolAddress as Address,
+          abi: POOL_TOKEN_ABI,
+          functionName: 'liquidity',
+        });
+        reserve0 = liquidity;
+        reserve1 = liquidity;
+      } else {
+        const reserves = await this.publicClient.readContract({
+          address: poolAddress as Address,
+          abi: V2_POOL_ABI,
+          functionName: 'getReserves',
+        });
+        reserve0 = reserves[0];
+        reserve1 = reserves[1];
+      }
+
+      return {
+        poolAddress,
+        token0: token0 as string,
+        token1: token1 as string,
+        reserve0,
+        reserve1,
+      };
+    } catch {
       return null;
     }
   }
@@ -565,9 +798,16 @@ export class OptimizedPoolScanner {
       const [tokenA, tokenB] =
         token0.toLowerCase() < token1.toLowerCase() ? [token0, token1] : [token1, token0];
 
-      const salt = keccak256(solidityPacked(['address', 'address'], [tokenA, tokenB]));
+      // Use viem's encodePacked for salt calculation
+      const salt = keccak256(
+        encodePacked(['address', 'address'], [tokenA as Address, tokenB as Address])
+      );
 
-      const poolAddress = getCreate2Address(dex.factory, salt, dex.initCodeHash);
+      const poolAddress = getCreate2Address({
+        from: dex.factory as Address,
+        salt,
+        bytecodeHash: dex.initCodeHash as Hex,
+      });
 
       // We skip the code check here and let the fetchPoolData handle validation
       return poolAddress;

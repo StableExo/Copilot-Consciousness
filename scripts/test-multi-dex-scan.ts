@@ -3,7 +3,7 @@
  * Tests Phase 3 (more DEX sources) and Phase 5 (enhanced logging)
  */
 
-import { JsonRpcProvider } from 'ethers';
+import { createViemPublicClient } from '../src/utils/viem';
 import { DEXRegistry } from '../src/dex/core/DEXRegistry';
 import { OptimizedPoolScanner } from '../src/arbitrage/OptimizedPoolScanner';
 
@@ -18,16 +18,16 @@ async function testMultiDexScan() {
   console.log('=== Multi-DEX Pool Discovery Test ===\n');
   
   try {
-    // Initialize provider
+    // Initialize viem public client
     console.log(`Connecting to Base network: ${BASE_RPC_URL}`);
-    const provider = new JsonRpcProvider(BASE_RPC_URL);
+    const publicClient = createViemPublicClient(8453, BASE_RPC_URL);
     
     // Check connection
-    const network = await provider.getNetwork();
-    console.log(`✓ Connected to network: ${network.name} (chainId: ${network.chainId})\n`);
+    const chainId = await publicClient.getChainId();
+    console.log(`✓ Connected to network: Base (chainId: ${chainId})\n`);
     
-    if (Number(network.chainId) !== 8453) {
-      console.log(`⚠ Warning: Expected Base (8453) but got chainId ${network.chainId}\n`);
+    if (chainId !== 8453) {
+      console.log(`⚠ Warning: Expected Base (8453) but got chainId ${chainId}\n`);
     }
     
     // Initialize DEX registry
@@ -39,8 +39,8 @@ async function testMultiDexScan() {
     });
     console.log();
     
-    // Initialize pool scanner
-    const scanner = new OptimizedPoolScanner(registry, provider, 8453);
+    // Initialize pool scanner with viem client
+    const scanner = new OptimizedPoolScanner(registry, publicClient, 8453);
     
     // Test with common token pair (WETH/USDC is most liquid on Base)
     const tokens = [WETH, USDC];
