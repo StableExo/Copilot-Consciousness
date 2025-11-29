@@ -10,14 +10,14 @@ import { type PublicClient, type Address, erc20Abi } from 'viem';
 import { WalletBalance } from '../types';
 
 export interface TokenConfig {
-  address: string;
+  address: Address;
   symbol: string;
   decimals: number;
 }
 
 export interface WalletBalanceConfig {
   publicClient: PublicClient;
-  walletAddress: string;
+  walletAddress: Address;
   chainId: number;
   chainName: string;
   tokens: TokenConfig[];
@@ -59,7 +59,7 @@ export class WalletBalanceService {
     try {
       // Get native balance (ETH)
       const nativeBalance = await this.config.publicClient.getBalance({
-        address: this.config.walletAddress as Address,
+        address: this.config.walletAddress,
       });
 
       // Get token balances
@@ -67,10 +67,10 @@ export class WalletBalanceService {
         this.config.tokens.map(async (token) => {
           try {
             const balance = await this.config.publicClient.readContract({
-              address: token.address as Address,
+              address: token.address,
               abi: erc20Abi,
               functionName: 'balanceOf',
-              args: [this.config.walletAddress as Address],
+              args: [this.config.walletAddress],
             });
 
             return {

@@ -70,6 +70,14 @@ function initializePublicClient(): PublicClient {
 // Export the actual public client instance for backward compatibility
 export const publicClient: PublicClient = initializePublicClient();
 
-// Legacy alias for backward compatibility during migration
+/**
+ * @deprecated Use `publicClient` instead. This alias exists only for backward compatibility
+ * during the ethers.js to viem migration and will be removed in a future version.
+ */
 export const provider = publicClient;
+
+/**
+ * @deprecated Use `getPublicClient()` instead. This alias exists only for backward compatibility
+ * during the ethers.js to viem migration and will be removed in a future version.
+ */
 export const getProvider = getPublicClient;
