@@ -454,17 +454,19 @@ export class MEVAttackFuzzer extends EventEmitter {
     }
 
     try {
-      // Create a timeout with cleanup to prevent memory leaks
-      let timeoutId: ReturnType<typeof setTimeout> | undefined;
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        timeoutId = setTimeout(() => reject(new Error('Defense timeout')), this.config.timeoutMs);
-      });
-      
+      // Create a timeout with proper cleanup using AbortController pattern
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, this.config.timeoutMs);
+
       const response = await Promise.race([
-        handler(scenario).finally(() => {
-          if (timeoutId) clearTimeout(timeoutId);
+        handler(scenario).finally(() => clearTimeout(timeoutId)),
+        new Promise<never>((_, reject) => {
+          controller.signal.addEventListener('abort', () => {
+            reject(new Error('Defense timeout'));
+          });
         }),
-        timeoutPromise,
       ]);
 
       const detectionTimeMs = response.responseTimeMs;
