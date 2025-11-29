@@ -635,7 +635,9 @@ export class AdversarialIntelligenceFeed extends EventEmitter {
    */
   private async generateDefenseRecommendations(intel: ThreatIntelligence): Promise<void> {
     const pattern = Array.from(this.patterns.values()).find(
-      (p) => p.attackType === intel.threatType && p.observationCount >= this.config.minObservationsForPattern
+      (p) =>
+        p.attackType === intel.threatType &&
+        p.observationCount >= this.config.minObservationsForPattern
     );
 
     if (pattern) {
@@ -750,7 +752,9 @@ export class AdversarialIntelligenceFeed extends EventEmitter {
    */
   getHighPriorityThreats(): ObservedAttackPattern[] {
     return Array.from(this.patterns.values())
-      .filter((p) => p.riskScore >= 0.7 && p.observationCount >= this.config.minObservationsForPattern)
+      .filter(
+        (p) => p.riskScore >= 0.7 && p.observationCount >= this.config.minObservationsForPattern
+      )
       .sort((a, b) => b.riskScore - a.riskScore)
       .slice(0, 20);
   }
@@ -795,11 +799,7 @@ export class AdversarialIntelligenceFeed extends EventEmitter {
   }
 
   private hashIndicators(iocs: ThreatIntelligence['iocs']): string {
-    const str = [
-      ...(iocs.ips ?? []),
-      ...(iocs.addresses ?? []),
-      ...(iocs.signatures ?? []),
-    ]
+    const str = [...(iocs.ips ?? []), ...(iocs.addresses ?? []), ...(iocs.signatures ?? [])]
       .sort()
       .join('');
     // Simple hash

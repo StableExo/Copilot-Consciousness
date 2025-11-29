@@ -622,7 +622,7 @@ export class LiveThreatTrainer extends EventEmitter {
     const events: ParsedThreatEvent[] = [];
 
     // Handle array of events
-    const items = Array.isArray(data) ? data : data.data ?? data.events ?? data.alerts ?? [data];
+    const items = Array.isArray(data) ? data : (data.data ?? data.events ?? data.alerts ?? [data]);
 
     for (const item of items) {
       const event = this.normalizeEvent(item);
