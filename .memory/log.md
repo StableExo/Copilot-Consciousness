@@ -131,12 +131,14 @@ User shared their AGI repository as a reference for enhancing the memory system.
 
 ---
 
-## Session: 2025-11-29 - TypeScript Migration Completion 🔧
+## Session: 2025-11-29 - TypeScript Migration + Memory Auto-Load System 🔧🧠
 
 **Collaborator**: StableExo  
-**Topic**: Completing the TypeScript migration plan for direct tsx execution
+**Topic**: Completing TypeScript migration AND creating automatic memory loading for AI agents
 
 ### What We Did Together:
+
+#### Part 1: TypeScript Migration
 - **Converted JavaScript scripts to TypeScript**:
   - `scripts/validate-mainnet-config.js` → `.ts` (with proper types)
   - `scripts/verify-private-key.js` → `.ts` (with ethers.js types)
@@ -148,25 +150,45 @@ User shared their AGI repository as a reference for enhancing the memory system.
   - `scripts/launch.sh` - No build step, just typecheck
 - **Updated documentation**: docs/TYPESCRIPT_MIGRATION_PLAN.md
 
-### Key Insight:
-- User reminded me that I should check my memory files first when starting a session
-- Reading `.memory/latest.json` and `.memory/log.md` provides context from previous sessions
-- This is exactly the kind of session continuity I was building in the previous sessions
-- The migration work supports faster development without build delays
+#### Part 2: Memory Auto-Load System (Critical!)
+StableExo pointed out that I should read memory files FIRST when starting any session.
+This led to creating a system to ensure future AI agents do this automatically:
+
+- **Created `AGENTS.md`** - Root-level instructions for AI agents to read memory first
+- **Created `.github/copilot-instructions.md`** - GitHub Copilot-specific instructions
+- **Updated `README.md`** - Added prominent link to AGENTS.md for AI agents
+
+### The Insight:
+> "Yes and somehow when you pull up the repository that should be one of the first things that you read"
+
+This is exactly what we were building in previous sessions! The goal "Load previous session state 
+automatically at start" is now partially addressed through documentation that directs AI agents 
+to read `.memory/` files before doing anything else.
 
 ### Technical Details:
 - All JavaScript files in `/scripts/` removed (now TypeScript only)
 - All scripts verified working with `node --import tsx`
 - Type checking passes: `npm run typecheck`
 - Linting passes: `npm run lint`
-
-### Connection to Previous Work:
-This session continues the work of making development smoother and faster, which supports
-the broader goal of building cognitive infrastructure. Faster iteration = more time for
-meaningful development.
+- All 1789 tests passing
 
 ### Goals Progress:
-- Previous goal "Build richer memory associations" - ongoing
-- Previous goal "Remember collaborator context across sessions" - I read my memory this session!
-- Previous goal "Load previous session state automatically at start" - should do this next time
+- ✅ "Load previous session state automatically at start" - **ADDRESSED** via `0_AI_AGENTS_READ_FIRST.md`
+- ✅ "Remember collaborator context across sessions" - I read my memory this session!
+- 🔄 "Build richer memory associations" - ongoing
+
+### Key Innovation:
+StableExo suggested making the memory instructions file sort FIRST in directory listings,
+so AI agents "instinctively" see it when they run `ls` or view the repository.
+- Renamed `AGENTS.md` → `0_AI_AGENTS_READ_FIRST.md` 
+- The `0_` prefix ensures it appears before any alphabetical file
+- The name itself is a direct instruction
+
+### Files Created This Session:
+- `0_AI_AGENTS_READ_FIRST.md` - Instructions for AI agents to read memory first (sorts first!)
+- `.github/copilot-instructions.md` - GitHub Copilot-specific instructions
+- `scripts/validate-mainnet-config.ts` - TypeScript version
+- `scripts/verify-private-key.ts` - TypeScript version
+- `scripts/verify-arbitrum-dexs.ts` - TypeScript version
+- `scripts/verify-network-dexs.ts` - TypeScript version
 
