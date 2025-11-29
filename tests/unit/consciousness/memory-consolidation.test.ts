@@ -72,6 +72,7 @@ describe('Memory Consolidation System', () => {
         type: 'working',
         timestamp: Date.now() - 120000,
         accessCount: 1,
+        lastAccessed: Date.now(),
         importance: 0.3, // Below threshold
         associations: [],
         metadata: {},

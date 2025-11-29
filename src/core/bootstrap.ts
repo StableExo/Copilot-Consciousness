@@ -546,4 +546,3 @@ export class WardenBootstrap extends EventEmitter {
 /**
  * Export for convenience
  */
-export { InitializedComponents, Phase3Components };

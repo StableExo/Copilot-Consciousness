@@ -1,12 +1,18 @@
 // tests/unit/consciousness/metacognition.test.ts
 
-import { Metacognition } from '../../../consciousness/metacognition';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const METACOGNITION_LOG_PATH = path.join(__dirname, '../../../.memory/metacognition_log.json');
+const METACOGNITION_LOG_PATH = path.join(process.cwd(), '.memory/metacognition_log.json');
 
 describe('Metacognition', () => {
+    let Metacognition: any;
+
+    beforeAll(async () => {
+        const module = await import('../../../consciousness/metacognition');
+        Metacognition = module.Metacognition;
+    });
+
     beforeEach(() => {
         if (fs.existsSync(METACOGNITION_LOG_PATH)) {
             fs.unlinkSync(METACOGNITION_LOG_PATH);

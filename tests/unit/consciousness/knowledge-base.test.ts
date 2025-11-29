@@ -38,9 +38,9 @@ describe('KnowledgeBase', () => {
         const kb = new KnowledgeBase();
         const article = kb.createArticle('test title', 'test summary', 'test content');
         const updatedArticle = kb.updateArticle(article.id, { title: 'new title' });
-        expect(updatedArticle.title).toBe('new title');
+        expect(updatedArticle?.title).toBe('new title');
         const retrievedArticle = kb.getArticle(article.id);
-        expect(retrievedArticle.title).toBe('new title');
+        expect(retrievedArticle?.title).toBe('new title');
     });
 
     it('should search by tag', () => {
