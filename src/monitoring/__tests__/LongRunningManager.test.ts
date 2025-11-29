@@ -243,8 +243,8 @@ describe('LongRunningManager', () => {
 
       await manager.start();
 
-      // Wait a bit
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      // Wait a bit (add margin for timing jitter)
+      await new Promise((resolve) => setTimeout(resolve, 110));
 
       const uptime = manager.getUptime();
       expect(uptime.sessionUptime).toBeGreaterThanOrEqual(100);
@@ -260,7 +260,7 @@ describe('LongRunningManager', () => {
       });
 
       await manager.start();
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 110));
       await manager.stop('test');
 
       // Second session
@@ -271,7 +271,7 @@ describe('LongRunningManager', () => {
       });
 
       await manager.start();
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 110));
 
       const uptime = manager.getUptime();
       expect(uptime.totalUptime).toBeGreaterThanOrEqual(200);
