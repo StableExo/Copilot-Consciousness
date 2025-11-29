@@ -5,6 +5,8 @@
 # ═══════════════════════════════════════════════════════════════
 # The singular autonomous entry point for TheWarden on mainnet.
 # This script consolidates all entry points into one unified command.
+# 
+# Uses tsx for direct TypeScript execution - no build step required!
 # ═══════════════════════════════════════════════════════════════
 
 # Determine the directory where this script is located
