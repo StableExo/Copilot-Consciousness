@@ -192,7 +192,7 @@ export class OptimizedPoolScanner {
           `Falling back to sequential RPC calls (slower performance expected).`,
         'POOLSCAN'
       );
-      
+
       for (const fee of UNISWAP_V3_FEE_TIERS) {
         try {
           const poolAddress = await this.publicClient.readContract({
@@ -201,7 +201,7 @@ export class OptimizedPoolScanner {
             functionName: 'getPool',
             args: [tokenA as Address, tokenB as Address, fee],
           });
-          
+
           if (poolAddress && poolAddress !== zeroAddress) {
             const code = await this.publicClient.getCode({ address: poolAddress });
             discoveries.push({
@@ -622,14 +622,14 @@ export class OptimizedPoolScanner {
     try {
       // Use viem multicall for batched fetching
       const batcher = await this.getMulticallBatcher();
-      
+
       if (!batcher) {
         // Fallback to individual reads
         return this.fetchPoolDataDirect(poolAddress, isV3);
       }
 
       const poolAbi = isV3 ? POOL_TOKEN_ABI : V2_POOL_ABI;
-      
+
       // Build calls
       const calls: MulticallRequest[] = [
         {
