@@ -5,6 +5,9 @@ export default defineConfig({
     // Test environment
     environment: 'node',
 
+    // Setup files
+    setupFiles: ['./tests/setup/vitest.setup.ts'],
+
     // Include patterns - same as previous Jest config
     include: [
       'src/**/__tests__/**/*.ts',

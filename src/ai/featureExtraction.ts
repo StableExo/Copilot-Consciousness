@@ -3,9 +3,11 @@
  *
  * Extracts features from arbitrage opportunities for AI model consumption
  * Specifically for OpportunityNNScorer neural network input
+ *
+ * Migrated to viem for better TypeScript support and smaller bundle size.
  */
 
-import { formatEther, formatUnits } from 'ethers';
+import { formatEther, formatUnits } from 'viem';
 import { ArbitragePath } from '../arbitrage/types';
 
 /**

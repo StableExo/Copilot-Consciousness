@@ -3,9 +3,12 @@
  *
  * Validates environment variables and returns a typed configuration object.
  * Throws descriptive errors for missing or invalid values.
+ *
+ * Migrated to viem for better TypeScript support and smaller bundle size.
  */
 
-import { ethers, isAddress } from 'ethers';
+import { isAddress, isHex } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
 
 export interface ValidatedConfig {
   // Network configuration
@@ -179,32 +182,32 @@ function validateRpcUrl(url: string): void {
  * Validate private key format
  */
 function validatePrivateKey(key: string): void {
-  // Remove 0x prefix if present
-  const cleanKey = key.startsWith('0x') ? key.slice(2) : key;
+  // Ensure the key has the 0x prefix for viem compatibility
+  const formattedKey = key.startsWith('0x') ? key : `0x${key}`;
 
-  // Check length (64 hex characters)
-  if (cleanKey.length !== 64) {
-    throw new ConfigValidationError(
-      `Invalid private key format: key must be 64 hexadecimal characters (32 bytes)\n` +
-        `Current length: ${cleanKey.length} characters\n` +
-        `Private key should be in format: 0x followed by 64 hex characters`
-    );
-  }
-
-  // Check if it's valid hex
-  if (!/^[0-9a-fA-F]{64}$/.test(cleanKey)) {
+  // Validate hex format using viem's isHex
+  if (!isHex(formattedKey)) {
     throw new ConfigValidationError(
       `Invalid private key format: key contains non-hexadecimal characters\n` +
         `Private key must only contain characters 0-9 and a-f`
     );
   }
 
-  // Validate it's a valid private key by trying to create a wallet
+  // Check length (66 characters with 0x prefix = 64 hex characters)
+  if (formattedKey.length !== 66) {
+    throw new ConfigValidationError(
+      `Invalid private key format: key must be 64 hexadecimal characters (32 bytes)\n` +
+        `Current length: ${formattedKey.length - 2} characters\n` +
+        `Private key should be in format: 0x followed by 64 hex characters`
+    );
+  }
+
+  // Validate it's a valid private key by trying to create an account
   try {
-    new ethers.Wallet(key);
+    privateKeyToAccount(formattedKey as `0x${string}`);
   } catch (error) {
     throw new ConfigValidationError(
-      `Invalid private key: unable to create wallet\n` +
+      `Invalid private key: unable to create account\n` +
         `Error: ${error instanceof Error ? error.message : String(error)}`
     );
   }

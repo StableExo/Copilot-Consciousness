@@ -12,7 +12,7 @@
  * 7. Log all reasoning
  */
 
-import { ethers, JsonRpcProvider } from 'ethers';
+import { createViemPublicClient } from '../src/utils/viem';
 // NOTE: Bun automatically loads .env files
 import { DEXRegistry } from '../src/dex/core/DEXRegistry';
 import { OptimizedPoolScanner } from '../src/arbitrage/OptimizedPoolScanner';
@@ -64,9 +64,9 @@ async function runEndToEndDryRun(): Promise<void> {
     console.log(`RPC: ${rpcUrl}`);
     console.log(`Mode: DRY RUN (no actual trades)\n`);
 
-    const provider = new JsonRpcProvider(rpcUrl);
+    const publicClient = createViemPublicClient(8453, rpcUrl);
     const registry = new DEXRegistry();
-    const scanner = new OptimizedPoolScanner(registry, provider, 8453);
+    const scanner = new OptimizedPoolScanner(registry, publicClient, 8453);
     const consciousness = new ArbitrageConsciousness(0.05, 1000);
     const modules = consciousness.getModules();
     const coordinator = new CognitiveCoordinator(modules);

@@ -1,22 +1,27 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { DEXRegistry } from '../core/DEXRegistry';
 import { JsonRpcProvider } from 'ethers';
 
-jest.mock('ethers', () => {
-  const originalEthers = jest.requireActual('ethers');
-  let validAddresses: Set<string>;
+// Store valid addresses at module level
+let validAddresses: Set<string> | null = null;
+
+function getValidAddresses(): Set<string> {
+  if (!validAddresses) {
+    const registry = new DEXRegistry();
+    validAddresses = new Set(registry.getAllDEXes().flatMap((dex) => [dex.router, dex.factory]));
+  }
+  return validAddresses;
+}
+
+vi.mock('ethers', async () => {
+  const originalEthers = await vi.importActual('ethers');
 
   return {
     ...originalEthers,
-    JsonRpcProvider: jest.fn().mockImplementation(() => ({
-      getCode: jest.fn().mockImplementation((address) => {
-        if (!validAddresses) {
-          const { DEXRegistry } = jest.requireActual('../core/DEXRegistry');
-          const registry = new DEXRegistry();
-          validAddresses = new Set(
-            registry.getAllDEXes().flatMap((dex) => [dex.router, dex.factory])
-          );
-        }
-        if (validAddresses.has(address)) {
+    JsonRpcProvider: vi.fn().mockImplementation(() => ({
+      getCode: vi.fn().mockImplementation((address: string) => {
+        const addresses = getValidAddresses();
+        if (addresses.has(address)) {
           return Promise.resolve('0x12345');
         }
         return Promise.resolve('0x');

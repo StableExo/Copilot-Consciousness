@@ -1,16 +1,17 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import DEXRegistry from '../core/DEXRegistry';
 import { JsonRpcProvider } from 'ethers';
 import { Connection } from '@solana/web3.js';
 
-const getAccountInfoMock = jest.fn().mockResolvedValue({
+const getAccountInfoMock = vi.fn().mockResolvedValue({
   executable: true,
 });
 
-jest.mock('@solana/web3.js', () => {
-  const originalWeb3 = jest.requireActual('@solana/web3.js');
+vi.mock('@solana/web3.js', async () => {
+  const originalWeb3 = await vi.importActual('@solana/web3.js');
   return {
     ...originalWeb3,
-    Connection: jest.fn().mockImplementation(() => ({
+    Connection: vi.fn().mockImplementation(() => ({
       getAccountInfo: getAccountInfoMock,
     })),
   };
@@ -18,24 +19,21 @@ jest.mock('@solana/web3.js', () => {
 
 describe('DEXRegistry', () => {
   let registry: DEXRegistry;
-  let getCodeMock: jest.Mock;
+  let getCodeMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    getCodeMock = jest.fn().mockResolvedValue('0x123');
-    const _mockProvider = {
-      getCode: getCodeMock,
-    };
+    getCodeMock = vi.fn().mockResolvedValue('0x123');
     // In ethers v6, JsonRpcProvider is exported directly, so we mock the whole module
-    jest.spyOn(JsonRpcProvider.prototype, 'getCode').mockImplementation(getCodeMock);
+    vi.spyOn(JsonRpcProvider.prototype, 'getCode').mockImplementation(getCodeMock);
 
-    (Connection as jest.Mock).mockClear();
+    vi.mocked(Connection).mockClear();
     getAccountInfoMock.mockClear();
 
     registry = new DEXRegistry();
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('should initialize with the correct number of DEXes', () => {

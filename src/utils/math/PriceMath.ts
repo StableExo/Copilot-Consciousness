@@ -9,9 +9,11 @@
  * - Token amount conversions
  * - Slippage calculations
  * - Uniswap V3 tick math
+ *
+ * Migrated to viem for better TypeScript support and smaller bundle size.
  */
 
-import { formatUnits } from 'ethers';
+import { formatUnits } from 'viem';
 import { logger } from '../logger';
 
 // Constants for price calculations

@@ -137,12 +137,24 @@ Supported chains with their IDs:
 - [~] `src/execution/TransactionExecutor.ts` (requires ethers.js, documented for coexistence)
 - [~] `src/execution/FlashSwapExecutor.ts` (requires ethers.js, documented for coexistence)
 - [~] `src/execution/NonceManager.ts` (requires ethers.js AbstractSigner, documented for coexistence)
-- [ ] `src/arbitrage/OptimizedPoolScanner.ts`
+- [x] `src/arbitrage/OptimizedPoolScanner.ts` ✅ **Migrated**
 - [ ] `src/arbitrage/MultiHopDataFetcher.ts`
 - [x] `src/services/PoolDataFetcher.ts`
 - [x] `src/services/BaseArbitrageRunner.ts` (updated for viem compatibility)
 - [x] `src/gas/GasPriceOracle.ts`
 - [x] `src/utils/MulticallBatcher.ts` (added ViemMulticallBatcher class)
+- [x] `src/utils/providers.ts` ✅ **Migrated** - Now uses viem PublicClient
+- [x] `src/utils/configValidator.ts` ✅ **Migrated** - Uses viem isAddress and privateKeyToAccount
+- [x] `src/utils/validation/ValidationUtils.ts` ✅ **Migrated** - Uses viem getAddress/isAddress
+- [x] `src/utils/math/PriceMath.ts` ✅ **Migrated** - Uses viem formatUnits
+- [ ] Other modules
+
+### Scripts Migration
+- [x] `scripts/test-multi-dex-scan.ts` ✅ **Migrated**
+- [x] `scripts/monitor-pool-performance.ts` ✅ **Migrated**
+- [x] `scripts/validate-phase2.ts` ✅ **Migrated**
+- [x] `scripts/validate-opportunity-detection.ts` ✅ **Migrated**
+- [x] `scripts/dry-run-e2e.ts` ✅ **Migrated**
 - [ ] Other modules
 
 ## Rollback Procedure
