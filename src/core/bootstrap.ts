@@ -40,6 +40,7 @@ import {
 import { ArbitrageConsciousness } from '../consciousness/ArbitrageConsciousness';
 import { CognitiveCoordinator } from '../consciousness/coordination/CognitiveCoordinator';
 import { EmergenceDetector } from '../consciousness/coordination/EmergenceDetector';
+import { Metacognition } from '../../consciousness/metacognition';
 import { DashboardServer } from '../dashboard/DashboardServer';
 import { GasAnalytics } from '../gas/GasAnalytics';
 import { CrossChainAnalytics } from '../chains/CrossChainAnalytics';
@@ -79,11 +80,17 @@ export class WardenBootstrap extends EventEmitter {
   private consciousness?: ArbitrageConsciousness;
   private cognitiveCoordinator?: CognitiveCoordinator;
   private emergenceDetector?: EmergenceDetector;
+  private metacognition: Metacognition;
   private dashboardServer?: DashboardServer;
   private perceptionStream?: PerceptionStream;
   private scanInterval?: NodeJS.Timeout;
   private isRunning = false;
   private shuttingDown = false;
+
+  constructor() {
+    super();
+    this.metacognition = new Metacognition();
+  }
 
   private stats: WardenStats = {
     startTime: Date.now(),
@@ -433,6 +440,13 @@ export class WardenBootstrap extends EventEmitter {
 
     // Log final status
     this.logStatus();
+
+    // Prompt for metacognitive reflection before shutting down
+    logger.info('[Metacognition] Prompting for session reflection...');
+    // In a real implementation, this would involve a more complex interaction
+    // For now, we'll just log a placeholder message
+    this.metacognition.log_question_for_future("How can I improve the shutdown sequence?");
+
 
     this.isRunning = false;
     this.emit('shutdown');
