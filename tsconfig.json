@@ -15,7 +15,7 @@
     "sourceMap": true,
     "moduleResolution": "bundler",
     "noEmit": false,
-    "types": ["node", "bun-types"]
+    "types": ["node"]
   },
   "include": [
     "src/**/*",

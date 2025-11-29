@@ -2,6 +2,7 @@
  * MemoryMigrationService Tests
  */
 
+import { vi } from 'vitest';
 import { MemoryMigrationService } from '../../../src/memory/backends/MemoryMigrationService';
 import { MemoryType, Priority } from '../../../src/types';
 
@@ -75,7 +76,7 @@ describe('MemoryMigrationService', () => {
     });
 
     it('should emit migration events', () => {
-      const handler = jest.fn();
+      const handler = vi.fn();
       service.on(handler);
 
       // Handler should be registered
@@ -106,7 +107,7 @@ describe('MemoryMigrationService', () => {
 
   describe('event handling', () => {
     it('should add and remove event handlers', () => {
-      const handler = jest.fn();
+      const handler = vi.fn();
       
       service.on(handler);
       service.off(handler);

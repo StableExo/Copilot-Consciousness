@@ -1,7 +1,7 @@
 /**
  * SQLiteStore Tests
  *
- * Tests for the SQLite persistent memory backend.
+ * Tests for the SQLite persistent memory backend using better-sqlite3.
  */
 
 import * as fs from 'fs';

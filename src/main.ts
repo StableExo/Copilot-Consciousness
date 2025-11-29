@@ -16,7 +16,8 @@
  * Based on PROJECT-HAVOC design patterns and AxionCitadel learnings
  */
 
-// NOTE: Bun automatically loads .env files - no dotenv import needed
+// Load environment variables from .env file
+import 'dotenv/config';
 
 import { JsonRpcProvider, Wallet, Contract, formatEther, formatUnits, parseEther } from 'ethers';
 // ethers namespace reserved for utilities
