@@ -1,4 +1,5 @@
-import { createPublicClient, http, type Client, type Transport, type Chain } from 'viem';
+import { createPublicClient, http } from 'viem';
+import type { PublicClient, HttpTransport, Chain } from 'viem';
 import { base, mainnet } from 'viem/chains';
 
 // NOTE: Bun automatically loads .env files
@@ -7,17 +8,16 @@ import { base, mainnet } from 'viem/chains';
 const DEFAULT_LOCAL_RPC_URL = 'http://localhost:8545';
 
 /**
- * Type for the public client - using a more flexible Client type
+ * Type for the public client - matches what createPublicClient returns with http transport
  */
-
-type ViemPublicClient = Client<Transport, Chain, any>;
+type ViemPublicClient = PublicClient<HttpTransport, Chain>;
 
 let _publicClient: ViemPublicClient | null = null;
 
 /**
  * Get the chain configuration based on RPC URL
  */
-function getChainFromRpcUrl(rpcUrl: string) {
+function getChainFromRpcUrl(rpcUrl: string): Chain {
   // Default to Base if BASE_RPC_URL is set, otherwise mainnet
   if (process.env.BASE_RPC_URL && rpcUrl === process.env.BASE_RPC_URL) {
     return base;
@@ -41,7 +41,7 @@ export function getPublicClient(): ViemPublicClient {
     _publicClient = createPublicClient({
       chain: getChainFromRpcUrl(rpcUrl),
       transport: http(rpcUrl),
-    }) as ViemPublicClient;
+    });
   }
   return _publicClient;
 }
@@ -65,12 +65,12 @@ function initializePublicClient(): ViemPublicClient {
     return createPublicClient({
       chain: mainnet,
       transport: http(DEFAULT_LOCAL_RPC_URL),
-    }) as ViemPublicClient;
+    });
   }
   return createPublicClient({
     chain: getChainFromRpcUrl(rpcUrl),
     transport: http(rpcUrl),
-  }) as ViemPublicClient;
+  });
 }
 
 // Export the actual public client instance for backward compatibility

@@ -16,10 +16,11 @@ function createBlockWatchClient() {
 }
 
 export class PerceptionStream {
-  private sensoryMemory: SensoryMemory;
-  private temporalFramework: TemporalAwarenessFramework;
-  private unwatch: (() => void) | null = null;
-  private client = createBlockWatchClient();
+  private readonly sensoryMemory: SensoryMemory;
+  private readonly temporalFramework: TemporalAwarenessFramework;
+  private readonly client = createBlockWatchClient();
+  /** Cleanup function to stop watching blocks. Null when not watching. */
+  private unwatchFn: (() => void) | null = null;
 
   constructor(sensoryMemory: SensoryMemory, temporalFramework: TemporalAwarenessFramework) {
     this.sensoryMemory = sensoryMemory;
@@ -27,10 +28,21 @@ export class PerceptionStream {
     console.log('PerceptionStream constructed and ready.');
   }
 
+  /**
+   * Returns true if the stream is currently watching for blocks
+   */
+  public isWatching(): boolean {
+    return this.unwatchFn !== null;
+  }
+
   public initialize() {
+    if (this.unwatchFn) {
+      console.log('PerceptionStream already initialized.');
+      return;
+    }
     console.log('Initializing blockchain event listener...');
     // Use viem's watchBlockNumber to subscribe to new blocks
-    this.unwatch = this.client.watchBlockNumber({
+    this.unwatchFn = this.client.watchBlockNumber({
       onBlockNumber: (blockNumber: bigint) => this.handleNewBlock(blockNumber),
       emitOnBegin: false,
     });
@@ -38,9 +50,9 @@ export class PerceptionStream {
   }
 
   public stop() {
-    if (this.unwatch) {
-      this.unwatch();
-      this.unwatch = null;
+    if (this.unwatchFn) {
+      this.unwatchFn();
+      this.unwatchFn = null;
       console.log('Block listener stopped.');
     }
   }
