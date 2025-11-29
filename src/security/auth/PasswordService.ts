@@ -1,8 +1,9 @@
 /**
  * Password Hashing and Verification Service
- * Uses Bun's built-in password hashing (Argon2id by default, more secure than bcrypt)
+ * Uses argon2id for secure password hashing
  */
 
+import * as argon2 from 'argon2';
 import { AuthConfig } from './types';
 
 export class PasswordService {
@@ -13,22 +14,27 @@ export class PasswordService {
   }
 
   /**
-   * Hash password using Bun's built-in Argon2id (more secure than bcrypt)
+   * Hash password using Argon2id (more secure than bcrypt)
    */
   async hashPassword(password: string): Promise<string> {
-    return Bun.password.hash(password, {
-      algorithm: 'argon2id',
+    return argon2.hash(password, {
+      type: argon2.argon2id,
       memoryCost: 65536, // 64 MB
       timeCost: 2,
+      parallelism: 1,
     });
   }
 
   /**
    * Verify password against hash
-   * Supports both Argon2id (new) and bcrypt (legacy) hashes
+   * Supports Argon2id hashes
    */
   async verifyPassword(password: string, hash: string): Promise<boolean> {
-    return Bun.password.verify(password, hash);
+    try {
+      return await argon2.verify(hash, password);
+    } catch {
+      return false;
+    }
   }
 
   /**

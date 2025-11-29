@@ -2,11 +2,12 @@
  * SQLiteStore - Persistent SQLite Memory Backend
  *
  * Provides persistent storage for TheWarden's memory system using SQLite.
- * Uses Bun's built-in SQLite for maximum performance.
+ * Uses better-sqlite3 for high-performance synchronous SQLite operations.
  * Designed for high-performance local persistence with full ACID compliance.
  */
 
-import { Database } from 'bun:sqlite';
+import Database from 'better-sqlite3';
+import type { Database as DatabaseType } from 'better-sqlite3';
 import * as path from 'path';
 import * as fs from 'fs';
 import { MemoryEntry, MemoryStore, MemoryQuery } from '../../consciousness/memory/types';
@@ -21,10 +22,10 @@ export interface SQLiteStoreConfig {
 }
 
 /**
- * SQLite implementation of the memory store using Bun's native SQLite
+ * SQLite implementation of the memory store using better-sqlite3
  */
 export class SQLiteStore extends MemoryStore {
-  private db: Database;
+  private db: DatabaseType;
   private readonly config: Required<SQLiteStoreConfig>;
 
   constructor(config: SQLiteStoreConfig = {}) {
@@ -262,9 +263,9 @@ export class SQLiteStore extends MemoryStore {
    */
   delete(id: UUID): boolean {
     const stmt = this.db.prepare('DELETE FROM memories WHERE id = ?');
-    stmt.run(id);
+    const result = stmt.run(id);
     this.memories.delete(id);
-    return true;
+    return result.changes > 0;
   }
 
   /**
