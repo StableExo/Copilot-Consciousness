@@ -30,31 +30,33 @@ function decodeAaveError(error: any): string {
 }
 
 async function main() {
+  // Connect to network to get NetworkConnection with networkName (Hardhat v3 API)
+  const networkConnection = await hre.network.connect();
+  const networkName = networkConnection.networkName;
   const ethers = (hre as any).ethers;
-  const network = hre.network;
   console.log("Starting multi-hop arbitrage script...");
 
   // --- 1. Configuration ---
   // Get addresses from centralized config based on current network
-  const netName = network.name as NetworkKey;
+  const netName = networkName as NetworkKey;
   const addresses = ADDRESSES[netName];
   
   if (!addresses) {
     throw new Error(
-      `No address configuration found for network: ${network.name}\n` +
+      `No address configuration found for network: ${networkName}\n` +
       `Please add addresses to config/addresses.ts for this network.`
     );
   }
   
   // Get token addresses
   const WETH_ADDRESS = requireAddress(netName, "weth", 
-    `WETH address is required for flash loans on ${network.name}`);
+    `WETH address is required for flash loans on ${networkName}`);
   const USDC_ADDRESS = addresses.usdc || ""; // USDC (for Base mainnet)
   const DAI_ADDRESS = addresses.dai || ""; // DAI (for testnet)
   
-  console.log(`\n=== Network: ${network.name} ===`);
+  console.log(`\n=== Network: ${networkName} ===`);
   console.log("Using WETH as primary asset (most likely to be active on Aave)");
-  if (network.name === "base") {
+  if (networkName === "base") {
     console.log("⚠️  BASE MAINNET: Using minimal amounts for initial safety test");
   }
   console.log("NOTE: Multi-hop arbitrage requires all pools to exist with sufficient liquidity\n");
@@ -79,7 +81,7 @@ async function main() {
   // --- 2. Configure Multi-Hop Pathfinding ---
   // BASE MAINNET: Use very small thresholds for initial testing
   // TESTNET: Use smaller thresholds suitable for testnet liquidity
-  const isBaseMainnet = network.name === "base";
+  const isBaseMainnet = networkName === "base";
   const pathConfig: PathfindingConfig = {
     maxHops: 4,
     minProfitThreshold: isBaseMainnet 
@@ -106,7 +108,7 @@ async function main() {
   
   if (isBaseMainnet) {
     console.log("⚠️  BASE MAINNET: Using minimal 0.001 WETH for initial safety test");
-  } else if (network.name === "baseSepolia") {
+  } else if (networkName === "baseSepolia") {
     console.log("⚠️  NOTE: This is an illustrative example. On testnet:");
     console.log("  - Liquidity may be insufficient for actual arbitrage");
     console.log("  - Price feeds may not reflect real market conditions");

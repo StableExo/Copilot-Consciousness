@@ -19,7 +19,6 @@ export interface RPCQueueConfig {
   interval: number; // Time window (ms)
   intervalCap: number; // Max requests per interval
   timeout: number; // Request timeout (ms)
-  throwOnTimeout: boolean; // Whether to throw on timeout
 }
 
 export interface RPCManagerConfig {
@@ -35,7 +34,6 @@ const DEFAULT_QUEUE_CONFIG: RPCQueueConfig = {
   interval: 1000, // Time window (1 second)
   intervalCap: 50, // Max 50 requests per second
   timeout: 30000, // 30 second timeout
-  throwOnTimeout: true,
 };
 
 /**
@@ -96,7 +94,6 @@ export class RPCManager {
         interval: config.interval,
         intervalCap: config.intervalCap,
         timeout: config.timeout,
-        throwOnTimeout: config.throwOnTimeout,
       });
 
       // Set up queue event handlers

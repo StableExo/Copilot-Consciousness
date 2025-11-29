@@ -523,7 +523,7 @@ export function validateEnv(
     };
   }
 
-  const errorMessages = result.error.errors.map((err: z.ZodIssue) => {
+  const errorMessages = result.error.issues.map((err: z.ZodIssue) => {
     const path = err.path.join('.');
     return `${path}: ${err.message}`;
   });
@@ -580,7 +580,7 @@ export function validateEnvSection<T extends z.ZodTypeAny>(
     return { success: true, data: result.data };
   }
 
-  const errorMessages = result.error.errors.map((err: z.ZodIssue) => {
+  const errorMessages = result.error.issues.map((err: z.ZodIssue) => {
     const path = err.path.join('.');
     return `${path}: ${err.message}`;
   });

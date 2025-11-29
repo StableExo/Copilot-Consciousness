@@ -1,4 +1,4 @@
-import { network } from "hardhat";
+import hre from "hardhat";
 import { ADDRESSES, NetworkKey } from "../src/config/addresses";
 
 /**
@@ -15,15 +15,18 @@ import { ADDRESSES, NetworkKey } from "../src/config/addresses";
  */
 
 async function main() {
-  const netName = network.name as NetworkKey;
+  // Connect to network to get NetworkConnection with networkName (Hardhat v3 API)
+  const networkConnection = await hre.network.connect();
+  const networkName = networkConnection.networkName;
+  const netName = networkName as NetworkKey;
 
   console.log(`\n${"=".repeat(60)}`);
-  console.log(`Network: ${network.name}`);
+  console.log(`Network: ${networkName}`);
   console.log(`${"=".repeat(60)}\n`);
 
   // Check if we have address configuration for this network
   if (!ADDRESSES[netName]) {
-    console.log(`❌ No known address configuration for network: ${network.name}`);
+    console.log(`❌ No known address configuration for network: ${networkName}`);
     console.log(`\nSupported networks:`);
     Object.keys(ADDRESSES).forEach(net => {
       console.log(`  - ${net}`);
@@ -43,7 +46,7 @@ async function main() {
 
   if (!hasAddresses) {
     console.log(`⚠️  Network configuration exists but no addresses are defined yet.`);
-    console.log(`Edit config/addresses.ts to add addresses for ${network.name}\n`);
+    console.log(`Edit config/addresses.ts to add addresses for ${networkName}\n`);
     return;
   }
 

@@ -78,10 +78,10 @@ export function extractOpportunityFeatures(
   }
 ): OpportunityFeatures {
   // Profit metrics
-  const grossProfit = Number(formatEther(opportunity.estimatedProfit || 0));
-  const netProfit = Number(formatEther(opportunity.netProfit || 0));
+  const grossProfit = Number(formatEther(opportunity.estimatedProfit || 0n));
+  const netProfit = Number(formatEther(opportunity.netProfit || 0n));
   const profitMargin = grossProfit > 0 ? netProfit / grossProfit : 0;
-  const roi = grossProfit > 0 ? netProfit / Number(formatEther(opportunity.totalGasCost || 1)) : 0;
+  const roi = grossProfit > 0 ? netProfit / Number(formatEther(opportunity.totalGasCost || 1n)) : 0;
 
   // Liquidity metrics (approximate from hop data)
   const hopLiquidities = opportunity.hops?.map((hop: any) => hop.liquidity || 0) || [];
@@ -99,7 +99,7 @@ export function extractOpportunityFeatures(
   // Path characteristics
   const hopCount = opportunity.hops?.length || 2;
   const pathComplexity = calculatePathComplexity(opportunity);
-  const gasEstimate = Number(formatUnits(opportunity.totalGasCost || 200000, 0));
+  const gasEstimate = Number(formatUnits(opportunity.totalGasCost || 200000n, 0));
 
   // Market conditions
   const volatility = marketState?.volatility || 0.5;

@@ -28,25 +28,27 @@ function decodeAaveError(error: any): string {
 }
 
 async function main() {
+  // Connect to network to get NetworkConnection with networkName (Hardhat v3 API)
+  const networkConnection = await hre.network.connect();
+  const networkName = networkConnection.networkName;
   const ethers = (hre as any).ethers;
-  const network = hre.network;
   console.log("Starting arbitrage script...");
 
   // --- 1. Configuration ---
   // Get addresses from centralized config based on current network
-  const netName = network.name as NetworkKey;
+  const netName = networkName as NetworkKey;
   const addresses = ADDRESSES[netName];
   
   if (!addresses) {
     throw new Error(
-      `No address configuration found for network: ${network.name}\n` +
+      `No address configuration found for network: ${networkName}\n` +
       `Please add addresses to config/addresses.ts for this network.`
     );
   }
   
   // Get token addresses with fallback and validation
   const WETH_ADDRESS = requireAddress(netName, "weth", 
-    `WETH address is required for flash loans on ${network.name}`);
+    `WETH address is required for flash loans on ${networkName}`);
   const USDC_ADDRESS = addresses.usdc || ""; // USDC (for Base mainnet WETH/USDC route)
   const DAI_ADDRESS = addresses.dai || ""; // DAI (for testnet compatibility)
   
@@ -56,28 +58,28 @@ async function main() {
   const FLASH_LOAN_ASSET = WETH_ADDRESS; // Use WETH as it's most reliable
   // For Base mainnet initial test: 0.001 WETH (~$2-3)
   // For testnet: 0.1 WETH
-  const isBaseMainnet = network.name === "base";
+  const isBaseMainnet = networkName === "base";
   const LOAN_AMOUNT = isBaseMainnet 
     ? parseUnits("0.001", 18) // MAINNET: Start with 0.001 WETH for safety
     : parseUnits("0.1", 18);   // TESTNET: 0.1 WETH
 
   // MAINNET: Increase to 1000+ for profitable trades
   
-  console.log(`\n=== Network: ${network.name} ===`);
+  console.log(`\n=== Network: ${networkName} ===`);
   console.log(`Flash Loan Asset: WETH (${FLASH_LOAN_ASSET})`);
   console.log(`Loan Amount: ${formatUnits(LOAN_AMOUNT, 18)} WETH`);
   if (isBaseMainnet) {
     console.log("⚠️  BASE MAINNET: Using minimal 0.001 WETH for initial safety test");
     console.log("   Increase amount after confirming successful execution\n");
-  } else if (network.name === "baseSepolia") {
+  } else if (networkName === "baseSepolia") {
     console.log("NOTE: Using amounts suitable for testnet.\n");
   }
 
   // Get DEX router addresses from centralized config
   const uniswapV3Router = requireAddress(netName, "uniswapV3Router",
-    `Uniswap V3 router address is required for Base arbitrage on ${network.name}`);
+    `Uniswap V3 router address is required for Base arbitrage on ${networkName}`);
   const sushiRouter = requireAddress(netName, "sushiRouter",
-    `SushiSwap router address is required for Base arbitrage on ${network.name}`);
+    `SushiSwap router address is required for Base arbitrage on ${networkName}`);
 
   console.log("DEX Configurations:");
   console.log(`  Uniswap V3 Router: ${uniswapV3Router}`);
