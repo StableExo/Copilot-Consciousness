@@ -298,8 +298,9 @@ describe('AdversarialIntelligenceFeed', () => {
 
   describe('high priority threats', () => {
     it('should identify high priority threats', async () => {
-      // Ingest critical threats with SAME IOCs to build up observation count
-      for (let i = 0; i < 10; i++) {
+      // Ingest many critical threats with SAME IOCs to build up observation count
+      // Need enough observations to push risk score above 0.7 threshold
+      for (let i = 0; i < 25; i++) {
         await feed.ingestIntelligence({
           entryId: `intel-priority-${i}`,
           timestamp: Date.now() + i,
@@ -307,10 +308,11 @@ describe('AdversarialIntelligenceFeed', () => {
           severity: 'critical',
           iocs: {
             ips: ['10.0.0.1'], // Same IP to update same pattern
+            addresses: ['0xmalicious'], // Add address for higher confidence
           },
-          suggestedMitigations: [],
+          suggestedMitigations: ['Block exfiltration'],
           source: 'test',
-          confidence: 0.95,
+          confidence: 0.99,
         });
       }
 

@@ -490,13 +490,13 @@ export class AdversarialIntelligenceFeed extends EventEmitter {
       return 'apt';
     }
 
-    // Advanced attack indicators
-    if (intel.severity === 'high' && indicatorCount > 5) {
+    // Advanced attack indicators - critical severity OR high with many indicators
+    if (intel.severity === 'critical' || (intel.severity === 'high' && indicatorCount > 5)) {
       return 'advanced';
     }
 
     // Intermediate
-    if (indicatorCount > 2 || intel.severity === 'medium') {
+    if (indicatorCount > 2 || intel.severity === 'medium' || intel.severity === 'high') {
       return 'intermediate';
     }
 
