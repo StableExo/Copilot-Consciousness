@@ -21,7 +21,7 @@ export class PasswordService {
       type: argon2.argon2id,
       memoryCost: 65536, // 64 MB
       timeCost: 2,
-      parallelism: 1,
+      parallelism: 4, // Utilize multiple cores for better performance
     });
   }
 

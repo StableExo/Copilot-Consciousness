@@ -2,6 +2,11 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { DEXRegistry } from '../core/DEXRegistry';
 import { JsonRpcProvider } from 'ethers';
 
+// Interface for the mocked provider
+interface MockedProvider {
+  getCode: (addr: string) => Promise<string>;
+}
+
 // Store valid addresses at module level
 let validAddresses: Set<string> | null = null;
 
@@ -47,10 +52,7 @@ describe('DEX Validator Tests', () => {
     for (const dex of dexes) {
       console.log(`Validating ${dex.name}...`);
 
-      // Use imported mock (will be replaced by vitest)
-      const provider = new JsonRpcProvider() as unknown as {
-        getCode: (addr: string) => Promise<string>;
-      };
+      const provider = new JsonRpcProvider() as unknown as MockedProvider;
 
       const routerCode = await provider.getCode(dex.router);
       expect(routerCode).not.toBe('0x');
@@ -61,9 +63,7 @@ describe('DEX Validator Tests', () => {
   });
 
   it('should fail validation for a DEX with an invalid address', async () => {
-    const provider = new JsonRpcProvider() as unknown as {
-      getCode: (addr: string) => Promise<string>;
-    };
+    const provider = new JsonRpcProvider() as unknown as MockedProvider;
     const invalidAddress = '0xInvalidAddress';
     const code = await provider.getCode(invalidAddress);
     expect(code).toBe('0x');
