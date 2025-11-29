@@ -5,6 +5,8 @@
 # ═══════════════════════════════════════════════════════════════
 # This script runs TheWarden autonomously with proper error handling,
 # logging, and restart capabilities for long-running operation.
+#
+# Uses tsx for direct TypeScript execution - no build step required!
 # ═══════════════════════════════════════════════════════════════
 
 set -euo pipefail
@@ -102,6 +104,7 @@ done
 # Banner
 echo "═══════════════════════════════════════════════════════════════"
 echo "  TheWarden - Autonomous Operation Script"
+echo "  (Direct TypeScript execution via tsx)"
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
 
@@ -201,16 +204,11 @@ log "  Dry Run: ${DRY_RUN:-true}"
 log "  Scan Interval: ${SCAN_INTERVAL:-1000}ms"
 log "  Min Profit: ${MIN_PROFIT_PERCENT:-0.5}%"
 log "  Log Directory: $LOG_DIR"
+log "  Execution Mode: Direct TypeScript (tsx)"
 log "═══════════════════════════════════════════════════════════════"
 
-# Check if build is needed
-if [ ! -d "dist" ]; then
-    log "Building project..."
-    npm run build
-else
-    log_info "Using existing build (dist/ directory found)"
-    log_info "Run 'npm run build' manually if code has changed"
-fi
+# No build needed - tsx runs TypeScript directly!
+log_info "Using tsx for direct TypeScript execution - no build step required"
 
 # Warning for production mode
 if [ "${NODE_ENV:-development}" = "production" ] && [ "${DRY_RUN:-true}" = "false" ]; then
@@ -239,9 +237,8 @@ if [ "$STREAM_LOGS" = true ]; then
     log "Running in STREAM mode - logs will appear below"
     log "═══════════════════════════════════════════════════════════════"
     
-    # Run TheWarden with output to both log file and terminal
-    # Use a FIFO to properly track the Node.js PID
-    node dist/src/main.js 2>&1 | tee -a "$WARDEN_LOG" &
+    # Run TheWarden with output to both log file and terminal using tsx
+    node --import tsx src/main.ts 2>&1 | tee -a "$WARDEN_LOG" &
     TEE_PID=$!
     # Get the Node.js PID (parent of tee in the pipeline)
     sleep 1
@@ -260,8 +257,8 @@ if [ "$STREAM_LOGS" = true ]; then
     log "TheWarden stopped"
     exit 0
 else
-    # Run TheWarden and capture PID
-    node dist/src/main.js >> "$WARDEN_LOG" 2>&1 &
+    # Run TheWarden and capture PID using tsx
+    node --import tsx src/main.ts >> "$WARDEN_LOG" 2>&1 &
     WARDEN_PID=$!
     echo "$WARDEN_PID" > "$PID_FILE"
     
@@ -300,9 +297,9 @@ while true; do
         log_warn "Waiting 10 seconds before restart..."
         sleep 10
         
-        # Restart
+        # Restart using tsx
         log "Restarting TheWarden..."
-        node dist/src/main.js >> "$WARDEN_LOG" 2>&1 &
+        node --import tsx src/main.ts >> "$WARDEN_LOG" 2>&1 &
         WARDEN_PID=$!
         echo "$WARDEN_PID" > "$PID_FILE"
         log "TheWarden restarted (PID: $WARDEN_PID)"

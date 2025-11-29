@@ -287,6 +287,36 @@ nvm install
 nvm use
 ```
 
+### 🔄 Codespaces / Environment Sync
+
+**After pulling updates in Codespaces or any development environment**, run the sync script to ensure everything is configured correctly:
+
+```bash
+# Quick one-liner to sync your environment
+source scripts/sync-env.sh
+```
+
+This script will:
+1. ✅ Install/switch to the correct Node.js version (22.x)
+2. ✅ Install/update all npm dependencies  
+3. ✅ Build the TypeScript project
+4. ✅ Verify your `.env` configuration
+
+**Manual sync commands** (if you prefer step-by-step):
+```bash
+# Step 1: Setup Node.js
+source scripts/setup-node.sh
+
+# Step 2: Install dependencies
+npm install
+
+# Step 3: Build
+npm run build
+
+# Step 4: Verify .env exists
+cp .env.example .env  # If needed, then configure your settings
+```
+
 ### Install Package
 
 ```bash
