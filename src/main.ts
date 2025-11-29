@@ -1232,8 +1232,7 @@ class TheWarden extends EventEmitter {
     logger.info('[Metacognition] Prompting for session reflection...');
     // In a real implementation, this would involve a more complex interaction
     // For now, we'll just log a placeholder message
-    this.metacognition.log_question_for_future("How can I improve the shutdown sequence?");
-
+    this.metacognition.log_question_for_future('How can I improve the shutdown sequence?');
 
     this.isRunning = false;
     this.emit('shutdown');
@@ -1609,8 +1608,7 @@ class EnhancedTheWarden extends EventEmitter {
     logger.info('[Metacognition] Prompting for session reflection...');
     // In a real implementation, this would involve a more complex interaction
     // For now, we'll just log a placeholder message
-    this.metacognition.log_question_for_future("How can I improve the shutdown sequence?");
-
+    this.metacognition.log_question_for_future('How can I improve the shutdown sequence?');
 
     this.isRunning = false;
     this.emit('shutdown');

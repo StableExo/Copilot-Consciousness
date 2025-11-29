@@ -197,17 +197,23 @@ export class SwarmCoordinator extends EventEmitter {
     }
 
     // Wait for all votes with timeout
-    const timeoutPromise = new Promise<'timeout'>((resolve) =>
-      setTimeout(() => resolve('timeout'), this.config.votingTimeoutMs)
-    );
+    let timeoutId: NodeJS.Timeout | undefined;
+    const timeoutPromise = new Promise<'timeout'>((resolve) => {
+      timeoutId = setTimeout(() => resolve('timeout'), this.config.votingTimeoutMs);
+    });
 
-    await Promise.race([
-      Promise.all(votePromises),
-      timeoutPromise.then(() => {
-        console.warn('[SwarmCoordinator] Voting timeout reached');
-        return 'timeout' as const;
-      }),
-    ]);
+    try {
+      await Promise.race([
+        Promise.all(votePromises),
+        timeoutPromise.then(() => {
+          console.warn('[SwarmCoordinator] Voting timeout reached');
+          return 'timeout' as const;
+        }),
+      ]);
+    } finally {
+      // Ensure timeout is always cleared
+      if (timeoutId) clearTimeout(timeoutId);
+    }
 
     // Collect completed votes
     const votes = this.pendingVotes.get(opportunity.id) || [];
