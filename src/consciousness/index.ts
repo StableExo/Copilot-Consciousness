@@ -8,6 +8,7 @@
  * - ArbitrageConsciousness with Identity Core integration
  * - Sensory memory and temporal awareness
  * - Introspection for self-access to thoughts and memory
+ * - Unified consciousness loop connecting trading and security
  */
 
 export * from './memory';
@@ -22,3 +23,9 @@ export {
   createEnhancedArbitrageConsciousness,
   type EnhancedOpportunity,
 } from './ArbitrageConsciousnessIntegration';
+
+// Unified Consciousness Loop - connects trading brain with security intelligence
+export {
+  ConsciousnessArbitrageLoop,
+  createConsciousnessLoop,
+} from './ConsciousnessArbitrageLoop';

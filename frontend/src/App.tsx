@@ -2,7 +2,6 @@
  * Main Dashboard Application
  */
 
-import React from 'react';
 import { useDashboard } from './hooks/useDashboard';
 import { MetricsCard } from './components/MetricsCard';
 import { LineChart } from './components/LineChart';

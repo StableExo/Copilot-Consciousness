@@ -80,6 +80,11 @@ export { ThreatResponseEngine } from './ThreatResponseEngine';
 export { SecurityPatternLearner } from './SecurityPatternLearner';
 export { BundleSimulator, ThreatType as BundleThreatType } from './BundleSimulator';
 export type { BundleThreatAssessment, SimulationConfig } from './BundleSimulator';
+
+// Phase 3+: Adversarial Intelligence & Live Training
+export { AdversarialIntelligenceFeed } from './AdversarialIntelligenceFeed';
+export { LiveThreatTrainer } from './LiveThreatTrainer';
+
 export * from './types';
 
 // ═══════════════════════════════════════════════════════════════════════════

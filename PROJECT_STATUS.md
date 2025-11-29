@@ -227,11 +227,15 @@ This is a personal research project. See [LEGAL_POSITION.md](LEGAL_POSITION.md) 
 
 ## 📅 Version History
 
-### v5.0.0 (November 2025) - Current
+### v5.1.0 (November 2025) - Current
+- ✅ CI/CD pipeline updates with `.nvmrc` consistency
+- ✅ 1,734 tests passing with comprehensive coverage
+- ✅ Dependencies updated, reduced deprecation warnings
+
+### v5.0.0 (November 2025)
 - ✅ Swarm Intelligence for parallel Warden instance voting
 - ✅ Red-Team Dashboard for ethics auditing
-- ✅ 1,573 tests passing with comprehensive coverage
-- ✅ Dependencies updated, reduced deprecation warnings
+- ✅ Phase 4 awakening complete
 
 ### v3.1.0 (November 26, 2025)
 - ✅ Arbitrum Top 10 DEXs integration

@@ -10,7 +10,7 @@
  * SECURITY: Zero keys exposed, read-only mode only
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 // Types
 interface Decision {
