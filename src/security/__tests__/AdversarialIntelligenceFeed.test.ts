@@ -269,19 +269,19 @@ describe('AdversarialIntelligenceFeed', () => {
 
   describe('security pattern export', () => {
     it('should export patterns for SecurityPatternLearner integration', async () => {
-      // Ingest enough data to create patterns
+      // Ingest enough data with SAME IOCs to update the same pattern
       for (let i = 0; i < 5; i++) {
         await feed.ingestIntelligence({
           entryId: `intel-export-${i}`,
-          timestamp: Date.now(),
+          timestamp: Date.now() + i,
           threatType: 'price_manipulation',
-          severity: 'high',
+          severity: 'critical',
           iocs: {
-            addresses: [`0xattacker${i}`],
+            addresses: ['0xattacker'], // Same address each time to update same pattern
           },
           suggestedMitigations: ['Add oracle protection'],
           source: 'test',
-          confidence: 0.85,
+          confidence: 0.95,
         });
       }
 
@@ -298,14 +298,16 @@ describe('AdversarialIntelligenceFeed', () => {
 
   describe('high priority threats', () => {
     it('should identify high priority threats', async () => {
-      // Ingest critical threats
-      for (let i = 0; i < 5; i++) {
+      // Ingest critical threats with SAME IOCs to build up observation count
+      for (let i = 0; i < 10; i++) {
         await feed.ingestIntelligence({
           entryId: `intel-priority-${i}`,
-          timestamp: Date.now(),
+          timestamp: Date.now() + i,
           threatType: 'data_exfiltration',
           severity: 'critical',
-          iocs: {},
+          iocs: {
+            ips: ['10.0.0.1'], // Same IP to update same pattern
+          },
           suggestedMitigations: [],
           source: 'test',
           confidence: 0.95,

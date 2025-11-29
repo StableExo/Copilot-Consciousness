@@ -397,7 +397,7 @@ export class AdversarialIntelligenceFeed extends EventEmitter {
       // Update indicators
       intelligence.iocs.ips?.forEach((ip) => pattern!.indicators.maliciousIPs.add(ip));
       intelligence.iocs.addresses?.forEach((addr) =>
-        pattern!.indicators.maliciousAddresses.add(addr)
+        pattern!.indicators.maliciousAddresses.add(addr.toLowerCase())
       );
 
       // Recalculate risk score based on frequency
@@ -460,7 +460,7 @@ export class AdversarialIntelligenceFeed extends EventEmitter {
 
       indicators: {
         maliciousIPs: new Set(intel.iocs.ips ?? []),
-        maliciousAddresses: new Set(intel.iocs.addresses ?? []),
+        maliciousAddresses: new Set((intel.iocs.addresses ?? []).map((a) => a.toLowerCase())),
         maliciousTxPatterns: intel.iocs.txHashes ?? [],
         maliciousContracts: new Set(),
       },
