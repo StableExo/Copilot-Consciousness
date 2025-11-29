@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.11.1'
+          node-version-file: '.nvmrc'
           cache: 'npm'
       
       - name: Install dependencies
@@ -26,7 +26,6 @@ jobs:
       
       - name: Run ESLint
         run: npm run lint
-        continue-on-error: true
       
       - name: Check code formatting
         run: npm run format:check
@@ -42,7 +41,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.11.1'
+          node-version-file: '.nvmrc'
           cache: 'npm'
       
       - name: Install dependencies
@@ -69,18 +68,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.11.1'
+          node-version-file: '.nvmrc'
           cache: 'npm'
       
       - name: Install dependencies
         run: npm ci
       
-      - name: Run unit tests
-        run: npm run test:unit
-        continue-on-error: true
+      - name: Run tests
+        run: npm test -- --maxWorkers=2
       
       - name: Generate coverage report
-        run: npm run test:coverage
+        run: npm run test:coverage -- --maxWorkers=2
         continue-on-error: true
       
       - name: Upload coverage to Codecov
@@ -102,7 +100,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.11.1'
+          node-version-file: '.nvmrc'
           cache: 'npm'
       
       - name: Install dependencies

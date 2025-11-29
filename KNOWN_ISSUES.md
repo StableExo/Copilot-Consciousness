@@ -106,33 +106,30 @@ npm audit --production
 
 ---
 
-## 2. Node.js Version Warning
+## 2. Node.js Version Requirement
 
-### Warning Message
+### Requirement
 ```
-WARNING: You are using Node.js 20.19.5 which is not supported by Hardhat.
+Node.js >= 22.12.0
+npm >= 10.9.0
 ```
 
-### Analysis ✅ INFORMATIONAL ONLY
+### Analysis ✅ DOCUMENTED IN .NVMRC
 
 **Current State**:
-- Node version: `20.19.5` (LTS)
-- Package.json requires: `>=18 <21`
-- ✅ We're within the specified range
+- Required version: `22.12.0` (specified in `.nvmrc`)
+- Package.json requires: `>=22.12.0`
+- ✅ CI/CD workflows now use `node-version-file: .nvmrc` for consistency
 
-**Hardhat's Preference**:
-- Recommends: Node.js 22.10.0+ (latest LTS)
-- Reality: Works fine on Node 20.x
+### Why Node.js 22.x Is Required
 
-### Why This Is Safe
-
-1. **Version is compatible**: 20.19.5 is within our specified range
-2. **Compilation works**: Contract compiles successfully
-3. **Scripts execute**: All hardhat commands function correctly
-4. **Widespread use**: Node 20.x is commonly used with Hardhat
+1. **Modern ECMAScript features**: ES2022+ syntax and APIs
+2. **ESM support**: Native ES modules without transpilation
+3. **Performance improvements**: V8 engine optimizations
+4. **LTS release**: Node.js 22.x is a Long-Term Support version
 
 ### Recommendation
-✅ **Safe to ignore** - Upgrade to Node 22+ optional, not required for deployment.
+✅ **Use nvm for version management** - Run `nvm install && nvm use` in the project directory.
 
 ---
 
