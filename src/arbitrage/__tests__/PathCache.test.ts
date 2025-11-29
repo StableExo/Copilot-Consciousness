@@ -132,7 +132,7 @@ describe('PathCache', () => {
   });
 
   describe('TTL expiration', () => {
-    it('should expire old entries', (done) => {
+    it('should expire old entries', async () => {
       const shortTtlCache = new PathCache({
         enabled: true,
         maxEntries: 10,
@@ -150,10 +150,8 @@ describe('PathCache', () => {
       expect(shortTtlCache.get(pathHash)).not.toBeNull();
 
       // Should be expired after TTL
-      setTimeout(() => {
-        expect(shortTtlCache.get(pathHash)).toBeNull();
-        done();
-      }, 1500);
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      expect(shortTtlCache.get(pathHash)).toBeNull();
     }, 3000);
   });
 

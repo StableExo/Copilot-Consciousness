@@ -171,17 +171,15 @@ describe('Strategic Knowledge Loop', () => {
       expect(result.timestamp).toBeLessThanOrEqual(Date.now());
     });
 
-    it('should start and stop knowledge loop', (done) => {
+    it('should start and stop knowledge loop', async () => {
       expect(knowledgeLoop.isActive()).toBe(false);
 
       knowledgeLoop.start(100); // 100ms interval for testing
       expect(knowledgeLoop.isActive()).toBe(true);
 
-      setTimeout(async () => {
-        await knowledgeLoop.stop();
-        expect(knowledgeLoop.isActive()).toBe(false);
-        done();
-      }, 250);
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      await knowledgeLoop.stop();
+      expect(knowledgeLoop.isActive()).toBe(false);
     }, 10000);
   });
 

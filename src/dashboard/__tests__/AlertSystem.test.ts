@@ -38,10 +38,12 @@ describe('AlertSystem', () => {
       expect(alert.message).toBe('This is a test');
     });
 
-    it('should emit alert event', (done) => {
-      alertSystem.on('alert', (alert) => {
-        expect(alert.title).toBe('Test Event');
-        done();
+    it('should emit alert event', async () => {
+      const alertPromise = new Promise<void>((resolve) => {
+        alertSystem.on('alert', (alert) => {
+          expect(alert.title).toBe('Test Event');
+          resolve();
+        });
       });
 
       alertSystem.createAlert({
@@ -49,6 +51,8 @@ describe('AlertSystem', () => {
         title: 'Test Event',
         message: 'Event test',
       });
+
+      await alertPromise;
     });
   });
 
