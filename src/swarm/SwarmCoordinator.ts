@@ -204,10 +204,7 @@ export class SwarmCoordinator extends EventEmitter {
 
     try {
       await Promise.race([
-        Promise.all(votePromises).then((result) => {
-          if (timeoutId) clearTimeout(timeoutId);
-          return result;
-        }),
+        Promise.all(votePromises),
         timeoutPromise.then(() => {
           console.warn('[SwarmCoordinator] Voting timeout reached');
           return 'timeout' as const;

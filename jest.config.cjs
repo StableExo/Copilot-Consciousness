@@ -18,7 +18,9 @@ const config = {
       tsconfig: 'tsconfig.test.json',
     }]
   },
-  // Force exit after all tests complete to handle async cleanup issues
+  // Note: forceExit is used because some third-party libraries (e.g., event emitters,
+  // internal timers in testing utilities) may not clean up fully. The primary timer leaks
+  // in CircuitBreaker and SwarmCoordinator have been fixed with proper cleanup.
   forceExit: true,
 };
 
