@@ -68,7 +68,8 @@
     "audit:slither": "slither . --fail-medium",
     "audit:slither:report": "slither . --print human-summary",
     "audit:prod": "npm audit --omit=dev --audit-level=high",
-    "audit:deps": "npm outdated || true"
+    "audit:deps": "npm outdated || true",
+    "promote-memory": "npm run build && node scripts/promote-memory.cjs"
   },
   "dependencies": {
     "@aave/core-v3": "1.19.3",

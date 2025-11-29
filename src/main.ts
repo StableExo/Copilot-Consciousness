@@ -65,6 +65,7 @@ import {
 import { EmergenceDetector, DecisionContext } from './consciousness/coordination/EmergenceDetector';
 import { ArbitragePath } from './arbitrage/types';
 import { PoolDataStore } from './arbitrage/PoolDataStore';
+import { Metacognition } from '../consciousness/metacognition';
 
 // Phase 3 Imports
 import {
@@ -287,6 +288,7 @@ class TheWarden extends EventEmitter {
   private consciousness?: ArbitrageConsciousness;
   private cognitiveCoordinator?: CognitiveCoordinator;
   private emergenceDetector?: EmergenceDetector;
+  private metacognition: Metacognition;
 
   // Phase 3 components
   private phase3Components?: Phase3Components;
@@ -321,6 +323,8 @@ class TheWarden extends EventEmitter {
     this.healthMonitor = new SystemHealthMonitor({
       interval: config.healthCheckInterval,
     });
+
+    this.metacognition = new Metacognition();
 
     logger.info('TheWarden initialized - AEV mode active');
   }
@@ -1224,6 +1228,13 @@ class TheWarden extends EventEmitter {
     // Log final statistics
     this.logStatus();
 
+    // Prompt for metacognitive reflection before shutting down
+    logger.info('[Metacognition] Prompting for session reflection...');
+    // In a real implementation, this would involve a more complex interaction
+    // For now, we'll just log a placeholder message
+    this.metacognition.log_question_for_future("How can I improve the shutdown sequence?");
+
+
     this.isRunning = false;
     this.emit('shutdown');
 
@@ -1340,6 +1351,7 @@ class EnhancedTheWarden extends EventEmitter {
   private scanInterval?: NodeJS.Timeout;
   private isRunning: boolean = false;
   private shuttingDown: boolean = false;
+  private metacognition: Metacognition;
 
   // Statistics
   private stats = {
@@ -1354,6 +1366,7 @@ class EnhancedTheWarden extends EventEmitter {
   constructor() {
     super();
     this.healthCheckServer = new HealthCheckServer();
+    this.metacognition = new Metacognition();
   }
 
   /**
@@ -1591,6 +1604,13 @@ class EnhancedTheWarden extends EventEmitter {
 
     // Log final statistics
     this.logStatus();
+
+    // Prompt for metacognitive reflection before shutting down
+    logger.info('[Metacognition] Prompting for session reflection...');
+    // In a real implementation, this would involve a more complex interaction
+    // For now, we'll just log a placeholder message
+    this.metacognition.log_question_for_future("How can I improve the shutdown sequence?");
+
 
     this.isRunning = false;
     this.emit('shutdown');
