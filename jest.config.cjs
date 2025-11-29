@@ -17,7 +17,9 @@ const config = {
     '^.+\\.ts$': ['ts-jest', {
       tsconfig: 'tsconfig.test.json',
     }]
-  }
+  },
+  // Force exit after all tests complete to handle async cleanup issues
+  forceExit: true,
 };
 
 module.exports = config;

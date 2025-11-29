@@ -18,17 +18,17 @@ This guide will help you set up your development environment and understand the 
 
 ### Required Software
 
-1. **Node.js** `^20.11.1`
+1. **Node.js** `>=22.12.0`
    ```bash
    # Install nvm (Node Version Manager)
-   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
    
    # Install and use the correct Node version
    nvm install
    nvm use
    ```
 
-2. **npm** `^10.2.4` (comes with Node.js)
+2. **npm** `>=10.9.0` (comes with Node.js)
 
 3. **Git**
    ```bash

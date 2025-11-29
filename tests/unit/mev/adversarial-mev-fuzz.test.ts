@@ -471,6 +471,9 @@ describe('Adversarial MEV Fuzz Tests', () => {
       });
 
       expect(circuitBreaker.canTrade()).toBe(false);
+      
+      // Clean up to prevent timer leak
+      circuitBreaker.shutdown();
     });
 
     it('should trigger emergency stop on excessive capital loss from MEV', async () => {
