@@ -2,17 +2,12 @@
  * WalletBalanceService - Fetches and caches wallet balances
  *
  * Provides real-time wallet balance information for native and ERC20 tokens
+ *
+ * Migrated to viem for better TypeScript support and smaller bundle size.
  */
 
-import { ethers, Provider } from 'ethers';
+import { type PublicClient, type Address, erc20Abi } from 'viem';
 import { WalletBalance } from '../types';
-
-// Minimal ERC20 ABI for balance checks
-const ERC20_ABI = [
-  'function balanceOf(address owner) view returns (uint256)',
-  'function decimals() view returns (uint8)',
-  'function symbol() view returns (string)',
-];
 
 export interface TokenConfig {
   address: string;
@@ -21,7 +16,7 @@ export interface TokenConfig {
 }
 
 export interface WalletBalanceConfig {
-  provider: Provider;
+  publicClient: PublicClient;
   walletAddress: string;
   chainId: number;
   chainName: string;
@@ -63,14 +58,20 @@ export class WalletBalanceService {
   private async fetchBalances(): Promise<WalletBalance> {
     try {
       // Get native balance (ETH)
-      const nativeBalance = await this.config.provider.getBalance(this.config.walletAddress);
+      const nativeBalance = await this.config.publicClient.getBalance({
+        address: this.config.walletAddress as Address,
+      });
 
       // Get token balances
       const tokenBalances = await Promise.all(
         this.config.tokens.map(async (token) => {
           try {
-            const contract = new ethers.Contract(token.address, ERC20_ABI, this.config.provider);
-            const balance = await contract.balanceOf(this.config.walletAddress);
+            const balance = await this.config.publicClient.readContract({
+              address: token.address as Address,
+              abi: erc20Abi,
+              functionName: 'balanceOf',
+              args: [this.config.walletAddress as Address],
+            });
 
             return {
               address: token.address,
