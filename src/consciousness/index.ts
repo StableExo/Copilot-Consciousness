@@ -9,6 +9,7 @@
  * - Sensory memory and temporal awareness
  * - Introspection for self-access to thoughts and memory
  * - Unified consciousness loop connecting trading and security
+ * - Monitoring integration for real-time gain/loss tracking
  */
 
 export * from './memory';
@@ -26,3 +27,13 @@ export {
 
 // Unified Consciousness Loop - connects trading brain with security intelligence
 export { ConsciousnessArbitrageLoop, createConsciousnessLoop } from './ConsciousnessArbitrageLoop';
+
+// Monitoring Integration - connects monitoring with consciousness and memory
+export {
+  MonitoringIntegration,
+  createMonitoringIntegration,
+  type MonitoringMetrics,
+  type GainLossEvent,
+  type SwarmAlignmentEvent,
+  type MonitoringIntegrationConfig,
+} from './monitoring';
