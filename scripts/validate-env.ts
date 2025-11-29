@@ -11,13 +11,12 @@
  *   ts-node scripts/validate-env.ts
  */
 
-import * as dotenv from 'dotenv';
+// NOTE: Bun automatically loads .env files
 import { ethers, JsonRpcProvider } from 'ethers';
 import * as fs from 'fs';
 import * as path from 'path';
 
 // Load environment variables
-dotenv.config();
 
 // ANSI color codes
 const colors = {

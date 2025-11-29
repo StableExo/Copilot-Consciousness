@@ -75,7 +75,14 @@ describe('RedisStore', () => {
     });
 
     it('should store with emotional context', () => {
-      const emotionalContext = { valence: 0.8, arousal: 0.5, dominance: 0.6 };
+      const timestamp = new Date();
+      const emotionalContext = {
+        primaryEmotion: 'curious',
+        intensity: 0.7,
+        valence: 0.8,
+        arousal: 0.5,
+        timestamp,
+      };
       const id = store.store({
         type: MemoryType.EPISODIC,
         content: 'emotional memory',
@@ -87,7 +94,11 @@ describe('RedisStore', () => {
       });
 
       const retrieved = store.retrieve(id);
-      expect(retrieved?.emotionalContext).toEqual(emotionalContext);
+      // In-memory store preserves Date objects
+      expect(retrieved?.emotionalContext?.primaryEmotion).toBe('curious');
+      expect(retrieved?.emotionalContext?.intensity).toBe(0.7);
+      expect(retrieved?.emotionalContext?.valence).toBe(0.8);
+      expect(retrieved?.emotionalContext?.arousal).toBe(0.5);
     });
   });
 

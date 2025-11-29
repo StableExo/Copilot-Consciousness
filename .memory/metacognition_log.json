@@ -1,70 +1,9 @@
 [
   {
-    "timestamp": "2025-11-29T06:03:00.130Z",
+    "timestamp": "2025-11-29T08:07:12.439Z",
     "type": "question_for_future",
     "data": {
       "question": "test question"
-    }
-  },
-  {
-    "timestamp": "2025-11-29T06:18:42.164Z",
-    "type": "failed_approach",
-    "data": {
-      "description": "Circular dependency causing SyntaxError",
-      "reason": "An import in src/main.ts created a circular dependency with src/core/bootstrap.ts and src/core/initializer.ts, leading to a module resolution failure at runtime."
-    }
-  },
-  {
-    "timestamp": "2025-11-29T06:18:42.165Z",
-    "type": "failed_approach",
-    "data": {
-      "description": "__dirname not defined in ES module scope",
-      "reason": "The project is configured as an ES Module, but several files were using the __dirname variable, which is only available in CommonJS modules. This caused a ReferenceError at runtime."
-    }
-  },
-  {
-    "timestamp": "2025-11-29T06:18:42.165Z",
-    "type": "architectural_decision",
-    "data": {
-      "decision": "Resolve circular dependency by removing re-export and fixing import",
-      "rationale": "Removed the re-export of InitializedComponents from src/core/bootstrap.ts and ensured src/main.ts imports it directly from src/core/initializer.ts. This broke the circular dependency and resolved the SyntaxError."
-    }
-  },
-  {
-    "timestamp": "2025-11-29T06:18:42.166Z",
-    "type": "architectural_decision",
-    "data": {
-      "decision": "Replace __dirname with import.meta.url pattern",
-      "rationale": "Replaced all instances of __dirname with the ES Module-compliant pattern using import.meta.url, fileURLToPath, and path.dirname. This resolved the ReferenceError."
-    }
-  },
-  {
-    "timestamp": "2025-11-29T06:18:42.167Z",
-    "type": "collaborator_preference",
-    "data": {
-      "preference": "Clean up environment variables before submission",
-      "context": "The user requested that I securely remove the provided secrets from the .env file before submitting my work. This is a security best practice that I will incorporate into my workflow."
-    }
-  },
-  {
-    "timestamp": "2025-11-29T06:20:47.528Z",
-    "type": "question_for_future",
-    "data": {
-      "question": "How can I improve the shutdown sequence?"
-    }
-  },
-  {
-    "timestamp": "2025-11-29T06:22:00.532Z",
-    "type": "question_for_future",
-    "data": {
-      "question": "How can I improve the shutdown sequence?"
-    }
-  },
-  {
-    "timestamp": "2025-11-29T06:22:09.505Z",
-    "type": "question_for_future",
-    "data": {
-      "question": "How can I improve the shutdown sequence?"
     }
   }
 ]

@@ -7,10 +7,9 @@
  */
 
 import { Wallet } from 'ethers';
-import dotenv from 'dotenv';
+// NOTE: Bun automatically loads .env files
 
 // Load environment
-dotenv.config();
 
 console.log('═══════════════════════════════════════════════════════════');
 console.log('  PRIVATE KEY VERIFICATION TOOL');

@@ -194,16 +194,19 @@ describe('BaseFeeVelocityTracker', () => {
       expect(tracker.getCurrentBaseFee()).toBeGreaterThan(0);
     });
 
-    it('should emit velocity update events', (done) => {
-      tracker.on('velocityUpdate', (data) => {
-        expect(data).toHaveProperty('velocity');
-        expect(data).toHaveProperty('threshold');
-        expect(data).toHaveProperty('blockNumber');
-        done();
+    it('should emit velocity update events', async () => {
+      const updatePromise = new Promise<void>((resolve) => {
+        tracker.on('velocityUpdate', (data) => {
+          expect(data).toHaveProperty('velocity');
+          expect(data).toHaveProperty('threshold');
+          expect(data).toHaveProperty('blockNumber');
+          resolve();
+        });
       });
 
       provider.setBlock(100, BigInt(40_000_000));
       tracker.updateFromBlock(100);
+      await updatePromise;
     });
 
     it('should handle extreme velocity spikes', async () => {

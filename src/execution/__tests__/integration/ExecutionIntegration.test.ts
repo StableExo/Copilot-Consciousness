@@ -378,7 +378,7 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
     });
 
     describe('Health Checks', () => {
-      it('should report healthy status for healthy components', (done) => {
+      it('should report healthy status for healthy components', async () => {
         const component: MonitoredComponent = {
           name: 'HealthyComponent',
           checkHealth: async () => HealthStatus.HEALTHY,
@@ -386,16 +386,19 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
 
         monitor.registerComponent(component);
 
-        monitor.on('health-check', (report) => {
-          const comp = report.components.find((c) => c.componentName === 'HealthyComponent');
-          expect(comp?.status).toBe(HealthStatus.HEALTHY);
-          done();
+        const healthPromise = new Promise<void>((resolve) => {
+          monitor.on('health-check', (report) => {
+            const comp = report.components.find((c) => c.componentName === 'HealthyComponent');
+            expect(comp?.status).toBe(HealthStatus.HEALTHY);
+            resolve();
+          });
         });
 
         monitor.start();
+        await healthPromise;
       });
 
-      it('should report degraded status for slow components', (done) => {
+      it('should report degraded status for slow components', async () => {
         const component: MonitoredComponent = {
           name: 'SlowComponent',
           checkHealth: async () => {
@@ -406,18 +409,21 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
 
         monitor.registerComponent(component);
 
-        monitor.on('health-check', (report) => {
-          const comp = report.components.find((c) => c.componentName === 'SlowComponent');
-          if (comp) {
-            expect(comp.status).toBe(HealthStatus.DEGRADED);
-            done();
-          }
+        const healthPromise = new Promise<void>((resolve) => {
+          monitor.on('health-check', (report) => {
+            const comp = report.components.find((c) => c.componentName === 'SlowComponent');
+            if (comp) {
+              expect(comp.status).toBe(HealthStatus.DEGRADED);
+              resolve();
+            }
+          });
         });
 
         monitor.start();
+        await healthPromise;
       });
 
-      it('should report unhealthy status for failed components', (done) => {
+      it('should report unhealthy status for failed components', async () => {
         const component: MonitoredComponent = {
           name: 'FailingComponent',
           checkHealth: async () => {
@@ -427,19 +433,22 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
 
         monitor.registerComponent(component);
 
-        monitor.on('health-check', (report) => {
-          const comp = report.components.find((c) => c.componentName === 'FailingComponent');
-          if (comp && comp.status === HealthStatus.UNHEALTHY) {
-            done();
-          }
+        const healthPromise = new Promise<void>((resolve) => {
+          monitor.on('health-check', (report) => {
+            const comp = report.components.find((c) => c.componentName === 'FailingComponent');
+            if (comp && comp.status === HealthStatus.UNHEALTHY) {
+              resolve();
+            }
+          });
         });
 
         monitor.start();
+        await healthPromise;
       });
     });
 
     describe('Anomaly Detection', () => {
-      it('should detect high error rates', (done) => {
+      it('should detect high error rates', async () => {
         const component: MonitoredComponent = {
           name: 'ErrorProneComponent',
           checkHealth: async () => {
@@ -449,14 +458,17 @@ describe('Mission #5: Integrated Arbitrage Execution Engine', () => {
 
         monitor.registerComponent(component);
 
-        monitor.on('anomaly-detected', (anomaly) => {
-          if (anomaly.anomalyType === 'HIGH_ERROR_RATE') {
-            expect(anomaly.affectedComponent).toBe('ErrorProneComponent');
-            done();
-          }
+        const anomalyPromise = new Promise<void>((resolve) => {
+          monitor.on('anomaly-detected', (anomaly) => {
+            if (anomaly.anomalyType === 'HIGH_ERROR_RATE') {
+              expect(anomaly.affectedComponent).toBe('ErrorProneComponent');
+              resolve();
+            }
+          });
         });
 
         monitor.start();
+        await anomalyPromise;
       });
     });
 

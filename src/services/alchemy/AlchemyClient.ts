@@ -5,10 +5,9 @@
  * for token data, transfers, prices, and blockchain analytics.
  */
 
-import { Alchemy, Network, AlchemySettings } from 'alchemy-sdk';
-import dotenv from 'dotenv';
+// NOTE: Bun automatically loads .env files
 
-dotenv.config();
+import { Alchemy, Network, AlchemySettings } from 'alchemy-sdk';
 
 export interface AlchemyConfig {
   apiKey: string;

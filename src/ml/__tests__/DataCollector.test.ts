@@ -54,7 +54,7 @@ describe('DataCollector', () => {
       expect(stats.activeTokens.has('0xToken1')).toBe(true);
     });
 
-    it('should emit data event', (done) => {
+    it('should emit data event', async () => {
       const dataPoint: PriceDataPoint = {
         timestamp: Date.now(),
         chain: 1,
@@ -64,18 +64,21 @@ describe('DataCollector', () => {
         liquidity: 50000,
       };
 
-      collector.on('data', (event) => {
-        expect(event.type).toBe('price');
-        expect(event.data).toEqual(dataPoint);
-        done();
+      const dataPromise = new Promise<void>((resolve) => {
+        collector.on('data', (event) => {
+          expect(event.type).toBe('price');
+          expect(event.data).toEqual(dataPoint);
+          resolve();
+        });
       });
 
       collector.recordPrice(dataPoint);
+      await dataPromise;
     });
   });
 
   describe('recordArbitrageExecution', () => {
-    it('should record arbitrage execution', (done) => {
+    it('should record arbitrage execution', async () => {
       const execution = {
         timestamp: Date.now(),
         path: { hops: [] },
@@ -85,24 +88,30 @@ describe('DataCollector', () => {
         chainId: 1,
       };
 
-      collector.on('data', (event) => {
-        expect(event.type).toBe('arbitrage');
-        done();
+      const dataPromise = new Promise<void>((resolve) => {
+        collector.on('data', (event) => {
+          expect(event.type).toBe('arbitrage');
+          resolve();
+        });
       });
 
       collector.recordArbitrageExecution(execution);
+      await dataPromise;
     });
   });
 
   describe('recordGasPrice', () => {
-    it('should record gas price', (done) => {
-      collector.on('data', (event) => {
-        expect(event.type).toBe('gas');
-        expect(event.data.gasPrice).toBe(50n);
-        done();
+    it('should record gas price', async () => {
+      const dataPromise = new Promise<void>((resolve) => {
+        collector.on('data', (event) => {
+          expect(event.type).toBe('gas');
+          expect(event.data.gasPrice).toBe(50n);
+          resolve();
+        });
       });
 
       collector.recordGasPrice(1, 50n);
+      await dataPromise;
     });
   });
 
@@ -207,11 +216,13 @@ describe('DataCollector', () => {
   });
 
   describe('subscription', () => {
-    it('should subscribe to data stream', (done) => {
-      const unsubscribe = collector.subscribeToStream((event) => {
-        expect(event.type).toBe('price');
-        unsubscribe();
-        done();
+    it('should subscribe to data stream', async () => {
+      const streamPromise = new Promise<void>((resolve) => {
+        const unsubscribe = collector.subscribeToStream((event) => {
+          expect(event.type).toBe('price');
+          unsubscribe();
+          resolve();
+        });
       });
 
       collector.recordPrice({
@@ -222,6 +233,8 @@ describe('DataCollector', () => {
         volume: 1000,
         liquidity: 50000,
       });
+
+      await streamPromise;
     });
 
     it('should unsubscribe from stream', () => {

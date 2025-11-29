@@ -9,10 +9,9 @@ import { BaseArbitrageRunner } from '../../src/services/BaseArbitrageRunner';
 import { ArbitrageConsciousness } from '../../src/consciousness/ArbitrageConsciousness';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as dotenv from 'dotenv';
+// NOTE: Bun automatically loads .env files
 
 // Load environment variables
-dotenv.config();
 
 async function main() {
   console.log('=== Base WETH/USDC Arbitrage Strategy ===\n');

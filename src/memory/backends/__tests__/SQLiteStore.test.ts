@@ -80,7 +80,14 @@ describe('SQLiteStore', () => {
     });
 
     it('should store with emotional context', () => {
-      const emotionalContext = { valence: 0.5, arousal: 0.7, dominance: 0.3 };
+      const timestamp = new Date();
+      const emotionalContext = {
+        primaryEmotion: 'curious',
+        intensity: 0.7,
+        valence: 0.5,
+        arousal: 0.7,
+        timestamp,
+      };
       const id = store.store({
         type: MemoryType.EPISODIC,
         content: 'emotional memory',
@@ -92,7 +99,14 @@ describe('SQLiteStore', () => {
       });
 
       const retrieved = store.retrieve(id);
-      expect(retrieved?.emotionalContext).toEqual(emotionalContext);
+      // SQLite serializes dates as ISO strings, so compare the string representation
+      expect(retrieved?.emotionalContext?.primaryEmotion).toBe('curious');
+      expect(retrieved?.emotionalContext?.intensity).toBe(0.7);
+      expect(retrieved?.emotionalContext?.valence).toBe(0.5);
+      expect(retrieved?.emotionalContext?.arousal).toBe(0.7);
+      // Timestamp may be serialized as string
+      const retrievedTimestamp = retrieved?.emotionalContext?.timestamp;
+      expect(new Date(retrievedTimestamp as any).toISOString()).toBe(timestamp.toISOString());
     });
   });
 

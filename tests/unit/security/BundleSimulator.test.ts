@@ -226,11 +226,13 @@ describe('BundleSimulator', () => {
   });
 
   describe('event emissions', () => {
-    it('should emit threat detection events', (done) => {
-      simulator.on('threatDetected', (assessment) => {
-        expect(assessment).toHaveProperty('probability');
-        expect(assessment).toHaveProperty('recommendation');
-        done();
+    it('should emit threat detection events', async () => {
+      const threatPromise = new Promise<void>((resolve) => {
+        simulator.on('threatDetected', (assessment) => {
+          expect(assessment).toHaveProperty('probability');
+          expect(assessment).toHaveProperty('recommendation');
+          resolve();
+        });
       });
 
       // Create high-risk scenario
@@ -252,6 +254,7 @@ describe('BundleSimulator', () => {
       }
 
       simulator.assessThreat(bundle);
+      await threatPromise;
     });
   });
 

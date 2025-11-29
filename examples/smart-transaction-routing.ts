@@ -6,7 +6,7 @@
  */
 
 import { ethers, Wallet } from 'ethers';
-import dotenv from 'dotenv';
+// NOTE: Bun automatically loads .env files
 import {
   PrivateRPCManager,
   createFlashbotsProtectConfig,
@@ -19,7 +19,6 @@ import {
 import { TransactionManager } from '../src/execution/TransactionManager';
 import { NonceManager } from '../src/execution/NonceManager';
 
-dotenv.config();
 
 /**
  * Enhanced Transaction Router

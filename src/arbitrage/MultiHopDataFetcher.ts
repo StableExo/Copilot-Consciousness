@@ -338,7 +338,7 @@ export class MultiHopDataFetcher {
       results.push(...batchResults);
 
       // Add a small delay to avoid RPC rate limiting
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Log progress for long scans (every 25% or at least every 100 batches)
       const progressInterval = Math.max(100, Math.floor(fetchTasks.length / 4));

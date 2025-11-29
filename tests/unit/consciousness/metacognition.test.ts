@@ -2,17 +2,11 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { Metacognition } from '../../../consciousness/metacognition';
 
 const METACOGNITION_LOG_PATH = path.join(process.cwd(), '.memory/metacognition_log.json');
 
 describe('Metacognition', () => {
-    let Metacognition: any;
-
-    beforeAll(async () => {
-        const module = await import('../../../consciousness/metacognition');
-        Metacognition = module.Metacognition;
-    });
-
     beforeEach(() => {
         if (fs.existsSync(METACOGNITION_LOG_PATH)) {
             fs.unlinkSync(METACOGNITION_LOG_PATH);
