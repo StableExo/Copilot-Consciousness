@@ -23,11 +23,13 @@ import { ADDRESSES, NetworkKey, requireAddress } from "../src/config/addresses";
  */
 
 async function main() {
-  const network = hre.network;
+  // Connect to network to get NetworkConnection with networkName (Hardhat v3 API)
+  const networkConnection = await hre.network.connect();
+  const networkName = networkConnection.networkName;
   
   console.log("🔍 FlashSwapV2 Contract Verification Script");
   console.log("============================================");
-  console.log(`Network: ${network.name}`);
+  console.log(`Network: ${networkName}`);
   
   // Get contract address from environment variable or prompt
   const contractAddress = process.env.CONTRACT_ADDRESS || process.env.FLASHSWAP_V2_ADDRESS;
@@ -44,18 +46,18 @@ async function main() {
   
   // Validate network is supported
   const supportedNetworks: NetworkKey[] = ["base", "baseSepolia", "arbitrum", "polygon", "mainnet", "goerli"];
-  if (!supportedNetworks.includes(network.name as NetworkKey)) {
-    console.error(`\n❌ Error: Unsupported network: ${network.name}`);
+  if (!supportedNetworks.includes(networkName as NetworkKey)) {
+    console.error(`\n❌ Error: Unsupported network: ${networkName}`);
     console.error(`Supported networks: ${supportedNetworks.join(", ")}`);
     process.exit(1);
   }
   
   // Get network addresses from centralized config
-  const netName = network.name as NetworkKey;
+  const netName = networkName as NetworkKey;
   const addresses = ADDRESSES[netName];
   
   if (!addresses) {
-    console.error(`\n❌ Error: No address configuration found for network: ${network.name}`);
+    console.error(`\n❌ Error: No address configuration found for network: ${networkName}`);
     console.error("Please add addresses to src/config/addresses.ts for this network.");
     process.exit(1);
   }
@@ -78,17 +80,19 @@ async function main() {
   console.log("\n📤 Submitting verification request...");
   
   try {
-    await hre.run("verify:verify", {
+    // Hardhat v3: Use verifyContract from hardhat-verify/verify
+    const verifyModule = await import("@nomicfoundation/hardhat-verify/verify");
+    await verifyModule.verifyContract({
       address: contractAddress,
-      constructorArguments: constructorArgs,
+      constructorArgs: constructorArgs,
       contract: "contracts/FlashSwapV2.sol:FlashSwapV2",
-    });
+    }, hre);
     
     console.log("\n✅ Contract verified successfully!");
     console.log(`\nView on block explorer:`);
     
     // Generate block explorer URL based on network
-    const explorerUrl = getBlockExplorerUrl(network.name, contractAddress);
+    const explorerUrl = getBlockExplorerUrl(networkName, contractAddress);
     console.log(`  ${explorerUrl}`);
     
   } catch (error: unknown) {
@@ -96,7 +100,7 @@ async function main() {
     const errorMessage = error instanceof Error ? error.message : String(error);
     if (errorMessage.includes("Already Verified") || errorMessage.includes("already verified")) {
       console.log("\n✅ Contract is already verified!");
-      const explorerUrl = getBlockExplorerUrl(network.name, contractAddress);
+      const explorerUrl = getBlockExplorerUrl(networkName, contractAddress);
       console.log(`\nView on block explorer:`);
       console.log(`  ${explorerUrl}`);
     } else {
@@ -110,7 +114,7 @@ async function main() {
       console.log("3. Ensure the contract address is correct");
       console.log("4. Check that constructor arguments match exactly");
       console.log("\nManual verification command:");
-      console.log(`npx hardhat verify --network ${network.name} ${contractAddress} ${constructorArgs.join(" ")}`);
+      console.log(`npx hardhat verify --network ${networkName} ${contractAddress} ${constructorArgs.join(" ")}`);
       
       process.exit(1);
     }

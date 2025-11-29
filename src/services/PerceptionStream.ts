@@ -1,12 +1,25 @@
 // src/services/PerceptionStream.ts
 
-import { provider } from '../utils/providers'; // Note: Adjust this import path to the actual location of your exported Ethers provider
+import { createPublicClient, http } from 'viem';
+import { mainnet } from 'viem/chains';
 import { SensoryMemory } from '../consciousness/sensory_memory';
 import { TemporalAwarenessFramework } from '../consciousness/temporal_awareness';
+
+// Create a dedicated public client for block watching
+function createBlockWatchClient() {
+  const rpcUrl =
+    process.env.ETHEREUM_RPC_URL || process.env.BASE_RPC_URL || 'http://localhost:8545';
+  return createPublicClient({
+    chain: mainnet,
+    transport: http(rpcUrl),
+  });
+}
 
 export class PerceptionStream {
   private sensoryMemory: SensoryMemory;
   private temporalFramework: TemporalAwarenessFramework;
+  private unwatch: (() => void) | null = null;
+  private client = createBlockWatchClient();
 
   constructor(sensoryMemory: SensoryMemory, temporalFramework: TemporalAwarenessFramework) {
     this.sensoryMemory = sensoryMemory;
@@ -16,31 +29,46 @@ export class PerceptionStream {
 
   public initialize() {
     console.log('Initializing blockchain event listener...');
-    provider.on('block', this.handleNewBlock.bind(this));
+    // Use viem's watchBlockNumber to subscribe to new blocks
+    this.unwatch = this.client.watchBlockNumber({
+      onBlockNumber: (blockNumber: bigint) => this.handleNewBlock(blockNumber),
+      emitOnBegin: false,
+    });
     console.log('Listener for new blocks is active.');
   }
 
-  // Inside the PerceptionStream class...
+  public stop() {
+    if (this.unwatch) {
+      this.unwatch();
+      this.unwatch = null;
+      console.log('Block listener stopped.');
+    }
+  }
 
-  private async handleNewBlock(blockNumber: number) {
+  private async handleNewBlock(blockNumber: bigint) {
     try {
-      const block = await provider.getBlock(blockNumber);
+      const block = await this.client.getBlock({ blockNumber });
       if (!block) return;
 
       // The raw sensory event to be logged.
       const sensoryEvent = {
         type: 'NEW_BLOCK',
         payload: {
-          blockNumber: block.number,
-          timestamp: block.timestamp,
+          blockNumber: Number(block.number),
+          timestamp: Number(block.timestamp),
         },
       };
 
       // 1. Log the raw perception event in Sensory Memory.
       this.sensoryMemory.processSensoryInput(sensoryEvent);
 
-      // 2. Pass the full block object to the Temporal Framework for memory and analysis.
-      this.temporalFramework.tick(block);
+      // 2. Pass the block info to the Temporal Framework for memory and analysis.
+      // Note: The tick method expects { number: number, timestamp: number }
+      this.temporalFramework.tick({
+        number: Number(block.number),
+        timestamp: Number(block.timestamp),
+        baseFeePerGas: block.baseFeePerGas ?? null,
+      });
     } catch (error) {
       console.error(`Error processing block ${blockNumber}:`, error);
     }

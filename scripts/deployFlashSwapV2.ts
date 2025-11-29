@@ -23,8 +23,10 @@ const VERIFY_CONTRACT = process.env.VERIFY_CONTRACT === "true";
 const SKIP_CONFIRMATION = process.env.SKIP_CONFIRMATION === "true";
 
 async function main() {
+  // Connect to network to get NetworkConnection with networkName (Hardhat v3 API)
+  const networkConnection = await hre.network.connect();
+  const networkName = networkConnection.networkName;
   const ethers = (hre as any).ethers;
-  const network = hre.network;
   const [deployer] = await ethers.getSigners();
   
   console.log("Deploying FlashSwapV2 with account:", deployer.address);
@@ -34,15 +36,15 @@ async function main() {
   
   // Determine which network we're deploying to
   const networkInfo = await ethers.provider.getNetwork();
-  console.log("Deploying to network:", network.name, "chainId:", networkInfo.chainId);
+  console.log("Deploying to network:", networkName, "chainId:", networkInfo.chainId);
   
   // Get addresses from centralized config
-  const netName = network.name as NetworkKey;
+  const netName = networkName as NetworkKey;
   const addresses = ADDRESSES[netName];
   
   if (!addresses) {
     throw new Error(
-      `No address configuration found for network: ${network.name}\n` +
+      `No address configuration found for network: ${networkName}\n` +
       `Please add addresses to config/addresses.ts for this network.`
     );
   }
@@ -96,11 +98,13 @@ async function main() {
   if (VERIFY_CONTRACT) {
     console.log("\n🔍 Starting automatic contract verification...");
     try {
-      await hre.run("verify:verify", {
+      // Hardhat v3: Use verifyContract from hardhat-verify/verify
+      const verifyModule = await import("@nomicfoundation/hardhat-verify/verify");
+      await verifyModule.verifyContract({
         address: contractAddress,
-        constructorArguments: [uniswapV3Router, sushiRouter, aavePool, aaveAddressesProvider],
+        constructorArgs: [uniswapV3Router, sushiRouter, aavePool, aaveAddressesProvider],
         contract: "contracts/FlashSwapV2.sol:FlashSwapV2",
-      });
+      }, hre);
       console.log("✅ Contract verified successfully!");
     } catch (verifyError: unknown) {
       const errorMessage = verifyError instanceof Error ? verifyError.message : String(verifyError);
@@ -109,16 +113,16 @@ async function main() {
       } else {
         console.error("⚠️  Verification failed:", errorMessage);
         console.log("You can manually verify later using:");
-        console.log(`  CONTRACT_ADDRESS=${contractAddress} npx hardhat run scripts/verifyFlashSwapV2.ts --network ${network.name}`);
+        console.log(`  CONTRACT_ADDRESS=${contractAddress} npx hardhat run scripts/verifyFlashSwapV2.ts --network ${networkName}`);
       }
     }
   } else {
     console.log("\n📝 To verify the contract on Basescan, run:");
-    console.log(`npx hardhat verify --network ${network.name} ${contractAddress} ${uniswapV3Router} ${sushiRouter} ${aavePool} ${aaveAddressesProvider}`);
+    console.log(`npx hardhat verify --network ${networkName} ${contractAddress} ${uniswapV3Router} ${sushiRouter} ${aavePool} ${aaveAddressesProvider}`);
     console.log("\nOr use the verification script:");
-    console.log(`CONTRACT_ADDRESS=${contractAddress} npx hardhat run scripts/verifyFlashSwapV2.ts --network ${network.name}`);
+    console.log(`CONTRACT_ADDRESS=${contractAddress} npx hardhat run scripts/verifyFlashSwapV2.ts --network ${networkName}`);
     console.log("\nOr deploy with automatic verification:");
-    console.log(`VERIFY_CONTRACT=true npx hardhat run scripts/deployFlashSwapV2.ts --network ${network.name}`);
+    console.log(`VERIFY_CONTRACT=true npx hardhat run scripts/deployFlashSwapV2.ts --network ${networkName}`);
   }
   
   console.log("\n📄 Save these details to your .env file:");

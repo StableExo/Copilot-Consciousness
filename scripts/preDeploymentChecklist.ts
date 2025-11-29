@@ -19,23 +19,25 @@ interface CheckResult {
 }
 
 async function main() {
+  // Connect to network to get NetworkConnection with networkName (Hardhat v3 API)
+  const networkConnection = await hre.network.connect();
+  const networkName = networkConnection.networkName;
   const ethers = (hre as any).ethers;
-  const network = hre.network;
   console.log("\n" + "=".repeat(70));
   console.log("  FLASHSWAPV2 PRE-DEPLOYMENT CHECKLIST - BASE MAINNET");
   console.log("=".repeat(70) + "\n");
 
   const results: CheckResult[] = [];
   const [deployer] = await ethers.getSigners();
-  const netName = network.name as NetworkKey;
+  const netName = networkName as NetworkKey;
 
   // Check 1: Verify we're on Base mainnet
   console.log("📋 Check 1: Network Verification");
   const networkInfo = await ethers.provider.getNetwork();
-  const isBaseMainnet = network.name === "base" && networkInfo.chainId === 8453;
+  const isBaseMainnet = networkName === "base" && networkInfo.chainId === 8453;
   results.push({
     passed: isBaseMainnet,
-    message: `Network: ${network.name} (Chain ID: ${networkInfo.chainId})`,
+    message: `Network: ${networkName} (Chain ID: ${networkInfo.chainId})`,
     critical: true
   });
   console.log(`   ${isBaseMainnet ? "✅" : "❌"} ${results[results.length - 1].message}`);
@@ -201,7 +203,7 @@ async function main() {
     aaveAddressesProvider: "0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D"
   };
   
-  if (addresses && network.name === "base") {
+  if (addresses && networkName === "base") {
     for (const [key, expectedAddr] of Object.entries(expectedAddresses)) {
       const actualAddr = addresses[key as keyof typeof addresses];
       const matches = actualAddr === expectedAddr;

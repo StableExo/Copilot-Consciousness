@@ -19,23 +19,25 @@ import { ADDRESSES, NetworkKey, requireAddress } from "../src/config/addresses";
  */
 
 async function main() {
+  // Connect to network to get NetworkConnection with networkName (Hardhat v3 API)
+  const networkConnection = await hre.network.connect();
+  const networkName = networkConnection.networkName;
   const ethers = (hre as any).ethers;
-  const network = hre.network;
   console.log("\n" + "=".repeat(70));
   console.log("  FLASHSWAPV2 ARBITRAGE DRY-RUN SIMULATION");
   console.log("=".repeat(70) + "\n");
 
   // --- 1. Configuration ---
-  const netName = network.name as NetworkKey;
+  const netName = networkName as NetworkKey;
   const addresses = ADDRESSES[netName];
   
   if (!addresses) {
-    throw new Error(`No address configuration found for network: ${network.name}`);
+    throw new Error(`No address configuration found for network: ${networkName}`);
   }
   
   const WETH_ADDRESS = requireAddress(netName, "weth");
   const USDC_ADDRESS = addresses.usdc || "";
-  const isBaseMainnet = network.name === "base";
+  const isBaseMainnet = networkName === "base";
   
   if (!USDC_ADDRESS && isBaseMainnet) {
     throw new Error("USDC address required for Base mainnet route");
@@ -47,7 +49,7 @@ async function main() {
     ? parseUnits("0.001", 18)
     : parseUnits("0.01", 18);
 
-  console.log(`Network: ${network.name}`);
+  console.log(`Network: ${networkName}`);
   console.log(`Flash Loan Asset: WETH (${FLASH_LOAN_ASSET})`);
   console.log(`Simulation Amount: ${formatUnits(LOAN_AMOUNT, 18)} WETH`);
   console.log();

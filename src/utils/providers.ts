@@ -1,4 +1,4 @@
-import { createPublicClient, http, type PublicClient } from 'viem';
+import { createPublicClient, http, type Client, type Transport, type Chain } from 'viem';
 import { base, mainnet } from 'viem/chains';
 
 // NOTE: Bun automatically loads .env files
@@ -6,7 +6,13 @@ import { base, mainnet } from 'viem/chains';
 /** Default fallback RPC URL for local development when no environment variable is configured */
 const DEFAULT_LOCAL_RPC_URL = 'http://localhost:8545';
 
-let _publicClient: PublicClient | null = null;
+/**
+ * Type for the public client - using a more flexible Client type
+ */
+
+type ViemPublicClient = Client<Transport, Chain, any>;
+
+let _publicClient: ViemPublicClient | null = null;
 
 /**
  * Get the chain configuration based on RPC URL
@@ -22,7 +28,7 @@ function getChainFromRpcUrl(rpcUrl: string) {
 /**
  * Get the public client instance, creating it lazily on first access
  */
-export function getPublicClient(): PublicClient {
+export function getPublicClient(): ViemPublicClient {
   if (!_publicClient) {
     const rpcUrl = process.env.ETHEREUM_RPC_URL || process.env.BASE_RPC_URL;
     if (!rpcUrl) {
@@ -35,7 +41,7 @@ export function getPublicClient(): PublicClient {
     _publicClient = createPublicClient({
       chain: getChainFromRpcUrl(rpcUrl),
       transport: http(rpcUrl),
-    });
+    }) as ViemPublicClient;
   }
   return _publicClient;
 }
@@ -47,7 +53,7 @@ export function getPublicClient(): PublicClient {
  * where the RPC URL might not be configured at import time, use getPublicClient()
  * instead for deferred initialization.
  */
-function initializePublicClient(): PublicClient {
+function initializePublicClient(): ViemPublicClient {
   const rpcUrl = process.env.ETHEREUM_RPC_URL || process.env.BASE_RPC_URL;
   if (!rpcUrl) {
     // Return a client with a placeholder URL that will fail on actual use
@@ -59,16 +65,16 @@ function initializePublicClient(): PublicClient {
     return createPublicClient({
       chain: mainnet,
       transport: http(DEFAULT_LOCAL_RPC_URL),
-    });
+    }) as ViemPublicClient;
   }
   return createPublicClient({
     chain: getChainFromRpcUrl(rpcUrl),
     transport: http(rpcUrl),
-  });
+  }) as ViemPublicClient;
 }
 
 // Export the actual public client instance for backward compatibility
-export const publicClient: PublicClient = initializePublicClient();
+export const publicClient: ViemPublicClient = initializePublicClient();
 
 /**
  * @deprecated Use `publicClient` instead. This alias exists only for backward compatibility
