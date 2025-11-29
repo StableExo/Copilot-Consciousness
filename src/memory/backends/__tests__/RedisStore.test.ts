@@ -75,7 +75,13 @@ describe('RedisStore', () => {
     });
 
     it('should store with emotional context', () => {
-      const emotionalContext = { valence: 0.8, arousal: 0.5, dominance: 0.6 };
+      const emotionalContext = {
+        primaryEmotion: 'curious',
+        intensity: 0.7,
+        valence: 0.8,
+        arousal: 0.5,
+        timestamp: new Date(),
+      };
       const id = store.store({
         type: MemoryType.EPISODIC,
         content: 'emotional memory',

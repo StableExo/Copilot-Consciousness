@@ -2,20 +2,15 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { fileURLToPath } from 'url';
 
-let __filename: string;
-let __dirname: string;
+// Get the directory path in a way that works for both ESM and CommonJS
+// In CommonJS (Jest), __dirname is available globally
+// In ESM runtime, we'd need to use import.meta.url, but this file is only used with Jest in CJS mode
+const currentDirPath = typeof __dirname !== 'undefined' 
+    ? __dirname 
+    : path.dirname(process.argv[1]);
 
-if (import.meta.url) {
-    __filename = fileURLToPath(import.meta.url);
-    __dirname = path.dirname(__filename);
-} else {
-    __filename = process.argv[1];
-    __dirname = path.dirname(__filename);
-}
-
-const MEMORY_DIR = path.join(__dirname, '../.memory');
+const MEMORY_DIR = path.join(currentDirPath, '../.memory');
 const METACOGNITION_LOG_PATH = path.join(MEMORY_DIR, 'metacognition_log.json');
 
 interface MetacognitionEntry {

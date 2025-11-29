@@ -80,7 +80,13 @@ describe('SQLiteStore', () => {
     });
 
     it('should store with emotional context', () => {
-      const emotionalContext = { valence: 0.5, arousal: 0.7, dominance: 0.3 };
+      const emotionalContext = {
+        primaryEmotion: 'curious',
+        intensity: 0.7,
+        valence: 0.5,
+        arousal: 0.7,
+        timestamp: new Date(),
+      };
       const id = store.store({
         type: MemoryType.EPISODIC,
         content: 'emotional memory',
