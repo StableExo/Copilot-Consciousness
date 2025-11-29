@@ -25,7 +25,4 @@ export {
 } from './ArbitrageConsciousnessIntegration';
 
 // Unified Consciousness Loop - connects trading brain with security intelligence
-export {
-  ConsciousnessArbitrageLoop,
-  createConsciousnessLoop,
-} from './ConsciousnessArbitrageLoop';
+export { ConsciousnessArbitrageLoop, createConsciousnessLoop } from './ConsciousnessArbitrageLoop';

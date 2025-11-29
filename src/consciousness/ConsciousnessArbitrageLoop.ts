@@ -16,7 +16,11 @@
  */
 
 import { EventEmitter } from 'events';
-import { ArbitrageConsciousness, ArbitrageExecution, MarketPattern } from './ArbitrageConsciousness';
+import {
+  ArbitrageConsciousness,
+  ArbitrageExecution,
+  MarketPattern,
+} from './ArbitrageConsciousness';
 import { ThoughtStream } from './introspection/ThoughtStream';
 import { IntrospectionPersistence } from './introspection/IntrospectionPersistence';
 import { ThoughtType } from './introspection/types';
@@ -182,7 +186,10 @@ export class ConsciousnessArbitrageLoop extends EventEmitter {
     }
 
     // Record startup thought
-    this.thoughtStream.think('Consciousness loop started - threat monitoring active', ThoughtType.OBSERVATION);
+    this.thoughtStream.think(
+      'Consciousness loop started - threat monitoring active',
+      ThoughtType.OBSERVATION
+    );
 
     // Start heartbeat
     this.startHeartbeat();
@@ -387,7 +394,10 @@ export class ConsciousnessArbitrageLoop extends EventEmitter {
     }
 
     // Record adaptation
-    this.thoughtStream.think(`Strategy adaptation: ${adaptations.join('; ')}`, ThoughtType.PLANNING);
+    this.thoughtStream.think(
+      `Strategy adaptation: ${adaptations.join('; ')}`,
+      ThoughtType.PLANNING
+    );
 
     this.metrics.adaptations++;
     this.emit('strategyAdapted', { threatType, severity, adaptations });
@@ -428,13 +438,22 @@ export class ConsciousnessArbitrageLoop extends EventEmitter {
   private setupEventHandlers(): void {
     // Arbitrage consciousness events
     this.arbitrageConsciousness.on('patternDetected', (pattern: MarketPattern) => {
-      this.thoughtStream.think(`Market pattern detected: ${pattern.description}`, ThoughtType.INSIGHT);
+      this.thoughtStream.think(
+        `Market pattern detected: ${pattern.description}`,
+        ThoughtType.INSIGHT
+      );
       this.updateTradingState();
     });
 
-    this.arbitrageConsciousness.on('learningUpdate', (learning: { parameter: string; rationale: string }) => {
-      this.thoughtStream.think(`Learning update: ${learning.parameter} - ${learning.rationale}`, ThoughtType.INSIGHT);
-    });
+    this.arbitrageConsciousness.on(
+      'learningUpdate',
+      (learning: { parameter: string; rationale: string }) => {
+        this.thoughtStream.think(
+          `Learning update: ${learning.parameter} - ${learning.rationale}`,
+          ThoughtType.INSIGHT
+        );
+      }
+    );
 
     this.arbitrageConsciousness.on(
       'reflectionComplete',
@@ -450,10 +469,16 @@ export class ConsciousnessArbitrageLoop extends EventEmitter {
     );
 
     // Adversarial feed events
-    this.adversarialFeed.on('newPatternLearned', (data: { attackType: string; sophistication: string }) => {
-      this.thoughtStream.think(`Threat pattern learned: ${data.attackType} (${data.sophistication})`, ThoughtType.INSIGHT);
-      this.updateSecurityState();
-    });
+    this.adversarialFeed.on(
+      'newPatternLearned',
+      (data: { attackType: string; sophistication: string }) => {
+        this.thoughtStream.think(
+          `Threat pattern learned: ${data.attackType} (${data.sophistication})`,
+          ThoughtType.INSIGHT
+        );
+        this.updateSecurityState();
+      }
+    );
 
     this.adversarialFeed.on('defenseRecommendation', (data: { threatType: ThreatType }) => {
       this.adaptStrategy(data.threatType, 'medium');
@@ -653,7 +678,8 @@ export class ConsciousnessArbitrageLoop extends EventEmitter {
       };
     }
 
-    const severity = intel.severity === 'critical' ? 'high' : intel.severity === 'high' ? 'medium' : 'low';
+    const severity =
+      intel.severity === 'critical' ? 'high' : intel.severity === 'high' ? 'medium' : 'low';
 
     const recommendations: Partial<Record<ThreatType, string>> = {
       flash_loan_attack: 'Enable flash loan detection, verify pool liquidity',
@@ -771,6 +797,8 @@ export class ConsciousnessArbitrageLoop extends EventEmitter {
 /**
  * Factory function to create the consciousness loop
  */
-export function createConsciousnessLoop(config?: Partial<ConsciousnessLoopConfig>): ConsciousnessArbitrageLoop {
+export function createConsciousnessLoop(
+  config?: Partial<ConsciousnessLoopConfig>
+): ConsciousnessArbitrageLoop {
   return new ConsciousnessArbitrageLoop(config);
 }

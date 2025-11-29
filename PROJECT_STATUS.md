@@ -15,7 +15,7 @@
 - ✅ **Pool Detection**: Working across multiple chains
 - ✅ **Performance Optimized**: 60s → 10s scan time with multicall batching
 - ✅ **DEX Coverage**: 42 DEXes across 8 chains
-- ✅ **Tests**: 1,734 passing (100%)
+- ✅ **Tests**: 1,789 passing (100%)
 
 ### Recent Achievements (November 2025)
 
@@ -52,7 +52,7 @@ All top 10 DEXs by volume/TVL on Arbitrum One are now integrated:
 ### Performance Metrics
 - **Scan Time**: 10 seconds (down from 60s)
 - **Pool Cache**: Working with 1-hour TTL
-- **Test Coverage**: 100% (1,734 passing)
+- **Test Coverage**: 100% (1,789 passing)
 - **Build Status**: ✅ Passing
 
 ### Supported Chains
@@ -229,7 +229,7 @@ This is a personal research project. See [LEGAL_POSITION.md](LEGAL_POSITION.md) 
 
 ### v5.1.0 (November 2025) - Current
 - ✅ CI/CD pipeline updates with `.nvmrc` consistency
-- ✅ 1,734 tests passing with comprehensive coverage
+- ✅ 1,789 tests passing with comprehensive coverage
 - ✅ Dependencies updated, reduced deprecation warnings
 
 ### v5.0.0 (November 2025)
@@ -255,6 +255,6 @@ See [CHANGELOG.md](CHANGELOG.md) for complete version history.
 
 **Status**: 🟢 Production-Ready  
 **Last Build**: ✅ Passing  
-**Tests**: ✅ 100% (1,734 passing)  
+**Tests**: ✅ 100% (1,789 passing)  
 **DEX Coverage**: ✅ 42 DEXes  
 **Arbitrum Status**: ✅ Top 10 Integrated
