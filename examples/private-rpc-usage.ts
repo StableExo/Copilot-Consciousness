@@ -16,7 +16,7 @@
  */
 
 import { ethers, Wallet } from 'ethers';
-import dotenv from 'dotenv';
+// NOTE: Bun automatically loads .env files
 import {
   PrivateRPCManager,
   createFlashbotsProtectConfig,
@@ -28,7 +28,6 @@ import {
   PrivateRelayConfig,
 } from '../src/execution/types';
 
-dotenv.config();
 
 /**
  * Example 1: Basic Flashbots Protect Usage

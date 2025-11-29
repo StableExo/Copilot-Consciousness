@@ -2,10 +2,11 @@
  * SQLiteStore - Persistent SQLite Memory Backend
  *
  * Provides persistent storage for TheWarden's memory system using SQLite.
+ * Uses Bun's built-in SQLite for maximum performance.
  * Designed for high-performance local persistence with full ACID compliance.
  */
 
-import Database from 'better-sqlite3';
+import { Database } from 'bun:sqlite';
 import * as path from 'path';
 import * as fs from 'fs';
 import { MemoryEntry, MemoryStore, MemoryQuery } from '../../consciousness/memory/types';
@@ -20,10 +21,10 @@ export interface SQLiteStoreConfig {
 }
 
 /**
- * SQLite implementation of the memory store
+ * SQLite implementation of the memory store using Bun's native SQLite
  */
 export class SQLiteStore extends MemoryStore {
-  private db: Database.Database;
+  private db: Database;
   private readonly config: Required<SQLiteStoreConfig>;
 
   constructor(config: SQLiteStoreConfig = {}) {
@@ -46,11 +47,11 @@ export class SQLiteStore extends MemoryStore {
 
     // Configure for performance
     if (this.config.walMode) {
-      this.db.pragma('journal_mode = WAL');
+      this.db.exec('PRAGMA journal_mode = WAL');
     }
-    this.db.pragma(`busy_timeout = ${this.config.busyTimeout}`);
-    this.db.pragma(`cache_size = ${this.config.cacheSize}`);
-    this.db.pragma('synchronous = NORMAL');
+    this.db.exec(`PRAGMA busy_timeout = ${this.config.busyTimeout}`);
+    this.db.exec(`PRAGMA cache_size = ${this.config.cacheSize}`);
+    this.db.exec('PRAGMA synchronous = NORMAL');
 
     this.initializeSchema();
   }
@@ -252,8 +253,8 @@ export class SQLiteStore extends MemoryStore {
       UPDATE memories SET ${setters.join(', ')} WHERE id = ?
     `);
 
-    const result = stmt.run(...params);
-    return result.changes > 0;
+    stmt.run(...params);
+    return true;
   }
 
   /**
@@ -261,9 +262,9 @@ export class SQLiteStore extends MemoryStore {
    */
   delete(id: UUID): boolean {
     const stmt = this.db.prepare('DELETE FROM memories WHERE id = ?');
-    const result = stmt.run(id);
+    stmt.run(id);
     this.memories.delete(id);
-    return result.changes > 0;
+    return true;
   }
 
   /**

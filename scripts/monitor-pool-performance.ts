@@ -13,12 +13,11 @@
  */
 
 import { ethers, JsonRpcProvider } from 'ethers';
-import dotenv from 'dotenv';
+// NOTE: Bun automatically loads .env files
 import { DEXRegistry } from '../src/dex/core/DEXRegistry';
 import { MultiHopDataFetcher } from '../src/arbitrage/MultiHopDataFetcher';
 import { OptimizedPoolScanner } from '../src/arbitrage/OptimizedPoolScanner';
 
-dotenv.config();
 
 // Base network tokens
 const BASE_TOKENS = {

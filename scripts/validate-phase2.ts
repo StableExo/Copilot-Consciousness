@@ -10,14 +10,13 @@
  */
 
 import { ethers, JsonRpcProvider } from 'ethers';
-import dotenv from 'dotenv';
+// NOTE: Bun automatically loads .env files
 import { ArbitrageConsciousness } from '../src/consciousness/ArbitrageConsciousness';
 import { CognitiveCoordinator, OpportunityContext } from '../src/consciousness/coordination/CognitiveCoordinator';
 import { EmergenceDetector, DecisionContext } from '../src/consciousness/coordination/EmergenceDetector';
 import { DEXRegistry } from '../src/dex/core/DEXRegistry';
 import { OptimizedPoolScanner } from '../src/arbitrage/OptimizedPoolScanner';
 
-dotenv.config();
 
 interface ValidationResult {
   task: string;

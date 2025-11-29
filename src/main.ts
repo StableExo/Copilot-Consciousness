@@ -16,10 +16,7 @@
  * Based on PROJECT-HAVOC design patterns and AxionCitadel learnings
  */
 
-// IMPORTANT: Load environment variables FIRST before any other imports
-// This ensures that DEXRegistry and other modules can read env vars during initialization
-import dotenv from 'dotenv';
-dotenv.config();
+// NOTE: Bun automatically loads .env files - no dotenv import needed
 
 import { JsonRpcProvider, Wallet, Contract, formatEther, formatUnits, parseEther } from 'ethers';
 // ethers namespace reserved for utilities

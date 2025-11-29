@@ -1,7 +1,6 @@
 import { JsonRpcProvider } from 'ethers';
-import dotenv from 'dotenv';
 
-dotenv.config();
+// NOTE: Bun automatically loads .env files
 
 /** Default fallback RPC URL for local development when no environment variable is configured */
 const DEFAULT_LOCAL_RPC_URL = 'http://localhost:8545';

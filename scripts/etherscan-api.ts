@@ -1,7 +1,6 @@
-import * as dotenv from "dotenv";
+// NOTE: Bun automatically loads .env files
 import * as https from "https";
 
-dotenv.config();
 
 /**
  * BaseScan/Etherscan API v2 Utility Script

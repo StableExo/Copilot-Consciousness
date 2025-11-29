@@ -4,14 +4,12 @@
  * Initializes and starts the Real-Time Analytics Dashboard
  */
 
+// NOTE: Bun automatically loads .env files
+
 import { GasAnalytics } from '../gas/GasAnalytics';
 import { CrossChainAnalytics } from '../chains/CrossChainAnalytics';
 import { DashboardServer } from './DashboardServer';
 import { DashboardConfig } from './types';
-import * as dotenv from 'dotenv';
-
-// Load environment variables
-dotenv.config();
 
 /**
  * Main function to start the dashboard server
