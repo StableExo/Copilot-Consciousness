@@ -3,9 +3,11 @@
  *
  * Integrated from AxionCitadel - Production-tested validation utilities
  * for addresses, RPC URLs, and data parsing.
+ *
+ * Migrated to viem for better TypeScript support and smaller bundle size.
  */
 
-import { getAddress, isAddress } from 'ethers';
+import { getAddress, isAddress } from 'viem';
 import { logger } from '../logger';
 
 /**

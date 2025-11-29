@@ -143,6 +143,10 @@ Supported chains with their IDs:
 - [x] `src/services/BaseArbitrageRunner.ts` (updated for viem compatibility)
 - [x] `src/gas/GasPriceOracle.ts`
 - [x] `src/utils/MulticallBatcher.ts` (added ViemMulticallBatcher class)
+- [x] `src/utils/providers.ts` ✅ **Migrated** - Now uses viem PublicClient
+- [x] `src/utils/configValidator.ts` ✅ **Migrated** - Uses viem isAddress and privateKeyToAccount
+- [x] `src/utils/validation/ValidationUtils.ts` ✅ **Migrated** - Uses viem getAddress/isAddress
+- [x] `src/utils/math/PriceMath.ts` ✅ **Migrated** - Uses viem formatUnits
 - [ ] Other modules
 
 ### Scripts Migration

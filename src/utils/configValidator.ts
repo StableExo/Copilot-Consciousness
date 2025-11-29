@@ -3,9 +3,12 @@
  *
  * Validates environment variables and returns a typed configuration object.
  * Throws descriptive errors for missing or invalid values.
+ *
+ * Migrated to viem for better TypeScript support and smaller bundle size.
  */
 
-import { ethers, isAddress } from 'ethers';
+import { isAddress } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
 
 export interface ValidatedConfig {
   // Network configuration
@@ -199,12 +202,13 @@ function validatePrivateKey(key: string): void {
     );
   }
 
-  // Validate it's a valid private key by trying to create a wallet
+  // Validate it's a valid private key by trying to create an account
   try {
-    new ethers.Wallet(key);
+    const formattedKey = key.startsWith('0x') ? key : `0x${key}`;
+    privateKeyToAccount(formattedKey as `0x${string}`);
   } catch (error) {
     throw new ConfigValidationError(
-      `Invalid private key: unable to create wallet\n` +
+      `Invalid private key: unable to create account\n` +
         `Error: ${error instanceof Error ? error.message : String(error)}`
     );
   }
