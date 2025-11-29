@@ -16,6 +16,11 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+/** Timeout for uptime tracking tests (includes margin for timing jitter) */
+const UPTIME_TEST_WAIT_MS = 110;
+/** Minimum expected uptime after waiting */
+const UPTIME_TEST_EXPECTED_MIN_MS = 100;
+
 describe('LongRunningManager', () => {
   let manager: LongRunningManager;
   const testStatsPath = path.join(__dirname, '.test-stats.json');
@@ -243,11 +248,10 @@ describe('LongRunningManager', () => {
 
       await manager.start();
 
-      // Wait a bit
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, UPTIME_TEST_WAIT_MS));
 
       const uptime = manager.getUptime();
-      expect(uptime.sessionUptime).toBeGreaterThanOrEqual(100);
+      expect(uptime.sessionUptime).toBeGreaterThanOrEqual(UPTIME_TEST_EXPECTED_MIN_MS);
       expect(uptime.restartCount).toBe(1);
     });
 
@@ -260,7 +264,7 @@ describe('LongRunningManager', () => {
       });
 
       await manager.start();
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, UPTIME_TEST_WAIT_MS));
       await manager.stop('test');
 
       // Second session
@@ -271,10 +275,10 @@ describe('LongRunningManager', () => {
       });
 
       await manager.start();
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, UPTIME_TEST_WAIT_MS));
 
       const uptime = manager.getUptime();
-      expect(uptime.totalUptime).toBeGreaterThanOrEqual(200);
+      expect(uptime.totalUptime).toBeGreaterThanOrEqual(UPTIME_TEST_EXPECTED_MIN_MS * 2);
     });
   });
 
