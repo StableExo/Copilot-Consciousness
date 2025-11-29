@@ -16,6 +16,11 @@ describe('MEVAttackFuzzer', () => {
     });
   });
 
+  afterEach(() => {
+    // Clean up event listeners to prevent memory leaks
+    fuzzer.removeAllListeners();
+  });
+
   describe('initialization', () => {
     it('should create fuzzer with default config', () => {
       const defaultFuzzer = new MEVAttackFuzzer();

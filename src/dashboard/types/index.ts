@@ -150,6 +150,7 @@ export interface DashboardConfig {
   port: number;
   wsPort?: number;
   enableCors: boolean;
+  corsOrigins?: string | string[]; // Specific origins for CORS (use '*' for all, or array of allowed origins)
   redis?: {
     host: string;
     port: number;
