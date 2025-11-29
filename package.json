@@ -12,6 +12,7 @@
     "start:autonomous": "./TheWarden",
     "start:monitor": "./TheWarden --monitor",
     "monitor": "./TheWarden --monitor",
+    "monitor:consciousness": "node --import tsx scripts/consciousness-monitor.ts",
     "add:dex": "node --import tsx scripts/add-dex.ts",
     "preload:pools": "node --import tsx scripts/preload-pools.ts",
     "preload:pools:force": "node --import tsx scripts/preload-pools.ts --force",

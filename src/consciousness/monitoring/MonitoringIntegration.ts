@@ -258,7 +258,8 @@ export class MonitoringIntegration extends EventEmitter {
 
     // Rolling average of approval rates
     this.currentMetrics.swarm.averageApprovalRate =
-      (this.currentMetrics.swarm.averageApprovalRate * (totalVotes - 1) + approvalRate) / totalVotes;
+      (this.currentMetrics.swarm.averageApprovalRate * (totalVotes - 1) + approvalRate) /
+      totalVotes;
 
     if (this.config.persistImmediately) {
       this.persistSwarmEvent(event);
@@ -279,7 +280,8 @@ export class MonitoringIntegration extends EventEmitter {
     }
 
     // Rolling average of alignment scores
-    const totalDecisions = this.currentMetrics.ethics.approved + this.currentMetrics.ethics.rejected;
+    const totalDecisions =
+      this.currentMetrics.ethics.approved + this.currentMetrics.ethics.rejected;
     this.currentMetrics.ethics.alignmentScore =
       (this.currentMetrics.ethics.alignmentScore * (totalDecisions - 1) + alignmentScore) /
       totalDecisions;
@@ -639,7 +641,7 @@ export class MonitoringIntegration extends EventEmitter {
   }
 
   private generateId(prefix: string): string {
-    return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   }
 
   private persistEvent(event: GainLossEvent): void {
@@ -654,11 +656,7 @@ export class MonitoringIntegration extends EventEmitter {
 
   private persistMetricsSummary(metrics: MonitoringMetrics): void {
     // Save iteration metrics
-    const metricsPath = path.join(
-      this.memoryPath,
-      'metrics',
-      `metrics_${metrics.iteration}.json`
-    );
+    const metricsPath = path.join(this.memoryPath, 'metrics', `metrics_${metrics.iteration}.json`);
     fs.writeFileSync(metricsPath, JSON.stringify(metrics, null, 2));
 
     // Update latest state
