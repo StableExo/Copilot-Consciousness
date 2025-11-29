@@ -125,7 +125,7 @@
     "eslint-plugin-prettier": "5.5.4",
     "globals": "16.5.0",
     "hardhat": "3.0.16",
-    "prettier": "3.7.2",
+    "prettier": "3.7.3",
     "prettier-plugin-solidity": "2.2.0",
     "tsx": "4.20.6",
     "typescript": "5.9.3",
