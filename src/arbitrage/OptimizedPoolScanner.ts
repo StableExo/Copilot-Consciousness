@@ -21,8 +21,6 @@ import {
   getCreate2Address,
   keccak256,
   encodePacked,
-  encodeAbiParameters,
-  parseAbiParameters,
   decodeFunctionResult,
   encodeFunctionData,
 } from 'viem';
