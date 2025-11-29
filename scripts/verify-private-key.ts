@@ -6,10 +6,10 @@
  * Verifies your private key format is correct without exposing the full key
  */
 
-import { Wallet } from 'ethers';
-// NOTE: Bun automatically loads .env files
+import dotenv from 'dotenv';
+dotenv.config();
 
-// Load environment
+import { Wallet } from 'ethers';
 
 console.log('═══════════════════════════════════════════════════════════');
 console.log('  PRIVATE KEY VERIFICATION TOOL');
