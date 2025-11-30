@@ -201,6 +201,7 @@ export class AdvancedPathFinder {
       depth: number;
       path: ArbitrageHop[];
       visited: Set<string>;
+      visitedPools: Set<string>; // Track unique pools to prevent same-pool round trips
     }> = [];
 
     queue.push({
@@ -209,6 +210,7 @@ export class AdvancedPathFinder {
       depth: 0,
       path: [],
       visited: new Set(),
+      visitedPools: new Set(),
     });
 
     while (queue.length > 0) {
@@ -223,6 +225,13 @@ export class AdvancedPathFinder {
       for (const edge of outgoingEdges) {
         const edgeKey = `${edge.poolAddress}-${edge.tokenOut}`;
         if (current.visited.has(edgeKey)) {
+          continue;
+        }
+
+        // CRITICAL: Skip if we've already used this pool in this path
+        // Using the same pool twice (even in opposite directions) is NOT a valid arb
+        // It just means paying fees twice to go nowhere
+        if (current.visitedPools.has(edge.poolAddress)) {
           continue;
         }
 
@@ -247,6 +256,8 @@ export class AdvancedPathFinder {
         const newPath = [...current.path, hop];
         const newVisited = new Set(current.visited);
         newVisited.add(edgeKey);
+        const newVisitedPools = new Set(current.visitedPools);
+        newVisitedPools.add(edge.poolAddress);
 
         // Check if we've returned to start
         if (edge.tokenOut === startToken && current.depth > 0) {
@@ -262,6 +273,7 @@ export class AdvancedPathFinder {
             depth: current.depth + 1,
             path: newPath,
             visited: newVisited,
+            visitedPools: newVisitedPools,
           });
         }
       }
@@ -328,13 +340,21 @@ export class AdvancedPathFinder {
   ): ArbitragePath | null {
     const hops: ArbitrageHop[] = [];
     const visited = new Set<string>();
+    const visitedPools = new Set<string>(); // Track unique pools
 
     let currentEdge: LogEdge | null = cycleEdge;
     let currentAmount = startAmount;
 
     // Trace back through predecessors to find the cycle
     while (currentEdge && !visited.has(currentEdge.from)) {
+      // CRITICAL: Skip paths that reuse the same pool
+      // Using the same pool twice is not a valid arbitrage
+      if (visitedPools.has(currentEdge.poolEdge.poolAddress)) {
+        return null; // Invalid path - same pool used twice
+      }
+
       visited.add(currentEdge.from);
+      visitedPools.add(currentEdge.poolEdge.poolAddress);
 
       const amountOut = this.calculateSwapOutput(currentAmount, currentEdge.poolEdge);
 

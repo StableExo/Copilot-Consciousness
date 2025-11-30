@@ -32,6 +32,7 @@ import {
 } from './core/initializer';
 import { HealthCheckServer } from './monitoring/healthCheck';
 import { DEXRegistry } from './dex/core/DEXRegistry';
+import { DEXConfig } from './dex/types';
 import { AdvancedOrchestrator } from './arbitrage/AdvancedOrchestrator';
 import { IntegratedArbitrageOrchestrator } from './execution/IntegratedArbitrageOrchestrator';
 import { ArbitrageOrchestrator } from './arbitrage/ArbitrageOrchestrator';
@@ -1085,7 +1086,7 @@ class TheWarden extends EventEmitter {
           logger.info('═══════════════════════════════════════════════════════════');
 
           const poolAddresses = bestPath.hops.map((h) => h.poolAddress);
-          const dexConfigs = new Map<string, import('./dex/types').DEXConfig>();
+          const dexConfigs = new Map<string, DEXConfig>();
 
           // Build DEX config map for the pools
           for (const hop of bestPath.hops) {

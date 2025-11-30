@@ -16,10 +16,17 @@ import {
 } from 'ethers';
 import { DEXRegistry } from '../dex/core/DEXRegistry';
 import { DEXConfig } from '../dex/types';
-import { PoolEdge } from './types';
+import { PoolEdge, ArbitragePath } from './types';
 import { logger } from '../utils/logger';
 import { UNISWAP_V3_FEE_TIERS, V3_LIQUIDITY_SCALE_FACTOR, isV3StyleProtocol } from './constants';
 import { PoolDataStore } from './PoolDataStore';
+
+// JIT Validation Constants
+// These control the staleness detection and profit adjustment for live reserve validation
+const JIT_STALENESS_THRESHOLD = 0.05; // 5% reserve ratio change = stale opportunity
+const JIT_PROFIT_SENSITIVITY = 10; // Multiplier for profit reduction based on ratio change
+const JIT_MAX_PROFIT_REDUCTION = 0.95; // Maximum 95% profit reduction cap
+const JIT_MIN_PROFIT_THRESHOLD = BigInt(1e15); // 0.001 ETH minimum profit after validation
 
 /**
  * Interface for pool data
@@ -745,16 +752,21 @@ export class MultiHopDataFetcher {
   /**
    * Re-calculate arbitrage profit using live reserves
    *
+   * Uses a heuristic approach to estimate profit validity:
+   * - Compares cached vs live reserve ratios
+   * - Applies conservative profit reduction based on ratio changes
+   * - Rejects opportunities that appear stale
+   *
    * @param path - The arbitrage path with hops
    * @param liveReserves - Map of pool address to live reserves
    * @returns Updated profit calculation or null if no longer profitable
    */
   recalculateProfitWithLiveReserves(
-    path: import('./types').ArbitragePath,
+    path: ArbitragePath,
     liveReserves: Map<string, { reserve0: bigint; reserve1: bigint }>
   ): { isStillProfitable: boolean; newNetProfit: bigint; profitChange: number } {
-    // For now, we'll do a simple reserve ratio comparison
-    // A more sophisticated implementation would recalculate the full swap amounts
+    // Compare cached vs live reserve ratios to detect staleness
+    // Full swap recalculation would be more accurate but this heuristic is fast
 
     let totalReserveRatioChange = 0;
     let poolsChecked = 0;
@@ -778,20 +790,19 @@ export class MultiHopDataFetcher {
     // Average ratio change across all pools
     const avgRatioChange = poolsChecked > 0 ? totalReserveRatioChange / poolsChecked : 0;
 
-    // If reserves changed by more than 5%, assume opportunity is stale
-    // This is a heuristic - in production you'd recalculate the full swap path
-    const isStale = avgRatioChange > 0.05;
+    // Detect stale opportunities based on reserve ratio drift
+    const isStale = avgRatioChange > JIT_STALENESS_THRESHOLD;
 
-    // Estimate new profit (conservative: reduce by ratio change percentage)
-    const profitReductionFactor = 1 - Math.min(avgRatioChange * 10, 0.95); // Cap at 95% reduction
+    // Conservative profit estimate: reduce proportionally to ratio change
+    const profitReductionFactor =
+      1 - Math.min(avgRatioChange * JIT_PROFIT_SENSITIVITY, JIT_MAX_PROFIT_REDUCTION);
     const newNetProfit = BigInt(
       Math.floor(Number(path.netProfit) * profitReductionFactor)
     );
 
-    // Consider still profitable if new profit > gas cost and > minimum threshold
-    const minProfitThreshold = BigInt(1e15); // 0.001 ETH minimum
+    // Profitable if: not stale, covers gas, exceeds minimum threshold
     const isStillProfitable =
-      !isStale && newNetProfit > path.totalGasCost && newNetProfit > minProfitThreshold;
+      !isStale && newNetProfit > path.totalGasCost && newNetProfit > JIT_MIN_PROFIT_THRESHOLD;
 
     return {
       isStillProfitable,
