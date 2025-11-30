@@ -669,4 +669,134 @@ export class MultiHopDataFetcher {
 
     return Date.now() - timestamp < this.cacheTTL;
   }
+
+  /**
+   * Fetch live reserves for specific pools (JIT validation)
+   *
+   * This enables the smart pattern:
+   * 1. Scan with preloaded data (fast)
+   * 2. Find candidate route
+   * 3. Fetch ONLY the 2-3 pools in that route with live data
+   * 4. Re-validate profit before execution
+   *
+   * @param poolAddresses - Array of pool addresses to fetch live reserves for
+   * @param rpcUrl - RPC URL to use for fetching
+   * @param dexConfigs - DEX configurations for the pools (to determine protocol type)
+   * @returns Map of pool address to live reserves
+   */
+  async fetchLiveReservesForPools(
+    poolAddresses: string[],
+    rpcUrl: string,
+    dexConfigs: Map<string, DEXConfig>
+  ): Promise<Map<string, { reserve0: bigint; reserve1: bigint }>> {
+    const results = new Map<string, { reserve0: bigint; reserve1: bigint }>();
+
+    if (poolAddresses.length === 0) {
+      return results;
+    }
+
+    logger.info(
+      `[JIT] Fetching live reserves for ${poolAddresses.length} pools`,
+      'DATAFETCH'
+    );
+
+    const provider = new JsonRpcProvider(rpcUrl);
+
+    // Fetch reserves in parallel for speed
+    const fetchPromises = poolAddresses.map(async (poolAddress) => {
+      const dexConfig = dexConfigs.get(poolAddress);
+      const protocol = dexConfig?.protocol || 'uniswap_v2'; // Default to V2 if unknown
+
+      try {
+        const reserves = await this.getReserves(poolAddress, provider, protocol);
+        if (reserves) {
+          return { poolAddress, reserves };
+        }
+        return null;
+      } catch (error) {
+        logger.warn(
+          `[JIT] Failed to fetch reserves for pool ${poolAddress}: ${error}`,
+          'DATAFETCH'
+        );
+        return null;
+      }
+    });
+
+    const fetchResults = await Promise.all(fetchPromises);
+
+    for (const result of fetchResults) {
+      if (result) {
+        results.set(result.poolAddress, result.reserves);
+        logger.debug(
+          `[JIT] Pool ${result.poolAddress.substring(0, 10)}... reserves: ${result.reserves.reserve0}/${result.reserves.reserve1}`,
+          'DATAFETCH'
+        );
+      }
+    }
+
+    logger.info(
+      `[JIT] Successfully fetched live reserves for ${results.size}/${poolAddresses.length} pools`,
+      'DATAFETCH'
+    );
+
+    return results;
+  }
+
+  /**
+   * Re-calculate arbitrage profit using live reserves
+   *
+   * @param path - The arbitrage path with hops
+   * @param liveReserves - Map of pool address to live reserves
+   * @returns Updated profit calculation or null if no longer profitable
+   */
+  recalculateProfitWithLiveReserves(
+    path: import('./types').ArbitragePath,
+    liveReserves: Map<string, { reserve0: bigint; reserve1: bigint }>
+  ): { isStillProfitable: boolean; newNetProfit: bigint; profitChange: number } {
+    // For now, we'll do a simple reserve ratio comparison
+    // A more sophisticated implementation would recalculate the full swap amounts
+
+    let totalReserveRatioChange = 0;
+    let poolsChecked = 0;
+
+    for (const hop of path.hops) {
+      const liveRes = liveReserves.get(hop.poolAddress);
+      if (!liveRes) continue;
+
+      // Compare with cached reserves (if available in hop)
+      if (hop.reserve0 && hop.reserve1) {
+        const cachedRatio = Number(hop.reserve0) / Number(hop.reserve1);
+        const liveRatio = Number(liveRes.reserve0) / Number(liveRes.reserve1);
+
+        // Calculate percentage change in ratio
+        const ratioChange = Math.abs(liveRatio - cachedRatio) / cachedRatio;
+        totalReserveRatioChange += ratioChange;
+        poolsChecked++;
+      }
+    }
+
+    // Average ratio change across all pools
+    const avgRatioChange = poolsChecked > 0 ? totalReserveRatioChange / poolsChecked : 0;
+
+    // If reserves changed by more than 5%, assume opportunity is stale
+    // This is a heuristic - in production you'd recalculate the full swap path
+    const isStale = avgRatioChange > 0.05;
+
+    // Estimate new profit (conservative: reduce by ratio change percentage)
+    const profitReductionFactor = 1 - Math.min(avgRatioChange * 10, 0.95); // Cap at 95% reduction
+    const newNetProfit = BigInt(
+      Math.floor(Number(path.netProfit) * profitReductionFactor)
+    );
+
+    // Consider still profitable if new profit > gas cost and > minimum threshold
+    const minProfitThreshold = BigInt(1e15); // 0.001 ETH minimum
+    const isStillProfitable =
+      !isStale && newNetProfit > path.totalGasCost && newNetProfit > minProfitThreshold;
+
+    return {
+      isStillProfitable,
+      newNetProfit,
+      profitChange: (Number(newNetProfit) / Number(path.netProfit) - 1) * 100,
+    };
+  }
 }
