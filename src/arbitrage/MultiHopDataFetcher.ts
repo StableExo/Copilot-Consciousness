@@ -93,18 +93,21 @@ export class MultiHopDataFetcher {
 
   /**
    * Check if we should force live data fetching
-   * When FORCE_LIVE_DATA=true or USE_PRELOADED_POOLS=false, always fetch fresh data from network
+   * LIVE DATA IS NOW THE DEFAULT - preloaded pools must be explicitly enabled
+   * Set USE_PRELOADED_POOLS=true to use cached data (for development/testing)
    */
   private shouldForceLiveData(): boolean {
-    // FORCE_LIVE_DATA=true bypasses all caching for real-time data
+    // FORCE_LIVE_DATA=true always bypasses all caching for real-time data
     if (process.env.FORCE_LIVE_DATA === 'true') {
       return true;
     }
-    // USE_PRELOADED_POOLS=false means don't use preloaded/cached pool data
-    if (process.env.USE_PRELOADED_POOLS === 'false') {
-      return true;
+    // USE_PRELOADED_POOLS must be explicitly set to 'true' to use cached data
+    // Default behavior is now LIVE DATA for production trading
+    if (process.env.USE_PRELOADED_POOLS === 'true') {
+      return false; // Use preloaded/cached pool data
     }
-    return false;
+    // Default: use live data for accurate, real-time trading
+    return true;
   }
 
   /**

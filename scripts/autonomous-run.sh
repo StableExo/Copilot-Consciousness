@@ -84,8 +84,7 @@ trap cleanup SIGINT SIGTERM SIGHUP
 # Parse command line arguments
 STREAM_LOGS=false
 SHOW_HELP=false
-FORCE_LIVE_DATA=false
-NO_CACHE=false
+USE_CACHED_POOLS=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -93,12 +92,13 @@ while [[ $# -gt 0 ]]; do
             STREAM_LOGS=true
             shift
             ;;
-        --live-pools|--live)
-            FORCE_LIVE_DATA=true
+        --cached|--preloaded)
+            USE_CACHED_POOLS=true
             shift
             ;;
-        --no-cache)
-            NO_CACHE=true
+        --live-pools|--live|--no-cache)
+            # These flags are now no-ops since live is the default
+            # Keep for backward compatibility but they do nothing
             shift
             ;;
         --help|-h)
@@ -123,9 +123,8 @@ if [ "$SHOW_HELP" = true ]; then
     echo ""
     echo "Options:"
     echo "  -s, --stream       Stream TheWarden logs to terminal in real-time"
-    echo "  --live-pools       Force live pool data fetching (bypass preloaded cache)"
-    echo "  --live             Alias for --live-pools"
-    echo "  --no-cache         Disable all pool data caching (forces live data)"
+    echo "  --cached           Use preloaded/cached pool data (for development only)"
+    echo "  --preloaded        Alias for --cached"
     echo "  --monitor          Run in diagnostic/monitoring mode (2-minute intervals)"
     echo "  --diagnostic       Alias for --monitor"
     echo "  -h, --help         Show this help message"
@@ -133,25 +132,24 @@ if [ "$SHOW_HELP" = true ]; then
     echo "Environment variables:"
     echo "  STATUS_INTERVAL       Seconds between status updates (default: 60)"
     echo "  MAX_ITERATIONS        Max monitoring iterations (default: 0 = infinite)"
-    echo "  USE_PRELOADED_POOLS   Set to 'false' to fetch live pool data"
-    echo "  FORCE_LIVE_DATA       Set to 'true' to bypass all caching"
+    echo "  USE_PRELOADED_POOLS   Set to 'true' to use cached pool data (dev only)"
     echo "  POOL_CACHE_DURATION   Cache duration in minutes (default: 60)"
     echo ""
     echo "Examples:"
-    echo "  ./TheWarden                    Run with periodic status updates"
+    echo "  ./TheWarden                    Run with LIVE pool data (default)"
     echo "  ./TheWarden --stream           Run with real-time log streaming"
-    echo "  ./TheWarden --live-pools       Run with live pool data (real opportunities)"
-    echo "  ./TheWarden --stream --live    Stream logs + live data"
+    echo "  ./TheWarden --cached           Use cached pool data (for testing)"
     echo "  ./TheWarden --monitor          Run in diagnostic mode with 2-min intervals"
     echo "  MAX_ITERATIONS=10 ./TheWarden --monitor   Run 10 diagnostic iterations"
     echo ""
     echo "Data modes:"
-    echo "  Default (preloaded):   Fast startup using cached pool data"
-    echo "                         Good for testing, but may show unrealistic profits"
-    echo ""
-    echo "  Live (--live-pools):   Fetches real-time pool data from network"
-    echo "                         Required for actual trading (slower startup)"
+    echo "  Default (LIVE):        🔴 Fetches real-time pool data from network"
+    echo "                         Required for actual trading"
     echo "                         Shows realistic profit opportunities (0.02-0.4 ETH)"
+    echo ""
+    echo "  Cached (--cached):     Uses preloaded pool data for faster startup"
+    echo "                         FOR DEVELOPMENT/TESTING ONLY"
+    echo "                         May show unrealistic profits due to stale data"
     echo ""
     echo "Monitoring mode will:"
     echo "  - Run TheWarden for 2 minutes"
@@ -253,15 +251,22 @@ if [ "${NODE_ENV:-development}" = "production" ] && [ "${DRY_RUN:-true}" = "fals
 fi
 
 # Set data mode environment variables based on CLI flags
-if [ "$FORCE_LIVE_DATA" = true ] || [ "$NO_CACHE" = true ]; then
-    export FORCE_LIVE_DATA=true
-    export USE_PRELOADED_POOLS=false
+# LIVE DATA IS NOW THE DEFAULT - only set USE_PRELOADED_POOLS if --cached flag is used
+if [ "$USE_CACHED_POOLS" = true ]; then
+    export USE_PRELOADED_POOLS=true
     log "═══════════════════════════════════════════════════════════════"
-    log "🔴 LIVE DATA MODE ENABLED"
+    log "📦 CACHED DATA MODE (Development Only)"
+    log "═══════════════════════════════════════════════════════════════"
+    log "  - Using preloaded pool data for faster startup"
+    log "  - ⚠️  May show unrealistic profits due to stale data"
+    log "  - For production trading, run without --cached flag"
+    log "═══════════════════════════════════════════════════════════════"
+else
+    log "═══════════════════════════════════════════════════════════════"
+    log "🔴 LIVE DATA MODE (Default)"
     log "═══════════════════════════════════════════════════════════════"
     log "  - Pool data will be fetched directly from network"
-    log "  - Preloaded cache will be bypassed"
-    log "  - Startup may be slower, but data will be real-time"
+    log "  - Real-time, accurate profit calculations"
     log "  - Expect realistic profit opportunities (0.02-0.4 ETH)"
     log "═══════════════════════════════════════════════════════════════"
 fi
