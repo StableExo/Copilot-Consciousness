@@ -183,6 +183,25 @@ if [ ! -f ".env" ]; then
     exit 1
 fi
 
+# Validate .env file syntax before sourcing
+log_info "Validating .env file syntax..."
+ENV_ERRORS=$(bash -n .env 2>&1)
+if [ $? -ne 0 ]; then
+    log_error "═══════════════════════════════════════════════════════════════"
+    log_error "CONFIGURATION ERROR: .env file has syntax errors"
+    log_error "═══════════════════════════════════════════════════════════════"
+    log_error "$ENV_ERRORS"
+    log_error ""
+    log_error "Common causes:"
+    log_error "  - Unclosed quotes (missing ' or \")"
+    log_error "  - Invalid characters in values"
+    log_error "  - Lines with only whitespace after ="
+    log_error ""
+    log_error "Please fix the .env file and try again."
+    log_error "═══════════════════════════════════════════════════════════════"
+    exit 1
+fi
+
 # Load environment variables
 set -a
 source .env
@@ -427,6 +446,29 @@ while true; do
                     rm -f "$PID_FILE"
                     exit 1
                 fi
+                
+                # Check for RPC connection errors
+                if grep -q "could not detect network\|ECONNREFUSED\|ETIMEDOUT\|getaddrinfo" "$WARDEN_LOG" 2>/dev/null; then
+                    log_error "═══════════════════════════════════════════════════════════════"
+                    log_error "NETWORK ERROR: Cannot connect to RPC endpoint"
+                    log_error "═══════════════════════════════════════════════════════════════"
+                    log_error "Please check:"
+                    log_error "  1. Your RPC URL is correct (BASE_RPC_URL, ETHEREUM_RPC_URL, etc.)"
+                    log_error "  2. Your API key is valid"
+                    log_error "  3. You have internet connectivity"
+                    log_error "═══════════════════════════════════════════════════════════════"
+                    rm -f "$PID_FILE"
+                    exit 1
+                fi
+                
+                # Show last few lines of the log if no specific error was detected
+                log_error "═══════════════════════════════════════════════════════════════"
+                log_error "TheWarden crashed. Last 15 lines of log:"
+                log_error "═══════════════════════════════════════════════════════════════"
+                tail -15 "$WARDEN_LOG" 2>/dev/null | while read -r line; do
+                    log_error "  $line"
+                done
+                log_error "═══════════════════════════════════════════════════════════════"
             fi
             
             if [ $CONSECUTIVE_FAILURES -ge $MAX_CONSECUTIVE_FAILURES ]; then
