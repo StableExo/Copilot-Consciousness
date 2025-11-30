@@ -484,8 +484,12 @@ class TheWarden extends EventEmitter {
       };
       this.emergenceDetector = new EmergenceDetector(emergenceThresholds);
       logger.info(`Emergence thresholds configured:`);
-      logger.info(`  minModules=${emergenceThresholds.minModules}, maxRiskScore=${emergenceThresholds.maxRiskScore}, minEthicalScore=${emergenceThresholds.minEthicalScore}`);
-      logger.info(`  minGoalAlignment=${emergenceThresholds.minGoalAlignment}, minPatternConfidence=${emergenceThresholds.minPatternConfidence}, minHistoricalSuccess=${emergenceThresholds.minHistoricalSuccess}`);
+      logger.info(
+        `  minModules=${emergenceThresholds.minModules}, maxRiskScore=${emergenceThresholds.maxRiskScore}, minEthicalScore=${emergenceThresholds.minEthicalScore}`
+      );
+      logger.info(
+        `  minGoalAlignment=${emergenceThresholds.minGoalAlignment}, minPatternConfidence=${emergenceThresholds.minPatternConfidence}, minHistoricalSuccess=${emergenceThresholds.minHistoricalSuccess}`
+      );
       logger.info(`  maxDissentRatio=${emergenceThresholds.maxDissentRatio}`);
 
       logger.info('Consciousness coordination initialized - 14 cognitive modules ready');
@@ -1076,7 +1080,9 @@ class TheWarden extends EventEmitter {
           const bestPath = paths[0];
           logger.info('Processing best opportunity...');
           logger.info(`  Network: ${getNetworkName(chainId)}`);
-          logger.info(`  Estimated profit (cached): ${formatEther(bestPath.netProfit.toString())} ETH`);
+          logger.info(
+            `  Estimated profit (cached): ${formatEther(bestPath.netProfit.toString())} ETH`
+          );
           logger.info(`  Gas cost: ${formatEther(bestPath.totalGasCost.toString())} ETH`);
           logger.info(`  Hops: ${bestPath.hops.length}`);
 
@@ -1106,20 +1112,86 @@ class TheWarden extends EventEmitter {
             );
 
             // Re-validate profit with live data
-            const validation = dataFetcher.recalculateProfitWithLiveReserves(bestPath, liveReserves);
+            const validation = dataFetcher.recalculateProfitWithLiveReserves(
+              bestPath,
+              liveReserves
+            );
 
             logger.info(`  Live profit validation:`);
             logger.info(`    Still profitable: ${validation.isStillProfitable ? 'YES ✓' : 'NO ✗'}`);
-            logger.info(`    New net profit: ${formatEther(validation.newNetProfit.toString())} ETH`);
+            logger.info(
+              `    New net profit: ${formatEther(validation.newNetProfit.toString())} ETH`
+            );
             logger.info(`    Profit change: ${validation.profitChange.toFixed(2)}%`);
 
             if (validation.isStillProfitable) {
               logger.info('═══════════════════════════════════════════════════════════');
               logger.info('✅ JIT VALIDATION PASSED - Opportunity confirmed with live data');
               logger.info('═══════════════════════════════════════════════════════════');
-              // TODO: Proceed with execution
-              // Full execution integration would require converting ArbitragePath to ArbitrageOpportunity
-              // and calling integratedOrchestrator.processOpportunity()
+
+              // Convert ArbitragePath to ArbitrageOpportunity format
+              const opportunity: import('./types/definitions').ArbitrageOpportunity = {
+                type: bestPath.hops.length > 2 ? 'triangular' : 'spatial',
+                path: bestPath.hops.map((hop) => ({
+                  dexName: hop.dexName,
+                  poolAddress: hop.poolAddress,
+                  tokenIn: hop.tokenIn,
+                  tokenOut: hop.tokenOut,
+                  fee: hop.fee,
+                })),
+                tokenA: { address: bestPath.startToken, decimals: 18, symbol: 'TOKEN_A' },
+                tokenB: {
+                  address: bestPath.hops[0]?.tokenOut || bestPath.startToken,
+                  decimals: 18,
+                  symbol: 'TOKEN_B',
+                },
+                tokenC: {
+                  address: bestPath.hops[1]?.tokenOut || bestPath.endToken,
+                  decimals: 18,
+                  symbol: 'TOKEN_C',
+                },
+              };
+
+              logger.info('═══════════════════════════════════════════════════════════');
+              logger.info('🚀 EXECUTING ARBITRAGE OPPORTUNITY');
+              logger.info('═══════════════════════════════════════════════════════════');
+              logger.info(`  Type: ${opportunity.type}`);
+              logger.info(`  Expected profit: ${formatEther(validation.newNetProfit.toString())} ETH`);
+              logger.info(`  Hops: ${bestPath.hops.length}`);
+
+              try {
+                const result = await this.integratedOrchestrator!.processOpportunity(
+                  opportunity,
+                  bestPath
+                );
+
+                if (result.success) {
+                  this.stats.tradesExecuted++;
+                  logger.info('═══════════════════════════════════════════════════════════');
+                  logger.info('✅ EXECUTION SUCCESSFUL');
+                  logger.info('═══════════════════════════════════════════════════════════');
+                  if (result.context.estimatedProfit) {
+                    const profitEth = formatEther(result.context.estimatedProfit.toString());
+                    this.stats.totalProfit += result.context.estimatedProfit;
+                    logger.info(`  Profit: ${profitEth} ETH`);
+                  }
+                  if (result.context.transactionHash) {
+                    logger.info(`  TX Hash: ${result.context.transactionHash}`);
+                  }
+                } else {
+                  logger.warn('═══════════════════════════════════════════════════════════');
+                  logger.warn('❌ EXECUTION FAILED');
+                  logger.warn('═══════════════════════════════════════════════════════════');
+                  if (result.errors && result.errors.length > 0) {
+                    for (const error of result.errors) {
+                      logger.warn(`  ${error.errorType}: ${error.message}`);
+                    }
+                  }
+                }
+              } catch (execError) {
+                logger.error(`Execution error: ${execError}`);
+                this.stats.errors++;
+              }
             } else {
               logger.warn('═══════════════════════════════════════════════════════════');
               logger.warn('❌ JIT VALIDATION FAILED - Stale opportunity, skipping');
