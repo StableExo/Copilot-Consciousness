@@ -470,7 +470,19 @@ class TheWarden extends EventEmitter {
       const modules = this.consciousness.getModules();
 
       this.cognitiveCoordinator = new CognitiveCoordinator(modules);
-      this.emergenceDetector = new EmergenceDetector();
+
+      // Initialize EmergenceDetector with thresholds from environment
+      const emergenceThresholds = {
+        minModules: parseInt(process.env.EMERGENCE_MIN_MODULES || '14'),
+        maxRiskScore: parseFloat(process.env.EMERGENCE_MAX_RISK_SCORE || '0.30'),
+        minEthicalScore: parseFloat(process.env.EMERGENCE_MIN_ETHICAL_SCORE || '0.70'),
+        minGoalAlignment: parseFloat(process.env.EMERGENCE_MIN_GOAL_ALIGNMENT || '0.75'),
+        minPatternConfidence: parseFloat(process.env.EMERGENCE_MIN_PATTERN_CONFIDENCE || '0.70'),
+        minHistoricalSuccess: parseFloat(process.env.EMERGENCE_MIN_HISTORICAL_SUCCESS || '0.60'),
+        maxDissentRatio: parseFloat(process.env.EMERGENCE_MAX_DISSENT_RATIO || '0.15'),
+      };
+      this.emergenceDetector = new EmergenceDetector(emergenceThresholds);
+      logger.info(`Emergence thresholds: minGoalAlignment=${emergenceThresholds.minGoalAlignment}, minPatternConfidence=${emergenceThresholds.minPatternConfidence}, minHistoricalSuccess=${emergenceThresholds.minHistoricalSuccess}`);
 
       logger.info('Consciousness coordination initialized - 14 cognitive modules ready');
 
