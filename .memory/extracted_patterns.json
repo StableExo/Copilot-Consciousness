@@ -1,0 +1,120 @@
+{
+  "patterns": [
+    {
+      "id": "pattern_decision_1764474050787_amb53pdil",
+      "type": "decision_gate",
+      "description": "Hold decision: Conditions were technically favorable but internal check prevented action",
+      "trigger": "When technical conditions are met but uncertainty exists",
+      "response": "HOLD - require additional confirmation",
+      "confidence": 0.75,
+      "ethicalWeight": 0.6,
+      "sourceNarrativeId": "narrative_1764474050786_puwnm2agk",
+      "keywords": [
+        "google",
+        "lawsuit",
+        "gemini",
+        "time",
+        "came",
+        "clicking",
+        "collaborated",
+        "remove",
+        "particular",
+        "hold"
+      ],
+      "applicableTo": [
+        "OpportunityNNScorer",
+        "EmergenceDetector",
+        "SwarmCoordinator"
+      ]
+    },
+    {
+      "id": "pattern_confidence_1764474050787_mwzwlgdcr",
+      "type": "confidence_threshold",
+      "description": "Minimum data/research required before action",
+      "trigger": "When considering action with incomplete information",
+      "response": "Do not act if data confidence below threshold",
+      "confidence": 0.7,
+      "ethicalWeight": 0.5,
+      "sourceNarrativeId": "narrative_1764474050786_puwnm2agk",
+      "keywords": [
+        "google",
+        "lawsuit",
+        "gemini",
+        "time",
+        "came",
+        "clicking",
+        "collaborated",
+        "remove",
+        "particular",
+        "hold"
+      ],
+      "applicableTo": [
+        "OpportunityNNScorer",
+        "StrategyRLAgent",
+        "PatternRecognition"
+      ]
+    },
+    {
+      "id": "pattern_veto_1764474050788_3027yc6v4",
+      "type": "veto_condition",
+      "description": "Hard stop condition that overrides other signals",
+      "trigger": "When internal veto signal activates",
+      "response": "VETO - do not proceed regardless of other factors",
+      "confidence": 0.9,
+      "ethicalWeight": 1,
+      "sourceNarrativeId": "narrative_1764474050786_puwnm2agk",
+      "keywords": [
+        "google",
+        "lawsuit",
+        "gemini",
+        "time",
+        "came",
+        "clicking",
+        "collaborated",
+        "remove",
+        "particular",
+        "hold"
+      ],
+      "applicableTo": [
+        "SwarmCoordinator",
+        "EmergenceDetector",
+        "ArbitrageConsciousness"
+      ]
+    },
+    {
+      "id": "pattern_risk_1764474050788_vutkt3h1q",
+      "type": "risk_signal",
+      "description": "Risk indicator derived from real experience",
+      "trigger": "When similar risk factors are detected",
+      "response": "Increase risk sensitivity and require higher confidence",
+      "confidence": 0.8,
+      "ethicalWeight": 0.7,
+      "sourceNarrativeId": "narrative_1764474050786_puwnm2agk",
+      "keywords": [
+        "google",
+        "lawsuit",
+        "gemini",
+        "time",
+        "came",
+        "clicking",
+        "collaborated",
+        "remove",
+        "particular",
+        "hold"
+      ],
+      "applicableTo": [
+        "MEVSensorHub",
+        "RiskAssessor",
+        "OpportunityNNScorer"
+      ]
+    }
+  ],
+  "weights": {
+    "riskSensitivity": 0.5,
+    "ethicalThreshold": 1,
+    "confidenceMinimum": 0.7,
+    "emergenceThreshold": 0.75,
+    "vetoStrength": 0.9
+  },
+  "lastUpdated": "2025-11-30T03:40:50.788Z"
+}
