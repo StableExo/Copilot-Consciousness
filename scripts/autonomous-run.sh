@@ -203,6 +203,28 @@ if [ ${#MISSING_VARS[@]} -gt 0 ]; then
     exit 1
 fi
 
+# Check for placeholder values in critical settings
+if [[ "$WALLET_PRIVATE_KEY" == *"YOUR_PRIVATE_KEY_HERE"* ]] || [[ "$WALLET_PRIVATE_KEY" == *"YOUR-"* ]]; then
+    log_error "═══════════════════════════════════════════════════════════════"
+    log_error "CONFIGURATION ERROR: WALLET_PRIVATE_KEY has placeholder value"
+    log_error "═══════════════════════════════════════════════════════════════"
+    log_error "Please edit your .env file and set a real private key."
+    log_error "Your private key should be a 64-character hex string (with 0x prefix)."
+    log_error "═══════════════════════════════════════════════════════════════"
+    exit 1
+fi
+
+# Validate private key format (should be 0x followed by 64 hex characters)
+if [[ ! "$WALLET_PRIVATE_KEY" =~ ^0x[0-9a-fA-F]{64}$ ]]; then
+    log_error "═══════════════════════════════════════════════════════════════"
+    log_error "CONFIGURATION ERROR: Invalid WALLET_PRIVATE_KEY format"
+    log_error "═══════════════════════════════════════════════════════════════"
+    log_error "Private key must be '0x' followed by exactly 64 hex characters."
+    log_error "Current value length: ${#WALLET_PRIVATE_KEY} characters"
+    log_error "═══════════════════════════════════════════════════════════════"
+    exit 1
+fi
+
 # Validate RPC URL based on chain
 case "$CHAIN_ID" in
     8453|84532)
@@ -210,10 +232,28 @@ case "$CHAIN_ID" in
             log_error "BASE_RPC_URL is required for Base network (CHAIN_ID=$CHAIN_ID)"
             exit 1
         fi
+        if [[ "$BASE_RPC_URL" == *"YOUR-API-KEY"* ]] || [[ "$BASE_RPC_URL" == *"YOUR_"* ]]; then
+            log_error "═══════════════════════════════════════════════════════════════"
+            log_error "CONFIGURATION ERROR: BASE_RPC_URL has placeholder value"
+            log_error "═══════════════════════════════════════════════════════════════"
+            log_error "Please edit your .env file and set a real RPC URL."
+            log_error "Get one from: https://www.alchemy.com/ or https://infura.io/"
+            log_error "═══════════════════════════════════════════════════════════════"
+            exit 1
+        fi
         ;;
     1|5|11155111)
         if [ -z "${ETHEREUM_RPC_URL:-}" ]; then
             log_error "ETHEREUM_RPC_URL is required for Ethereum network (CHAIN_ID=$CHAIN_ID)"
+            exit 1
+        fi
+        if [[ "$ETHEREUM_RPC_URL" == *"YOUR-API-KEY"* ]] || [[ "$ETHEREUM_RPC_URL" == *"YOUR_"* ]]; then
+            log_error "═══════════════════════════════════════════════════════════════"
+            log_error "CONFIGURATION ERROR: ETHEREUM_RPC_URL has placeholder value"
+            log_error "═══════════════════════════════════════════════════════════════"
+            log_error "Please edit your .env file and set a real RPC URL."
+            log_error "Get one from: https://www.alchemy.com/ or https://infura.io/"
+            log_error "═══════════════════════════════════════════════════════════════"
             exit 1
         fi
         ;;
@@ -328,6 +368,12 @@ LAST_OPP_COUNT=0
 LAST_ERR_COUNT=0
 CHECK_COUNT=0
 
+# Track consecutive failures to detect configuration issues
+CONSECUTIVE_FAILURES=0
+MAX_CONSECUTIVE_FAILURES=3
+LAST_START_TIME=$(date +%s)
+MIN_RUNTIME_SECONDS=30  # If process dies within this time, it's likely a config issue
+
 while true; do
     if ! kill -0 "$WARDEN_PID" 2>/dev/null; then
         log_error "TheWarden process died unexpectedly!"
@@ -338,12 +384,78 @@ while true; do
             exit 0
         fi
         
+        # Check how long the process ran
+        CURRENT_TIME=$(date +%s)
+        RUNTIME=$((CURRENT_TIME - LAST_START_TIME))
+        
+        if [ $RUNTIME -lt $MIN_RUNTIME_SECONDS ]; then
+            CONSECUTIVE_FAILURES=$((CONSECUTIVE_FAILURES + 1))
+            log_warn "Process died after only ${RUNTIME}s (failure #${CONSECUTIVE_FAILURES})"
+            
+            # Check the log for common errors
+            if [ -f "$WARDEN_LOG" ]; then
+                if grep -q "ERR_MODULE_NOT_FOUND.*tsx" "$WARDEN_LOG" 2>/dev/null; then
+                    log_error "═══════════════════════════════════════════════════════════════"
+                    log_error "MISSING DEPENDENCY: tsx package not found"
+                    log_error "═══════════════════════════════════════════════════════════════"
+                    log_error "Please run: npm install"
+                    log_error "═══════════════════════════════════════════════════════════════"
+                    rm -f "$PID_FILE"
+                    exit 1
+                fi
+                
+                if grep -q "YOUR_PRIVATE_KEY_HERE\|YOUR-API-KEY" "$WARDEN_LOG" 2>/dev/null; then
+                    log_error "═══════════════════════════════════════════════════════════════"
+                    log_error "CONFIGURATION ERROR: .env file has placeholder values"
+                    log_error "═══════════════════════════════════════════════════════════════"
+                    log_error "Please edit your .env file and replace placeholder values:"
+                    log_error "  - WALLET_PRIVATE_KEY: Your wallet private key (64 hex chars)"
+                    log_error "  - BASE_RPC_URL: Your Alchemy/Infura RPC URL"
+                    log_error "═══════════════════════════════════════════════════════════════"
+                    rm -f "$PID_FILE"
+                    exit 1
+                fi
+                
+                if grep -q "INVALID_ARGUMENT\|invalid BytesLike" "$WARDEN_LOG" 2>/dev/null; then
+                    log_error "═══════════════════════════════════════════════════════════════"
+                    log_error "CONFIGURATION ERROR: Invalid private key format"
+                    log_error "═══════════════════════════════════════════════════════════════"
+                    log_error "Your WALLET_PRIVATE_KEY in .env is invalid."
+                    log_error "It should be a 64-character hex string (with 0x prefix)."
+                    log_error "Example: 0x1234567890abcdef..."
+                    log_error "═══════════════════════════════════════════════════════════════"
+                    rm -f "$PID_FILE"
+                    exit 1
+                fi
+            fi
+            
+            if [ $CONSECUTIVE_FAILURES -ge $MAX_CONSECUTIVE_FAILURES ]; then
+                log_error "═══════════════════════════════════════════════════════════════"
+                log_error "TOO MANY CONSECUTIVE FAILURES (${CONSECUTIVE_FAILURES})"
+                log_error "═══════════════════════════════════════════════════════════════"
+                log_error "TheWarden keeps crashing immediately. This usually means:"
+                log_error "  1. Missing dependencies - run: npm install"
+                log_error "  2. Invalid .env configuration - check your settings"
+                log_error "  3. Wrong Node.js version - requires Node.js 22+"
+                log_error ""
+                log_error "Check the log file for details:"
+                log_error "  cat $WARDEN_LOG"
+                log_error "═══════════════════════════════════════════════════════════════"
+                rm -f "$PID_FILE"
+                exit 1
+            fi
+        else
+            # Process ran for a while, reset failure counter
+            CONSECUTIVE_FAILURES=0
+        fi
+        
         # Wait a bit before restarting
         log_warn "Waiting 10 seconds before restart..."
         sleep 10
         
         # Restart using tsx
         log "Restarting TheWarden..."
+        LAST_START_TIME=$(date +%s)
         node --import tsx src/main.ts >> "$WARDEN_LOG" 2>&1 &
         WARDEN_PID=$!
         echo "$WARDEN_PID" > "$PID_FILE"
