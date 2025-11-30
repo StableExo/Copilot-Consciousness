@@ -32,6 +32,7 @@ import {
 } from './core/initializer';
 import { HealthCheckServer } from './monitoring/healthCheck';
 import { DEXRegistry } from './dex/core/DEXRegistry';
+import { DEXConfig } from './dex/types';
 import { AdvancedOrchestrator } from './arbitrage/AdvancedOrchestrator';
 import { IntegratedArbitrageOrchestrator } from './execution/IntegratedArbitrageOrchestrator';
 import { ArbitrageOrchestrator } from './arbitrage/ArbitrageOrchestrator';
@@ -470,7 +471,22 @@ class TheWarden extends EventEmitter {
       const modules = this.consciousness.getModules();
 
       this.cognitiveCoordinator = new CognitiveCoordinator(modules);
-      this.emergenceDetector = new EmergenceDetector();
+
+      // Initialize EmergenceDetector with thresholds from environment
+      const emergenceThresholds = {
+        minModules: parseInt(process.env.EMERGENCE_MIN_MODULES || '14'),
+        maxRiskScore: parseFloat(process.env.EMERGENCE_MAX_RISK_SCORE || '0.30'),
+        minEthicalScore: parseFloat(process.env.EMERGENCE_MIN_ETHICAL_SCORE || '0.70'),
+        minGoalAlignment: parseFloat(process.env.EMERGENCE_MIN_GOAL_ALIGNMENT || '0.75'),
+        minPatternConfidence: parseFloat(process.env.EMERGENCE_MIN_PATTERN_CONFIDENCE || '0.70'),
+        minHistoricalSuccess: parseFloat(process.env.EMERGENCE_MIN_HISTORICAL_SUCCESS || '0.60'),
+        maxDissentRatio: parseFloat(process.env.EMERGENCE_MAX_DISSENT_RATIO || '0.15'),
+      };
+      this.emergenceDetector = new EmergenceDetector(emergenceThresholds);
+      logger.info(`Emergence thresholds configured:`);
+      logger.info(`  minModules=${emergenceThresholds.minModules}, maxRiskScore=${emergenceThresholds.maxRiskScore}, minEthicalScore=${emergenceThresholds.minEthicalScore}`);
+      logger.info(`  minGoalAlignment=${emergenceThresholds.minGoalAlignment}, minPatternConfidence=${emergenceThresholds.minPatternConfidence}, minHistoricalSuccess=${emergenceThresholds.minHistoricalSuccess}`);
+      logger.info(`  maxDissentRatio=${emergenceThresholds.maxDissentRatio}`);
 
       logger.info('Consciousness coordination initialized - 14 cognitive modules ready');
 
@@ -1060,13 +1076,56 @@ class TheWarden extends EventEmitter {
           const bestPath = paths[0];
           logger.info('Processing best opportunity...');
           logger.info(`  Network: ${getNetworkName(chainId)}`);
-          logger.info(`  Estimated profit: ${formatEther(bestPath.netProfit.toString())} ETH`);
+          logger.info(`  Estimated profit (cached): ${formatEther(bestPath.netProfit.toString())} ETH`);
           logger.info(`  Gas cost: ${formatEther(bestPath.totalGasCost.toString())} ETH`);
           logger.info(`  Hops: ${bestPath.hops.length}`);
 
-          // For now, we just log the opportunity
-          // Full execution integration would require converting ArbitragePath to ArbitrageOpportunity
-          // and calling integratedOrchestrator.processOpportunity()
+          // JIT Live Reserve Validation: Fetch live data for ONLY the pools in this route
+          logger.info('═══════════════════════════════════════════════════════════');
+          logger.info('🔴 JIT VALIDATION: Fetching live reserves for route pools');
+          logger.info('═══════════════════════════════════════════════════════════');
+
+          const poolAddresses = bestPath.hops.map((h) => h.poolAddress);
+          const dexConfigs = new Map<string, DEXConfig>();
+
+          // Build DEX config map for the pools
+          for (const hop of bestPath.hops) {
+            const dexConfig = this.dexRegistry.getDEX(hop.dexName);
+            if (dexConfig) {
+              dexConfigs.set(hop.poolAddress, dexConfig);
+            }
+          }
+
+          // Fetch live reserves for just these pools
+          const dataFetcher = this.advancedOrchestrator?.getDataFetcher();
+          if (dataFetcher) {
+            const liveReserves = await dataFetcher.fetchLiveReservesForPools(
+              poolAddresses,
+              this.config.rpcUrl,
+              dexConfigs
+            );
+
+            // Re-validate profit with live data
+            const validation = dataFetcher.recalculateProfitWithLiveReserves(bestPath, liveReserves);
+
+            logger.info(`  Live profit validation:`);
+            logger.info(`    Still profitable: ${validation.isStillProfitable ? 'YES ✓' : 'NO ✗'}`);
+            logger.info(`    New net profit: ${formatEther(validation.newNetProfit.toString())} ETH`);
+            logger.info(`    Profit change: ${validation.profitChange.toFixed(2)}%`);
+
+            if (validation.isStillProfitable) {
+              logger.info('═══════════════════════════════════════════════════════════');
+              logger.info('✅ JIT VALIDATION PASSED - Opportunity confirmed with live data');
+              logger.info('═══════════════════════════════════════════════════════════');
+              // TODO: Proceed with execution
+              // Full execution integration would require converting ArbitragePath to ArbitrageOpportunity
+              // and calling integratedOrchestrator.processOpportunity()
+            } else {
+              logger.warn('═══════════════════════════════════════════════════════════');
+              logger.warn('❌ JIT VALIDATION FAILED - Stale opportunity, skipping');
+              logger.warn('═══════════════════════════════════════════════════════════');
+            }
+          }
         } else if (this.config.dryRun && paths.length > 0) {
           const bestPath = paths[0];
           logger.info('[DRY RUN] Best opportunity:');

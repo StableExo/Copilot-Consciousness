@@ -137,6 +137,13 @@ export class AdvancedOrchestrator {
   }
 
   /**
+   * Get the data fetcher for JIT live reserve fetching
+   */
+  getDataFetcher(): MultiHopDataFetcher {
+    return this.dataFetcher;
+  }
+
+  /**
    * Find arbitrage opportunities using advanced features
    */
   async findOpportunities(tokens: string[], startAmount: bigint): Promise<ArbitragePath[]> {

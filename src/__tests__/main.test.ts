@@ -4,14 +4,47 @@
 
 import { loadConfig, TheWarden, WardenConfig } from '../main';
 
-// Mock environment variables
+// Store original environment variables that may come from .env file
 const originalEnv = process.env;
+
+// Environment variables that loadConfig reads and need to be cleared for test isolation
+const CONFIG_ENV_VARS = [
+  'ETHEREUM_RPC_URL',
+  'BASE_RPC_URL',
+  'POLYGON_RPC_URL',
+  'ARBITRUM_RPC_URL',
+  'OPTIMISM_RPC_URL',
+  'RPC_URL',
+  'WALLET_PRIVATE_KEY',
+  'CHAIN_ID',
+  'SCAN_CHAINS',
+  'FLASHSWAP_V2_ADDRESS',
+  'FLASHSWAP_V2_OWNER',
+  'MULTI_SIG_ADDRESS',
+  'SCAN_INTERVAL',
+  'CONCURRENCY',
+  'MIN_PROFIT_THRESHOLD',
+  'MIN_PROFIT_PERCENT',
+  'MAX_GAS_PRICE',
+  'MAX_GAS_COST_PERCENTAGE',
+  'ENABLE_ML_PREDICTIONS',
+  'ENABLE_CROSS_CHAIN',
+  'DRY_RUN',
+  'HEALTH_CHECK_INTERVAL',
+  'NODE_ENV',
+];
 
 describe('Main Runner', () => {
   beforeEach(() => {
-    // Reset environment before each test
+    // Reset environment before each test - clear all config env vars
+    // to ensure test isolation from .env file values loaded by dotenv
     jest.resetModules();
     process.env = { ...originalEnv };
+
+    // Clear all config-related environment variables
+    for (const key of CONFIG_ENV_VARS) {
+      delete process.env[key];
+    }
   });
 
   afterAll(() => {

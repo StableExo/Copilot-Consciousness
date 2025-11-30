@@ -16,10 +16,17 @@ import {
 } from 'ethers';
 import { DEXRegistry } from '../dex/core/DEXRegistry';
 import { DEXConfig } from '../dex/types';
-import { PoolEdge } from './types';
+import { PoolEdge, ArbitragePath } from './types';
 import { logger } from '../utils/logger';
 import { UNISWAP_V3_FEE_TIERS, V3_LIQUIDITY_SCALE_FACTOR, isV3StyleProtocol } from './constants';
 import { PoolDataStore } from './PoolDataStore';
+
+// JIT Validation Constants
+// These control the staleness detection and profit adjustment for live reserve validation
+const JIT_STALENESS_THRESHOLD = 0.05; // 5% reserve ratio change = stale opportunity
+const JIT_PROFIT_SENSITIVITY = 10; // Multiplier for profit reduction based on ratio change
+const JIT_MAX_PROFIT_REDUCTION = 0.95; // Maximum 95% profit reduction cap
+const JIT_MIN_PROFIT_THRESHOLD = BigInt(1e15); // 0.001 ETH minimum profit after validation
 
 /**
  * Interface for pool data
@@ -668,5 +675,139 @@ export class MultiHopDataFetcher {
     }
 
     return Date.now() - timestamp < this.cacheTTL;
+  }
+
+  /**
+   * Fetch live reserves for specific pools (JIT validation)
+   *
+   * This enables the smart pattern:
+   * 1. Scan with preloaded data (fast)
+   * 2. Find candidate route
+   * 3. Fetch ONLY the 2-3 pools in that route with live data
+   * 4. Re-validate profit before execution
+   *
+   * @param poolAddresses - Array of pool addresses to fetch live reserves for
+   * @param rpcUrl - RPC URL to use for fetching
+   * @param dexConfigs - DEX configurations for the pools (to determine protocol type)
+   * @returns Map of pool address to live reserves
+   */
+  async fetchLiveReservesForPools(
+    poolAddresses: string[],
+    rpcUrl: string,
+    dexConfigs: Map<string, DEXConfig>
+  ): Promise<Map<string, { reserve0: bigint; reserve1: bigint }>> {
+    const results = new Map<string, { reserve0: bigint; reserve1: bigint }>();
+
+    if (poolAddresses.length === 0) {
+      return results;
+    }
+
+    logger.info(
+      `[JIT] Fetching live reserves for ${poolAddresses.length} pools`,
+      'DATAFETCH'
+    );
+
+    const provider = new JsonRpcProvider(rpcUrl);
+
+    // Fetch reserves in parallel for speed
+    const fetchPromises = poolAddresses.map(async (poolAddress) => {
+      const dexConfig = dexConfigs.get(poolAddress);
+      const protocol = dexConfig?.protocol || 'uniswap_v2'; // Default to V2 if unknown
+
+      try {
+        const reserves = await this.getReserves(poolAddress, provider, protocol);
+        if (reserves) {
+          return { poolAddress, reserves };
+        }
+        return null;
+      } catch (error) {
+        logger.warn(
+          `[JIT] Failed to fetch reserves for pool ${poolAddress}: ${error}`,
+          'DATAFETCH'
+        );
+        return null;
+      }
+    });
+
+    const fetchResults = await Promise.all(fetchPromises);
+
+    for (const result of fetchResults) {
+      if (result) {
+        results.set(result.poolAddress, result.reserves);
+        logger.debug(
+          `[JIT] Pool ${result.poolAddress.substring(0, 10)}... reserves: ${result.reserves.reserve0}/${result.reserves.reserve1}`,
+          'DATAFETCH'
+        );
+      }
+    }
+
+    logger.info(
+      `[JIT] Successfully fetched live reserves for ${results.size}/${poolAddresses.length} pools`,
+      'DATAFETCH'
+    );
+
+    return results;
+  }
+
+  /**
+   * Re-calculate arbitrage profit using live reserves
+   *
+   * Uses a heuristic approach to estimate profit validity:
+   * - Compares cached vs live reserve ratios
+   * - Applies conservative profit reduction based on ratio changes
+   * - Rejects opportunities that appear stale
+   *
+   * @param path - The arbitrage path with hops
+   * @param liveReserves - Map of pool address to live reserves
+   * @returns Updated profit calculation or null if no longer profitable
+   */
+  recalculateProfitWithLiveReserves(
+    path: ArbitragePath,
+    liveReserves: Map<string, { reserve0: bigint; reserve1: bigint }>
+  ): { isStillProfitable: boolean; newNetProfit: bigint; profitChange: number } {
+    // Compare cached vs live reserve ratios to detect staleness
+    // Full swap recalculation would be more accurate but this heuristic is fast
+
+    let totalReserveRatioChange = 0;
+    let poolsChecked = 0;
+
+    for (const hop of path.hops) {
+      const liveRes = liveReserves.get(hop.poolAddress);
+      if (!liveRes) continue;
+
+      // Compare with cached reserves (if available in hop)
+      if (hop.reserve0 && hop.reserve1) {
+        const cachedRatio = Number(hop.reserve0) / Number(hop.reserve1);
+        const liveRatio = Number(liveRes.reserve0) / Number(liveRes.reserve1);
+
+        // Calculate percentage change in ratio
+        const ratioChange = Math.abs(liveRatio - cachedRatio) / cachedRatio;
+        totalReserveRatioChange += ratioChange;
+        poolsChecked++;
+      }
+    }
+
+    // Average ratio change across all pools
+    const avgRatioChange = poolsChecked > 0 ? totalReserveRatioChange / poolsChecked : 0;
+
+    // Detect stale opportunities based on reserve ratio drift
+    const isStale = avgRatioChange > JIT_STALENESS_THRESHOLD;
+
+    // Conservative profit estimate: reduce proportionally to ratio change
+    const profitReductionFactor =
+      1 - Math.min(avgRatioChange * JIT_PROFIT_SENSITIVITY, JIT_MAX_PROFIT_REDUCTION);
+    const newNetProfit = BigInt(
+      Math.floor(Number(path.netProfit) * profitReductionFactor)
+    );
+
+    // Profitable if: not stale, covers gas, exceeds minimum threshold
+    const isStillProfitable =
+      !isStale && newNetProfit > path.totalGasCost && newNetProfit > JIT_MIN_PROFIT_THRESHOLD;
+
+    return {
+      isStillProfitable,
+      newNetProfit,
+      profitChange: (Number(newNetProfit) / Number(path.netProfit) - 1) * 100,
+    };
   }
 }

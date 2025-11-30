@@ -126,7 +126,7 @@
     "hardhat": "3.0.16",
     "prettier": "3.7.3",
     "prettier-plugin-solidity": "2.2.0",
-    "tsx": "4.20.6",
+    "tsx": "4.21.0",
     "typescript": "5.9.3",
     "vitest": "4.0.14"
   },
