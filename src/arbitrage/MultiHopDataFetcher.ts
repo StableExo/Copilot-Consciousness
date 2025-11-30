@@ -92,9 +92,30 @@ export class MultiHopDataFetcher {
   }
 
   /**
+   * Check if we should force live data fetching
+   * When FORCE_LIVE_DATA=true or USE_PRELOADED_POOLS=false, always fetch fresh data from network
+   */
+  private shouldForceLiveData(): boolean {
+    // FORCE_LIVE_DATA=true bypasses all caching for real-time data
+    if (process.env.FORCE_LIVE_DATA === 'true') {
+      return true;
+    }
+    // USE_PRELOADED_POOLS=false means don't use preloaded/cached pool data
+    if (process.env.USE_PRELOADED_POOLS === 'false') {
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * Check if preloaded data is still valid (within 1 hour by default)
    */
   private isPreloadedDataValid(): boolean {
+    // If forcing live data, preloaded data is never valid
+    if (this.shouldForceLiveData()) {
+      return false;
+    }
+
     if (!this.preloadedEdges || this.preloadedEdges.length === 0) {
       return false;
     }
@@ -207,6 +228,14 @@ export class MultiHopDataFetcher {
    * Build graph edges for all available token pairs across DEXs
    */
   async buildGraphEdges(tokens: string[]): Promise<PoolEdge[]> {
+    // Log if forcing live data mode
+    if (this.shouldForceLiveData()) {
+      logger.info(
+        '🔴 LIVE DATA MODE: Fetching fresh pool data from network (preloaded cache bypassed)',
+        'DATAFETCH'
+      );
+    }
+
     // Try to use preloaded data first
     if (this.isPreloadedDataValid()) {
       logger.debug('Using preloaded pool data', 'DATAFETCH');
