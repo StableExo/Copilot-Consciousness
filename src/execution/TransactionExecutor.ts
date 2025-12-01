@@ -151,10 +151,10 @@ export class TransactionExecutor {
         `[TransactionExecutor] Transaction built - data length: ${transaction.data?.toString().length || 0}`
       );
       if (!transaction.data || transaction.data.toString().length < 10) {
+        logger.error(`[TransactionExecutor] WARNING: Transaction data appears empty or invalid!`);
         logger.error(
-          `[TransactionExecutor] WARNING: Transaction data appears empty or invalid!`
+          `[TransactionExecutor] txParams: ${JSON.stringify(txParams, (_, v) => (typeof v === 'bigint' ? v.toString() : v))}`
         );
-        logger.error(`[TransactionExecutor] txParams: ${JSON.stringify(txParams, (_, v) => typeof v === 'bigint' ? v.toString() : v)}`);
       }
 
       // Step 6: Submit transaction using NonceManager (Mission #2)
