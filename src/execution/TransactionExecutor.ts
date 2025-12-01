@@ -146,6 +146,17 @@ export class TransactionExecutor {
       // Step 5: Build the actual transaction
       const transaction = await this.buildTransaction(request, txParams, gasEstimation, gasPrice);
 
+      // Debug: Log transaction data to trace encoding issues
+      logger.debug(
+        `[TransactionExecutor] Transaction built - data length: ${transaction.data?.toString().length || 0}`
+      );
+      if (!transaction.data || transaction.data.toString().length < 10) {
+        logger.error(
+          `[TransactionExecutor] WARNING: Transaction data appears empty or invalid!`
+        );
+        logger.error(`[TransactionExecutor] txParams: ${JSON.stringify(txParams, (_, v) => typeof v === 'bigint' ? v.toString() : v)}`);
+      }
+
       // Step 6: Submit transaction using NonceManager (Mission #2)
       logger.info(`[TransactionExecutor] Submitting transaction for ${request.context.id}`);
       const txResponse = await nonceManager.sendTransaction(transaction);
@@ -408,11 +419,14 @@ export class TransactionExecutor {
     gasPrice: bigint
   ): Promise<TransactionRequest> {
     // Encode function call
-    const iface = new Interface([
-      this.getFunctionSignature(txParams.functionName, txParams.dexType),
-    ]);
+    const signature = this.getFunctionSignature(txParams.functionName, txParams.dexType);
+    logger.debug(`[TransactionExecutor] Building tx with function: ${txParams.functionName}`);
+    logger.debug(`[TransactionExecutor] Function signature: ${signature}`);
+
+    const iface = new Interface([signature]);
 
     const data = this.encodeTransaction(iface, txParams);
+    logger.debug(`[TransactionExecutor] Encoded data length: ${data.length}`);
 
     return {
       from: request.from,
