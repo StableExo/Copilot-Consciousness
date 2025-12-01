@@ -69,7 +69,9 @@
     "audit:slither": "slither . --fail-medium",
     "audit:slither:report": "slither . --print human-summary",
     "audit:deps": "npm outdated || true",
-    "promote-memory": "npm run build && node --import tsx scripts/promote-memory.cjs"
+    "promote-memory": "npm run build && node --import tsx scripts/promote-memory.cjs",
+    "run:20cycles": "./scripts/run-20-cycles.sh",
+    "autonomous:learn": "node --import tsx scripts/autonomous-cycle-runner.ts"
   },
   "dependencies": {
     "@aave/core-v3": "1.19.3",
