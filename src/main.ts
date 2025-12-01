@@ -234,7 +234,9 @@ function loadConfig(): WardenConfig {
   logger.info(`- Min Profit: ${config.minProfitPercent}%`);
   logger.info(`- Dry Run Mode: ${config.dryRun}`);
   if (config.sequentialExecution) {
-    logger.info(`- Sequential Execution: ENABLED (max ${config.maxOpportunitiesPerCycle} per cycle)`);
+    logger.info(
+      `- Sequential Execution: ENABLED (max ${config.maxOpportunitiesPerCycle} per cycle)`
+    );
   }
 
   return config;
