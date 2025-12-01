@@ -238,6 +238,16 @@ export class TransactionExecutor {
       // Determine opportunity type and build appropriate parameters
       let paramResult: ParamResult;
 
+      // Validate that pools are different (same-pool "arbitrage" is invalid)
+      if (path.hops.length >= 2) {
+        const pool1 = path.hops[0]?.poolAddress?.toLowerCase();
+        const pool2 = path.hops[1]?.poolAddress?.toLowerCase();
+        if (pool1 && pool2 && pool1 === pool2) {
+          logger.error('[TransactionExecutor] Invalid path: same pool used for multiple hops');
+          return null;
+        }
+      }
+
       if (opportunity.type === 'spatial' && opportunity.path && opportunity.path.length === 2) {
         // Two-hop Uniswap V3 arbitrage
         paramResult = buildTwoHopParams(

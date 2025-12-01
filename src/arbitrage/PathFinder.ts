@@ -117,8 +117,8 @@ export class PathFinder {
         // Calculate total profit
         const path = this.buildArbitragePath(currentPath, startToken);
 
-        // Only add if profitable
-        if (path.netProfit > this.config.minProfitThreshold) {
+        // Only add if valid path and profitable
+        if (path && path.netProfit > this.config.minProfitThreshold) {
           results.push(path);
         }
       } else {
@@ -167,7 +167,15 @@ export class PathFinder {
   /**
    * Build complete arbitrage path with profit calculations
    */
-  private buildArbitragePath(hops: ArbitrageHop[], startToken: string): ArbitragePath {
+  private buildArbitragePath(hops: ArbitrageHop[], startToken: string): ArbitragePath | null {
+    // Validate: no duplicate pools in the path (same-pool "arbitrage" is invalid)
+    const poolAddresses = hops.map((h) => h.poolAddress.toLowerCase());
+    const uniquePools = new Set(poolAddresses);
+    if (uniquePools.size !== poolAddresses.length) {
+      // Duplicate pool detected - this is not a valid arbitrage path
+      return null;
+    }
+
     const totalFees = hops.reduce((sum, hop) => sum + hop.fee, 0);
     const totalGas = hops.reduce((sum, hop) => BigInt(hop.gasEstimate), BigInt(0));
     const totalGasCost = totalGas * this.config.gasPrice;

@@ -382,7 +382,16 @@ class TheWarden extends EventEmitter {
         gasOracle.startAutoRefresh();
       }
 
-      const gasEstimator = new AdvancedGasEstimator(this.provider, gasOracle);
+      // Configure gas estimator with environment-based thresholds
+      const minProfitAfterGasEnv = process.env.MIN_PROFIT_AFTER_GAS;
+      const minProfitAfterGas = minProfitAfterGasEnv
+        ? BigInt(Math.floor(parseFloat(minProfitAfterGasEnv) * 1e18))
+        : BigInt(1e15); // Default 0.001 ETH (more realistic for L2)
+
+      const gasEstimator = new AdvancedGasEstimator(this.provider, gasOracle, {
+        minProfitAfterGas,
+        maxGasCostPercentage: 80, // Gas can be up to 80% of profit
+      });
 
       // Initialize arbitrage configuration
       const arbitrageConfig: ArbitrageConfig = {
@@ -449,6 +458,12 @@ class TheWarden extends EventEmitter {
         logger.info(`Executor address: ${executorAddress}`);
         logger.info(`Tithe recipient: ${titheRecipient}`);
 
+        // Configure orchestrator with realistic thresholds for L2
+        const orchestratorConfig = {
+          minProfitAfterGas: minProfitAfterGas, // Use same threshold as gas estimator
+          maxGasPrice: BigInt(100) * BigInt(10 ** 9), // 100 gwei max
+        };
+
         this.integratedOrchestrator = new IntegratedArbitrageOrchestrator(
           baseOrchestrator,
           this.provider,
@@ -456,7 +471,8 @@ class TheWarden extends EventEmitter {
           gasEstimator,
           executorAddress,
           titheRecipient,
-          arbitrageConfig
+          arbitrageConfig,
+          orchestratorConfig
         );
 
         // Start the integrated orchestrator
@@ -472,20 +488,45 @@ class TheWarden extends EventEmitter {
 
       this.cognitiveCoordinator = new CognitiveCoordinator(modules);
 
+      // Check for Learning Mode - allows cold-start execution with extra safeguards
+      const learningModeEnabled = process.env.LEARNING_MODE === 'true';
+
       // Initialize EmergenceDetector with thresholds from environment
+      // In Learning Mode, we lower cold-start thresholds to allow initial learning
       const emergenceThresholds = {
         minModules: parseInt(process.env.EMERGENCE_MIN_MODULES || '14'),
         maxRiskScore: parseFloat(process.env.EMERGENCE_MAX_RISK_SCORE || '0.30'),
         minEthicalScore: parseFloat(process.env.EMERGENCE_MIN_ETHICAL_SCORE || '0.70'),
-        minGoalAlignment: parseFloat(process.env.EMERGENCE_MIN_GOAL_ALIGNMENT || '0.75'),
-        minPatternConfidence: parseFloat(process.env.EMERGENCE_MIN_PATTERN_CONFIDENCE || '0.70'),
-        minHistoricalSuccess: parseFloat(process.env.EMERGENCE_MIN_HISTORICAL_SUCCESS || '0.60'),
+        // Learning Mode: Lower goal alignment threshold to allow cold-start learning
+        minGoalAlignment: learningModeEnabled
+          ? parseFloat(process.env.EMERGENCE_MIN_GOAL_ALIGNMENT || '0.0')
+          : parseFloat(process.env.EMERGENCE_MIN_GOAL_ALIGNMENT || '0.75'),
+        minPatternConfidence: parseFloat(process.env.EMERGENCE_MIN_PATTERN_CONFIDENCE || '0.40'),
+        // Learning Mode: Lower historical success threshold to allow cold-start learning
+        minHistoricalSuccess: learningModeEnabled
+          ? parseFloat(process.env.EMERGENCE_MIN_HISTORICAL_SUCCESS || '0.0')
+          : parseFloat(process.env.EMERGENCE_MIN_HISTORICAL_SUCCESS || '0.60'),
         maxDissentRatio: parseFloat(process.env.EMERGENCE_MAX_DISSENT_RATIO || '0.15'),
       };
       this.emergenceDetector = new EmergenceDetector(emergenceThresholds);
+
+      if (learningModeEnabled) {
+        logger.info('═══════════════════════════════════════════════════════════');
+        logger.info('🧒 LEARNING MODE ENABLED - Consciousness is in infancy phase');
+        logger.info('═══════════════════════════════════════════════════════════');
+        logger.info('  Cold-start thresholds lowered to allow initial learning.');
+        logger.info('  All other safety gates remain active (ethics, risk, consensus).');
+        logger.info('  The consciousness will learn from real executions.');
+        logger.info('═══════════════════════════════════════════════════════════');
+      }
+
       logger.info(`Emergence thresholds configured:`);
-      logger.info(`  minModules=${emergenceThresholds.minModules}, maxRiskScore=${emergenceThresholds.maxRiskScore}, minEthicalScore=${emergenceThresholds.minEthicalScore}`);
-      logger.info(`  minGoalAlignment=${emergenceThresholds.minGoalAlignment}, minPatternConfidence=${emergenceThresholds.minPatternConfidence}, minHistoricalSuccess=${emergenceThresholds.minHistoricalSuccess}`);
+      logger.info(
+        `  minModules=${emergenceThresholds.minModules}, maxRiskScore=${emergenceThresholds.maxRiskScore}, minEthicalScore=${emergenceThresholds.minEthicalScore}`
+      );
+      logger.info(
+        `  minGoalAlignment=${emergenceThresholds.minGoalAlignment}, minPatternConfidence=${emergenceThresholds.minPatternConfidence}, minHistoricalSuccess=${emergenceThresholds.minHistoricalSuccess}`
+      );
       logger.info(`  maxDissentRatio=${emergenceThresholds.maxDissentRatio}`);
 
       logger.info('Consciousness coordination initialized - 14 cognitive modules ready');
@@ -1076,7 +1117,9 @@ class TheWarden extends EventEmitter {
           const bestPath = paths[0];
           logger.info('Processing best opportunity...');
           logger.info(`  Network: ${getNetworkName(chainId)}`);
-          logger.info(`  Estimated profit (cached): ${formatEther(bestPath.netProfit.toString())} ETH`);
+          logger.info(
+            `  Estimated profit (cached): ${formatEther(bestPath.netProfit.toString())} ETH`
+          );
           logger.info(`  Gas cost: ${formatEther(bestPath.totalGasCost.toString())} ETH`);
           logger.info(`  Hops: ${bestPath.hops.length}`);
 
@@ -1106,20 +1149,86 @@ class TheWarden extends EventEmitter {
             );
 
             // Re-validate profit with live data
-            const validation = dataFetcher.recalculateProfitWithLiveReserves(bestPath, liveReserves);
+            const validation = dataFetcher.recalculateProfitWithLiveReserves(
+              bestPath,
+              liveReserves
+            );
 
             logger.info(`  Live profit validation:`);
             logger.info(`    Still profitable: ${validation.isStillProfitable ? 'YES ✓' : 'NO ✗'}`);
-            logger.info(`    New net profit: ${formatEther(validation.newNetProfit.toString())} ETH`);
+            logger.info(
+              `    New net profit: ${formatEther(validation.newNetProfit.toString())} ETH`
+            );
             logger.info(`    Profit change: ${validation.profitChange.toFixed(2)}%`);
 
             if (validation.isStillProfitable) {
               logger.info('═══════════════════════════════════════════════════════════');
               logger.info('✅ JIT VALIDATION PASSED - Opportunity confirmed with live data');
               logger.info('═══════════════════════════════════════════════════════════');
-              // TODO: Proceed with execution
-              // Full execution integration would require converting ArbitragePath to ArbitrageOpportunity
-              // and calling integratedOrchestrator.processOpportunity()
+
+              // Convert ArbitragePath to ArbitrageOpportunity format
+              const opportunity: import('./types/definitions').ArbitrageOpportunity = {
+                type: bestPath.hops.length > 2 ? 'triangular' : 'spatial',
+                path: bestPath.hops.map((hop) => ({
+                  dexName: hop.dexName,
+                  poolAddress: hop.poolAddress,
+                  tokenIn: hop.tokenIn,
+                  tokenOut: hop.tokenOut,
+                  fee: hop.fee,
+                })),
+                tokenA: { address: bestPath.startToken, decimals: 18, symbol: 'TOKEN_A' },
+                tokenB: {
+                  address: bestPath.hops[0]?.tokenOut || bestPath.startToken,
+                  decimals: 18,
+                  symbol: 'TOKEN_B',
+                },
+                tokenC: {
+                  address: bestPath.hops[1]?.tokenOut || bestPath.endToken,
+                  decimals: 18,
+                  symbol: 'TOKEN_C',
+                },
+              };
+
+              logger.info('═══════════════════════════════════════════════════════════');
+              logger.info('🚀 EXECUTING ARBITRAGE OPPORTUNITY');
+              logger.info('═══════════════════════════════════════════════════════════');
+              logger.info(`  Type: ${opportunity.type}`);
+              logger.info(`  Expected profit: ${formatEther(validation.newNetProfit.toString())} ETH`);
+              logger.info(`  Hops: ${bestPath.hops.length}`);
+
+              try {
+                const result = await this.integratedOrchestrator!.processOpportunity(
+                  opportunity,
+                  bestPath
+                );
+
+                if (result.success) {
+                  this.stats.tradesExecuted++;
+                  logger.info('═══════════════════════════════════════════════════════════');
+                  logger.info('✅ EXECUTION SUCCESSFUL');
+                  logger.info('═══════════════════════════════════════════════════════════');
+                  if (result.context.estimatedProfit) {
+                    const profitEth = formatEther(result.context.estimatedProfit.toString());
+                    this.stats.totalProfit += result.context.estimatedProfit;
+                    logger.info(`  Profit: ${profitEth} ETH`);
+                  }
+                  if (result.context.transactionHash) {
+                    logger.info(`  TX Hash: ${result.context.transactionHash}`);
+                  }
+                } else {
+                  logger.warn('═══════════════════════════════════════════════════════════');
+                  logger.warn('❌ EXECUTION FAILED');
+                  logger.warn('═══════════════════════════════════════════════════════════');
+                  if (result.errors && result.errors.length > 0) {
+                    for (const error of result.errors) {
+                      logger.warn(`  ${error.errorType}: ${error.message}`);
+                    }
+                  }
+                }
+              } catch (execError) {
+                logger.error(`Execution error: ${execError}`);
+                this.stats.errors++;
+              }
             } else {
               logger.warn('═══════════════════════════════════════════════════════════');
               logger.warn('❌ JIT VALIDATION FAILED - Stale opportunity, skipping');

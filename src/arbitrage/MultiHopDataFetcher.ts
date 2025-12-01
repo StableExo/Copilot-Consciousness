@@ -702,10 +702,7 @@ export class MultiHopDataFetcher {
       return results;
     }
 
-    logger.info(
-      `[JIT] Fetching live reserves for ${poolAddresses.length} pools`,
-      'DATAFETCH'
-    );
+    logger.info(`[JIT] Fetching live reserves for ${poolAddresses.length} pools`, 'DATAFETCH');
 
     const provider = new JsonRpcProvider(rpcUrl);
 
@@ -796,9 +793,7 @@ export class MultiHopDataFetcher {
     // Conservative profit estimate: reduce proportionally to ratio change
     const profitReductionFactor =
       1 - Math.min(avgRatioChange * JIT_PROFIT_SENSITIVITY, JIT_MAX_PROFIT_REDUCTION);
-    const newNetProfit = BigInt(
-      Math.floor(Number(path.netProfit) * profitReductionFactor)
-    );
+    const newNetProfit = BigInt(Math.floor(Number(path.netProfit) * profitReductionFactor));
 
     // Profitable if: not stale, covers gas, exceeds minimum threshold
     const isStillProfitable =

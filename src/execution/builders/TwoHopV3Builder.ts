@@ -95,12 +95,26 @@ export class TwoHopV3Builder {
     // Calculate amount0 and amount1 based on token position
     const { amount0, amount1 } = this.calculateAmounts(borrowAmount, isToken0);
 
+    // Normalize fees: if they're decimals (0.003), convert to basis points (3000)
+    // V3 expects uint24 fees like 500, 3000, 10000
+    const normalizeFee = (fee: number): number => {
+      if (fee < 1) {
+        // Fee is a decimal like 0.003, convert to basis points
+        return Math.round(fee * 1_000_000);
+      }
+      // Fee is already in basis points like 3000
+      return Math.round(fee);
+    };
+
+    const fee1 = normalizeFee(hop1.fee);
+    const fee2 = normalizeFee(hop2.fee);
+
     // Build callback parameters for V3 flash loan
     const callbackParams = {
       pool1: hop1.poolAddress,
       pool2: hop2.poolAddress,
-      fee1: hop1.fee,
-      fee2: hop2.fee,
+      fee1,
+      fee2,
       tokenIn: hop1.tokenIn,
       tokenIntermediate: hop1.tokenOut,
       tokenOut: hop2.tokenOut,

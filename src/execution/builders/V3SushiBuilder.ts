@@ -94,12 +94,26 @@ export class V3SushiBuilder {
     this.validateFee(hop1.fee);
     this.validateFee(hop2.fee);
 
+    // Normalize fees: if they're decimals (0.003), convert to basis points (3000)
+    // V3 expects uint24 fees like 500, 3000, 10000
+    const normalizeFee = (fee: number): number => {
+      if (fee < 1) {
+        // Fee is a decimal like 0.003, convert to basis points
+        return Math.round(fee * 1_000_000);
+      }
+      // Fee is already in basis points like 3000
+      return Math.round(fee);
+    };
+
+    const feeV3 = normalizeFee(hop1.fee);
+    const feeSushi = normalizeFee(hop2.fee);
+
     // Build cross-protocol parameters
     const params = {
       poolV3: hop1.poolAddress,
       poolSushi: hop2.poolAddress,
-      feeV3: hop1.fee,
-      feeSushi: hop2.fee,
+      feeV3,
+      feeSushi,
       tokenIn: hop1.tokenIn,
       tokenIntermediate: hop1.tokenOut,
       tokenOut: hop2.tokenOut,
