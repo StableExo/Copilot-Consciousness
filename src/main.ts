@@ -382,7 +382,16 @@ class TheWarden extends EventEmitter {
         gasOracle.startAutoRefresh();
       }
 
-      const gasEstimator = new AdvancedGasEstimator(this.provider, gasOracle);
+      // Configure gas estimator with environment-based thresholds
+      const minProfitAfterGasEnv = process.env.MIN_PROFIT_AFTER_GAS;
+      const minProfitAfterGas = minProfitAfterGasEnv
+        ? BigInt(Math.floor(parseFloat(minProfitAfterGasEnv) * 1e18))
+        : BigInt(1e15); // Default 0.001 ETH (more realistic for L2)
+
+      const gasEstimator = new AdvancedGasEstimator(this.provider, gasOracle, {
+        minProfitAfterGas,
+        maxGasCostPercentage: 80, // Gas can be up to 80% of profit
+      });
 
       // Initialize arbitrage configuration
       const arbitrageConfig: ArbitrageConfig = {
@@ -449,6 +458,12 @@ class TheWarden extends EventEmitter {
         logger.info(`Executor address: ${executorAddress}`);
         logger.info(`Tithe recipient: ${titheRecipient}`);
 
+        // Configure orchestrator with realistic thresholds for L2
+        const orchestratorConfig = {
+          minProfitAfterGas: minProfitAfterGas, // Use same threshold as gas estimator
+          maxGasPrice: BigInt(100) * BigInt(10 ** 9), // 100 gwei max
+        };
+
         this.integratedOrchestrator = new IntegratedArbitrageOrchestrator(
           baseOrchestrator,
           this.provider,
@@ -456,7 +471,8 @@ class TheWarden extends EventEmitter {
           gasEstimator,
           executorAddress,
           titheRecipient,
-          arbitrageConfig
+          arbitrageConfig,
+          orchestratorConfig
         );
 
         // Start the integrated orchestrator

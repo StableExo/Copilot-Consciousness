@@ -61,14 +61,27 @@ export function getTokensByChainId(chainId: number): ChainTokens {
 
 /**
  * Get an array of token addresses for scanning
- * Returns all available tokens for the given chain
+ * Returns limited tokens for faster scanning during development
+ * Can be configured via SCAN_TOKENS environment variable
  */
 export function getScanTokens(chainId: number): string[] {
   const tokens = getTokensByChainId(chainId);
   const addresses: string[] = [];
 
-  // Dynamically include all available tokens for the chain
-  // This ensures we don't miss any configured tokens
+  // Check for limited token scan via environment
+  const scanTokensEnv = process.env.SCAN_TOKENS;
+  if (scanTokensEnv) {
+    const limitedSymbols = scanTokensEnv.split(',').map((s) => s.trim().toUpperCase());
+    for (const symbol of limitedSymbols) {
+      const tokenInfo = tokens[symbol];
+      if (tokenInfo && tokenInfo.address) {
+        addresses.push(tokenInfo.address);
+      }
+    }
+    return addresses;
+  }
+
+  // Default: include all available tokens for the chain
   for (const [_symbol, tokenInfo] of Object.entries(tokens)) {
     if (tokenInfo && tokenInfo.address) {
       addresses.push(tokenInfo.address);
