@@ -8,6 +8,21 @@
 export const UINT24_MAX = 16777215;
 
 /**
+ * Normalize fee to integer basis points for V3 encoding.
+ * Handles both decimal format (0.003 = 0.3%) and integer format (3000 = 0.3%)
+ * @param fee - Fee value in either decimal or basis points format
+ * @returns Integer basis points suitable for uint24 encoding
+ */
+export function normalizeFee(fee: number): number {
+  if (fee < 1) {
+    // Fee is a decimal like 0.003, convert to basis points (multiply by 1M for V3)
+    return Math.round(fee * 1_000_000);
+  }
+  // Fee is already in basis points like 3000
+  return Math.round(fee);
+}
+
+/**
  * BuildResult interface that defines the structure for the result of a build.
  * @interface BuildResult
  * @property {object} params - The encoded parameters for the transaction.
