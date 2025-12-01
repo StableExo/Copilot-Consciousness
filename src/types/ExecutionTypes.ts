@@ -288,6 +288,7 @@ export interface MultiDEXTransactionParams {
   borrowTokenAddress: string;
   borrowAmount: bigint;
   minAmountOut: bigint;
+  poolAddress?: string; // V3 pool address for flash loan initiation
 }
 
 export interface UniswapV3TwoHopParams {
