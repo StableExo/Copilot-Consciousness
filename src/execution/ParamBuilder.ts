@@ -25,6 +25,22 @@ const DEX_TYPE_PANCAKESWAP_V3 = 3;
 const DEX_TYPE_AERODROME = 4;
 const DEX_TYPE_UNISWAP_V2 = 5;
 
+/**
+ * Normalize fee to uint24 format expected by smart contracts.
+ * Handles both decimal format (0.003 = 0.3%) and basis point format (3000).
+ * @param fee - The fee value to normalize
+ * @returns Fee as uint24 (e.g., 3000 for 0.3%)
+ */
+function normalizeFee(fee: number): number {
+  if (fee < 1) {
+    // Fee is a decimal like 0.003 (0.3%), convert to uint24 format
+    // 0.003 * 1_000_000 = 3000
+    return Math.round(fee * 1_000_000);
+  }
+  // Fee is already in the correct format (e.g., 3000, 500, 10000)
+  return Math.round(fee);
+}
+
 function mapDexType(dexString: string): number {
   const lowerDex = dexString?.toLowerCase() || '';
 
@@ -81,8 +97,9 @@ export function buildTwoHopParams(
   const tokenBorrowed = opportunity.tokenA;
   const tokenIntermediate = opportunity.tokenB;
 
-  const feeA = Number(leg1.fee);
-  const feeB = Number(leg2.fee);
+  // Normalize fees to uint24 format (handles both 0.003 and 3000 formats)
+  const feeA = normalizeFee(Number(leg1.fee));
+  const feeB = normalizeFee(Number(leg2.fee));
   const borrowAmount = simulationResult.initialAmount;
 
   const minAmountOut1 = calculateMinAmountOut(
@@ -138,9 +155,9 @@ export function buildTriangularParams(
     tokenA: tokenA.address,
     tokenB: tokenB.address,
     tokenC: tokenC.address,
-    fee1: Number(poolAB.fee),
-    fee2: Number(poolBC.fee),
-    fee3: Number(poolCA.fee),
+    fee1: normalizeFee(Number(poolAB.fee)),
+    fee2: normalizeFee(Number(poolBC.fee)),
+    fee3: normalizeFee(Number(poolCA.fee)),
     amountOutMinimumFinal: minAmountOutFinal,
     titheRecipient: titheRecipient,
   };
@@ -179,7 +196,12 @@ export function buildAavePathParams(
     const stepMinOut =
       i === (opportunity.path as ArbitragePath[]).length - 1 ? minAmountOutFinal : 0n;
     const dexType = mapDexType(step.dexName);
-    const fee = step.dexName.toLowerCase() === 'uniswapv3' ? Number(step.fee) : 0;
+    // Normalize fee to uint24 format for all DEX types
+    // V3 pools need actual fees, V2 pools use 0 (fee is embedded in reserves)
+    const isV3 =
+      step.dexName.toLowerCase().includes('v3') ||
+      step.dexName.toLowerCase().includes('pancakeswap');
+    const fee = isV3 ? normalizeFee(Number(step.fee)) : 0;
 
     return {
       pool: step.poolAddress,
