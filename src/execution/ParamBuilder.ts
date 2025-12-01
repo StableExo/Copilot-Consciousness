@@ -21,19 +21,49 @@ import { logger as _logger } from '../utils/logger';
 const DEX_TYPE_UNISWAP_V3 = 0;
 const DEX_TYPE_SUSHISWAP = 1;
 const DEX_TYPE_DODO = 2;
+const DEX_TYPE_PANCAKESWAP_V3 = 3;
+const DEX_TYPE_AERODROME = 4;
+const DEX_TYPE_UNISWAP_V2 = 5;
 
 function mapDexType(dexString: string): number {
-  const lowerDex = dexString?.toLowerCase();
-  switch (lowerDex) {
-    case 'uniswapv3':
-      return DEX_TYPE_UNISWAP_V3;
-    case 'sushiswap':
-      return DEX_TYPE_SUSHISWAP;
-    case 'dodo':
-      return DEX_TYPE_DODO;
-    default:
-      throw new Error(`Unsupported DEX type for path building: ${dexString}`);
+  const lowerDex = dexString?.toLowerCase() || '';
+
+  // Uniswap V3 variants (including forks on different chains)
+  if (lowerDex.includes('uniswap') && lowerDex.includes('v3')) {
+    return DEX_TYPE_UNISWAP_V3;
   }
+  // Uniswap V2 variants
+  if (lowerDex.includes('uniswap') && (lowerDex.includes('v2') || !lowerDex.includes('v3'))) {
+    return DEX_TYPE_UNISWAP_V2;
+  }
+  // PancakeSwap V3 (uses same interface as Uniswap V3)
+  if (lowerDex.includes('pancakeswap') && lowerDex.includes('v3')) {
+    return DEX_TYPE_PANCAKESWAP_V3;
+  }
+  // SushiSwap variants
+  if (lowerDex.includes('sushiswap') || lowerDex.includes('sushi')) {
+    return DEX_TYPE_SUSHISWAP;
+  }
+  // Aerodrome/Velodrome (Solidly forks on Base/Optimism)
+  if (lowerDex.includes('aerodrome') || lowerDex.includes('velodrome')) {
+    return DEX_TYPE_AERODROME;
+  }
+  // DODO
+  if (lowerDex.includes('dodo')) {
+    return DEX_TYPE_DODO;
+  }
+  // AlienBase, BaseSwap, etc. - treat as Uniswap V2 compatible
+  if (
+    lowerDex.includes('alienbase') ||
+    lowerDex.includes('baseswap') ||
+    lowerDex.includes('swapbased') ||
+    lowerDex.includes('rocketswap')
+  ) {
+    return DEX_TYPE_UNISWAP_V2;
+  }
+
+  // Default: treat as Uniswap V3 compatible (most common on Base)
+  return DEX_TYPE_UNISWAP_V3;
 }
 
 export function buildTwoHopParams(

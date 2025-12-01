@@ -132,6 +132,10 @@ interface WardenConfig {
 
   // Monitoring
   healthCheckInterval: number;
+
+  // Sequential execution mode - process one opportunity at a time
+  sequentialExecution?: boolean;
+  maxOpportunitiesPerCycle?: number;
 }
 
 /**
@@ -215,6 +219,11 @@ function loadConfig(): WardenConfig {
     dryRun: process.env.DRY_RUN === 'true' || nodeEnv === 'development',
 
     healthCheckInterval: parseInt(process.env.HEALTH_CHECK_INTERVAL || '30000'),
+
+    // Sequential execution mode - process one opportunity at a time
+    sequentialExecution: process.env.SEQUENTIAL_EXECUTION === 'true',
+    // Max opportunities to evaluate per cycle in sequential mode
+    maxOpportunitiesPerCycle: parseInt(process.env.MAX_OPPORTUNITIES_PER_CYCLE || '1'),
   };
 
   logger.info('Configuration loaded successfully');
@@ -224,6 +233,9 @@ function loadConfig(): WardenConfig {
   logger.info(`- Scan Interval: ${config.scanInterval}ms`);
   logger.info(`- Min Profit: ${config.minProfitPercent}%`);
   logger.info(`- Dry Run Mode: ${config.dryRun}`);
+  if (config.sequentialExecution) {
+    logger.info(`- Sequential Execution: ENABLED (max ${config.maxOpportunitiesPerCycle} per cycle)`);
+  }
 
   return config;
 }
@@ -1167,8 +1179,15 @@ class TheWarden extends EventEmitter {
               logger.info('═══════════════════════════════════════════════════════════');
 
               // Convert ArbitragePath to ArbitrageOpportunity format
+              // Triangular requires exactly 3 hops forming a complete cycle (A->B->C->A)
+              const isTriangular =
+                bestPath.hops.length === 3 &&
+                bestPath.startToken.toLowerCase() === bestPath.endToken.toLowerCase();
+
               const opportunity: import('./types/definitions').ArbitrageOpportunity = {
-                type: bestPath.hops.length > 2 ? 'triangular' : 'spatial',
+                // Only use 'triangular' for true 3-hop triangular arbs
+                // For 2-hop, use 'spatial'. For 4+ hops, path-based execution will be used
+                type: isTriangular ? 'triangular' : 'spatial',
                 path: bestPath.hops.map((hop) => ({
                   dexName: hop.dexName,
                   poolAddress: hop.poolAddress,
@@ -1176,6 +1195,18 @@ class TheWarden extends EventEmitter {
                   tokenOut: hop.tokenOut,
                   fee: hop.fee,
                 })),
+                // For triangular arbs, populate pools array for ParamBuilder
+                pools: isTriangular
+                  ? bestPath.hops.map((hop) => ({
+                      address: hop.poolAddress,
+                      token0: hop.tokenIn,
+                      token1: hop.tokenOut,
+                      fee: hop.fee,
+                      reserve0: BigInt(0),
+                      reserve1: BigInt(0),
+                      dexName: hop.dexName,
+                    }))
+                  : undefined,
                 tokenA: { address: bestPath.startToken, decimals: 18, symbol: 'TOKEN_A' },
                 tokenB: {
                   address: bestPath.hops[0]?.tokenOut || bestPath.startToken,
@@ -1193,7 +1224,9 @@ class TheWarden extends EventEmitter {
               logger.info('🚀 EXECUTING ARBITRAGE OPPORTUNITY');
               logger.info('═══════════════════════════════════════════════════════════');
               logger.info(`  Type: ${opportunity.type}`);
-              logger.info(`  Expected profit: ${formatEther(validation.newNetProfit.toString())} ETH`);
+              logger.info(
+                `  Expected profit: ${formatEther(validation.newNetProfit.toString())} ETH`
+              );
               logger.info(`  Hops: ${bestPath.hops.length}`);
 
               try {
@@ -1664,27 +1697,58 @@ class EnhancedTheWarden extends EventEmitter {
 
       if (paths && paths.length > 0) {
         this.stats.opportunitiesFound += paths.length;
-        logger.info(
-          `Found ${paths.length} potential opportunities in cycle ${this.stats.cyclesCompleted}`,
-          'ARBITRAGE'
-        );
+
+        // Sequential execution mode: process one opportunity at a time
+        const maxToProcess = this.components.config.sequentialExecution
+          ? Math.min(paths.length, this.components.config.maxOpportunitiesPerCycle || 1)
+          : paths.length;
+
+        if (this.components.config.sequentialExecution) {
+          logger.info('═══════════════════════════════════════════════════════════');
+          logger.info('📋 SEQUENTIAL EXECUTION MODE');
+          logger.info('═══════════════════════════════════════════════════════════');
+          logger.info(`  Found ${paths.length} opportunities, processing ${maxToProcess}`);
+        } else {
+          logger.info(
+            `Found ${paths.length} potential opportunities in cycle ${this.stats.cyclesCompleted}`,
+            'ARBITRAGE'
+          );
+        }
 
         if (
           !this.components.config.dryRun &&
           this.components.integratedOrchestrator &&
           paths.length > 0
         ) {
-          const bestPath = paths[0];
-          logger.info('Processing best opportunity...', 'ARBITRAGE');
-          logger.info(
-            `  Estimated profit: ${formatEther(bestPath.netProfit.toString())} ETH`,
-            'ARBITRAGE'
-          );
-          logger.info(
-            `  Gas cost: ${formatEther(bestPath.totalGasCost.toString())} ETH`,
-            'ARBITRAGE'
-          );
-          logger.info(`  Hops: ${bestPath.hops.length}`, 'ARBITRAGE');
+          // In sequential mode, process opportunities one at a time and wait for each
+          for (let i = 0; i < maxToProcess; i++) {
+            const currentPath = paths[i];
+
+            if (this.components.config.sequentialExecution) {
+              logger.info(`───────────────────────────────────────────────────────────`);
+              logger.info(`📍 Processing opportunity ${i + 1}/${maxToProcess}`);
+            }
+
+            logger.info('Processing opportunity...', 'ARBITRAGE');
+            logger.info(
+              `  Estimated profit: ${formatEther(currentPath.netProfit.toString())} ETH`,
+              'ARBITRAGE'
+            );
+            logger.info(
+              `  Gas cost: ${formatEther(currentPath.totalGasCost.toString())} ETH`,
+              'ARBITRAGE'
+            );
+            logger.info(`  Hops: ${currentPath.hops.length}`, 'ARBITRAGE');
+            logger.info(
+              `  Route: ${currentPath.hops.map((h) => h.dexName).join(' → ')}`,
+              'ARBITRAGE'
+            );
+
+            // In sequential mode, break after first opportunity (will process next in next cycle)
+            if (this.components.config.sequentialExecution && i === 0) {
+              logger.info('  ⏳ Executing this route before finding next...');
+            }
+          }
         } else if (this.components.config.dryRun && paths.length > 0) {
           const bestPath = paths[0];
           logger.info('[DRY RUN] Best opportunity:', 'ARBITRAGE');

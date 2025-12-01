@@ -50,6 +50,10 @@ export interface ValidatedConfig {
   enableLayer2: boolean;
   dryRun: boolean;
 
+  // Sequential execution mode
+  sequentialExecution?: boolean;
+  maxOpportunitiesPerCycle?: number;
+
   // Environment
   nodeEnv: string;
   debug: boolean;
@@ -369,6 +373,10 @@ export function validateConfig(): ValidatedConfig {
       enableCrossChain: parseBoolEnv('ENABLE_CROSS_CHAIN', false),
       enableLayer2: parseBoolEnv('ENABLE_LAYER2', false),
       dryRun: parseBoolEnv('DRY_RUN', process.env.NODE_ENV !== 'production'),
+
+      // Sequential execution mode
+      sequentialExecution: parseBoolEnv('SEQUENTIAL_EXECUTION', false),
+      maxOpportunitiesPerCycle: parseIntEnv('MAX_OPPORTUNITIES_PER_CYCLE', 1),
 
       // Environment
       nodeEnv: getEnv('NODE_ENV', 'development'),
