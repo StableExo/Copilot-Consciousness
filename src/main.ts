@@ -1167,8 +1167,15 @@ class TheWarden extends EventEmitter {
               logger.info('═══════════════════════════════════════════════════════════');
 
               // Convert ArbitragePath to ArbitrageOpportunity format
+              // Triangular requires exactly 3 hops forming a complete cycle (A->B->C->A)
+              const isTriangular =
+                bestPath.hops.length === 3 &&
+                bestPath.startToken.toLowerCase() === bestPath.endToken.toLowerCase();
+
               const opportunity: import('./types/definitions').ArbitrageOpportunity = {
-                type: bestPath.hops.length > 2 ? 'triangular' : 'spatial',
+                // Only use 'triangular' for true 3-hop triangular arbs
+                // For 2-hop, use 'spatial'. For 4+ hops, path-based execution will be used
+                type: isTriangular ? 'triangular' : 'spatial',
                 path: bestPath.hops.map((hop) => ({
                   dexName: hop.dexName,
                   poolAddress: hop.poolAddress,
@@ -1176,6 +1183,18 @@ class TheWarden extends EventEmitter {
                   tokenOut: hop.tokenOut,
                   fee: hop.fee,
                 })),
+                // For triangular arbs, populate pools array for ParamBuilder
+                pools: isTriangular
+                  ? bestPath.hops.map((hop) => ({
+                      address: hop.poolAddress,
+                      token0: hop.tokenIn,
+                      token1: hop.tokenOut,
+                      fee: hop.fee,
+                      reserve0: BigInt(0),
+                      reserve1: BigInt(0),
+                      dexName: hop.dexName,
+                    }))
+                  : undefined,
                 tokenA: { address: bestPath.startToken, decimals: 18, symbol: 'TOKEN_A' },
                 tokenB: {
                   address: bestPath.hops[0]?.tokenOut || bestPath.startToken,
@@ -1193,7 +1212,9 @@ class TheWarden extends EventEmitter {
               logger.info('🚀 EXECUTING ARBITRAGE OPPORTUNITY');
               logger.info('═══════════════════════════════════════════════════════════');
               logger.info(`  Type: ${opportunity.type}`);
-              logger.info(`  Expected profit: ${formatEther(validation.newNetProfit.toString())} ETH`);
+              logger.info(
+                `  Expected profit: ${formatEther(validation.newNetProfit.toString())} ETH`
+              );
               logger.info(`  Hops: ${bestPath.hops.length}`);
 
               try {
