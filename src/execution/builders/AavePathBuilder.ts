@@ -124,13 +124,16 @@ export class AavePathBuilder {
       // Validate fee is valid uint24
       this.validateFee(hop.fee);
 
+      // Normalize fee: if it's a decimal (0.003), convert to basis points (3000)
+      const normalizedFee = hop.fee < 1 ? Math.round(hop.fee * 1_000_000) : Math.round(hop.fee);
+
       swapSteps.push({
         dexType,
         pool: hop.poolAddress,
         tokenIn: hop.tokenIn,
         tokenOut: hop.tokenOut,
         minOut,
-        fee: hop.fee,
+        fee: normalizedFee,
       });
     }
 
