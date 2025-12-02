@@ -39,9 +39,7 @@ export interface AnomalyReport {
   transaction: TransactionEvent;
   anomalies: Anomaly[];
   overallSeverity: 'low' | 'medium' | 'high' | 'critical';
-  risk
-
-Score: number; // 0-1
+  riskScore: number; // 0-1
   recommendations: string[];
   shouldPause: boolean;
 }

@@ -311,8 +311,8 @@ export class AddressRegistry {
    */
   export(): string {
     const data = Array.from(this.addresses.entries()).map(([address, record]) => ({
-      address,
       ...record,
+      address,
       totalValueReceived: record.totalValueReceived.toString(),
       totalValueSent: record.totalValueSent.toString(),
       averageGasPrice: record.averageGasPrice.toString(),
