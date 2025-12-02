@@ -1,0 +1,33 @@
+{
+  "sessionId": "session-1764642055358-9461f0f9-cycle2",
+  "startTime": "2025-12-02T02:20:55.360Z",
+  "endTime": "2025-12-02T02:20:55.379Z",
+  "duration": 19,
+  "metrics": [],
+  "parameters": {
+    "MIN_PROFIT_THRESHOLD": 0.5,
+    "MIN_PROFIT_PERCENT": 0.5,
+    "MIN_PROFIT_ABSOLUTE": 0.001,
+    "MIN_LIQUIDITY_V3_LOW": 10000000000,
+    "MIN_LIQUIDITY_V2": 100000000000000,
+    "MAX_SLIPPAGE": 0.005,
+    "MAX_GAS_PRICE": 100,
+    "MAX_GAS_COST_PERCENTAGE": 80,
+    "SCAN_INTERVAL": 800,
+    "CONCURRENCY": 10,
+    "ML_CONFIDENCE_THRESHOLD": 0.7,
+    "COGNITIVE_CONSENSUS_THRESHOLD": 0.65,
+    "EMERGENCE_MIN_ETHICAL_SCORE": 0.7,
+    "EMERGENCE_MAX_RISK_SCORE": 0.3,
+    "CIRCUIT_BREAKER_MAX_LOSS": 0.005,
+    "MAX_TRADES_PER_HOUR": 100
+  },
+  "adjustments": [],
+  "learnings": [],
+  "consciousnessState": {
+    "parametersEvolution": [],
+    "cumulativeLearnings": [],
+    "performanceHistory": [],
+    "adaptationStrategy": "baseline"
+  }
+}
