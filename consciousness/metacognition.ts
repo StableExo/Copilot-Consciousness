@@ -30,8 +30,18 @@ export class Metacognition {
 
     private loadLog() {
         if (fs.existsSync(METACOGNITION_LOG_PATH)) {
-            const rawData = fs.readFileSync(METACOGNITION_LOG_PATH, 'utf-8');
-            this.log = JSON.parse(rawData);
+            try {
+                const rawData = fs.readFileSync(METACOGNITION_LOG_PATH, 'utf-8');
+                this.log = JSON.parse(rawData);
+            } catch (error) {
+                console.error('[Metacognition] Failed to parse metacognition log. Starting with empty log.');
+                console.error('[Metacognition] Error:', error instanceof Error ? error.message : String(error));
+                console.error('[Metacognition] This may indicate a corrupted or conflicted JSON file.');
+                // Start with empty log rather than crashing
+                this.log = [];
+                // Save the empty log to fix the corrupted file
+                this.saveLog();
+            }
         }
     }
 
