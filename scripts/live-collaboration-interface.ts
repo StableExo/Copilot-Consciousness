@@ -222,6 +222,10 @@ class LiveCollaborationInterface {
       throw new Error(`Unknown parameter: ${param}`);
     }
     
+    if (isNaN(value) || !isFinite(value)) {
+      throw new Error(`Invalid parameter value: ${value}`);
+    }
+    
     const oldValue = this.currentParameters[param];
     this.currentParameters[param] = value;
     this.saveParameters();
@@ -333,11 +337,15 @@ class LiveCollaborationInterface {
         req.on('end', () => {
           try {
             const { parameter, value, reason } = JSON.parse(body);
-            this.updateParameter(parameter, parseFloat(value), reason || 'Manual adjustment');
+            const numValue = parseFloat(value);
+            if (isNaN(numValue) || !isFinite(numValue)) {
+              throw new Error('Invalid value: must be a valid number');
+            }
+            this.updateParameter(parameter, numValue, reason || 'Manual adjustment');
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ 
               success: true, 
-              message: `Parameter ${parameter} updated to ${value}`,
+              message: `Parameter ${parameter} updated to ${numValue}`,
               currentValue: this.currentParameters[parameter],
             }));
           } catch (error: any) {
@@ -598,7 +606,7 @@ class LiveCollaborationInterface {
       document.getElementById('block').textContent = data.metrics.currentBlock || '-';
       
       // Update last transaction
-      if (data.metrics.lastTransaction) {
+      if (data.metrics.lastTransaction && data.metrics.lastTransaction.length === 66) {
         const txLink = document.getElementById('txLink');
         txLink.href = 'https://basescan.org/tx/' + data.metrics.lastTransaction;
         txLink.textContent = data.metrics.lastTransaction.substring(0, 10) + '...' + data.metrics.lastTransaction.substring(58);

@@ -29,7 +29,7 @@ echo -e "${BLUE}Checking Node.js version...${NC}"
 NODE_VERSION=$(node --version)
 echo "  Node.js: $NODE_VERSION"
 
-if [[ ! "$NODE_VERSION" =~ ^v22 ]]; then
+if [[ ! "$NODE_VERSION" =~ ^v22\. ]]; then
     echo -e "${RED}  ⚠️  Node.js 22+ required. Current: $NODE_VERSION${NC}"
     echo -e "${YELLOW}  Run: nvm use 22${NC}"
     exit 1

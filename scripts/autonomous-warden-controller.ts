@@ -25,6 +25,7 @@
 import { spawn, ChildProcess } from 'child_process';
 import { writeFileSync, readFileSync, existsSync, mkdirSync, appendFileSync } from 'fs';
 import { join } from 'path';
+import { randomUUID } from 'crypto';
 import * as dotenv from 'dotenv';
 
 // Load environment variables
@@ -116,7 +117,7 @@ class AutonomousWardenController {
   
   constructor() {
     // Generate session ID
-    this.sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    this.sessionId = `session-${Date.now()}-${randomUUID().slice(0, 8)}`;
     
     // Ensure directory exists
     this.ensureDirectoryExists();
@@ -766,7 +767,15 @@ async function main() {
   
   // Parse duration from command line args
   const durationArg = process.argv.find(arg => arg.startsWith('--duration='));
-  const duration = durationArg ? parseInt(durationArg.split('=')[1], 10) * 1000 : 0;
+  let duration = 0;
+  if (durationArg) {
+    const durationSeconds = parseInt(durationArg.split('=')[1], 10);
+    if (isNaN(durationSeconds) || durationSeconds < 0) {
+      console.error('Error: duration must be a positive number');
+      process.exit(1);
+    }
+    duration = durationSeconds * 1000;
+  }
   
   try {
     await controller.start(duration);
