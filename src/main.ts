@@ -1797,15 +1797,21 @@ class EnhancedTheWarden extends EventEmitter {
     const scanInterval = this.components?.config.scanInterval || 1000;
     logger.info(`Starting scan loop with ${scanInterval}ms interval...`, 'MAIN');
 
-    // Run first scan immediately
-    await this.scanCycle();
+    // Run first scan asynchronously (don't block startup)
+    // This prevents hanging if RPC endpoints are slow or unavailable
+    logger.info('TheWarden is now running and scanning for opportunities', 'MAIN');
+    this.scanCycle().catch((error) => {
+      logger.error(`Error in initial scan cycle: ${error}`, 'MAIN');
+    });
 
     // Set up interval for continuous scanning
     this.scanInterval = setInterval(async () => {
-      await this.scanCycle();
+      try {
+        await this.scanCycle();
+      } catch (error) {
+        logger.error(`Error in scan cycle: ${error}`, 'MAIN');
+      }
     }, scanInterval);
-
-    logger.info('TheWarden is now running and scanning for opportunities', 'MAIN');
   }
 
   /**

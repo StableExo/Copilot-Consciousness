@@ -280,7 +280,13 @@ export class DashboardServer {
         <p style="margin-top: 0.5rem;">Active Connections: <span class="metric">${this.wsHandler.getConnectedClientsCount()}</span></p>
         <div class="info-box">
           <p><strong>Connect via:</strong></p>
-          <code>ws://localhost:${this.config.port}</code>
+          <code id="ws-url"></code>
+          <script>
+            // Dynamically set WebSocket URL based on current page protocol and host
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = wsProtocol + '//' + window.location.host;
+            document.getElementById('ws-url').textContent = wsUrl;
+          </script>
         </div>
       </div>
 
@@ -362,7 +368,7 @@ export class DashboardServer {
           console.log('📊 Real-Time Analytics Dashboard Started');
           console.log('='.repeat(60));
           console.log(`🌐 HTTP Server: http://localhost:${this.config.port}`);
-          console.log(`🔌 WebSocket: ws://localhost:${this.config.port}`);
+          console.log(`🔌 WebSocket: ws://localhost:${this.config.port} (or wss:// for HTTPS)`);
           console.log(`📈 Update Interval: ${this.config.updateInterval}ms`);
           console.log(`👥 Max Connections: ${this.config.maxConnections}`);
           console.log('='.repeat(60));
