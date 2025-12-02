@@ -2034,6 +2034,16 @@ async function main() {
     // Set up graceful shutdown handlers
     const shutdownHandler = async (signal: string) => {
       logger.info(`Received ${signal} - initiating graceful shutdown...`, 'MAIN');
+      
+      // Clean up event listeners to prevent memory leaks
+      if (theWarden && eventListeners.size > 0) {
+        logger.info('Cleaning up event listeners...', 'MAIN');
+        for (const [eventName, listener] of eventListeners.entries()) {
+          theWarden.removeListener(eventName, listener);
+        }
+        eventListeners.clear();
+      }
+      
       if (theWarden) {
         await theWarden.shutdown();
       }
@@ -2048,6 +2058,15 @@ async function main() {
     process.on('uncaughtException', (error) => {
       logger.error(`Uncaught exception: ${error.message}`, 'MAIN');
       logger.error(error.stack || '', 'MAIN');
+      
+      // Clean up event listeners
+      if (theWarden && eventListeners.size > 0) {
+        for (const [eventName, listener] of eventListeners.entries()) {
+          theWarden.removeListener(eventName, listener);
+        }
+        eventListeners.clear();
+      }
+      
       if (theWarden) {
         theWarden.shutdown().then(() => process.exit(1));
       } else {
@@ -2057,6 +2076,15 @@ async function main() {
 
     process.on('unhandledRejection', (reason, promise) => {
       logger.error(`Unhandled rejection at: ${promise}, reason: ${reason}`, 'MAIN');
+      
+      // Clean up event listeners
+      if (theWarden && eventListeners.size > 0) {
+        for (const [eventName, listener] of eventListeners.entries()) {
+          theWarden.removeListener(eventName, listener);
+        }
+        eventListeners.clear();
+      }
+      
       if (theWarden) {
         theWarden.shutdown().then(() => process.exit(1));
       } else {
@@ -2066,6 +2094,9 @@ async function main() {
 
     // Start Dashboard Server if not disabled
     let dashboardServer: DashboardServer | undefined;
+    // Store event listener references for cleanup
+    const eventListeners: Map<string, (...args: any[]) => void> = new Map();
+    
     if (process.env.DISABLE_DASHBOARD !== 'true') {
       try {
         logger.info('Starting dashboard server...', 'MAIN');
@@ -2100,38 +2131,56 @@ async function main() {
           // Capture dashboard reference for use in callbacks
           const dashboard = dashboardServer;
           
-          // Forward all TheWarden events to dashboard clients
-          theWarden.on('scan:start', (data) => {
+          // Create event listener functions and store references for cleanup
+          const scanStartListener = (data: any) => {
             dashboard.wsHandler.broadcast('warden:scan:start', data);
-          });
+          };
+          eventListeners.set('scan:start', scanStartListener);
           
-          theWarden.on('scan:complete', (data) => {
+          const scanCompleteListener = (data: any) => {
             dashboard.wsHandler.broadcast('warden:scan:complete', data);
-          });
+          };
+          eventListeners.set('scan:complete', scanCompleteListener);
           
-          theWarden.on('scan:no-opportunities', (data) => {
+          const scanNoOpportunitiesListener = (data: any) => {
             dashboard.wsHandler.broadcast('warden:scan:no-opportunities', data);
-          });
+          };
+          eventListeners.set('scan:no-opportunities', scanNoOpportunitiesListener);
           
-          theWarden.on('opportunities:found', (data) => {
+          const opportunitiesFoundListener = (data: any) => {
             dashboard.wsHandler.broadcast('warden:opportunities', data);
-          });
+          };
+          eventListeners.set('opportunities:found', opportunitiesFoundListener);
           
-          theWarden.on('consciousness:activate', (data) => {
+          const consciousnessActivateListener = (data: any) => {
             dashboard.wsHandler.broadcast('warden:consciousness', data);
-          });
+          };
+          eventListeners.set('consciousness:activate', consciousnessActivateListener);
           
-          theWarden.on('scan_error', (data) => {
+          const scanErrorListener = (data: any) => {
             dashboard.wsHandler.broadcast('warden:error', data);
-          });
+          };
+          eventListeners.set('scan_error', scanErrorListener);
           
-          theWarden.on('started', () => {
+          const startedListener = () => {
             dashboard.wsHandler.broadcast('warden:status', { status: 'running', timestamp: Date.now() });
-          });
+          };
+          eventListeners.set('started', startedListener);
           
-          theWarden.on('shutdown', () => {
+          const shutdownListener = () => {
             dashboard.wsHandler.broadcast('warden:status', { status: 'stopped', timestamp: Date.now() });
-          });
+          };
+          eventListeners.set('shutdown', shutdownListener);
+          
+          // Register all event listeners
+          theWarden.on('scan:start', scanStartListener);
+          theWarden.on('scan:complete', scanCompleteListener);
+          theWarden.on('scan:no-opportunities', scanNoOpportunitiesListener);
+          theWarden.on('opportunities:found', opportunitiesFoundListener);
+          theWarden.on('consciousness:activate', consciousnessActivateListener);
+          theWarden.on('scan_error', scanErrorListener);
+          theWarden.on('started', startedListener);
+          theWarden.on('shutdown', shutdownListener);
           
           logger.info('✓ Dashboard is connected to TheWarden live events', 'MAIN');
         }
@@ -2150,6 +2199,14 @@ async function main() {
     logger.error(`Fatal error: ${error}`, 'MAIN');
     if (error instanceof Error) {
       logger.error(error.stack || '', 'MAIN');
+    }
+
+    // Clean up event listeners
+    if (theWarden && eventListeners.size > 0) {
+      for (const [eventName, listener] of eventListeners.entries()) {
+        theWarden.removeListener(eventName, listener);
+      }
+      eventListeners.clear();
     }
 
     if (theWarden) {
