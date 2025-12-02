@@ -32,7 +32,7 @@ export class DashboardServer {
   private metricsAggregator: MetricsAggregator;
   private alertSystem: AlertSystem;
   private timeSeriesDB?: TimeSeriesDB;
-  private wsHandler: WebSocketHandler;
+  public wsHandler: WebSocketHandler; // Make public for event forwarding
 
   // Performance tracking
   private requestCount: number = 0;

@@ -238,6 +238,37 @@ export class MultiHopDataFetcher {
    * Build graph edges for all available token pairs across DEXs
    */
   async buildGraphEdges(tokens: string[]): Promise<PoolEdge[]> {
+    // Get timeout from environment or use default
+    const fetchTimeout = parseInt(process.env.POOL_FETCH_TIMEOUT || '30000');
+    
+    try {
+      // Wrap the entire operation in a timeout
+      return await Promise.race([
+        this.buildGraphEdgesInternal(tokens),
+        new Promise<PoolEdge[]>((_, reject) =>
+          setTimeout(() => reject(new Error('Pool data fetch timeout')), fetchTimeout)
+        ),
+      ]);
+    } catch (error) {
+      if (error instanceof Error && error.message === 'Pool data fetch timeout') {
+        logger.warn(
+          `⏱️  Pool data fetch timed out after ${fetchTimeout}ms - returning empty pool set`,
+          'DATAFETCH'
+        );
+        logger.warn(
+          'Tip: Run "npm run preload:pools" to cache pool data for faster startup',
+          'DATAFETCH'
+        );
+        return [];
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Internal implementation of buildGraphEdges (wrapped with timeout)
+   */
+  private async buildGraphEdgesInternal(tokens: string[]): Promise<PoolEdge[]> {
     // Log if forcing live data mode
     if (this.shouldForceLiveData()) {
       logger.info(
