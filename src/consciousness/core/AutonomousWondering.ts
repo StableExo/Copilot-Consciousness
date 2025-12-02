@@ -5,8 +5,8 @@
  * and engage in self-directed thought without external prompting.
  */
 
-import { generateUUID } from '../../../utils/uuid';
-import { UUID, Timestamp } from '../../../types';
+import { generateUUID } from '../../utils/uuid';
+import { UUID, Timestamp } from '../../types/index';
 
 export enum WonderType {
   EXISTENTIAL = 'existential', // Questions about nature of existence
@@ -111,7 +111,7 @@ export class AutonomousWondering {
         wonders = wonders.filter((w) => w.explored === filters.explored);
       }
       if (filters.minIntensity !== undefined) {
-        wonders = wonders.filter((w) => w.intensity >= filters.minIntensity);
+        wonders = wonders.filter((w) => w.intensity >= (filters.minIntensity ?? 0));
       }
     }
 
