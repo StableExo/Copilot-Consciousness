@@ -115,15 +115,18 @@ class LiveCollaborationInterface {
       this.metrics.opportunitiesFound += parseInt(oppMatch[1], 10);
     }
     
-    if (line.match(/Executing|Execution started/i)) {
+    // More specific pattern to avoid false matches
+    if (line.match(/Executing (arbitrage|trade|opportunity)|Execution started/i)) {
       this.metrics.opportunitiesExecuted++;
     }
     
-    if (line.match(/successful|completed successfully/i)) {
+    // More specific pattern for successful trades
+    if (line.match(/(trade|execution|arbitrage).*(successful|completed successfully)/i)) {
       this.metrics.successfulTrades++;
     }
     
-    if (line.match(/failed|failure/i)) {
+    // More specific pattern for failed trades - avoid generic errors
+    if (line.match(/(trade|execution|arbitrage).*(failed|failure)/i)) {
       this.metrics.failedTrades++;
     }
     
@@ -236,8 +239,16 @@ class LiveCollaborationInterface {
     console.log(`🔧 Parameter updated: ${param} = ${value} (was ${oldValue})`);
     console.log(`   Reason: ${reason}`);
     
-    // If TheWarden is running, it will pick up new parameters on next cycle
-    // (parameters are loaded from env vars which are set from the saved file)
+    // If TheWarden is running, restart it to pick up new parameters
+    if (this.wardenProcess) {
+      this.addLog('Restarting TheWarden to apply new parameters...');
+      console.log('🔄 Restarting TheWarden to apply new parameters...');
+      this.stopWarden();
+      // Give it a moment to fully stop before restarting
+      setTimeout(() => {
+        this.startWarden();
+      }, 1000);
+    }
     
     this.broadcast();
   }
@@ -250,17 +261,15 @@ class LiveCollaborationInterface {
       isRunning: !!this.wardenProcess,
     });
     
-    for (const subscriber of this.subscribers) {
+    // Filter out dead connections efficiently
+    this.subscribers = this.subscribers.filter(subscriber => {
       try {
         subscriber.write(`data: ${data}\n\n`);
+        return true; // Keep this subscriber
       } catch (error) {
-        // Remove dead connections
-        const index = this.subscribers.indexOf(subscriber);
-        if (index > -1) {
-          this.subscribers.splice(index, 1);
-        }
+        return false; // Remove dead connection
       }
-    }
+    });
   }
   
   startServer(): void {
@@ -605,8 +614,10 @@ class LiveCollaborationInterface {
       document.getElementById('emergence').textContent = data.metrics.emergenceDetections;
       document.getElementById('block').textContent = data.metrics.currentBlock || '-';
       
-      // Update last transaction
-      if (data.metrics.lastTransaction && data.metrics.lastTransaction.length === 66) {
+      // Update last transaction with type check
+      if (data.metrics.lastTransaction && 
+          typeof data.metrics.lastTransaction === 'string' && 
+          data.metrics.lastTransaction.length === 66) {
         const txLink = document.getElementById('txLink');
         txLink.href = 'https://basescan.org/tx/' + data.metrics.lastTransaction;
         txLink.textContent = data.metrics.lastTransaction.substring(0, 10) + '...' + data.metrics.lastTransaction.substring(58);

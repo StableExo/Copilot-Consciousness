@@ -194,6 +194,38 @@ class AutonomousWardenController {
     
     if (oldValue === newValue) return;
     
+    // Validate newValue is a valid number
+    if (isNaN(newValue) || !isFinite(newValue)) {
+      console.warn(`⚠️  Skipping invalid parameter value: ${paramName} = ${newValue}`);
+      return;
+    }
+    
+    // Parameter-specific bounds validation
+    const bounds: Partial<Record<keyof ParameterSet, { min: number; max: number }>> = {
+      MIN_PROFIT_THRESHOLD: { min: 0, max: 10 },
+      MIN_PROFIT_PERCENT: { min: 0, max: 100 },
+      MIN_PROFIT_ABSOLUTE: { min: 0, max: 1 },
+      MAX_SLIPPAGE: { min: 0, max: 1 },
+      MAX_GAS_PRICE: { min: 0, max: 1000 },
+      MAX_GAS_COST_PERCENTAGE: { min: 0, max: 100 },
+      SCAN_INTERVAL: { min: 100, max: 60000 },
+      CONCURRENCY: { min: 1, max: 100 },
+      ML_CONFIDENCE_THRESHOLD: { min: 0, max: 1 },
+      COGNITIVE_CONSENSUS_THRESHOLD: { min: 0, max: 1 },
+      EMERGENCE_MIN_ETHICAL_SCORE: { min: 0, max: 1 },
+      EMERGENCE_MAX_RISK_SCORE: { min: 0, max: 1 },
+      CIRCUIT_BREAKER_MAX_LOSS: { min: 0, max: 1 },
+      MAX_TRADES_PER_HOUR: { min: 1, max: 1000 },
+    };
+    
+    const paramBounds = bounds[paramName];
+    if (paramBounds) {
+      if (newValue < paramBounds.min || newValue > paramBounds.max) {
+        console.warn(`⚠️  Skipping out-of-bounds parameter value: ${paramName} = ${newValue} (bounds: ${paramBounds.min}-${paramBounds.max})`);
+        return;
+      }
+    }
+    
     this.adjustments.push({
       timestamp: new Date(),
       parameter: paramName,
@@ -225,7 +257,10 @@ class AutonomousWardenController {
     const recent = this.metrics.slice(-10); // Last 10 data points
     const latest = this.metrics[this.metrics.length - 1];
     
-    // Calculate aggregates
+    // Guard against empty recent array (shouldn't happen but being defensive)
+    if (recent.length === 0) return;
+    
+    // Calculate aggregates with safe division
     const avgOpportunities = recent.reduce((sum, m) => sum + m.opportunitiesFound, 0) / recent.length;
     const avgExecuted = recent.reduce((sum, m) => sum + m.opportunitiesExecuted, 0) / recent.length;
     const successRate = recent.reduce((sum, m) => {
@@ -356,18 +391,18 @@ class AutonomousWardenController {
       metrics.opportunitiesFound = parseInt(oppMatch[1], 10);
     }
     
-    // Parse executions
-    if (line.match(/Executing|Execution started/i)) {
+    // Parse executions - more specific pattern
+    if (line.match(/Executing (arbitrage|trade|opportunity)|Execution started/i)) {
       metrics.opportunitiesExecuted = 1;
     }
     
-    // Parse success
-    if (line.match(/successful|success|completed successfully/i)) {
+    // Parse success - more specific pattern
+    if (line.match(/(trade|execution|arbitrage).*(successful|success|completed successfully)/i)) {
       metrics.successfulTrades = 1;
     }
     
-    // Parse failures
-    if (line.match(/failed|failure|error/i)) {
+    // Parse failures - more specific pattern to avoid generic errors
+    if (line.match(/(trade|execution|arbitrage).*(failed|failure)/i)) {
       metrics.failedTrades = 1;
     }
     
@@ -375,12 +410,14 @@ class AutonomousWardenController {
     const profitMatch = line.match(/profit[:\s]+([\d.]+)\s*ETH/i);
     if (profitMatch) {
       const profit = parseFloat(profitMatch[1]);
-      if (profit > 0) {
-        metrics.totalProfit = profit;
-        metrics.netProfit = profit;
-      } else {
-        metrics.totalLoss = Math.abs(profit);
-        metrics.netProfit = profit;
+      if (!isNaN(profit) && isFinite(profit)) {
+        if (profit > 0) {
+          metrics.totalProfit = profit;
+          metrics.netProfit = profit;
+        } else {
+          metrics.totalLoss = Math.abs(profit);
+          metrics.netProfit = profit;
+        }
       }
     }
     
@@ -625,12 +662,17 @@ class AutonomousWardenController {
       this.wardenProcess.kill('SIGTERM');
       
       // Force kill after 5 seconds if not stopped
-      setTimeout(() => {
+      const forceKillTimeout = setTimeout(() => {
         if (this.wardenProcess && !this.wardenProcess.killed) {
           console.log('Force killing process...');
           this.wardenProcess.kill('SIGKILL');
         }
       }, 5000);
+      
+      // Clear timeout when process exits
+      this.wardenProcess.once('exit', () => {
+        clearTimeout(forceKillTimeout);
+      });
     }
   }
   
