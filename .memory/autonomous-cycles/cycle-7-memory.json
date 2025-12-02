@@ -1,0 +1,31 @@
+{
+  "timestamp": "2025-12-02T00:00:37.428Z",
+  "cycleNumber": 7,
+  "type": "operational_experience",
+  "experience": {
+    "opportunitiesFound": 0,
+    "successfulTrades": 0,
+    "failedTrades": 0,
+    "netProfit": 0,
+    "ethicsVetoes": 0
+  },
+  "parameters": {
+    "MIN_PROFIT_THRESHOLD": 0.2657205000000001,
+    "MIN_PROFIT_PERCENT": 0.2657205000000001,
+    "MIN_PROFIT_ABSOLUTE": 0.000531441,
+    "MAX_SLIPPAGE": 0.008857805000000003,
+    "MAX_GAS_PRICE": 100,
+    "MAX_GAS_COST_PERCENTAGE": 80,
+    "SCAN_INTERVAL": 800,
+    "CONCURRENCY": 10,
+    "ML_CONFIDENCE_THRESHOLD": 0.7,
+    "COGNITIVE_CONSENSUS_THRESHOLD": 0.65,
+    "EMERGENCE_MIN_ETHICAL_SCORE": 0.7,
+    "EMERGENCE_MAX_RISK_SCORE": 0.3,
+    "MIN_LIQUIDITY_V3_LOW": 2621440000,
+    "MIN_LIQUIDITY_V2": 26214400000000
+  },
+  "learnings": [
+    "Few opportunities found - constraints may be too tight"
+  ]
+}
