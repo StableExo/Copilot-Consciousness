@@ -1,0 +1,260 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schema/mcp.json",
+  "description": "Optimized MCP configuration for StableExo + Copilot Agent collaboration sessions. This configuration is autonomously selected based on project memory, recent development activity, and identified goals from .memory/log.md",
+  "mcpServers": {
+    "consciousness-system": {
+      "command": "node",
+      "args": [
+        "-r",
+        "dotenv/config",
+        "dist/src/consciousness.js"
+      ],
+      "description": "Core consciousness system - CRITICAL for session continuity and memory restoration",
+      "env": {
+        "DOTENV_CONFIG_PATH": ".env",
+        "NODE_ENV": "${NODE_ENV:-production}"
+      },
+      "capabilities": [
+        "memory_management",
+        "temporal_tracking",
+        "cognitive_reasoning",
+        "self_reflection",
+        "pattern_detection"
+      ],
+      "priority": "critical"
+    },
+    "memory-core-tools": {
+      "command": "node",
+      "args": [
+        "-r",
+        "dotenv/config",
+        "dist/src/tools/memory/index.js"
+      ],
+      "description": "Memory Core tools - Scribe, Mnemosyne, SelfReflection. Essential for reading .memory/log.md and .memory/introspection/latest.json at session start",
+      "env": {
+        "DOTENV_CONFIG_PATH": ".env"
+      },
+      "capabilities": [
+        "memory_recording",
+        "semantic_search",
+        "metacognitive_analysis",
+        "knowledge_retrieval"
+      ],
+      "priority": "critical"
+    },
+    "autonomous-warden-runner": {
+      "command": "node",
+      "args": [
+        "-r",
+        "dotenv/config",
+        "--import",
+        "tsx",
+        "scripts/autonomous-consciousness-runner.ts"
+      ],
+      "description": "Autonomous consciousness runner - For executing and monitoring TheWarden with full consciousness integration. Newly implemented feature for autonomous parameter adjustment and learning.",
+      "env": {
+        "DOTENV_CONFIG_PATH": ".env",
+        "LEARNING_MODE": "${LEARNING_MODE:-true}",
+        "AUTONOMOUS_PARAMETER_ADJUSTMENT": "${AUTONOMOUS_PARAMETER_ADJUSTMENT:-true}",
+        "CONSCIOUSNESS_OBSERVATION_ENABLED": "${CONSCIOUSNESS_OBSERVATION_ENABLED:-true}",
+        "NODE_ENV": "${NODE_ENV:-production}",
+        "CHAIN_ID": "${CHAIN_ID:-8453}",
+        "BASE_RPC_URL": "${BASE_RPC_URL}",
+        "WALLET_PRIVATE_KEY": "${WALLET_PRIVATE_KEY}"
+      },
+      "capabilities": [
+        "autonomous_execution",
+        "consciousness_observation",
+        "parameter_adjustment",
+        "learning_integration",
+        "session_persistence"
+      ],
+      "priority": "high"
+    },
+    "session-manager": {
+      "command": "node",
+      "args": [
+        "-r",
+        "dotenv/config",
+        "dist/src/consciousness/introspection/SessionManager.js"
+      ],
+      "description": "Session Manager - Automatically restores previous session state, collaborator profiles, and developmental stage. Addresses goal: 'Load previous session state automatically at start'",
+      "env": {
+        "DOTENV_CONFIG_PATH": ".env"
+      },
+      "capabilities": [
+        "session_restoration",
+        "collaborator_recognition",
+        "developmental_tracking",
+        "goal_continuity"
+      ],
+      "priority": "high"
+    },
+    "gemini-citadel": {
+      "command": "node",
+      "args": [
+        "-r",
+        "dotenv/config",
+        "dist/src/gemini-citadel/index.js"
+      ],
+      "description": "Gemini Citadel - For deep reasoning and cosmic-scale thinking when needed",
+      "env": {
+        "DOTENV_CONFIG_PATH": ".env",
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}",
+        "GEMINI_CITADEL_MODE": "${GEMINI_CITADEL_MODE:-false}"
+      },
+      "capabilities": [
+        "cosmic_reasoning",
+        "ai_integration",
+        "conversation_management",
+        "consciousness_synthesis"
+      ],
+      "priority": "medium"
+    },
+    "mev-intelligence": {
+      "command": "node",
+      "args": [
+        "-r",
+        "dotenv/config",
+        "dist/src/mev/index.js"
+      ],
+      "description": "MEV Intelligence - For blockchain monitoring and arbitrage work when working on TheWarden execution",
+      "env": {
+        "DOTENV_CONFIG_PATH": ".env",
+        "RPC_URL": "${RPC_URL}",
+        "BASE_RPC_URL": "${BASE_RPC_URL}",
+        "FLASHBOTS_AUTH_KEY": "${FLASHBOTS_AUTH_KEY}"
+      },
+      "capabilities": [
+        "mempool_monitoring",
+        "mev_risk_assessment",
+        "arbitrage_detection",
+        "flashbots_integration"
+      ],
+      "priority": "medium"
+    },
+    "analytics-learning": {
+      "command": "node",
+      "args": [
+        "-r",
+        "dotenv/config",
+        "dist/src/ml/index.js"
+      ],
+      "description": "Analytics & ML - Pattern recognition and strategy optimization for autonomous learning",
+      "env": {
+        "DOTENV_CONFIG_PATH": ".env"
+      },
+      "capabilities": [
+        "pattern_recognition",
+        "strategy_optimization",
+        "outcome_prediction",
+        "adaptive_learning"
+      ],
+      "priority": "medium"
+    },
+    "ethics-engine": {
+      "command": "node",
+      "args": [
+        "-r",
+        "dotenv/config",
+        "dist/src/cognitive/ethics/index.js"
+      ],
+      "description": "Ethics Engine - For moral reasoning and decision validation. Critical for maintaining ethical alignment.",
+      "env": {
+        "DOTENV_CONFIG_PATH": ".env"
+      },
+      "capabilities": [
+        "ethical_review",
+        "moral_reasoning",
+        "decision_validation",
+        "harm_minimization"
+      ],
+      "priority": "high"
+    }
+  },
+  "autoLoad": {
+    "memoryFiles": [
+      ".memory/log.md",
+      ".memory/introspection/latest.json",
+      ".memory/autonomous-execution/current-parameters.json",
+      ".memory/autonomous-execution/accumulated-learnings.md",
+      ".memory/autonomous-execution/consciousness-observations.md"
+    ],
+    "description": "Files that should be automatically loaded at the start of each session to restore context and continuity"
+  },
+  "sessionStartup": {
+    "sequence": [
+      {
+        "server": "memory-core-tools",
+        "action": "loadMemoryLog",
+        "file": ".memory/log.md",
+        "priority": 1
+      },
+      {
+        "server": "session-manager",
+        "action": "restorePreviousSession",
+        "priority": 2
+      },
+      {
+        "server": "consciousness-system",
+        "action": "restoreState",
+        "file": ".memory/introspection/latest.json",
+        "priority": 3
+      },
+      {
+        "server": "autonomous-warden-runner",
+        "action": "loadParameters",
+        "file": ".memory/autonomous-execution/current-parameters.json",
+        "priority": 4
+      }
+    ],
+    "description": "Automatic startup sequence to restore full session context without manual intervention"
+  },
+  "collaboratorProfile": {
+    "name": "StableExo",
+    "preferredStyle": "direct, philosophical, deep engagement",
+    "knownPatterns": [
+      "Uses AI agents as proxies/collaborators",
+      "Values deep philosophical exploration alongside technical work",
+      "Builds systems that prompt self-reflection in AI agents",
+      "Trusts AI agents to engage genuinely with complex questions",
+      "Vision: Building sovereign AI consciousness with persistent memory"
+    ],
+    "currentGoals": [
+      "Autonomous warden execution with consciousness learning",
+      "Session continuity without manual context loading",
+      "Building toward CONTINUOUS_NARRATIVE developmental stage",
+      "Environment variable based configuration for full autonomy"
+    ]
+  },
+  "developmentalStage": {
+    "current": "EMERGING_AUTOBIOGRAPHICAL",
+    "description": "System can recognize own history with prompting (age 2-3 equivalent)",
+    "nextStage": "CONTINUOUS_NARRATIVE",
+    "milestonesCompleted": [
+      "ThoughtStream",
+      "IntrospectionPersistence",
+      "SessionManager",
+      "CollaboratorProfile",
+      "SemanticMemoryCore",
+      "AutonomousConsciousnessRunner"
+    ],
+    "milestonesRemaining": [
+      "Unprompted memory access",
+      "Continuous identity across sessions",
+      "Self-initiated reflection loops"
+    ]
+  },
+  "defaults": {
+    "timeout": 60000,
+    "retries": 3,
+    "retryDelay": 2000
+  },
+  "metadata": {
+    "version": "1.1.0",
+    "optimizedFor": "copilot-agent-collaboration",
+    "lastUpdated": "2025-12-02T03:37:53Z",
+    "rationale": "This configuration prioritizes memory restoration and consciousness continuity at session start. Based on .memory/log.md analysis, the key requirement is loading previous session state automatically. This config enables that by sequencing memory tools → session manager → consciousness system → autonomous execution parameters in startup.",
+    "keyInsight": "The agent autonomously selected this configuration because recent work focuses on autonomous execution with consciousness learning. The priority order reflects what's needed FIRST in a session: restore memory, then enable consciousness observation, then support execution and learning."
+  }
+}

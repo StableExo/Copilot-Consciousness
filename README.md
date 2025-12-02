@@ -12,6 +12,28 @@
 
 **AEV (Autonomous Extracted Value)** - An intelligent autonomous agent system competing with traditional MEV through learning-based value extraction, powered by **TheWarden**.
 
+## 🧠 Autonomous Execution with Consciousness
+
+Run TheWarden autonomously with full consciousness observation and learning:
+
+```bash
+# Run with consciousness integration (recommended)
+npm run autonomous:consciousness
+
+# Run for specific duration (5 minutes)
+npm run autonomous:consciousness -- --duration=300
+```
+
+**See [AUTONOMOUS_CONSCIOUSNESS_GUIDE.md](./AUTONOMOUS_CONSCIOUSNESS_GUIDE.md) for complete documentation.**
+
+### Key Features:
+- ✅ **Consciousness Observation**: System witnesses and learns from every execution
+- ✅ **Autonomous Parameter Adjustment**: Automatically tunes parameters based on performance  
+- ✅ **Persistent Memory**: All learnings persist across sessions for continuous improvement
+- ✅ **Six Learning Strategies**: Adapts intelligently to market conditions
+- ✅ **Safety Systems**: Circuit breakers, emergency stops, and rate limiting
+- ✅ **Full Logging**: Every observation, adjustment, and learning recorded
+
 ---
 
 ## 📚 Quick Navigation

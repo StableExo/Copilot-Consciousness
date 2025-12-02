@@ -14,6 +14,8 @@
     "monitor": "./TheWarden --monitor",
     "monitor:consciousness": "node --import tsx scripts/consciousness-monitor.ts",
     "autonomous:control": "node --import tsx scripts/autonomous-warden-controller.ts",
+    "autonomous:consciousness": "node --import tsx scripts/autonomous-consciousness-runner.ts",
+    "autonomous:run": "node --import tsx scripts/autonomous-consciousness-runner.ts",
     "warden:collab": "node --import tsx scripts/live-collaboration-interface.ts",
     "warden:collab:auto": "node --import tsx scripts/live-collaboration-interface.ts --auto-start",
     "add:dex": "node --import tsx scripts/add-dex.ts",
