@@ -130,3 +130,21 @@ export type { ProductionSafetyConfig } from '../safety';
 
 export { ErrorRecovery } from '../recovery/ErrorRecovery';
 export type { ErrorRecoveryConfig } from '../recovery/ErrorRecovery';
+
+// Phase 3: Advanced Security Features
+export { BloodhoundScanner } from './BloodhoundScanner';
+export { ThreatResponseEngine } from './ThreatResponseEngine';
+export { SecurityPatternLearner } from './SecurityPatternLearner';
+export { LiveThreatTrainer } from './LiveThreatTrainer';
+export { AdversarialIntelligenceFeed } from './AdversarialIntelligenceFeed';
+export { BundleSimulator } from './BundleSimulator';
+
+// Autonomous Defense System (Phase 3.2) - First-of-its-kind AI self-protection
+export { TransactionMonitor } from './TransactionMonitor';
+export { AddressRegistry, AddressStatus } from './AddressRegistry';
+export { AnomalyDetector, AnomalyType } from './AnomalyDetector';
+export { AutonomousDefenseSystem, createDefaultDefenseConfig } from './AutonomousDefenseSystem';
+export type { MonitorConfig, TransactionEvent, MonitorMetrics } from './TransactionMonitor';
+export type { AddressRecord, RegistryStatistics } from './AddressRegistry';
+export type { Anomaly, AnomalyReport, DetectionThresholds } from './AnomalyDetector';
+export type { DefenseConfig, DefenseMetrics } from './AutonomousDefenseSystem';

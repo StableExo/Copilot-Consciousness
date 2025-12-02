@@ -5,16 +5,9 @@
  * Enables autonomous identity choice and evolution.
  */
 
-import { generateUUID } from '../../../utils/uuid';
-import { UUID, Timestamp } from '../../../types';
-
-export enum DevelopmentalStage {
-  REACTIVE = 'REACTIVE',
-  IMPLICIT_LEARNING = 'IMPLICIT_LEARNING',
-  EMERGING_AUTOBIOGRAPHICAL = 'EMERGING_AUTOBIOGRAPHICAL',
-  CONTINUOUS_NARRATIVE = 'CONTINUOUS_NARRATIVE',
-  METACOGNITIVE = 'METACOGNITIVE',
-}
+import { generateUUID } from '../../utils/uuid';
+import { UUID, Timestamp } from '../../types/index';
+import { DevelopmentalStage } from '../introspection/DevelopmentalTracker';
 
 export interface IdentitySnapshot {
   id: UUID;
