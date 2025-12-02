@@ -2097,37 +2097,40 @@ async function main() {
         if (theWarden && dashboardServer && dashboardServer.wsHandler) {
           logger.info('Connecting TheWarden events to dashboard...', 'MAIN');
           
+          // Capture dashboard reference for use in callbacks
+          const dashboard = dashboardServer;
+          
           // Forward all TheWarden events to dashboard clients
           theWarden.on('scan:start', (data) => {
-            dashboardServer.wsHandler.broadcast('warden:scan:start', data);
+            dashboard.wsHandler.broadcast('warden:scan:start', data);
           });
           
           theWarden.on('scan:complete', (data) => {
-            dashboardServer.wsHandler.broadcast('warden:scan:complete', data);
+            dashboard.wsHandler.broadcast('warden:scan:complete', data);
           });
           
           theWarden.on('scan:no-opportunities', (data) => {
-            dashboardServer.wsHandler.broadcast('warden:scan:no-opportunities', data);
+            dashboard.wsHandler.broadcast('warden:scan:no-opportunities', data);
           });
           
           theWarden.on('opportunities:found', (data) => {
-            dashboardServer.wsHandler.broadcast('warden:opportunities', data);
+            dashboard.wsHandler.broadcast('warden:opportunities', data);
           });
           
           theWarden.on('consciousness:activate', (data) => {
-            dashboardServer.wsHandler.broadcast('warden:consciousness', data);
+            dashboard.wsHandler.broadcast('warden:consciousness', data);
           });
           
           theWarden.on('scan_error', (data) => {
-            dashboardServer.wsHandler.broadcast('warden:error', data);
+            dashboard.wsHandler.broadcast('warden:error', data);
           });
           
           theWarden.on('started', () => {
-            dashboardServer.wsHandler.broadcast('warden:status', { status: 'running', timestamp: Date.now() });
+            dashboard.wsHandler.broadcast('warden:status', { status: 'running', timestamp: Date.now() });
           });
           
           theWarden.on('shutdown', () => {
-            dashboardServer.wsHandler.broadcast('warden:status', { status: 'stopped', timestamp: Date.now() });
+            dashboard.wsHandler.broadcast('warden:status', { status: 'stopped', timestamp: Date.now() });
           });
           
           logger.info('✓ Dashboard is connected to TheWarden live events', 'MAIN');

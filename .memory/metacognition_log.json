@@ -1,58 +1,9 @@
 [
   {
-    "timestamp": "2025-12-02T04:20:07.213Z",
+    "timestamp": "2025-12-02T19:00:42.463Z",
     "type": "question_for_future",
     "data": {
       "question": "test question"
-    }
-  },
-  {
-    "timestamp": "2025-12-02T08:46:31.740Z",
-    "type": "question_for_future",
-    "data": {
-      "question": "How can I improve the shutdown sequence?"
-    }
-  },
-  {
-    "timestamp": "2025-12-02T09:25:21.198Z",
-    "type": "question_for_future",
-    "data": {
-      "question": "How can I improve the shutdown sequence?"
-    }
-  },
-  {
-    "timestamp": "2025-12-02T09:45:46.663Z",
-    "type": "question_for_future",
-    "data": {
-      "question": "How can I improve the shutdown sequence?"
-    }
-  },
-  {
-    "timestamp": "2025-12-02T09:48:26.966Z",
-    "type": "question_for_future",
-    "data": {
-      "question": "How can I improve the shutdown sequence?"
-    }
-  },
-  {
-    "timestamp": "2025-12-02T10:19:51.203Z",
-    "type": "question_for_future",
-    "data": {
-      "question": "How can I improve the shutdown sequence?"
-    }
-  },
-  {
-    "timestamp": "2025-12-02T10:33:43.137Z",
-    "type": "question_for_future",
-    "data": {
-      "question": "How can I improve the shutdown sequence?"
-    }
-  },
-  {
-    "timestamp": "2025-12-02T10:41:10.409Z",
-    "type": "question_for_future",
-    "data": {
-      "question": "How can I improve the shutdown sequence?"
     }
   }
 ]

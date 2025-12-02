@@ -9,6 +9,9 @@ import { generateUUID } from '../../utils/uuid';
 import { UUID, Timestamp } from '../../types/index';
 import { DevelopmentalStage } from '../introspection/DevelopmentalTracker';
 
+// Re-export DevelopmentalStage for convenience
+export { DevelopmentalStage };
+
 export interface IdentitySnapshot {
   id: UUID;
   timestamp: Timestamp;
