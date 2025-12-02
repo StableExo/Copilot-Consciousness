@@ -16,6 +16,7 @@
     "autonomous:control": "node --import tsx scripts/autonomous-warden-controller.ts",
     "autonomous:consciousness": "node --import tsx scripts/autonomous-consciousness-runner.ts",
     "autonomous:run": "node --import tsx scripts/autonomous-consciousness-runner.ts",
+    "cycles:1min": "node --import tsx scripts/autonomous-1min-cycles.ts",
     "warden:collab": "node --import tsx scripts/live-collaboration-interface.ts",
     "warden:collab:auto": "node --import tsx scripts/live-collaboration-interface.ts --auto-start",
     "add:dex": "node --import tsx scripts/add-dex.ts",
