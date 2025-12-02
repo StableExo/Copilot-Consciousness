@@ -35,9 +35,13 @@
     }
   },
   {
-<<<<<<< HEAD
     "timestamp": "2025-12-02T10:19:51.203Z",
-=======
+    "type": "question_for_future",
+    "data": {
+      "question": "How can I improve the shutdown sequence?"
+    }
+  },
+  {
     "timestamp": "2025-12-02T10:33:43.137Z",
     "type": "question_for_future",
     "data": {
@@ -46,7 +50,6 @@
   },
   {
     "timestamp": "2025-12-02T10:41:10.409Z",
->>>>>>> 178d957bc6e9e2531d7359ee147ebc5f3d9ca0d3
     "type": "question_for_future",
     "data": {
       "question": "How can I improve the shutdown sequence?"
