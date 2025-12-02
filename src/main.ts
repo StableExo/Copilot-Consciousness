@@ -1077,6 +1077,8 @@ class TheWarden extends EventEmitter {
     this.advancedOrchestrator.setChainId(chainId);
 
     try {
+      // Emit scan start event to dashboard
+      this.emit('scan:start', { chainId, cycle: this.stats.cyclesCompleted });
       // Get tokens to scan based on chain
       const tokens = getScanTokens(chainId);
 
@@ -1094,14 +1096,40 @@ class TheWarden extends EventEmitter {
 
       const startAmount = parseEther('1.0');
 
-      // Find opportunities using advanced orchestrator
+      // Find opportunities using advanced orchestrator with timeout protection
       // Only log fetching pool data every 10 cycles to reduce verbosity
       if (this.stats.cyclesCompleted === 1 || this.stats.cyclesCompleted % 10 === 0) {
         logger.debug(
           `[Cycle ${this.stats.cyclesCompleted}] [Chain ${chainId}] Fetching pool data for ${tokens.length} tokens across DEXes...`
         );
       }
-      const paths = await this.advancedOrchestrator.findOpportunities(tokens, startAmount);
+      
+      // Wrap opportunity finding in a timeout to prevent hanging
+      const opportunityTimeout = parseInt(process.env.OPPORTUNITY_TIMEOUT || '45000');
+      let paths: ArbitragePath[] = [];
+      
+      try {
+        paths = await Promise.race([
+          this.advancedOrchestrator.findOpportunities(tokens, startAmount),
+          new Promise<ArbitragePath[]>((_, reject) =>
+            setTimeout(() => reject(new Error('Opportunity search timeout')), opportunityTimeout)
+          ),
+        ]);
+      } catch (error) {
+        if (error instanceof Error && error.message === 'Opportunity search timeout') {
+          logger.warn(
+            `⏱️  Opportunity search timed out after ${opportunityTimeout}ms - skipping this cycle`,
+            'SCAN'
+          );
+          logger.warn(
+            'Tip: Run "npm run preload:pools" to cache pool data and avoid timeouts',
+            'SCAN'
+          );
+          paths = [];
+        } else {
+          throw error;
+        }
+      }
 
       // Only log if paths found or every 10 cycles
       if (paths.length > 0 || this.stats.cyclesCompleted % 10 === 0) {
@@ -1117,11 +1145,30 @@ class TheWarden extends EventEmitter {
             this.stats.cyclesCompleted
           } on ${getNetworkName(chainId)}`
         );
+        
+        // Emit opportunities found event to dashboard
+        this.emit('opportunities:found', {
+          count: paths.length,
+          chainId,
+          cycle: this.stats.cyclesCompleted,
+          paths: paths.slice(0, 5).map(p => ({
+            profit: formatEther(p.netProfit.toString()),
+            hops: p.hops.length,
+            tokens: p.hops.map(h => `${h.tokenIn.slice(0, 6)}→${h.tokenOut.slice(0, 6)}`).join('→')
+          }))
+        });
 
         // 🧠 CONSCIOUSNESS COORDINATION: Analyze opportunities with cognitive modules
         logger.info('═══════════════════════════════════════════════════════════');
         logger.info('🧠 ACTIVATING CONSCIOUSNESS COORDINATION');
         logger.info('═══════════════════════════════════════════════════════════');
+        
+        // Emit consciousness activation event
+        this.emit('consciousness:activate', { 
+          opportunityCount: paths.length,
+          cycle: this.stats.cyclesCompleted
+        });
+        
         await this.analyzeWithConsciousness(paths, this.stats.cyclesCompleted);
         logger.info('═══════════════════════════════════════════════════════════');
 
@@ -1278,7 +1325,32 @@ class TheWarden extends EventEmitter {
           logger.info(`  Gas cost: ${formatEther(bestPath.totalGasCost.toString())} ETH`);
           logger.info(`  Hops: ${bestPath.hops.length}`);
         }
+      } else {
+        // No opportunities found - emit event for dashboard
+        if (this.stats.cyclesCompleted % 5 === 0) {
+          this.emit('scan:no-opportunities', {
+            chainId,
+            cycle: this.stats.cyclesCompleted,
+            totalCycles: this.stats.cyclesCompleted,
+            totalOpportunities: this.stats.opportunitiesFound
+          });
+        }
       }
+      
+      // Emit scan completion event
+      this.emit('scan:complete', {
+        chainId,
+        cycle: this.stats.cyclesCompleted,
+        opportunitiesFound: paths.length,
+        totalOpportunities: this.stats.opportunitiesFound,
+        stats: {
+          cycles: this.stats.cyclesCompleted,
+          opportunities: this.stats.opportunitiesFound,
+          trades: this.stats.tradesExecuted,
+          profit: formatEther(this.stats.totalProfit.toString()),
+          errors: this.stats.errors
+        }
+      });
     } catch (error) {
       this.stats.errors++;
       logger.error(
@@ -2020,6 +2092,46 @@ async function main() {
 
         await dashboardServer.start();
         logger.info('Dashboard server started successfully', 'MAIN');
+        
+        // Connect TheWarden events to dashboard WebSocket for live updates
+        if (theWarden && dashboardServer && dashboardServer.wsHandler) {
+          logger.info('Connecting TheWarden events to dashboard...', 'MAIN');
+          
+          // Forward all TheWarden events to dashboard clients
+          theWarden.on('scan:start', (data) => {
+            dashboardServer.wsHandler.broadcast('warden:scan:start', data);
+          });
+          
+          theWarden.on('scan:complete', (data) => {
+            dashboardServer.wsHandler.broadcast('warden:scan:complete', data);
+          });
+          
+          theWarden.on('scan:no-opportunities', (data) => {
+            dashboardServer.wsHandler.broadcast('warden:scan:no-opportunities', data);
+          });
+          
+          theWarden.on('opportunities:found', (data) => {
+            dashboardServer.wsHandler.broadcast('warden:opportunities', data);
+          });
+          
+          theWarden.on('consciousness:activate', (data) => {
+            dashboardServer.wsHandler.broadcast('warden:consciousness', data);
+          });
+          
+          theWarden.on('scan_error', (data) => {
+            dashboardServer.wsHandler.broadcast('warden:error', data);
+          });
+          
+          theWarden.on('started', () => {
+            dashboardServer.wsHandler.broadcast('warden:status', { status: 'running', timestamp: Date.now() });
+          });
+          
+          theWarden.on('shutdown', () => {
+            dashboardServer.wsHandler.broadcast('warden:status', { status: 'stopped', timestamp: Date.now() });
+          });
+          
+          logger.info('✓ Dashboard is connected to TheWarden live events', 'MAIN');
+        }
       } catch (error) {
         logger.warn(`Failed to start dashboard server: ${error}`, 'MAIN');
         logger.warn('Continuing without dashboard...', 'MAIN');
