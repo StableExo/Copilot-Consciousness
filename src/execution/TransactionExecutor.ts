@@ -495,24 +495,24 @@ export class TransactionExecutor {
     // For initiateUniswapV3FlashLoan - matches FlashSwapV2.sol contract signature:
     // function initiateUniswapV3FlashLoan(uint8 callbackType, address poolAddress, uint256 amount0, uint256 amount1, bytes params)
     const encodedParams = this.encodeParams(txParams);
-    
+
     // Determine callback type: 0 = TWO_HOP, 1 = TRIANGULAR
     const callbackType = fn === 'initiateTriangularFlashSwap' ? 1 : 0;
-    
+
     // Get pool address from params (first pool in the path)
     const poolAddress = txParams.poolAddress || txParams.borrowTokenAddress;
-    
+
     // For V3 flash loans, we borrow from one side (amount0 or amount1 depending on token position)
     // Default: borrow as amount0, amount1 = 0 (contract will figure out token positions)
     const amount0 = txParams.borrowAmount;
     const amount1 = BigInt(0);
-    
+
     return iface.encodeFunctionData('initiateUniswapV3FlashLoan', [
-      callbackType,     // uint8 callbackType
-      poolAddress,      // address poolAddress
-      amount0,          // uint256 amount0
-      amount1,          // uint256 amount1
-      encodedParams,    // bytes params
+      callbackType, // uint8 callbackType
+      poolAddress, // address poolAddress
+      amount0, // uint256 amount0
+      amount1, // uint256 amount1
+      encodedParams, // bytes params
     ]);
   }
 
