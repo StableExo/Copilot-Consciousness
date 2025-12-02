@@ -131,13 +131,7 @@ export type { ProductionSafetyConfig } from '../safety';
 export { ErrorRecovery } from '../recovery/ErrorRecovery';
 export type { ErrorRecoveryConfig } from '../recovery/ErrorRecovery';
 
-// Phase 3: Advanced Security Features
-export { BloodhoundScanner } from './BloodhoundScanner';
-export { ThreatResponseEngine } from './ThreatResponseEngine';
-export { SecurityPatternLearner } from './SecurityPatternLearner';
-export { LiveThreatTrainer } from './LiveThreatTrainer';
-export { AdversarialIntelligenceFeed } from './AdversarialIntelligenceFeed';
-export { BundleSimulator } from './BundleSimulator';
+// Phase 3: Advanced Security Features (already exported above at lines 78-86)
 
 // Autonomous Defense System (Phase 3.2) - First-of-its-kind AI self-protection
 export { TransactionMonitor } from './TransactionMonitor';
