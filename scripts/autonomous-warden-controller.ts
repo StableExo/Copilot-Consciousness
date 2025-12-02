@@ -115,9 +115,10 @@ class AutonomousWardenController {
   private wardenProcess?: ChildProcess;
   private isRunning = false;
   
-  constructor() {
-    // Generate session ID
-    this.sessionId = `session-${Date.now()}-${randomUUID().slice(0, 8)}`;
+  constructor(cycleNumber?: number) {
+    // Generate session ID with cycle number if provided
+    const cycleId = cycleNumber ? `-cycle${cycleNumber}` : '';
+    this.sessionId = `session-${Date.now()}-${randomUUID().slice(0, 8)}${cycleId}`;
     
     // Ensure directory exists
     this.ensureDirectoryExists();
@@ -134,6 +135,9 @@ class AutonomousWardenController {
     console.log('  🤖 AUTONOMOUS WARDEN CONTROLLER');
     console.log('═══════════════════════════════════════════════════════════════');
     console.log(`  Session ID: ${this.sessionId}`);
+    if (cycleNumber) {
+      console.log(`  Cycle: ${cycleNumber}`);
+    }
     console.log(`  Memory Directory: ${this.memoryDir}`);
     console.log(`  Learning Mode: ${process.env.LEARNING_MODE === 'true' ? 'ENABLED' : 'DISABLED'}`);
     console.log(`  DRY RUN: ${process.env.DRY_RUN !== 'false' ? 'YES' : 'NO (LIVE TRADING!)'}`);
@@ -794,7 +798,31 @@ class AutonomousWardenController {
 
 // Main execution
 async function main() {
-  const controller = new AutonomousWardenController();
+  // Parse command line arguments
+  const durationArg = process.argv.find(arg => arg.startsWith('--duration='));
+  const cycleArg = process.argv.find(arg => arg.startsWith('--cycle='));
+  
+  let duration = 0;
+  let cycleNumber: number | undefined;
+  
+  if (durationArg) {
+    const durationValue = parseInt(durationArg.split('=')[1], 10);
+    if (isNaN(durationValue) || durationValue < 0) {
+      console.error('Error: duration must be a positive number (milliseconds)');
+      process.exit(1);
+    }
+    duration = durationValue;
+  }
+  
+  if (cycleArg) {
+    cycleNumber = parseInt(cycleArg.split('=')[1], 10);
+    if (isNaN(cycleNumber) || cycleNumber < 1) {
+      console.error('Error: cycle must be a positive number');
+      process.exit(1);
+    }
+  }
+  
+  const controller = new AutonomousWardenController(cycleNumber);
   
   // Set up signal handlers
   process.on('SIGINT', () => {
@@ -807,18 +835,6 @@ async function main() {
     controller.stop();
   });
   
-  // Parse duration from command line args
-  const durationArg = process.argv.find(arg => arg.startsWith('--duration='));
-  let duration = 0;
-  if (durationArg) {
-    const durationSeconds = parseInt(durationArg.split('=')[1], 10);
-    if (isNaN(durationSeconds) || durationSeconds < 0) {
-      console.error('Error: duration must be a positive number');
-      process.exit(1);
-    }
-    duration = durationSeconds * 1000;
-  }
-  
   try {
     await controller.start(duration);
   } catch (error) {
@@ -828,11 +844,9 @@ async function main() {
 }
 
 // Run if executed directly
-if (require.main === module) {
-  main().catch(error => {
-    console.error('Fatal error in main:', error);
-    process.exit(1);
-  });
-}
+main().catch(error => {
+  console.error('Fatal error in main:', error);
+  process.exit(1);
+});
 
 export { AutonomousWardenController };
