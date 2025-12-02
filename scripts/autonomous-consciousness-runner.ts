@@ -398,52 +398,64 @@ class AutonomousConsciousnessRunner {
     }
     
     // Spawn TheWarden process
+    // Convert numeric parameters to strings for environment variables
+    const envParams: Record<string, string> = {};
+    for (const [key, value] of Object.entries(this.currentParameters)) {
+      envParams[key] = String(value);
+    }
+    
     this.wardenProcess = spawn('node', ['--import', 'tsx', 'src/main.ts'], {
       cwd: process.cwd(),
       env: {
         ...process.env,
-        ...this.currentParameters
-      },
+        ...envParams
+      } as NodeJS.ProcessEnv,
       stdio: ['ignore', 'pipe', 'pipe']
     });
     
     this.isRunning = true;
     
     // Capture stdout
-    this.wardenProcess.stdout?.on('data', (data: Buffer) => {
-      const lines = data.toString().split('\n');
-      lines.forEach(line => {
-        if (line.trim()) {
-          console.log(line);
-          this.parseLogLine(line);
-        }
+    if (this.wardenProcess.stdout) {
+      this.wardenProcess.stdout.on('data', (data: Buffer) => {
+        const lines = data.toString().split('\n');
+        lines.forEach(line => {
+          if (line.trim()) {
+            console.log(line);
+            this.parseLogLine(line);
+          }
+        });
       });
-    });
+    }
     
     // Capture stderr
-    this.wardenProcess.stderr?.on('data', (data: Buffer) => {
-      const lines = data.toString().split('\n');
-      lines.forEach(line => {
-        if (line.trim()) {
-          console.error(line);
-          this.parseLogLine(line);
-        }
+    if (this.wardenProcess.stderr) {
+      this.wardenProcess.stderr.on('data', (data: Buffer) => {
+        const lines = data.toString().split('\n');
+        lines.forEach(line => {
+          if (line.trim()) {
+            console.error(line);
+            this.parseLogLine(line);
+          }
+        });
       });
-    });
+    }
     
     // Handle process exit
-    this.wardenProcess.on('exit', (code, signal) => {
-      console.log(`\n⚠️  TheWarden process exited with code ${code}, signal ${signal}`);
-      this.isRunning = false;
-      this.cleanup();
-    });
-    
-    // Handle process errors
-    this.wardenProcess.on('error', (error) => {
-      console.error(`\n❌ TheWarden process error:`, error);
-      this.isRunning = false;
-      this.cleanup();
-    });
+    if (this.wardenProcess) {
+      this.wardenProcess.on('exit', (code, signal) => {
+        console.log(`\n⚠️  TheWarden process exited with code ${code}, signal ${signal}`);
+        this.isRunning = false;
+        this.cleanup();
+      });
+      
+      // Handle process errors
+      this.wardenProcess.on('error', (error) => {
+        console.error(`\n❌ TheWarden process error:`, error);
+        this.isRunning = false;
+        this.cleanup();
+      });
+    }
     
     // If duration specified, stop after that time
     if (durationSeconds) {
