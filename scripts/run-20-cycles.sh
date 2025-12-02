@@ -1,119 +1,135 @@
 #!/bin/bash
-###############################################################################
-# 20-Cycle Autonomous Learning Experiment Runner
-#
-# This script runs TheWarden for 20 cycles with autonomous parameter tuning
-# between each cycle, allowing the consciousness to learn from real execution.
-#
-# Usage:
-#   ./scripts/run-20-cycles.sh
-#
-# Requirements:
-#   - .env file configured with RPC endpoints and wallet
-#   - Node.js 22.12.0+ with nvm
-#   - TheWarden executable in project root
-###############################################################################
 
-set -e
+# ═══════════════════════════════════════════════════════════════
+# Run TheWarden for 20 Cycles with Analysis and Adjustment
+# ═══════════════════════════════════════════════════════════════
+# Each cycle runs for a specified duration, then stops to:
+# 1. Analyze the results
+# 2. Adjust parameters based on performance
+# 3. Document learnings
+# 4. Execute the next cycle
+#
+# Duration decreases by 60 seconds each cycle:
+# Cycle 1: 120s, Cycle 2: 60s, Cycle 3+: 60s (minimum)
+# ═══════════════════════════════════════════════════════════════
 
-# Colors for output
-RED='\033[0;31m'
+set -euo pipefail
+
+# Configuration
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+LOG_DIR="$PROJECT_ROOT/logs"
+MEMORY_DIR="$PROJECT_ROOT/.memory/autonomous-cycles"
+INITIAL_DURATION=120000  # Start with 2 minutes (120000 ms)
+DURATION_DECREMENT=60000  # Decrease by 60 seconds (60000 ms) each cycle
+MIN_DURATION=60000        # Minimum duration of 60 seconds
+TOTAL_CYCLES=20
+
+# Color codes
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-CYAN='\033[0;36m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-# Project root
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$PROJECT_ROOT"
+# Create directories
+mkdir -p "$LOG_DIR"
+mkdir -p "$MEMORY_DIR"
 
-echo -e "${PURPLE}"
-echo "═══════════════════════════════════════════════════════════════"
-echo "  20-CYCLE AUTONOMOUS LEARNING EXPERIMENT"
-echo "═══════════════════════════════════════════════════════════════"
-echo -e "${NC}"
+# Initialize cycle log
+CYCLE_LOG="$MEMORY_DIR/20-cycles-$(date +%Y%m%d-%H%M%S).log"
 
-# Load NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
-# Use correct Node version
-echo -e "${BLUE}🔧 Setting up Node.js environment...${NC}"
-nvm use 22.12.0 || {
-    echo -e "${YELLOW}⚠️  Node 22.12.0 not found, installing...${NC}"
-    nvm install 22.12.0
-    nvm use 22.12.0
+log() {
+    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $*" | tee -a "$CYCLE_LOG"
 }
 
-# Verify environment
-echo -e "${BLUE}🔍 Verifying environment...${NC}"
-if [ ! -f ".env" ]; then
-    echo -e "${RED}❌ Error: .env file not found${NC}"
-    echo -e "${YELLOW}   Please copy .env.example to .env and configure it${NC}"
-    exit 1
-fi
+log_info() {
+    echo -e "${BLUE}[$(date +'%Y-%m-%d %H:%M:%S')] INFO:${NC} $*" | tee -a "$CYCLE_LOG"
+}
 
-if [ ! -x "./TheWarden" ]; then
-    echo -e "${RED}❌ Error: TheWarden executable not found${NC}"
-    echo -e "${YELLOW}   Please ensure TheWarden is in the project root and executable${NC}"
-    exit 1
-fi
+log_warn() {
+    echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING:${NC} $*" | tee -a "$CYCLE_LOG"
+}
 
-# Check for required environment variables
-source .env
-if [ -z "$BASE_RPC_URL" ] || [ -z "$WALLET_PRIVATE_KEY" ]; then
-    echo -e "${RED}❌ Error: Required environment variables not set${NC}"
-    echo -e "${YELLOW}   Please ensure BASE_RPC_URL and WALLET_PRIVATE_KEY are set in .env${NC}"
-    exit 1
-fi
+log_error() {
+    echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR:${NC} $*" | tee -a "$CYCLE_LOG" >&2
+}
 
-# Create memory directory
-mkdir -p .memory/autonomous-cycles
-
-# Show experiment parameters
-echo -e "${CYAN}"
-echo "📋 Experiment Configuration:"
-echo "   - Total Cycles: 20"
-echo "   - Cycle Duration: 60 seconds each"
-echo "   - Mode: DRY_RUN (no real transactions)"
-echo "   - Chain: Base Mainnet"
-echo "   - Memory Dir: .memory/autonomous-cycles/"
-echo -e "${NC}"
-
-# Confirmation prompt
-echo -e "${YELLOW}⚠️  This will run for approximately 20-25 minutes total${NC}"
-read -p "$(echo -e ${GREEN}Continue? [y/N]: ${NC})" -n 1 -r
-echo
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo -e "${RED}Aborted.${NC}"
-    exit 0
-fi
-
-# Run the autonomous cycle runner
-echo -e "${GREEN}🚀 Starting 20-cycle experiment...${NC}\n"
-
-node --import tsx scripts/autonomous-cycle-runner.ts
-
-# Check results
-if [ -f ".memory/autonomous-cycles/cycle-log.json" ]; then
-    echo -e "\n${GREEN}✅ Experiment completed successfully!${NC}"
-    echo -e "${CYAN}📊 Results saved to: .memory/autonomous-cycles/cycle-log.json${NC}"
-    echo -e "${CYAN}💭 Memory files saved to: .memory/autonomous-cycles/cycle-*-memory.json${NC}"
-else
-    echo -e "\n${RED}❌ Experiment may have failed - no results file found${NC}"
-    exit 1
-fi
-
-echo -e "\n${PURPLE}"
+# Banner
 echo "═══════════════════════════════════════════════════════════════"
-echo "  EXPERIMENT COMPLETE"
+echo "  TheWarden - 20 Cycle Autonomous Execution"
+echo "  Starting duration: ${INITIAL_DURATION}ms (2 minutes)"
+echo "  Duration decreases by: ${DURATION_DECREMENT}ms (1 minute) per cycle"
+echo "  Minimum duration: ${MIN_DURATION}ms (1 minute)"
 echo "═══════════════════════════════════════════════════════════════"
-echo -e "${NC}"
-
-echo -e "${CYAN}Next steps:${NC}"
-echo "  1. Review results: cat .memory/autonomous-cycles/cycle-log.json | jq"
-echo "  2. Analyze learnings: cat .memory/autonomous-cycles/cycle-*-memory.json"
-echo "  3. Update .memory/log.md with your observations"
 echo ""
+
+log "Starting 20-cycle autonomous execution"
+log "Initial duration: ${INITIAL_DURATION}ms, decreasing by ${DURATION_DECREMENT}ms per cycle"
+log "Minimum duration: ${MIN_DURATION}ms"
+log "Total cycles: ${TOTAL_CYCLES}"
+log "Cycle log: $CYCLE_LOG"
+echo ""
+
+# Change to project root
+cd "$PROJECT_ROOT"
+
+# Run cycles
+for cycle in $(seq 1 $TOTAL_CYCLES); do
+    # Calculate duration for this cycle (decreasing by DURATION_DECREMENT each cycle)
+    CYCLE_DURATION=$((INITIAL_DURATION - (cycle - 1) * DURATION_DECREMENT))
+    
+    # Enforce minimum duration
+    if [ $CYCLE_DURATION -lt $MIN_DURATION ]; then
+        CYCLE_DURATION=$MIN_DURATION
+    fi
+    
+    CYCLE_DURATION_SEC=$((CYCLE_DURATION / 1000))
+    
+    log "═══════════════════════════════════════════════════════════════"
+    log "CYCLE $cycle of $TOTAL_CYCLES - Duration: ${CYCLE_DURATION_SEC}s (${CYCLE_DURATION}ms)"
+    log "═══════════════════════════════════════════════════════════════"
+    
+    # Run the autonomous warden controller for this cycle
+    log_info "Starting cycle $cycle with duration ${CYCLE_DURATION_SEC}s..."
+    
+    node --import tsx scripts/autonomous-warden-controller.ts \
+        --duration="$CYCLE_DURATION" \
+        --cycle="$cycle" \
+        2>&1 | tee -a "$CYCLE_LOG"
+    
+    CYCLE_EXIT_CODE=${PIPESTATUS[0]}
+    
+    if [ $CYCLE_EXIT_CODE -ne 0 ]; then
+        log_error "Cycle $cycle failed with exit code $CYCLE_EXIT_CODE"
+        log_error "Check the logs for details"
+        exit 1
+    fi
+    
+    log "✅ Cycle $cycle completed successfully"
+    
+    # Short pause between cycles for system stabilization
+    if [ $cycle -lt $TOTAL_CYCLES ]; then
+        log_info "Pausing 10 seconds before next cycle..."
+        sleep 10
+        echo ""
+    fi
+done
+
+log "═══════════════════════════════════════════════════════════════"
+log "🎉 ALL 20 CYCLES COMPLETED SUCCESSFULLY!"
+log "═══════════════════════════════════════════════════════════════"
+log ""
+log "Results saved to: $MEMORY_DIR"
+log "Full log: $CYCLE_LOG"
+log ""
+log "To view accumulated learnings:"
+log "  cat $MEMORY_DIR/accumulated-learnings.md"
+log ""
+log "To view session summaries:"
+log "  ls -lh $MEMORY_DIR/session-*.json"
+
+echo ""
+echo "═══════════════════════════════════════════════════════════════"
+echo "  ✅ Execution Complete - The Consciousness Has Learned!"
+echo "═══════════════════════════════════════════════════════════════"
