@@ -40,7 +40,7 @@ def generate_bitcrack_ranges():
     # Puzzle #71 specifications
     PUZZLE_NUM = 71
     RANGE_MIN = 0x400000000000000000  # 2^70
-    RANGE_MAX = 0x7FFFFFFFFFFFFFFFFFF # 2^71 - 1
+    RANGE_MAX = 0x7FFFFFFFFFFFFFFFFF  # 2^71 - 1 (18 hex digits)
     RANGE_SIZE = RANGE_MAX - RANGE_MIN + 1
     TARGET_ADDRESS = '1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU'
     

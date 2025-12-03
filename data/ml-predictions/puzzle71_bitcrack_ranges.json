@@ -8,40 +8,40 @@
   },
   "ranges": {
     "high_priority": {
-      "start": "3599999999999A00000",
-      "end": "7399999999999C00000",
+      "start": "5999999999999A0000",
+      "end": "7999999999999A0000",
       "coverage": 50.0,
       "description": "ML-optimized 40-90% range"
     },
     "multi_gpu_splits": [
       {
         "gpu": 0,
-        "start": "3599999999999A00000",
-        "end": "4833333333333400000",
+        "start": "5999999999999A0000",
+        "end": "633333333333340000",
         "description": "Lower third"
       },
       {
         "gpu": 1,
-        "start": "4833333333333400000",
-        "end": "5ACCCCCCCCCCCC00000",
+        "start": "633333333333340000",
+        "end": "6CCCCCCCCCCCCC0000",
         "description": "Middle third"
       },
       {
         "gpu": 2,
-        "start": "5ACCCCCCCCCCCC00000",
-        "end": "7399999999999C00000",
+        "start": "6CCCCCCCCCCCCC0000",
+        "end": "7999999999999A0000",
         "description": "Upper third"
       }
     ],
     "fallback": [
       {
         "start": "400000000000000000",
-        "end": "3599999999999A00000",
+        "end": "5999999999999A0000",
         "description": "Bottom 40%"
       },
       {
-        "start": "7399999999999C00000",
-        "end": "8000000000000000000",
+        "start": "7999999999999A0000",
+        "end": "800000000000000000",
         "description": "Top 10%"
       }
     ]
