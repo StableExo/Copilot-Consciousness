@@ -1,0 +1,13 @@
+[
+  "puzzleNum",
+  "puzzleMod10",
+  "puzzleMod5",
+  "logPuzzle",
+  "sqrtPuzzle",
+  "puzzleSquared",
+  "logRangeSize",
+  "yearSolved",
+  "monthSolved",
+  "prevSolvedCount",
+  "avgPositionPrev"
+]

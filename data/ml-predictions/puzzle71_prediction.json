@@ -1,0 +1,52 @@
+{
+  "puzzle_number": 71,
+  "prediction": {
+    "ensemble_prediction": 64.9572188082712,
+    "individual_predictions": {
+      "random_forest": 55.77341179922814,
+      "gradient_boosting": 53.32622713566366,
+      "neural_network": 111.54221098456114,
+      "elastic_net": 47.53476227286683
+    },
+    "weights": {
+      "random_forest": 0.35,
+      "gradient_boosting": 0.3,
+      "neural_network": 0.2,
+      "elastic_net": 0.15
+    },
+    "std_dev": 25.864573204363527,
+    "confidence_interval": {
+      "lower": 13.22807239954414,
+      "upper": 100
+    }
+  },
+  "search_strategy": {
+    "search_center": 64.9572188082712,
+    "search_range": {
+      "lower": 13.22807239954414,
+      "upper": 100,
+      "width": 86.77192760045585
+    },
+    "keyspace": {
+      "total": 1.1805916207174113e+21,
+      "to_search": 1.0244221063859605e+21
+    },
+    "speedup": 1.1524464508896615,
+    "time_estimate": {
+      "seconds": 1024422106385.9606,
+      "days": 11856737.3424301,
+      "years": 32461.977665790826
+    },
+    "feasibility": "COMPUTATIONALLY INFEASIBLE"
+  },
+  "model_info": {
+    "models_used": [
+      "random_forest",
+      "gradient_boosting",
+      "neural_network",
+      "elastic_net"
+    ],
+    "ensemble_method": "weighted_average",
+    "training_samples": 82
+  }
+}
