@@ -109,7 +109,11 @@ export class AutonomousMempoolStudy {
       const data = await response.json();
       return data[0] as MempoolBlock; // First element is next block
     } catch (error: any) {
-      console.error('Failed to fetch next block:', error.message);
+      if (error.response?.status) {
+        console.error(`Failed to fetch next block: API returned ${error.response.status}`);
+      } else {
+        console.error(`Failed to fetch next block: ${error.message || 'Network error'}`);
+      }
       return null;
     }
   }
@@ -216,8 +220,8 @@ export class AutonomousMempoolStudy {
         feeDistribution,
         sizeDistribution,
         highValueTxCount,
-        rbfEnabledCount: 0, // Would need full TX data to detect
-        segwitAdoption: 0, // Would need address analysis
+        rbfEnabledCount: 0, // TODO: Implement RBF detection by analyzing nSequence values
+        segwitAdoption: 0, // TODO: Implement SegWit detection by analyzing address types (bc1q vs 1 vs 3)
       },
       rules,
       mevOpportunities,
@@ -527,8 +531,8 @@ export class AutonomousMempoolStudy {
   }
 }
 
-// CLI interface
-if (import.meta.url === `file://${process.argv[1]}`) {
+// CLI interface - more reliable module detection
+if (process.argv[1] && new URL(import.meta.url).pathname === process.argv[1]) {
   const durationMinutes = parseInt(process.argv[2] || '10', 10);
   const study = new AutonomousMempoolStudy();
   
