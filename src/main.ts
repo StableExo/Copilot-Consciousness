@@ -2016,6 +2016,8 @@ async function main() {
   );
   // =================================================================
   let theWarden: TheWarden | EnhancedTheWarden | undefined;
+  // Store event listener references for cleanup
+  const eventListeners: Map<string, (...args: any[]) => void> = new Map();
 
   try {
     // Choose which initializer pattern to use
@@ -2094,8 +2096,6 @@ async function main() {
 
     // Start Dashboard Server if not disabled
     let dashboardServer: DashboardServer | undefined;
-    // Store event listener references for cleanup
-    const eventListeners: Map<string, (...args: any[]) => void> = new Map();
     
     if (process.env.DISABLE_DASHBOARD !== 'true') {
       try {
