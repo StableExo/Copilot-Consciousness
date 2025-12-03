@@ -1,0 +1,3651 @@
+[
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc9a",
+    "privateKeyDecimal": "1293466",
+    "address": "13shZLHXGMZ9sgpHayWrzoKBbL4he94MYi",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827de",
+    "privateKeyDecimal": "3680222",
+    "address": "166WNBHtKmHr4m9SqJSmdVFG7vrYehW23g",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "puzzleNum": 49,
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000174176b015f4d",
+    "address": "12CiUhYVTTH33w3SPUBqcpMoqnApAV4WCF",
+    "btcValue": 0.049,
+    "solveDate": "2015-09-01",
+    "positionInRange": 45.34,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136f8",
+    "privateKeyDecimal": "79608",
+    "address": "1MHEvzjUCwekjSBUKMj6xMegXhSPHnufMv",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09fc",
+    "privateKeyDecimal": "4065788",
+    "address": "15fw8E8W4draHuauiGNhnFgR2DdBTwW34v",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136f0",
+    "privateKeyDecimal": "79600",
+    "address": "1CyPnDRbzDB8kfbrgmgk1cA86kAJepwNgV",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcf5",
+    "privateKeyDecimal": "1293557",
+    "address": "1CJeE2GS3eQezEegTrF17DFQkyQBQrcj9c",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000013683",
+    "privateKeyDecimal": "79491",
+    "address": "1FMQFoVpQ118JuRRVenDhSnXic6SNy6mxW",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136e2",
+    "privateKeyDecimal": "79586",
+    "address": "1MCoXkbaGCQgta7TBkt1Ks68vQHAovfGcv",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136bd",
+    "privateKeyDecimal": "79549",
+    "address": "1DLBhEkgvAV3gdGvXvK1nvirjurr8uN8J9",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcfb",
+    "privateKeyDecimal": "1293563",
+    "address": "132Z51qKcpU6cPzTPboaYp7otQsC6LBaH6",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc8e",
+    "privateKeyDecimal": "1293454",
+    "address": "1MXr2v5BoVadL6Q5JW1yct4M7H4m2e88g3",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000038278a",
+    "privateKeyDecimal": "3680138",
+    "address": "1Gm7r1zVVKjzYhbRTcbQVhKY3DMZ8fYC8D",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e098b",
+    "privateKeyDecimal": "4065675",
+    "address": "1GTNRMGy1ch3rRzssevXbtgmxEhh39b7GP",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827c0",
+    "privateKeyDecimal": "3680192",
+    "address": "1Cf94HMC9F8VbwMzD2NdKk7Fp16s5aPxtF",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827f4",
+    "privateKeyDecimal": "3680244",
+    "address": "17KmjcGTZtecKQLsvk4nTEXrscnDraZEmu",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000382792",
+    "privateKeyDecimal": "3680146",
+    "address": "12zp6AzgM3W383VE18hYQrQLJgRHmbc1ij",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136e7",
+    "privateKeyDecimal": "79591",
+    "address": "17vmdjqmhMtY36DdcHQDFCG8VkEydS1jgN",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd2e",
+    "privateKeyDecimal": "2280750",
+    "address": "1NHxF42f383q7XWsrCXW4ustXcepSayy5t",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd47",
+    "privateKeyDecimal": "2280775",
+    "address": "12L1X7JbY217b8dKgBoe9jrp8Y7SPoyEAe",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e099a",
+    "privateKeyDecimal": "4065690",
+    "address": "1NQyMsi5oW7dmHGU1mh5mdthiEzuHHwZxG",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e0992",
+    "privateKeyDecimal": "4065682",
+    "address": "1AEFh55xmtEVrqQBDZaY3Stpvo8pGJvsbY",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827f2",
+    "privateKeyDecimal": "3680242",
+    "address": "19ndtoyuQzvmhevLJmtuFVaYUfJ83pNmdd",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09ab",
+    "privateKeyDecimal": "4065707",
+    "address": "1GUb4zH5VbNAbV3RKRKhuVqSRuqUh8NZJ3",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "puzzleNum": 4,
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000000008",
+    "address": "1EhqbyUMvvs7BfL8goY6qcPbD6YKfPqb7e",
+    "btcValue": 0.004,
+    "solveDate": "2015-01-15",
+    "positionInRange": 0,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd10",
+    "privateKeyDecimal": "2280720",
+    "address": "12RitauMWqmMj5neUXZZK7JVy5qQ1veL3B",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcae",
+    "privateKeyDecimal": "1293486",
+    "address": "15LJHYdQJ71xE1Q2YYBikvbGAJrqyJd7oD",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e0995",
+    "privateKeyDecimal": "4065685",
+    "address": "1LVVRYFdi99VqoxSfa7fTUde5WM9aH6ZCD",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "puzzleNum": 38,
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000022382facd0",
+    "address": "1HBtApAFA9B2YZw3G2YKSMCtb3dVnjuNe2",
+    "btcValue": 0.038,
+    "solveDate": "2015-01-19",
+    "positionInRange": 6.93,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827a6",
+    "privateKeyDecimal": "3680166",
+    "address": "14C5wYP3ArALEreDEwq9tDNCtXPVZetXeV",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136d5",
+    "privateKeyDecimal": "79573",
+    "address": "169Mk1QMGTSLTGPE33csoMWFs7yxPf4BDm",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd2c",
+    "privateKeyDecimal": "2280748",
+    "address": "1GJcVAMkqgsDFBKpqWcCux7G9AEycbkrR3",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09d8",
+    "privateKeyDecimal": "4065752",
+    "address": "1PUsLd3bTS8opeiKsMCpwrzSZ3K5E1ViRa",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bca6",
+    "privateKeyDecimal": "1293478",
+    "address": "1KWiKqNTcXhy8bdFm2B6rZjenaF8jgBWK",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd07",
+    "privateKeyDecimal": "2280711",
+    "address": "1MG316kWXGVDsJdwNaXGAZSU56Ff54qCRe",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd70",
+    "privateKeyDecimal": "2280816",
+    "address": "1LqHV5jgo7EYhDY7UgaJZ8uzbBhyXzgpE4",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09bb",
+    "privateKeyDecimal": "4065723",
+    "address": "1GdCmjA2FSbFJpwwaF9z2XSMwUyBHxDBzH",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcf4",
+    "privateKeyDecimal": "1293556",
+    "address": "14j2syxFd4UnT6mJ55a8mcgA8eT9YuFzhS",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "puzzleNum": 25,
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000001fa5ee5",
+    "address": "15JhYXn6Mx3oF4Y7PcTAv2wVVAuCFFQNiP",
+    "btcValue": 0.025,
+    "solveDate": "2015-01-15",
+    "positionInRange": 97.8,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09a5",
+    "privateKeyDecimal": "4065701",
+    "address": "1GAhJkAovPv8wwbky1iTxLcp5p4Xvc3zvr",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136e6",
+    "privateKeyDecimal": "79590",
+    "address": "1PAE6PHFoNrj2hGJqMCGzYT6f5rZQP5Fqf",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09ba",
+    "privateKeyDecimal": "4065722",
+    "address": "1D3tTWeFHL8Ks4Ksdr7mQoWGEuvPATB3GQ",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcba",
+    "privateKeyDecimal": "1293498",
+    "address": "1E82TzJJN51ibn8Bvt9Q5HgkZhMs5Z2PrP",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827c5",
+    "privateKeyDecimal": "3680197",
+    "address": "1BpvZuXtir6yi8webm7AToQ8NPVzFwkFzS",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd71",
+    "privateKeyDecimal": "2280817",
+    "address": "1Po4w3q9wupBdDkyDMqbZnKSuftxrxZUch",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "puzzleNum": 12,
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000000a7b",
+    "address": "1DBaumZxUkM4qMQRt2LVWyFJq5kDtSZQot",
+    "btcValue": 0.012,
+    "solveDate": "2015-01-15",
+    "positionInRange": 31,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136e0",
+    "privateKeyDecimal": "79584",
+    "address": "1APivNVCVWUc9D2njk5JCaBjQm7vmNVRDq",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd02",
+    "privateKeyDecimal": "2280706",
+    "address": "1EfdcDHF4zBeqnpUkKwceNtn5jTQSJnmqU",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcce",
+    "privateKeyDecimal": "1293518",
+    "address": "1NAHGQDY52BDfKMukCjUgj8fF4zpZDatQt",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e099b",
+    "privateKeyDecimal": "4065691",
+    "address": "1DEcZXvLt6V8CrEUvuguQD5ZumqwrKMgyJ",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000382791",
+    "privateKeyDecimal": "3680145",
+    "address": "13VEEWWTPErhEdpU5eDoh9X6aj89NoBPr6",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc8f",
+    "privateKeyDecimal": "1293455",
+    "address": "1JD9NLYUX7UbwoG293HUvhxauq5ngXae9R",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09e7",
+    "privateKeyDecimal": "4065767",
+    "address": "1AsK4a3nNaH19yjEojEWuwg5dJdA6Q4aKc",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd62",
+    "privateKeyDecimal": "2280802",
+    "address": "147f2MBKdH9ez7csveHYiNjVgMgeUkh72f",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09b9",
+    "privateKeyDecimal": "4065721",
+    "address": "112ALiN5RVLJ9yzAM9K8heJ9MJfdFxz1wb",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcd2",
+    "privateKeyDecimal": "1293522",
+    "address": "1Cxcxae5dfgtDpoPyR6oohV5MvEZUp2AHa",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136ac",
+    "privateKeyDecimal": "79532",
+    "address": "1LN7AnwVeSB1n45xhFx1ZQEBTwxBmJQqnh",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd61",
+    "privateKeyDecimal": "2280801",
+    "address": "16LsYx4gPgAQGVJYopd7oARCCxoKFurqfz",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136c1",
+    "privateKeyDecimal": "79553",
+    "address": "154WZVQHzw3fLFeHjhC4m7VmcmyBkQVRSz",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827a7",
+    "privateKeyDecimal": "3680167",
+    "address": "15YcsF1nwSvZ56eUNJ756mKAsVUcjNnL9A",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd5a",
+    "privateKeyDecimal": "2280794",
+    "address": "135gujgWgh22deqZaNnKRsig62Ey2f5jPW",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827e2",
+    "privateKeyDecimal": "3680226",
+    "address": "1M3bzgquFRUc7hLQcyNtzCSuMwzF4f7EbZ",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000013686",
+    "privateKeyDecimal": "79494",
+    "address": "1TCNXDgddcG61dXBp8tN3ubiHkDjiEwbk",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd4c",
+    "privateKeyDecimal": "2280780",
+    "address": "16fwoymmdsSieuBR7DGMWiMNdPrwWsX8hd",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd36",
+    "privateKeyDecimal": "2280758",
+    "address": "17J9oUpMS1m45sGaCirWftasZB7SXYeRDe",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827be",
+    "privateKeyDecimal": "3680190",
+    "address": "1LvgTyxP5s2Tdp1Ujin1dZBr78spKfiBtg",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bce6",
+    "privateKeyDecimal": "1293542",
+    "address": "19VD1ZuLbuukwM2mSVw9a1kGdG5QhNGjSP",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09ca",
+    "privateKeyDecimal": "4065738",
+    "address": "1Njj33LGXRZhpcw1D7jAxt7cZ2Rmx5v7Kv",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bceb",
+    "privateKeyDecimal": "1293547",
+    "address": "13s4kS9BDkn3WjHXriDJaHCiDSUPCqNs9A",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09e2",
+    "privateKeyDecimal": "4065762",
+    "address": "1MJAfiBefv8FUVkZsWTjHtx8eRS8KERaGc",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd1c",
+    "privateKeyDecimal": "2280732",
+    "address": "1Mjp2953TeTk7B6A77iXPPcEQYmfkbCSBu",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc8c",
+    "privateKeyDecimal": "1293452",
+    "address": "1HtbU469QL1Wy3ag3XEyNwFqQ1NuUKqDfy",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000038278d",
+    "privateKeyDecimal": "3680141",
+    "address": "1EhJhUk25HnyX7HxBdtVg1eFZ1Ldi68ZFo",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcd0",
+    "privateKeyDecimal": "1293520",
+    "address": "1E2rpoCunpvXKqzFJEDHP6vKDi8h5tutMF",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd64",
+    "privateKeyDecimal": "2280804",
+    "address": "113S3AhikpZ54ns6dUysEkjPmRTWTomLu4",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "puzzleNum": 55,
+    "privateKeyHex": "000000000000000000000000000000000000000000000000006abe1f9b67e114",
+    "address": "1LzhS3k3e9Ub8i2W1V8xQFdB8n2MYCHPCa",
+    "btcValue": 0.55,
+    "solveDate": "2018-05-29",
+    "positionInRange": 66.78,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd1b",
+    "privateKeyDecimal": "2280731",
+    "address": "1JjswqreA8kPHj4LAQumU43kze21PzE4ky",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bccd",
+    "privateKeyDecimal": "1293517",
+    "address": "1LD8gRUSwNTYptQFvaXq1V36G8seCydcJH",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd6e",
+    "privateKeyDecimal": "2280814",
+    "address": "17tUP1z8XcrbTvEBvGXHWx7Akz8GVPTqeq",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd7a",
+    "privateKeyDecimal": "2280826",
+    "address": "164sZKHLcJyc5cVPpmBpHfmMXFNhtESmta",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcd5",
+    "privateKeyDecimal": "1293525",
+    "address": "1PvT1uY9hq3jFmbaFFWD1ppgrznmDsYo5o",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "puzzleNum": 56,
+    "privateKeyHex": "000000000000000000000000000000000000000000000000009d18b63ac4ffdf",
+    "address": "17aPYR1m6pVAacXg1PTDDU7XafvK1dxvhi",
+    "btcValue": 0.56,
+    "solveDate": "2018-09-08",
+    "positionInRange": 22.73,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000382789",
+    "privateKeyDecimal": "3680137",
+    "address": "12QnY3Qrge8jzuapZt38PxMzEkDXpoRuRw",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd63",
+    "privateKeyDecimal": "2280803",
+    "address": "16soEC9xEGjAn1pMokVeAn2VNC5Bk9AX2X",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000382783",
+    "privateKeyDecimal": "3680131",
+    "address": "1ymfbZtiB1wHbZDsjqkVX2YpjicrWJVHN",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e098d",
+    "privateKeyDecimal": "4065677",
+    "address": "16YmP1F7MagnrutUMeQyYhyzvPVvvVT1H5",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09fb",
+    "privateKeyDecimal": "4065787",
+    "address": "1GpKiR5X9sDbKiMTX5XoPjiryFRF5ZUrFT",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e0982",
+    "privateKeyDecimal": "4065666",
+    "address": "1PjZDKTbTfDdR61LMCZDmdwJzC85c4VMGp",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd51",
+    "privateKeyDecimal": "2280785",
+    "address": "17ELsaEJxdhk4xg9NeDGqMLe1H5khwHX8A",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd14",
+    "privateKeyDecimal": "2280724",
+    "address": "14rxj1RLaxQh5MLwB1Pi7bU7Bm8XiFxV8H",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000382798",
+    "privateKeyDecimal": "3680152",
+    "address": "1FTQJrqqyY1nXWKz2XYtYnyRgGZbkA1BHe",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e0999",
+    "privateKeyDecimal": "4065689",
+    "address": "1CL5CvR8fufPj9C9yHQJLMMWj1Z3ebjQeP",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000013681",
+    "privateKeyDecimal": "79489",
+    "address": "15fU8W5mEGXW5fPYNb9KUPrG8hTD4GNiUA",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09c8",
+    "privateKeyDecimal": "4065736",
+    "address": "15DD1DK8R7o5bQriwdfYq5f8s92sibNPgu",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "puzzleNum": 40,
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000e9ae4933d6",
+    "address": "1EeAxcprB2PpCnr34VfZdFrkUWuxyiNEFv",
+    "btcValue": 0.04,
+    "solveDate": "2015-01-30",
+    "positionInRange": 82.56,
+    "label": 1
+  },
+  {
+    "puzzleNum": 42,
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000002a221c58d8f",
+    "address": "1E32GPWgDyeyQac4aJxm9HVoLrrEYPnM4N",
+    "btcValue": 0.042,
+    "solveDate": "2015-01-30",
+    "positionInRange": 31.66,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09d3",
+    "privateKeyDecimal": "4065747",
+    "address": "1BbrVf4CresKiby3fMuxh2Fw73Z4R5cU6P",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136ea",
+    "privateKeyDecimal": "79594",
+    "address": "1yrbsHLuyZ5hA6XJTgMdMF4BuWvV7bQdX",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd5c",
+    "privateKeyDecimal": "2280796",
+    "address": "1FgcpHyCBqv6ss1TGsdvcHxP4Ga43pxHbE",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09d2",
+    "privateKeyDecimal": "4065746",
+    "address": "1EKfoXG4rnQfzUYWVzKLN2n86k6TRTFDLB",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136e5",
+    "privateKeyDecimal": "79589",
+    "address": "1HqLemZbmME9ZPVfq7Qew324Gz9UL5DWLA",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcd1",
+    "privateKeyDecimal": "1293521",
+    "address": "1NDnk2HrhVgZG2kAmjerAZJYWxQ2Smdws4",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09aa",
+    "privateKeyDecimal": "4065706",
+    "address": "1GxoeWjZ4RtRfRZDu1C2EbZq432js8mMUC",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc95",
+    "privateKeyDecimal": "1293461",
+    "address": "1J3WmwrvPNgscAq66Qt39XnJ2KtMH9KpeU",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "puzzleNum": 18,
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000003080d",
+    "address": "1GnNTmTVLZiqQfLbAdp9DVdicEnB5GoERE",
+    "btcValue": 0.018,
+    "solveDate": "2015-01-15",
+    "positionInRange": 51.57,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09c5",
+    "privateKeyDecimal": "4065733",
+    "address": "19ETptsvsPRCSQwq7PVUAVCMWTumCpPmne",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc96",
+    "privateKeyDecimal": "1293462",
+    "address": "19qEhUs5nsQHk5jQ4Fkcqw2NVe3VEggw68",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd79",
+    "privateKeyDecimal": "2280825",
+    "address": "1KY3M9no3qg7i3YjVqsBJYjENpdsVPiEua",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcf6",
+    "privateKeyDecimal": "1293558",
+    "address": "1AjVC26oZSQHWyEYQevCnajWp8UVs4YA5j",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136d8",
+    "privateKeyDecimal": "79576",
+    "address": "1E8rAxchULNafwnzpo8nuxyah6pQ2GbCRf",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000038279d",
+    "privateKeyDecimal": "3680157",
+    "address": "1MRuhemrEK3jM1D2EkhHEGYxm4kq98sckB",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcda",
+    "privateKeyDecimal": "1293530",
+    "address": "1944xwfLt71VnbiXgixMzJsWzhqg5ZcEEE",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136b5",
+    "privateKeyDecimal": "79541",
+    "address": "14vfn2unpPNDqR1bKqfc9Hckg8XSsXFtdA",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc81",
+    "privateKeyDecimal": "1293441",
+    "address": "138jaVvgqic2TEEL2qs9gGhiFDrazVdbH2",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcf3",
+    "privateKeyDecimal": "1293555",
+    "address": "1NG4FeCfd2RvFznfV1GNwtKBd77Ux61M4L",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd4f",
+    "privateKeyDecimal": "2280783",
+    "address": "12fFBd1qDpFh4nAakpjvmhD2yp8XXdbiDV",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827e0",
+    "privateKeyDecimal": "3680224",
+    "address": "127KGXaY8Cn6PbszcPPTMsbb2ttHbYuWSb",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd6a",
+    "privateKeyDecimal": "2280810",
+    "address": "1Epa8Uno1Y1fkJBv3yzXHpa5W7WKWEevx3",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcde",
+    "privateKeyDecimal": "1293534",
+    "address": "148f22rUZmCbEBbvg4Ghhd99ywxNK8jzDs",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "puzzleNum": 70,
+    "privateKeyHex": "0000000000000000000000000000000000000000000000349b84b6431a6c4ef1",
+    "address": "19YZECXj3SxEZMoUeJ1yiPsw8xANe7M7QR",
+    "btcValue": 0.7,
+    "solveDate": "2019-06-09",
+    "positionInRange": 64.39,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd2b",
+    "privateKeyDecimal": "2280747",
+    "address": "1JFdXPF7m4hTH2FRafqRMNhytuFUTM85Fj",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "puzzleNum": 54,
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000236fb6d5ad1f43",
+    "address": "1KYUv7nSvXx4642TKeuC2SNdTk326uUpFy",
+    "btcValue": 0.54,
+    "solveDate": "2017-11-16",
+    "positionInRange": 10.73,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136ad",
+    "privateKeyDecimal": "79533",
+    "address": "1CpWazjVhsUMDw1dDFF8WTE3AJxZnhbAwC",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc88",
+    "privateKeyDecimal": "1293448",
+    "address": "14eRWiu9HyrwGeFJSn5MiMqRf1Lxs8cZeg",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd08",
+    "privateKeyDecimal": "2280712",
+    "address": "1BSTxiPkmRtHo6fqrT5K6QvCELb21fNGTZ",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000013682",
+    "privateKeyDecimal": "79490",
+    "address": "1HN7XGMEQSvfMatkF7b4TwwF8wGEJjXNfr",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcbc",
+    "privateKeyDecimal": "1293500",
+    "address": "1FEHC2aW2GsWqPdk5vWT3GHFVQ4s1DpDWB",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09a4",
+    "privateKeyDecimal": "4065700",
+    "address": "1KtETGnfAaYd3JhVZ5YVvLBDcN4svT7xuw",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcfc",
+    "privateKeyDecimal": "1293564",
+    "address": "1CxgZCxCYyYu3SzoNg8Ys7ABW3wmsAt7Le",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd7c",
+    "privateKeyDecimal": "2280828",
+    "address": "1JrLy2hu9ZvGNJq6iQ5JF9VQ4djCskeFEs",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000013697",
+    "privateKeyDecimal": "79511",
+    "address": "14PmJ7EVHuqz9rcgYmjAAz3HQabyhNriz8",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136f4",
+    "privateKeyDecimal": "79604",
+    "address": "19r9kWcf8dn6HsiS5BGVeaDDVZzXxowPcn",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09c7",
+    "privateKeyDecimal": "4065735",
+    "address": "1EoVMrnTAgKNbW33LEvKKTZixbePnk39CN",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09b1",
+    "privateKeyDecimal": "4065713",
+    "address": "1B3YVUkEhMxHHzq5kgtS2cRQCUGJM7J5S3",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000382788",
+    "privateKeyDecimal": "3680136",
+    "address": "16Bzc1wpcByV4iMXEfVDMnKT57v8ReJMsr",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827ce",
+    "privateKeyDecimal": "3680206",
+    "address": "19AfToy85yqF6gsNd4NPMRQAUKUsoR7mXQ",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcff",
+    "privateKeyDecimal": "1293567",
+    "address": "18C9kDUGkqHTjvjhfhAeZ5ZAVbM5tB2rpQ",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e0997",
+    "privateKeyDecimal": "4065687",
+    "address": "1K8vB1jXkur1ks1JZMu2H8qJ88zTLDji3B",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcc2",
+    "privateKeyDecimal": "1293506",
+    "address": "16oEtRJX3zmkBqG4NAErqwqmr8fk2eccxb",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd6c",
+    "privateKeyDecimal": "2280812",
+    "address": "1BLHSX4oMem9HwDEujNhsTANFYLERHFgmC",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd28",
+    "privateKeyDecimal": "2280744",
+    "address": "1N39XkXpX1fzLGWytVEZxuyqM6iFfN5UXt",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000038278e",
+    "privateKeyDecimal": "3680142",
+    "address": "1PNJPR5mfPtuCtr8P2Jmpy6N7yE8shDZDi",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827c8",
+    "privateKeyDecimal": "3680200",
+    "address": "13HYgqAocYGXRBUjEWYRegwQBGjJKBFSdh",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000382795",
+    "privateKeyDecimal": "3680149",
+    "address": "1MeJ2reMfXp1ii2B7A47AYWHMwY67mxmH6",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000382796",
+    "privateKeyDecimal": "3680150",
+    "address": "1JgbrZK2N7zC9uUnuKN3AaBZqXV6i1k3VC",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bce0",
+    "privateKeyDecimal": "1293536",
+    "address": "15ZoJBsPhzzVWwLxYbqZY5K4vR9Rzr8mKV",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcf1",
+    "privateKeyDecimal": "1293553",
+    "address": "1DZSGXkVnto7f4uKRxYCYKLSAatPxKNP45",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcb1",
+    "privateKeyDecimal": "1293489",
+    "address": "16fVB1J5zz2eC5rKGntaTtvYu4avfAYXdB",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827a9",
+    "privateKeyDecimal": "3680169",
+    "address": "1FH9SbfotP94ntQWjdPTsweAo2bVusg6ZY",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bca1",
+    "privateKeyDecimal": "1293473",
+    "address": "1NjebesKF3X6wmPTUa89gpGmcGiGi5wY6e",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd7e",
+    "privateKeyDecimal": "2280830",
+    "address": "17zR1yNdGoshM52qWUutkzGpAqpvJqqexd",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd67",
+    "privateKeyDecimal": "2280807",
+    "address": "1N9x6gGsb6ZiLnRpVA2nBcFeod6fQySszQ",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd7f",
+    "privateKeyDecimal": "2280831",
+    "address": "1Hm359Jn1gwJheSjvrQZ7bPbB7SLWFUwHj",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136cc",
+    "privateKeyDecimal": "79564",
+    "address": "18Yt66qMuayXoUvzyVcvL1DcqqwUQdwum5",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827f3",
+    "privateKeyDecimal": "3680243",
+    "address": "1H2wDhHMM8PTKsGBsmRMafoHLA6cVDXcub",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000001369e",
+    "privateKeyDecimal": "79518",
+    "address": "1BLytceKw9vzUPiWLHJmWSagnQHWi2NXGQ",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd11",
+    "privateKeyDecimal": "2280721",
+    "address": "1NaW1qTucy7LGUykweCbu1tBmu4Ek3yTci",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136db",
+    "privateKeyDecimal": "79579",
+    "address": "1GgdWXJWe1pAwPzhDZ9PzSzTkKvmpQmAWX",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09eb",
+    "privateKeyDecimal": "4065771",
+    "address": "14e8c3KyRuodD8yt9GNVX7omMcoXBjXgNP",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09f3",
+    "privateKeyDecimal": "4065779",
+    "address": "1N5yGhmeGzNvPKsahfJMjDZUssosotw9JV",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd72",
+    "privateKeyDecimal": "2280818",
+    "address": "1Hh4kQTwpcZNDq36PQMQwZhkiPTFqYHpJU",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd45",
+    "privateKeyDecimal": "2280773",
+    "address": "183Gw2c3rUp1Lge67ysP223XXxcHxoAkqS",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136ff",
+    "privateKeyDecimal": "79615",
+    "address": "1M5KjHxW2L25uSXejuJ1ZH6x8P7YrrMZQG",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136a5",
+    "privateKeyDecimal": "79525",
+    "address": "1MMRbzXZPo3G4BQpp7nkQ393Jn2YfrGKdt",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "puzzleNum": 120,
+    "privateKeyHex": "0000000000000000000000000000000000b10f22572c497a836ea187f2e1fc23",
+    "address": "17s2b9ksz5y7abUm92cHwG8jEPCzK3dLnT",
+    "btcValue": 1.2,
+    "solveDate": "2023-02-27",
+    "positionInRange": 38.32,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09a9",
+    "privateKeyDecimal": "4065705",
+    "address": "158w7hB4uZGcfFeqm96ya41t8zUyrqPfqt",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09d4",
+    "privateKeyDecimal": "4065748",
+    "address": "1Pfku5Eh86uri1N2ChjTJomKpE4ZKQEEbR",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136a2",
+    "privateKeyDecimal": "79522",
+    "address": "17k2Z8FxS8dPjsThP2qSjUdW9v3xz4yZek",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136ce",
+    "privateKeyDecimal": "79566",
+    "address": "1DQBhVtqfYZfuf1mYr94ooigDRGGEeror9",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827ad",
+    "privateKeyDecimal": "3680173",
+    "address": "122znq7kCmszuCLFWHHfHLM4UTcRpzGFhG",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd01",
+    "privateKeyDecimal": "2280705",
+    "address": "1Ny9oDrbQZCgjT72RkoRD59edpBtiWhRLp",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136fa",
+    "privateKeyDecimal": "79610",
+    "address": "1CY9Nny2dM6pNSg8gP5c1z4DgorHiuuFP5",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "puzzleNum": 30,
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000003d94cd64",
+    "address": "1LHtnpd8nU5VHEMkG2TMYYNUjjLc992bps",
+    "btcValue": 0.03,
+    "solveDate": "2015-01-16",
+    "positionInRange": 92.44,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09d7",
+    "privateKeyDecimal": "4065751",
+    "address": "175gudRppxAahay6LNWxC5fPp7zDqL6oKf",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09bc",
+    "privateKeyDecimal": "4065724",
+    "address": "15rpvV8QeZJfBNaUDfSpgv1D7o2Uaacnwp",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "puzzleNum": 48,
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000ade6d7ce3b9b",
+    "address": "1DFYhaB2J9q1LLZJWKTnscPWos9VBqDHzv",
+    "btcValue": 0.048,
+    "solveDate": "2015-09-01",
+    "positionInRange": 35.86,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136d9",
+    "privateKeyDecimal": "79577",
+    "address": "1M34fpcq1gtKfF76snf6A2m38RnHiBEcKw",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e0990",
+    "privateKeyDecimal": "4065680",
+    "address": "1NwwrshDLuDwJtdeaGrmkbaKWyzsj1XXDN",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09dc",
+    "privateKeyDecimal": "4065756",
+    "address": "1H1MZYrHkzFVoXZv9DcyZAnUHef76NNaZa",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827c6",
+    "privateKeyDecimal": "3680198",
+    "address": "1NDfv9sfxXyoaNN9bhqsVukCd2PTNFDR71",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "puzzleNum": 43,
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000006bd3b27c591",
+    "address": "1PiFuqGpG8yGM5v6rNHWS3TjsG6awgEGA1",
+    "btcValue": 0.043,
+    "solveDate": "2015-01-30",
+    "positionInRange": 68.47,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827d7",
+    "privateKeyDecimal": "3680215",
+    "address": "1JutbHn6gvpSbvieSz9J3V93JV1kJZREoH",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000013684",
+    "privateKeyDecimal": "79492",
+    "address": "1CPY2YjuTXPcDftqNjtXdajEV4VFBv2k3c",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136d2",
+    "privateKeyDecimal": "79570",
+    "address": "1JRZBPWp9cWma7mgxWx9ibJ8YzSqximAXT",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "puzzleNum": 2,
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000000003",
+    "address": "1CUNEBjYrCn2y1SdiUMohaKUi4wpP326Lb",
+    "btcValue": 0.002,
+    "solveDate": "2015-01-15",
+    "positionInRange": 50,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827a5",
+    "privateKeyDecimal": "3680165",
+    "address": "1CF8rzFYTnSzDGR7m2AbekZKt8p2rBWyu",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd03",
+    "privateKeyDecimal": "2280707",
+    "address": "1EZprujLXQBjfVgM991j64VkFdnXVpgbYE",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09e4",
+    "privateKeyDecimal": "4065764",
+    "address": "1LfPYoUKGbWFNpwBPMoPdoFuMZBvQKGfVx",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "puzzleNum": 100,
+    "privateKeyHex": "000000000000000000000000000000000000000af55fc59c335c8ec67ed24826",
+    "address": "1KCgMv8fo2TPBpddVi9jqmMmcne9uSNJ5F",
+    "btcValue": 1,
+    "solveDate": "2019-07-08",
+    "positionInRange": 36.98,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000382785",
+    "privateKeyDecimal": "3680133",
+    "address": "1JsZFM21i1TZRbjdd1MzDsr4418FVDUka4",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcfa",
+    "privateKeyDecimal": "1293562",
+    "address": "1Ct7tLtsUWrtJn7ysG6GPWAwNpf5Vmx6Mb",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827e4",
+    "privateKeyDecimal": "3680228",
+    "address": "126k4VvJGm6qrec3bCpPuUJtpbPTV1WChA",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bced",
+    "privateKeyDecimal": "1293549",
+    "address": "1JmjYnh5nF1carS9FFYE69KJVq8aWojyTD",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000013696",
+    "privateKeyDecimal": "79510",
+    "address": "1Lkp2SzdSP6cjaoP8MRekriznw9inJakTF",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcc0",
+    "privateKeyDecimal": "1293504",
+    "address": "14TGMDS4X24io8VAraw4irCM2pA3TWzonq",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcd7",
+    "privateKeyDecimal": "1293527",
+    "address": "1wz6HndtXPZtsc37S237JVN8fjKPjqeoT",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "puzzleNum": 36,
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000009de820a7c",
+    "address": "1Be2UF9NLfyLFbtm3TCbmuocc9N1Kduci1",
+    "btcValue": 0.036,
+    "solveDate": "2015-01-17",
+    "positionInRange": 23.36,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136a4",
+    "privateKeyDecimal": "79524",
+    "address": "1EdmPpAUrbxfefKd9d4PbS6C319nzSN4Ek",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136d1",
+    "privateKeyDecimal": "79569",
+    "address": "1EaZPSSZ2U7SQ1EpdUWg6y6bVzDZYgwXaS",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc85",
+    "privateKeyDecimal": "1293445",
+    "address": "18RuWPsJBW1XLG3gmYGY6cGxTrdneizhzm",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000001369d",
+    "privateKeyDecimal": "79517",
+    "address": "14Y14uan35JDrpBxJwVJpVebWbcLxCrs4F",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd5d",
+    "privateKeyDecimal": "2280797",
+    "address": "1AS4NJwqJdCTkRZMBRPVtufKCwaDepzmu2",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000001368b",
+    "privateKeyDecimal": "79499",
+    "address": "1KfDFPGzX7tGvWjmboEM6MJ1zWCZg6VjzZ",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "puzzleNum": 14,
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000002930",
+    "address": "1ErZWg5cFCe4Vw5BzgfzB74VNLaXEiEkhk",
+    "btcValue": 0.014,
+    "solveDate": "2015-01-15",
+    "positionInRange": 28.71,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd05",
+    "privateKeyDecimal": "2280709",
+    "address": "1Cmem6ThEsS3S1DxrXCYcysacSwxuVW73C",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcd4",
+    "privateKeyDecimal": "1293524",
+    "address": "1HnkbcXM2Ui7z93Z15XTQDCuvsAscHjtw2",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e098e",
+    "privateKeyDecimal": "4065678",
+    "address": "127LAYCTkGw89DnBbuwGvtpN94TTbfkbmM",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "puzzleNum": 34,
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000034a65911d",
+    "address": "1PWABE7oUahG2AFFQhhvViQovnCr4rEv7Q",
+    "btcValue": 0.034,
+    "solveDate": "2015-01-17",
+    "positionInRange": 64.53,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827bb",
+    "privateKeyDecimal": "3680187",
+    "address": "14eF9eECq3eBXDUQc558FKNMPiKbfgAtcq",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000382793",
+    "privateKeyDecimal": "3680147",
+    "address": "1LXUJoesiUADiKZUw93X41pmZP9XMFLomP",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827f5",
+    "privateKeyDecimal": "3680245",
+    "address": "13WeyrkX4X5GZgB1nTMzdV4TgLdZzc5EtV",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09c0",
+    "privateKeyDecimal": "4065728",
+    "address": "14iVbaZKYMYo3ccE8v9fukSTqb5yPGCvWc",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc98",
+    "privateKeyDecimal": "1293464",
+    "address": "1FG2eruzjs2xKgep7RjQQjSqL2XEJEke7J",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827fc",
+    "privateKeyDecimal": "3680252",
+    "address": "19ZLNiASMwbSpxV1kADivhxWAgRE7a4AW6",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd22",
+    "privateKeyDecimal": "2280738",
+    "address": "1K7FjTfrja5qSW4Ub6F96FM8Q3cvSoNKcc",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd5b",
+    "privateKeyDecimal": "2280795",
+    "address": "1Cadsmxro13Me3pcxEjrTB6aNtYpC4Qr3x",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "puzzleNum": 16,
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000000c936",
+    "address": "1BDyrQ6WoF8VN3g9SAS1iKZcPzFfnDVieY",
+    "btcValue": 0.016,
+    "solveDate": "2015-01-15",
+    "positionInRange": 57.19,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd2f",
+    "privateKeyDecimal": "2280751",
+    "address": "13yhZmTrNaG1C6N5ofWBuWHeZHdtCsWH6U",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bce4",
+    "privateKeyDecimal": "1293540",
+    "address": "1BGiip73redDeVPG2ku9EudCKPXTWUHVsz",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000382786",
+    "privateKeyDecimal": "3680134",
+    "address": "19MLPA1Q3rE7DtrZsd4TJzn9E6XR2oNPxq",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09e0",
+    "privateKeyDecimal": "4065760",
+    "address": "17xb8qAW18wxcbW31Q9vD3g2i9zQZksupd",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827d1",
+    "privateKeyDecimal": "3680209",
+    "address": "19pjJw1uYrLfMuhSFGmnE4rxdixq3i5bGo",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827bd",
+    "privateKeyDecimal": "3680189",
+    "address": "17tnzZ1qCbTryivQz1Qq9yzwVX86fqrUng",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "puzzleNum": 29,
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000017e2551e",
+    "address": "19EEC52krRUK1RkUAEZmQdjTyHT7Gp1TYT",
+    "btcValue": 0.029,
+    "solveDate": "2015-01-15",
+    "positionInRange": 49.27,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bce8",
+    "privateKeyDecimal": "1293544",
+    "address": "12dkBYbPTw6S4hLaSECnggu2nw9ZTBxA3Z",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000001368e",
+    "privateKeyDecimal": "79502",
+    "address": "1DETeoRQMN7ewqBkdtWChzCztajvXpAisR",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "puzzleNum": 1,
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000000001",
+    "address": "1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH",
+    "btcValue": 0.001,
+    "solveDate": "2015-01-15",
+    "positionInRange": 0,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcc5",
+    "privateKeyDecimal": "1293509",
+    "address": "183mJwbxzCvoHz9wbv8BfxNPBHK8EdJtHv",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827b5",
+    "privateKeyDecimal": "3680181",
+    "address": "1Md4xAJKUBzSjjWQxZXXwLn3GjUxYR1cbs",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcfe",
+    "privateKeyDecimal": "1293566",
+    "address": "13rFZ7YKMhXvbMQZCqACjLfgxPkRruEq53",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "puzzleNum": 130,
+    "privateKeyHex": "000000000000000000000000000000033e7665705359f04f28b88cf897c603c9",
+    "address": "1Fo65aKq8s8iquMt6weF1rku1moWVEd5Ua",
+    "btcValue": 13,
+    "solveDate": "2024-09-23",
+    "positionInRange": 62.19,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000013687",
+    "privateKeyDecimal": "79495",
+    "address": "1AWAcbWkmyXmcFLZQHTueMgZDyxBkxVAoS",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd3b",
+    "privateKeyDecimal": "2280763",
+    "address": "1AQcJRweWpnSHhhSFdobVMC3bpSD1wwxb1",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e0998",
+    "privateKeyDecimal": "4065688",
+    "address": "15vQ3Rj1EAF2EJmAswYb32TyfaHNFzuWBy",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136ca",
+    "privateKeyDecimal": "79562",
+    "address": "1Go1igffix2v8RoZhigKsaJbE8gTz3kvxL",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc82",
+    "privateKeyDecimal": "1293442",
+    "address": "1396A6W9znF9YY6PpEUTHtjHBjRbGuZZyd",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136b3",
+    "privateKeyDecimal": "79539",
+    "address": "1MVNxAKFwzHiLdMWXyaFR6xKEfuMbkvdfz",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "puzzleNum": 19,
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000005749f",
+    "address": "1NWmZRpHH4XSPwsW6dsS3nrNWfL1yrJj4w",
+    "btcValue": 0.019,
+    "solveDate": "2015-01-15",
+    "positionInRange": 36.38,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd68",
+    "privateKeyDecimal": "2280808",
+    "address": "1KnWjhLcGDphpoACZCW1M6Y6ZcfsuX1Sog",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136d7",
+    "privateKeyDecimal": "79575",
+    "address": "1FJeHthH6YjPowvauDc6mV8LfuoHvSE6Wv",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "puzzleNum": 95,
+    "privateKeyHex": "0000000000000000000000000000000000000000527a792b183c7f64a0e8b1f4",
+    "address": "19eVSDuizydXxhohGh8Ki9WY9KsHdSwoQC",
+    "btcValue": 0.95,
+    "solveDate": "2019-07-06",
+    "positionInRange": 28.87,
+    "label": 1
+  },
+  {
+    "puzzleNum": 115,
+    "privateKeyHex": "0000000000000000000000000000000000060f4d11574f5deee49961d9609ac6",
+    "address": "1NLbHuJebVwUZ1XqDjsAyfTRUPwDQbemfv",
+    "btcValue": 1.15,
+    "solveDate": "2020-06-16",
+    "positionInRange": 51.49,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd25",
+    "privateKeyDecimal": "2280741",
+    "address": "1FKbpsqwWC2Rji2XVsTHascUQkGueJ9GoK",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e098c",
+    "privateKeyDecimal": "4065676",
+    "address": "1CYB4oPbJ2pzikM7VAYrLK2zvD76MAnwY2",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136f3",
+    "privateKeyDecimal": "79603",
+    "address": "15ACY11g9YFoWmpUGAdjaP4kSSLUANoJPi",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd7b",
+    "privateKeyDecimal": "2280827",
+    "address": "1N361G6M3kt1SKnrcNwVMHNdheZdEwajBx",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09ec",
+    "privateKeyDecimal": "4065772",
+    "address": "16kekFZTiCXTABMz1koa7RzGpAsVe3yXmz",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "puzzleNum": 51,
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000075070a1a009d4",
+    "address": "1NpnQyZ7x24ud82b7WiRNvPm6N8bqGQnaS",
+    "btcValue": 0.051,
+    "solveDate": "2017-04-05",
+    "positionInRange": 82.85,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827cc",
+    "privateKeyDecimal": "3680204",
+    "address": "1ekmKtGxuS7foPMjBomJCevkkRhaXMkGe",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcf2",
+    "privateKeyDecimal": "1293554",
+    "address": "1EWSCVJuUNs19akwL7Bg1KaNAPRvWrYows",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd76",
+    "privateKeyDecimal": "2280822",
+    "address": "1CT6GEkgNezUvqp9TCSvp2WYvupj2JyBJz",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827e1",
+    "privateKeyDecimal": "3680225",
+    "address": "15GK1tQXewgwPG9coEckYN3ZRhL2Qwban2",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000013692",
+    "privateKeyDecimal": "79506",
+    "address": "13G6a5AFZP4YorB9iUGCSnmjp9eYZTMTUn",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000038278c",
+    "privateKeyDecimal": "3680140",
+    "address": "1D5zhfKurfZGKgiShiDeAeDkgohiNF6y79",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136bb",
+    "privateKeyDecimal": "79547",
+    "address": "1ECgFiENTkNcJUq8hq48qVmkPyNoGadr9D",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd49",
+    "privateKeyDecimal": "2280777",
+    "address": "166EWyF6qwSCYRV2pxTb8KUX4abjaZiySh",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136a0",
+    "privateKeyDecimal": "79520",
+    "address": "1LE7wytSHAE24RfFkEfoP8UzRSkztTFyzP",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd0e",
+    "privateKeyDecimal": "2280718",
+    "address": "14Z6vwuCfaXUmPTZeMomdweQF3u9dCGzKq",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09e5",
+    "privateKeyDecimal": "4065765",
+    "address": "1NApVzsjZDDetioU8Hh5AEsy5eszVaagxY",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09a1",
+    "privateKeyDecimal": "4065697",
+    "address": "12cTSah7YLrb4wTJog3vxpZKzhuWv6wW7K",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd77",
+    "privateKeyDecimal": "2280823",
+    "address": "1HuDrZZ97GVy73XncaXzXbpEbxWDvfZgqK",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09b5",
+    "privateKeyDecimal": "4065717",
+    "address": "1DBQ3fbDqvtTPPqAdbAD5uLcE48oXTsMQM",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd60",
+    "privateKeyDecimal": "2280800",
+    "address": "183DW2AZaBNUfvGLAs89oYqhwKnMaZjQjy",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc86",
+    "privateKeyDecimal": "1293446",
+    "address": "1BHBef7Wit4icG1hQB8WKoqWhDx7TXgi4Z",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000001368a",
+    "privateKeyDecimal": "79498",
+    "address": "1LNfi3vKi9f5BHPrf95cR521tqjcziQLbY",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136e8",
+    "privateKeyDecimal": "79592",
+    "address": "1Gi4v3Tm9fFqnXy1rx3W1yfoZcEmXdS6Bx",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136e1",
+    "privateKeyDecimal": "79585",
+    "address": "17oEgFYT3JTD6SzBX2MJZtymbV7F7Aaipn",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "puzzleNum": 85,
+    "privateKeyHex": "00000000000000000000000000000000000000000011720c4f018d51b8cebba8",
+    "address": "1Kh22PvXERd2xpTQk3ur6pPEqFeckCJfAr",
+    "btcValue": 0.85,
+    "solveDate": "2019-06-17",
+    "positionInRange": 9.03,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e0993",
+    "privateKeyDecimal": "4065683",
+    "address": "13AAuaTsUzEEaRg6CZUn633LWw8noJEwfU",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcc8",
+    "privateKeyDecimal": "1293512",
+    "address": "1Gi7LU4mDWixTqy4dQvnByybwjUQ8AroiN",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "puzzleNum": 33,
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000001a96ca8d8",
+    "address": "187swFMjz1G54ycVU56B7jZFHFTNVQFDiu",
+    "btcValue": 0.033,
+    "solveDate": "2015-01-16",
+    "positionInRange": 66.18,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827b2",
+    "privateKeyDecimal": "3680178",
+    "address": "1D7gaD2YAZL6MYittSGM5xUbiUD9DhV3mJ",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcd9",
+    "privateKeyDecimal": "1293529",
+    "address": "1MvVTCY3eoB5hxruMdxUpUjEBqMJoZDZ21",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000013685",
+    "privateKeyDecimal": "79493",
+    "address": "1DkJAZe7Qsd8Pikaua7mPPNTrnjaFgdFnP",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e0991",
+    "privateKeyDecimal": "4065681",
+    "address": "1Ai9YS4f8Rr3sM2NnkhEjuJEmwipJFuRf6",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136c3",
+    "privateKeyDecimal": "79555",
+    "address": "16VPmW99tZio8sJyNEuMseABUEtGpFTPU5",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e0a00",
+    "privateKeyDecimal": "4065792",
+    "address": "19T1yXgVxsM1x1mSNrP2JZ5JN2dGcjMp1n",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000013690",
+    "privateKeyDecimal": "79504",
+    "address": "1GYSJN82zE13ubx8ND69RzqVQnwYTQkVcT",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc91",
+    "privateKeyDecimal": "1293457",
+    "address": "15a4YknzmWEJKyWTUS4w5UN8M7kcPJYjoG",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827ee",
+    "privateKeyDecimal": "3680238",
+    "address": "1DGhZbdSS1f6DNtKuSUiCqRJY5vp5jVLjZ",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136a6",
+    "privateKeyDecimal": "79526",
+    "address": "1JDhmd4W3c3aN69yH9uKGqUskPQwrFRKLr",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827ea",
+    "privateKeyDecimal": "3680234",
+    "address": "1BFxSdrKfzRs6X2YD3i41n3RpergCUXB2a",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000038279c",
+    "privateKeyDecimal": "3680156",
+    "address": "1DiADdJY8nbdXT8pZvL9CthsHZMe3M8Ph",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcd3",
+    "privateKeyDecimal": "1293523",
+    "address": "12pATkTWvbH2Kkb54q3jrWvL6wBBF3q5ND",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136fd",
+    "privateKeyDecimal": "79613",
+    "address": "1GsFYULGVkTuBvAusCbY4emx1UFtpuvmoz",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09f4",
+    "privateKeyDecimal": "4065780",
+    "address": "1A8Xp2QmJJZRchPj36tZvCCgP2aumGgDNA",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd55",
+    "privateKeyDecimal": "2280789",
+    "address": "1GQ1GvNHcV7Fnnys9udxqeCW6i4fyxF1RY",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000001369a",
+    "privateKeyDecimal": "79514",
+    "address": "1vZLQXBwWXCwDBLQ4DHoqTc1QBqvhprmz",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827fa",
+    "privateKeyDecimal": "3680250",
+    "address": "17CUxEH5JxMBDoFqoTed4MvtScEmqN1Ud8",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09e6",
+    "privateKeyDecimal": "4065766",
+    "address": "13p2WK47Ee6eU4ANTmSEJTYkK2KRRWC1ty",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827ff",
+    "privateKeyDecimal": "3680255",
+    "address": "18Vk96TuEvTeDZiDLiQRTuHWUyjRzqPxHm",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcca",
+    "privateKeyDecimal": "1293514",
+    "address": "14ksLxBQVNA4jp3bkGprHBi375wrobWa8a",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136dc",
+    "privateKeyDecimal": "79580",
+    "address": "1Ps5bqqqw6DuWtpvQ1zNpZz4yjP82Sms8A",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd50",
+    "privateKeyDecimal": "2280784",
+    "address": "18vNGzBqro1jyFt3BgBfJ3Tf1G8agF2b7e",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "puzzleNum": 11,
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000000483",
+    "address": "1PgQVLmst3Z314JrQn5TNiys8Hc38TcXJu",
+    "btcValue": 0.011,
+    "solveDate": "2015-01-15",
+    "positionInRange": 12.79,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e0989",
+    "privateKeyDecimal": "4065673",
+    "address": "1NZ5UrW6xUugGcDax4s2Vu2GcVS7gxczZS",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136b2",
+    "privateKeyDecimal": "79538",
+    "address": "1KEcmPrGZLQDVXxm6LRoCNqUwNpBfYpWEK",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09ee",
+    "privateKeyDecimal": "4065774",
+    "address": "1DKgLKS5ghC6FYwM7EnJd9TTLPYpJY5ZZ",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09b7",
+    "privateKeyDecimal": "4065719",
+    "address": "16iSBgrnv9pktmSgtLt7Fu8yn229FUcvTn",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "puzzleNum": 90,
+    "privateKeyHex": "000000000000000000000000000000000000000002ce00bb2136a445c71e85bf",
+    "address": "1L12FHH2FHjvTviyanuiFVfmzCy46RRATU",
+    "btcValue": 0.9,
+    "solveDate": "2019-07-01",
+    "positionInRange": 40.23,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136f6",
+    "privateKeyDecimal": "79606",
+    "address": "145YprFbBbEN5ACmQKQeHtfEdB6RLSZKTy",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09c9",
+    "privateKeyDecimal": "4065737",
+    "address": "1BhJsXi6enWWSzvQiH1Ta7kpwgfoFCoaT8",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "puzzleNum": 26,
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000340326e",
+    "address": "1JVnST957hGztonaWK6FougdtjxzHzRMMg",
+    "btcValue": 0.026,
+    "solveDate": "2015-01-15",
+    "positionInRange": 62.53,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136d4",
+    "privateKeyDecimal": "79572",
+    "address": "19tWNyYCA1CkEA6HXBB3CUDtqt7xxvXNDM",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "puzzleNum": 65,
+    "privateKeyHex": "000000000000000000000000000000000000000000000001a838b13505b26867",
+    "address": "18ZMbwUFLMHoZBbfpCjUJQTCMCbktshgpe",
+    "btcValue": 0.65,
+    "solveDate": "2019-06-07",
+    "positionInRange": 65.71,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd34",
+    "privateKeyDecimal": "2280756",
+    "address": "1ArZ9RPZaiENC58B9vpRzyj4ZxX333F7jP",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09f5",
+    "privateKeyDecimal": "4065781",
+    "address": "1fgHMsVxq78hhxhsz5sUsCDTqi5SaA86u",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd4d",
+    "privateKeyDecimal": "2280781",
+    "address": "1DAXFp2hubu1qoTLqCsuvkecvtsyyCCDmC",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136ef",
+    "privateKeyDecimal": "79599",
+    "address": "1DpvmPBYHeoHWZ5XGdv9csC3dR2sLvy7es",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09c3",
+    "privateKeyDecimal": "4065731",
+    "address": "1PrGycer8uK4vV2QsnzDPRbhmtr1LyC9VG",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827b0",
+    "privateKeyDecimal": "3680176",
+    "address": "1FoTBwdSvcPbdnzbkBd1yY8Shz9T1sMpbD",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136ae",
+    "privateKeyDecimal": "79534",
+    "address": "1DKXovSQBeXR8mSJ6ftjmhUqpUGMPEDFR4",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136f2",
+    "privateKeyDecimal": "79602",
+    "address": "1NaK3GDkCvwZomyGxvzdPerVgjt1AXqrnM",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc83",
+    "privateKeyDecimal": "1293443",
+    "address": "171mqtTCfpB8P8dJ5LjFaUrSYjW3eCoSJy",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd3f",
+    "privateKeyDecimal": "2280767",
+    "address": "16pVMnh1ygRHRdgFP1CWBXWz7T3oe4phaJ",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcb4",
+    "privateKeyDecimal": "1293492",
+    "address": "19CGvsEYLcExvtwJBsP7if3a7jcURFat1s",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000001369b",
+    "privateKeyDecimal": "79515",
+    "address": "19144GC3bwpw9TJYvgscY3RqHp9nwot2th",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd21",
+    "privateKeyDecimal": "2280737",
+    "address": "1Jn9F3FFzCFP6cS8oS9AEyPvqq4G6gg7Ke",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000038279a",
+    "privateKeyDecimal": "3680154",
+    "address": "1HBc1Y8P9WDudJATo1A4dpwPykYmq82gsd",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827d4",
+    "privateKeyDecimal": "3680212",
+    "address": "1NqraWA3DP5tFMUzpxVVNiKpzrKDvbmKP6",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd59",
+    "privateKeyDecimal": "2280793",
+    "address": "1HL98CdBzAhRcRXkPs2Ke9UUqPgFfBSYsK",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000382784",
+    "privateKeyDecimal": "3680132",
+    "address": "12VnxsPaiTy2Q9uH2H5n6XFXrkWGPx5jkp",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000382799",
+    "privateKeyDecimal": "3680153",
+    "address": "1NYy6ezJD5KwtDPDF4rAhueZzr9v71gpTi",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd1d",
+    "privateKeyDecimal": "2280733",
+    "address": "1e2Vqj4Ju7kBznhArCgWcxFQJF5cCciiA",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd2d",
+    "privateKeyDecimal": "2280749",
+    "address": "1AE2gCtpJdar2UwfJhMperY39tBM5C1z74",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd17",
+    "privateKeyDecimal": "2280727",
+    "address": "1N9SyjDHdS1TPB5Ahi2NRxpHKVCCAUwdsq",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd74",
+    "privateKeyDecimal": "2280820",
+    "address": "1JQjmCjYV8tkoMgzRAw57ugair75QZr4Gk",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136af",
+    "privateKeyDecimal": "79535",
+    "address": "1KZyB4Mdwfrspbw4c2VCV9cCfULxKwbfD9",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136fc",
+    "privateKeyDecimal": "79612",
+    "address": "1HeP9erv9FS9WWGj77rTNaaGGmurqgkv32",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd6f",
+    "privateKeyDecimal": "2280815",
+    "address": "16H5rQQ6WvzGMKvPaU543XvEGKtcaQCBYj",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136b8",
+    "privateKeyDecimal": "79544",
+    "address": "1BpX5VYAqcVkucc3YnDMzdDBjobGzJMZEr",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd44",
+    "privateKeyDecimal": "2280772",
+    "address": "16HtVXeCpzDC2fDq2qxThaMFCTu1kkHZWx",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09c1",
+    "privateKeyDecimal": "4065729",
+    "address": "1366mqxMSgXfUhTJTZhuDqkDrbPpZx7Azx",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136ed",
+    "privateKeyDecimal": "79597",
+    "address": "1KgBRM6FYqLDvHwV1TCELAWgvoWYFkQtbF",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "puzzleNum": 17,
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000001764f",
+    "address": "1HduPEXZRdG26SUT5Yk83mLkPyjnZuJ7Bm",
+    "btcValue": 0.017,
+    "solveDate": "2015-01-15",
+    "positionInRange": 46.21,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136da",
+    "privateKeyDecimal": "79578",
+    "address": "1AsYJkuYTzvmeBEaygpgw4yxJRB6uuNo4i",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09d1",
+    "privateKeyDecimal": "4065745",
+    "address": "1nGS2rdgV8cwifmUqYL7vA5jijGjTSthg",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcf9",
+    "privateKeyDecimal": "1293561",
+    "address": "1DZWE1jepQ8DCWgPZLgKUEp4S1hjxeNkFF",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd80",
+    "privateKeyDecimal": "2280832",
+    "address": "1959xcw98TUiLogApJ8RT2BYhQPrA3rHHP",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09d0",
+    "privateKeyDecimal": "4065744",
+    "address": "13aMwgcwypb9syXTKR7vuAZTD4TXWtBdGN",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "puzzleNum": 3,
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000000007",
+    "address": "19ZewH8Kk1PDbSNdJ97FP4EiCjTRaZMZQA",
+    "btcValue": 0.003,
+    "solveDate": "2015-01-15",
+    "positionInRange": 75,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc8d",
+    "privateKeyDecimal": "1293453",
+    "address": "13x8shkqjGgWxcgdjxQf98zMnfgqGw9eyX",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09b4",
+    "privateKeyDecimal": "4065716",
+    "address": "1No8MG9iV6AoK5JJsEP7bg8DwwPrgnrVzB",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "puzzleNum": 28,
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000d916ce8",
+    "address": "12jbtzBb54r97TCwW3G1gCFoumpckRAPdY",
+    "btcValue": 0.028,
+    "solveDate": "2015-01-15",
+    "positionInRange": 69.6,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd4a",
+    "privateKeyDecimal": "2280778",
+    "address": "1AkLfwtFyz2GYwWRNiv9BX6G4D2EGCMGxS",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc8b",
+    "privateKeyDecimal": "1293451",
+    "address": "15MpN3KnRYz9k6Nk9jFy6t9F7fTPetHYPM",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd56",
+    "privateKeyDecimal": "2280790",
+    "address": "1JhNveZctPF1Fx4Uk2hgdbAPYRi4aXQT8U",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcdc",
+    "privateKeyDecimal": "1293532",
+    "address": "1PTefLb4jnGRgNJQyYP4gKX1Qj1HX3RWQb",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827e8",
+    "privateKeyDecimal": "3680232",
+    "address": "13mc2wPeA5bqKpbBMhThJGXAFwR584HG3K",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd54",
+    "privateKeyDecimal": "2280788",
+    "address": "13n4bM8HAmSfigZEZMb5hEFsGTA9Tg7UzY",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e0987",
+    "privateKeyDecimal": "4065671",
+    "address": "17GytDYvnL3Sv9tTXiEemc3NM47hnwZrTz",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09b8",
+    "privateKeyDecimal": "4065720",
+    "address": "13PR5NpsoK7hGFaQTKgZT9VzKvaVVq5wfD",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136df",
+    "privateKeyDecimal": "79583",
+    "address": "1HWjfmiyz4rMB5zBd7jUz1pm6ANuQxk371",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd29",
+    "privateKeyDecimal": "2280745",
+    "address": "154skDKWFC7RApkLzJFpCRFsmzqYEjchB9",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd73",
+    "privateKeyDecimal": "2280819",
+    "address": "13e1X1nwvBkwvGdqmCN7UjWNaTsRuxUJRk",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000382797",
+    "privateKeyDecimal": "3680151",
+    "address": "1Dq9K3PfKnAwWpYinJy7kWDHcNNKoB5pku",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc9c",
+    "privateKeyDecimal": "1293468",
+    "address": "13BsbCjoEukaaNLJVRgj2z8PWKxX9N15sV",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000038279b",
+    "privateKeyDecimal": "3680155",
+    "address": "1N1b1hXtYGQmfEZDR4JeMp8SBxGUTNQPhx",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136bc",
+    "privateKeyDecimal": "79548",
+    "address": "18FDPCu4JW7tj6SfcZ2AeVNZDA7YgBiFQE",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827f9",
+    "privateKeyDecimal": "3680249",
+    "address": "1CpeyVi9APScdgjCBbjxaqEUYWcsaWEzbU",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09e9",
+    "privateKeyDecimal": "4065769",
+    "address": "16j731YtSJCYsHR9eZMxUoGWNRxWrgCZ7b",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd4e",
+    "privateKeyDecimal": "2280782",
+    "address": "1KN7d1Zow1v6rYPNqVDq7GsDX8mKJzKXCq",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bce9",
+    "privateKeyDecimal": "1293545",
+    "address": "17bnRUetBnXpPuwL9qvDxP1BD9KzGXCCAe",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09a6",
+    "privateKeyDecimal": "4065702",
+    "address": "1MTpg7b8FYBYYuMGM2ZanoBwHXxVAe8EMC",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136b4",
+    "privateKeyDecimal": "79540",
+    "address": "186UTf2Egi8Rqzkb4WbEfN6oChsP9wLPNZ",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136eb",
+    "privateKeyDecimal": "79595",
+    "address": "1P7gNTPxJC624ULcMZNX5xuJVN7NriBLCw",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827a0",
+    "privateKeyDecimal": "3680160",
+    "address": "1BzwhS33s5LZJrivXBSspH2JxGkfQdnVYe",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc92",
+    "privateKeyDecimal": "1293458",
+    "address": "19tCwMzvayusRpjpFFudeuDfiNjpsFct6",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd43",
+    "privateKeyDecimal": "2280771",
+    "address": "1PzcBSE7KebpabSn22LLZ27TLnC8JDV4JH",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bca3",
+    "privateKeyDecimal": "1293475",
+    "address": "18UbvTADAdFFrpth89fS2KsmYr4qACMs4K",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e0988",
+    "privateKeyDecimal": "4065672",
+    "address": "1FSAre4yGawMY4fPfaYm71F4mfUvExJheM",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "puzzleNum": 69,
+    "privateKeyHex": "0000000000000000000000000000000000000000000000101d83275fb2bc7e0c",
+    "address": "19vkiEajfhuZ8bs8Zu2jgmC6oqZbWqhxhG",
+    "btcValue": 6.9,
+    "solveDate": "2025-04-30",
+    "positionInRange": 0.72,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09b3",
+    "privateKeyDecimal": "4065715",
+    "address": "1E7Yk53MJaPbzbtQJ2fcpB4ijnXMozRSw7",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136e4",
+    "privateKeyDecimal": "79588",
+    "address": "1NnVg1iQK6GD2MAdKdo8m8UwFwcSyaC3z7",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "puzzleNum": 15,
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000068f3",
+    "address": "1QCbW9HWnwQWiQqVo5exhAnmfqKRrCRsvW",
+    "btcValue": 0.015,
+    "solveDate": "2015-01-15",
+    "positionInRange": 63.98,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827df",
+    "privateKeyDecimal": "3680223",
+    "address": "16CL42HQZyFrRAuYUM3PwAHuLEPoGLiMn3",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd46",
+    "privateKeyDecimal": "2280774",
+    "address": "13yzjfTxFVLZwJw1Ney4ceGnV3nBQPoLEY",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcf0",
+    "privateKeyDecimal": "1293552",
+    "address": "17TJ5SNBZ9su8uVNswRmpZGTaCiYj7AqT6",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "puzzleNum": 57,
+    "privateKeyHex": "00000000000000000000000000000000000000000000000001eb25c90795d61c",
+    "address": "15c9mPGLku1HuW9LRtBf4jcHVpBUt8txKz",
+    "btcValue": 0.57,
+    "solveDate": "2018-11-08",
+    "positionInRange": 91.85,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136e9",
+    "privateKeyDecimal": "79593",
+    "address": "1MPZUpt5JF33q3jCzHh25XNp1kDWSYBP8B",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09ae",
+    "privateKeyDecimal": "4065710",
+    "address": "1JkJdUJiybevBmUpJi3HxsJmQNvPg4W3NT",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827f7",
+    "privateKeyDecimal": "3680247",
+    "address": "1GGd6zqjvScfZ8UDHx2P5hFmYjhQo6t78N",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "puzzleNum": 6,
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000000031",
+    "address": "1PitScNLyp2HCygzadCh7FveTnfmpPbfp8",
+    "btcValue": 0.006,
+    "solveDate": "2015-01-15",
+    "positionInRange": 53.12,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e099e",
+    "privateKeyDecimal": "4065694",
+    "address": "1N8sUeEVVJZeX97r651wvJDZMCzDShaw8r",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827ab",
+    "privateKeyDecimal": "3680171",
+    "address": "16H1Vz53BVLSvWhqRaE2hR3Q1kjAKN3EJ4",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc84",
+    "privateKeyDecimal": "1293444",
+    "address": "179pkeqaxy98bQq9ocshgADRDSMX8DN3M6",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcec",
+    "privateKeyDecimal": "1293548",
+    "address": "18fBKfvLKXYtq6yW6yUyQujMPiraGRuvPs",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcd8",
+    "privateKeyDecimal": "1293528",
+    "address": "1EznecPHcEiXNwN9NtUDJxn3U9a4VAHJuU",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc8a",
+    "privateKeyDecimal": "1293450",
+    "address": "1F7zt8Wvhz9Yav7Kh2dYXXQ9UFwGZzTSvc",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bce2",
+    "privateKeyDecimal": "1293538",
+    "address": "14DZ6LY4susT9Tv42G92MUdKokHM2gDf7U",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd24",
+    "privateKeyDecimal": "2280740",
+    "address": "19S8SbzuGUcXERo49zJRsohphLXLHUUt2N",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd6d",
+    "privateKeyDecimal": "2280813",
+    "address": "1AAeYeJ1nkMcxeXvPCt5nUTt4r7meyUEZA",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcb7",
+    "privateKeyDecimal": "1293495",
+    "address": "1PBMTh3tJVpy12KEzHXmeDmeeZydXArxWr",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcc9",
+    "privateKeyDecimal": "1293513",
+    "address": "1N8rbE4Ey8wwQzqwWogMrdgfvGZ2o2AbJQ",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136d3",
+    "privateKeyDecimal": "79571",
+    "address": "1D984eomTyp45pPrEChtD7A9sXd4YqSiGX",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09b0",
+    "privateKeyDecimal": "4065712",
+    "address": "1MTSiDVtrCLr8NSR4dQbNXQzdqhGkwPvT4",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "puzzleNum": 64,
+    "privateKeyHex": "000000000000000000000000000000000000000000000000f7051f27b09112d4",
+    "address": "16jY7qLJnxb7CHZyqBP8qca9d51gAjyXQN",
+    "btcValue": 0.64,
+    "solveDate": "2022-09-10",
+    "positionInRange": 92.98,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09e1",
+    "privateKeyDecimal": "4065761",
+    "address": "1Pc6jzPTS4KuQypfmBijx4s8RmVp6kct4Q",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09ce",
+    "privateKeyDecimal": "4065742",
+    "address": "1CET9kzvL4BQzYT2Y17AEoJF8Ef6T3dF5Q",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcc3",
+    "privateKeyDecimal": "1293507",
+    "address": "1rEmf4RSpQ5hyKZC3aGRKQs6hRGjhdSru",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136a8",
+    "privateKeyDecimal": "79528",
+    "address": "1GNE8D1sDcJjYVaJ4viSSfq2WuLSLjRKCU",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136c5",
+    "privateKeyDecimal": "79557",
+    "address": "1HrwvhCwtcca2f7HEW795QjPCcznrstSfa",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827fe",
+    "privateKeyDecimal": "3680254",
+    "address": "1FKjU3RiT2PQ5UGMbgMRHoVmd8LW6JqXYf",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcdb",
+    "privateKeyDecimal": "1293531",
+    "address": "1DfTWYAxvNLLshL99FRjkxTPcxy4Nnpfzp",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bce7",
+    "privateKeyDecimal": "1293543",
+    "address": "1Gh89Bo3HP6yAF2LxjGr6cDwSYPWmqwweN",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd1e",
+    "privateKeyDecimal": "2280734",
+    "address": "1AhV3iYVDRFgufyoKEjdXz8sFyLNzMK8PL",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd1a",
+    "privateKeyDecimal": "2280730",
+    "address": "1C7vY2haEvAWQ98PkxYsLXfuh4NM2QPMEY",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827b3",
+    "privateKeyDecimal": "3680179",
+    "address": "1KDDqv8xw4ZEJTxvpuHxZyToDgXqtJkjN2",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "puzzleNum": 80,
+    "privateKeyHex": "00000000000000000000000000000000000000000000ea1a5c66dcc11b5ad180",
+    "address": "1BCf6rHUW6m3iH2ptsvnjgLruAiPQQepLe",
+    "btcValue": 0.8,
+    "solveDate": "2019-06-11",
+    "positionInRange": 82.89,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd5f",
+    "privateKeyDecimal": "2280799",
+    "address": "1CYNqMzygQ9X9B2H7pxNkaxsR3PzkH47eC",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e099d",
+    "privateKeyDecimal": "4065693",
+    "address": "14AR5LfxXa8DQkJojZRyPtaiJW1jmkSRwd",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827a1",
+    "privateKeyDecimal": "3680161",
+    "address": "1PHnQw6yV3HVBAZdAKMpGu3d3Gxfq28Y14",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bc94",
+    "privateKeyDecimal": "1293460",
+    "address": "1EWHr51BPvvL9hHyUtdMz8xEZDt3rfjz9L",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd38",
+    "privateKeyDecimal": "2280760",
+    "address": "15EpTLdvkCjiXxwJSevTTWtppsZtMuocDo",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09d6",
+    "privateKeyDecimal": "4065750",
+    "address": "1Jg3EnLTivgiopUmYpfYedTcvCJT1mvHaR",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136ec",
+    "privateKeyDecimal": "79596",
+    "address": "16TAmy1U1zf6yXpHxNtM8TR6yV3Tt4pjZz",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09cc",
+    "privateKeyDecimal": "4065740",
+    "address": "172zFjCnCA6FJqXfHRnfKtB2Q3KL2VsSk",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09a7",
+    "privateKeyDecimal": "4065703",
+    "address": "18arsCGG179xodj18JYtyJrjmcYFP5EAN1",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd57",
+    "privateKeyDecimal": "2280791",
+    "address": "15dXifn8rKaUD8AuZbAf9cjjPSkAkNkMYg",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd3c",
+    "privateKeyDecimal": "2280764",
+    "address": "1mLCXoPNcYT2rHfiMBoeVDJtdLMEL8ToP",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827dc",
+    "privateKeyDecimal": "3680220",
+    "address": "18Zx2mqUC4PdKcNutBL6V9Acx3WhspSEGV",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136b6",
+    "privateKeyDecimal": "79542",
+    "address": "17pHzgx19azwLsCXUmT9zafQheBvjgpqmc",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "puzzleNum": 22,
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000002de40f",
+    "address": "1CfZWK1QTQE3eS9qn61dQjV89KDjZzfNcv",
+    "btcValue": 0.022,
+    "solveDate": "2015-01-15",
+    "positionInRange": 43.4,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd37",
+    "privateKeyDecimal": "2280759",
+    "address": "13Yv77Qi64jPF9QqBcsuTVSuKUL8PiGgh4",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136cb",
+    "privateKeyDecimal": "79563",
+    "address": "1GbLp3cUiFSAjPHZXC7KbthRYdbTiM7BG3",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827d3",
+    "privateKeyDecimal": "3680211",
+    "address": "17snEEybEdnFCrypT74NXEJtDrqcqYboBm",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd26",
+    "privateKeyDecimal": "2280742",
+    "address": "1LSfHNbErJBwpWhVThd2dqtGhZR27tsjyj",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd31",
+    "privateKeyDecimal": "2280753",
+    "address": "1FnXjnW9k7BTkrCP78SLbdnJdrdCt2Hmuk",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd12",
+    "privateKeyDecimal": "2280722",
+    "address": "1HZGmUFuFgFh1ksPtinfYr4oqtLj9MeAbT",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcf7",
+    "privateKeyDecimal": "1293559",
+    "address": "1KRCSW2th9SjF7pa25FbeyuGSWnXRnmmw3",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136b1",
+    "privateKeyDecimal": "79537",
+    "address": "168j43R5BCLXZkDE99rej9qoZVvFP2fHmm",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827b4",
+    "privateKeyDecimal": "3680180",
+    "address": "15wPW6xSyAGnuESURbuhtqWXGQ8FuTjB9j",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "puzzleNum": 31,
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000007d4fe747",
+    "address": "1LhE6sCTuGae42Axu1L1ZB7L96yi9irEBE",
+    "btcValue": 0.031,
+    "solveDate": "2015-01-16",
+    "positionInRange": 95.8,
+    "label": 1
+  },
+  {
+    "puzzleNum": 39,
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000004b5f8303e9",
+    "address": "122AJhKLEfkFBaGAd84pLp1kfE7xK3GdT8",
+    "btcValue": 0.039,
+    "solveDate": "2015-01-21",
+    "positionInRange": 17.77,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136dd",
+    "privateKeyDecimal": "79581",
+    "address": "12URQCdjNTYEgvMA6coGi91FtStmnvoXQm",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "puzzleNum": 61,
+    "privateKeyHex": "00000000000000000000000000000000000000000000000013c96a3742f64906",
+    "address": "1AVJKwzs9AskraJLGHAZPiaZcrpDr1U6AB",
+    "btcValue": 0.61,
+    "solveDate": "2019-05-11",
+    "positionInRange": 23.66,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000382787",
+    "privateKeyDecimal": "3680135",
+    "address": "1MwUFpYo1z7dEtsj7J6Ao5L4sTVc4bofiB",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136de",
+    "privateKeyDecimal": "79582",
+    "address": "1NaHyWXKS6H7KvxrDe18YCELP4HPcEfc29",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000013698",
+    "privateKeyDecimal": "79512",
+    "address": "1FVHEBMxkkArfMzBQ6H4YTy36fbY3NGmUC",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827a2",
+    "privateKeyDecimal": "3680162",
+    "address": "1CiNeb4s8G8BqYLuTFXydwfCT7CWb1WB8w",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827eb",
+    "privateKeyDecimal": "3680235",
+    "address": "19fTpg2ACxh1NKWFiWGBBPZv9DfBvAtwgq",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827f8",
+    "privateKeyDecimal": "3680248",
+    "address": "14moLUQLbFH2Gc4a2cuWV739449Wi4gNxA",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "puzzleNum": 8,
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000000e0",
+    "address": "1M92tSqNmQLYw33fuBvjmeadirh1ysMBxK",
+    "btcValue": 0.008,
+    "solveDate": "2015-01-15",
+    "positionInRange": 75,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000382794",
+    "privateKeyDecimal": "3680148",
+    "address": "13WztpQee2NHzG1nyofyAJm7xoa5MMRGkT",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "puzzleNum": 35,
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000004aed21170",
+    "address": "1PWCx5fovoEaoBowAvF5k91m2Xat9bMgwb",
+    "btcValue": 0.035,
+    "solveDate": "2015-01-17",
+    "positionInRange": 17.07,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09be",
+    "privateKeyDecimal": "4065726",
+    "address": "12DcCQKxSF6SGehJVgzVwpH5XWjfkcACor",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827ae",
+    "privateKeyDecimal": "3680174",
+    "address": "18krfkz8wwZn8xpuQ8HKYRe93obLZ9ot7C",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09af",
+    "privateKeyDecimal": "4065711",
+    "address": "1EuRjFQqEYnPZvBAqtE2eUaiudK4UoJn4G",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09f8",
+    "privateKeyDecimal": "4065784",
+    "address": "1LkDMW8GQ76fjj6LoLPkqPwjRKVxyLEjtZ",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "puzzleNum": 7,
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000000004c",
+    "address": "1McVt1vMtCC7yn5b9wgX1833yCcLXzueeC",
+    "btcValue": 0.007,
+    "solveDate": "2015-01-15",
+    "positionInRange": 18.75,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827f6",
+    "privateKeyDecimal": "3680246",
+    "address": "13uFCS29ztU8wxezKeMBgGinfq4P6ErjDp",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000001368d",
+    "privateKeyDecimal": "79501",
+    "address": "1MMVkS9soPmJPzqh3JoLYz58fafAozLxuU",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09c4",
+    "privateKeyDecimal": "4065732",
+    "address": "1FnadZqBfRrxdh1WRk9PAE537FiHfDn8A3",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827bc",
+    "privateKeyDecimal": "3680188",
+    "address": "123Xz9XLhvu58tBkBioEV6tMjdHYmoVy17",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "puzzleNum": 46,
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000002ec18388d544",
+    "address": "1F3JRMWudBaj48EhwcHDdpeuy2jwACNxjP",
+    "btcValue": 0.046,
+    "solveDate": "2015-01-30",
+    "positionInRange": 46.11,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000382800",
+    "privateKeyDecimal": "3680256",
+    "address": "1vP2UPHce9mQKEdZip9uNVULc2YJvowrL",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "puzzleNum": 110,
+    "privateKeyHex": "00000000000000000000000000000000000035c0d7234df7deb0f20cf7062444",
+    "address": "12JzYkkN76xkwvcPT6AWKZtGX6w2LAgsJg",
+    "btcValue": 1.1,
+    "solveDate": "2020-05-30",
+    "positionInRange": 67.97,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd33",
+    "privateKeyDecimal": "2280755",
+    "address": "18iravPo2GqraRMFYHVCZX48ujky2DH9pp",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136f7",
+    "privateKeyDecimal": "79607",
+    "address": "13ZJs8BXh3oErSjVXKbikcjhSLhJRyv5zA",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "puzzleNum": 60,
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000fc07a1825367bbe",
+    "address": "1Kn5h2qpgw9mWE5jKpk8PP4qvvJ1QVy8su",
+    "btcValue": 0.6,
+    "solveDate": "2019-02-17",
+    "positionInRange": 96.89,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827e9",
+    "privateKeyDecimal": "3680233",
+    "address": "13MgkczAARjCT2tF2B6yPBMQWa6ay8AtN2",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "puzzleNum": 9,
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000001d3",
+    "address": "1CQFwcjw1dwhtkVWBttNLDtqL7ivBonGPV",
+    "btcValue": 0.009,
+    "solveDate": "2015-01-15",
+    "positionInRange": 82.42,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bce5",
+    "privateKeyDecimal": "1293541",
+    "address": "17piAPA5qdsRgkaFd2Jhrrp3uJxBXUWaiX",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827c1",
+    "privateKeyDecimal": "3680193",
+    "address": "1B7hdpKjtShhNpcbNAuQTK4fyWqe7zT9xT",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "puzzleNum": 32,
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000b862a62e",
+    "address": "1FRoHA9xewq7DjrZ1psWJVeTer8gHRqEvR",
+    "btcValue": 0.032,
+    "solveDate": "2015-01-16",
+    "positionInRange": 44.05,
+    "label": 1
+  },
+  {
+    "puzzleNum": 5,
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000000015",
+    "address": "1E6NuFjCi27W5zoXg8TRdcSRq84zJeBW3k",
+    "btcValue": 0.005,
+    "solveDate": "2015-01-15",
+    "positionInRange": 31.25,
+    "label": 1
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136b7",
+    "privateKeyDecimal": "79543",
+    "address": "1PTxtJ59DDYg4r6hcbpDjsJSyAjLFJUoQb",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136fb",
+    "privateKeyDecimal": "79611",
+    "address": "16aE9bcEDJxpd65H3ijBUdZwQpymU6gGhk",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09bd",
+    "privateKeyDecimal": "4065725",
+    "address": "13Kf3erMVeagk8aJ3UP9buq3QPbuEk3qAQ",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827e5",
+    "privateKeyDecimal": "3680229",
+    "address": "1M6n4KZfG7PofC1q3mkQRaNwM3SStAVj6v",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003827ca",
+    "privateKeyDecimal": "3680202",
+    "address": "1Lyb8cwmQXZuhxPaSQfiJPjrgAkmyJbKvi",
+    "dioId": 28752,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136e3",
+    "privateKeyDecimal": "79587",
+    "address": "1QE7LbEFBp2iTjmxFpLpetNnccMMbv4Fsk",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09b2",
+    "privateKeyDecimal": "4065714",
+    "address": "1EqvKuZhigzf7X1B9QYrYdBixhs9B47b5s",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000001368c",
+    "privateKeyDecimal": "79500",
+    "address": "1PLTkYQkwbL5tZTwcqJewVt6bcGcEPYVYu",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd78",
+    "privateKeyDecimal": "2280824",
+    "address": "12nACJtp93So2xTNV7qXrwKFgxkpDPcfcx",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd3e",
+    "privateKeyDecimal": "2280766",
+    "address": "1BihYts7tbPyFdRVncr1yY76qat41958n3",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136c2",
+    "privateKeyDecimal": "79554",
+    "address": "1DJ6YdbxUdKxY5TwpHxmqZuEHxNUH3jMtY",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd75",
+    "privateKeyDecimal": "2280821",
+    "address": "1DbzXn2vch8eLsfAGJQkDJMwh6TShBE193",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136f9",
+    "privateKeyDecimal": "79609",
+    "address": "16mC2KbekoUfpJ3SX8ABnqWcG2tJz91B8r",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bccc",
+    "privateKeyDecimal": "1293516",
+    "address": "1APMvcc8oQqzdQEc86Lyu38oSiiJiHC21t",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09e8",
+    "privateKeyDecimal": "4065768",
+    "address": "1LRzZ3NJe6XSCwfEBy6b3s5vgNAbBRnTn",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcb8",
+    "privateKeyDecimal": "1293496",
+    "address": "1BHyDiiZnr1xYdj8Avjwi2YSrvfi7TY3sz",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136f1",
+    "privateKeyDecimal": "79601",
+    "address": "1NMCsjaxA6sqBL2e3LprzgZnAYnvVfhYNc",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09d5",
+    "privateKeyDecimal": "4065749",
+    "address": "16AXB5sbmygkTbhx1JUmgQuRmAYsrTmXF8",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09ad",
+    "privateKeyDecimal": "4065709",
+    "address": "1FWgsdyB3mnnTWa7qd9g8kkp97nakVivPC",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcea",
+    "privateKeyDecimal": "1293546",
+    "address": "16fFYjnvdiNVv78HJD1xHy1ffpTdE8NhDp",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bccf",
+    "privateKeyDecimal": "1293519",
+    "address": "1LvPvMzMi3LdvzeWjRyZSHqBUZsnz2iNHw",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136a7",
+    "privateKeyDecimal": "79527",
+    "address": "1HNFGKX7PW3L3nvDScH3aJn6YdTcP7aJXX",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136d6",
+    "privateKeyDecimal": "79574",
+    "address": "15BctpcLGRZGVqnP3yHnyD39q9m3b8jTVN",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09ff",
+    "privateKeyDecimal": "4065791",
+    "address": "17uTY5dkRfS2iVSemuUifU52CkiSii5aTD",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09ef",
+    "privateKeyDecimal": "4065775",
+    "address": "15tvE55NVGJnQPrBvBqofnP8XFwhGoJt1S",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09c2",
+    "privateKeyDecimal": "4065730",
+    "address": "1Ft9RbggEQTpXjzpna8UfeKzLoDQB3KnfR",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd69",
+    "privateKeyDecimal": "2280809",
+    "address": "1412ZGqxT3h7MZQLZWVhCe4ncYMveHZ2nA",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "0000000000000000000000000000000000000000000000000000000000013688",
+    "privateKeyDecimal": "79496",
+    "address": "1Hi8SjR8tE6zmfbY3uP4D4GhPxzEs9C86z",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136ab",
+    "privateKeyDecimal": "79531",
+    "address": "14iyj7twTXGpb2vZYw5AtPBYnzwsvsQq3r",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09f2",
+    "privateKeyDecimal": "4065778",
+    "address": "1FQDwsXWxHEmGrfKX6kfN62A4uUc6gcGSB",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bcd6",
+    "privateKeyDecimal": "1293526",
+    "address": "1J5M6MDA9T8RKC93ZGcmUbL7mULTrcceUc",
+    "dioId": 10106,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000022cd6b",
+    "privateKeyDecimal": "2280811",
+    "address": "1muoZqqMyTT4kUgUnDwscR2jhdkZwvszS",
+    "dioId": 17819,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09cb",
+    "privateKeyDecimal": "4065739",
+    "address": "18Z2tTSNH2rhPVrwgGFbDVyseNyiGRejno",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e098a",
+    "privateKeyDecimal": "4065674",
+    "address": "1JD6HmhazwDvsnZBhwWBgEc3tygDGwPa2A",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09f9",
+    "privateKeyDecimal": "4065785",
+    "address": "1B52Zq9Sk276JaDee5e1R26h65iYad7ono",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e0981",
+    "privateKeyDecimal": "4065665",
+    "address": "1FN33uLdUnccji1XHZJL5dSVhPWXdzhpXu",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000000136f5",
+    "privateKeyDecimal": "79605",
+    "address": "1Li5eEfDcNFtJJqk9GrFzKGhGZSudhaJuu",
+    "dioId": 622,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "00000000000000000000000000000000000000000000000000000000003e09f1",
+    "privateKeyDecimal": "4065777",
+    "address": "1Kep4oMgTEAB9EzdQDe1BZDE5vgg915Tte",
+    "dioId": 31764,
+    "label": 0
+  },
+  {
+    "privateKeyHex": "000000000000000000000000000000000000000000000000000000000013bca8",
+    "privateKeyDecimal": "1293480",
+    "address": "12qZS4d6voVcET23HPomjktfqMCkUFEqbk",
+    "dioId": 10106,
+    "label": 0
+  }
+]
