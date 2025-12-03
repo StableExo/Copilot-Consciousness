@@ -1,0 +1,5777 @@
+{
+  "totalPuzzlesMain": 160,
+  "totalPuzzlesBlockchain": 256,
+  "solvedPuzzlesMain": 82,
+  "solvedPuzzlesBlockchain": 0,
+  "discrepancies": [
+    {
+      "puzzleNum": 1,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000000000000001"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #1: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 1,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.001
+      },
+      "blockchainData": {
+        "expectedValue": 100000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #1: Expected 100000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 2,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000000000000003"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #2: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 2,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.002
+      },
+      "blockchainData": {
+        "expectedValue": 200000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #2: Expected 200000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 3,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000000000000007"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #3: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 3,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.003
+      },
+      "blockchainData": {
+        "expectedValue": 300000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #3: Expected 300000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 4,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000000000000008"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #4: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 4,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.004
+      },
+      "blockchainData": {
+        "expectedValue": 400000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #4: Expected 400000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 5,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000000000000015"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #5: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 5,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.005
+      },
+      "blockchainData": {
+        "expectedValue": 500000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #5: Expected 500000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 6,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000000000000031"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #6: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 6,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.006
+      },
+      "blockchainData": {
+        "expectedValue": 600000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #6: Expected 600000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 7,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000000000000000004c"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #7: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 7,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.007
+      },
+      "blockchainData": {
+        "expectedValue": 700000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #7: Expected 700000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 8,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000000000000000e0"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #8: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 8,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.008
+      },
+      "blockchainData": {
+        "expectedValue": 800000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #8: Expected 800000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 9,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000000000000001d3"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #9: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 9,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.009
+      },
+      "blockchainData": {
+        "expectedValue": 900000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #9: Expected 900000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 10,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000000000000202"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #10: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 10,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.01
+      },
+      "blockchainData": {
+        "expectedValue": 1000000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #10: Expected 1000000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 11,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000000000000483"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #11: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 11,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.011
+      },
+      "blockchainData": {
+        "expectedValue": 1100000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #11: Expected 1100000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 12,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000000000000a7b"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #12: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 12,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.012
+      },
+      "blockchainData": {
+        "expectedValue": 1200000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #12: Expected 1200000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 13,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000000000001460"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #13: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 13,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.013
+      },
+      "blockchainData": {
+        "expectedValue": 1300000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #13: Expected 1300000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 14,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000000000002930"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #14: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 14,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.014
+      },
+      "blockchainData": {
+        "expectedValue": 1400000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #14: Expected 1400000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 15,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000000000000068f3"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #15: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 15,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.015
+      },
+      "blockchainData": {
+        "expectedValue": 1500000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #15: Expected 1500000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 16,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000000000000000c936"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #16: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 16,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.016
+      },
+      "blockchainData": {
+        "expectedValue": 1600000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #16: Expected 1600000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 17,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000000000000001764f"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #17: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 17,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.017
+      },
+      "blockchainData": {
+        "expectedValue": 1700000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #17: Expected 1700000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 18,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000000000000003080d"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #18: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 18,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.018
+      },
+      "blockchainData": {
+        "expectedValue": 1800000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #18: Expected 1800000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 19,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000000000000005749f"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #19: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 19,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.019
+      },
+      "blockchainData": {
+        "expectedValue": 1900000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #19: Expected 1900000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 20,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000000000000d2c55"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #20: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 20,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.02
+      },
+      "blockchainData": {
+        "expectedValue": 2000000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #20: Expected 2000000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 21,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000000000001ba534"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #21: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 21,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.021
+      },
+      "blockchainData": {
+        "expectedValue": 2100000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #21: Expected 2100000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 22,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000000000002de40f"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #22: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 22,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.022
+      },
+      "blockchainData": {
+        "expectedValue": 2200000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #22: Expected 2200000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 23,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000000000556e52"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #23: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 23,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.023
+      },
+      "blockchainData": {
+        "expectedValue": 2300000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #23: Expected 2300000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 24,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000000000dc2a04"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #24: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 24,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.024
+      },
+      "blockchainData": {
+        "expectedValue": 2400000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #24: Expected 2400000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 25,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000000001fa5ee5"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #25: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 25,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.025
+      },
+      "blockchainData": {
+        "expectedValue": 2500000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #25: Expected 2500000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 26,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000000000000340326e"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #26: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 26,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.026
+      },
+      "blockchainData": {
+        "expectedValue": 2600000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #26: Expected 2600000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 27,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000000006ac3875"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #27: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 27,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.027
+      },
+      "blockchainData": {
+        "expectedValue": 2700000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #27: Expected 2700000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 28,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000000000000d916ce8"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #28: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 28,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.028
+      },
+      "blockchainData": {
+        "expectedValue": 2800000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #28: Expected 2800000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 29,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000000017e2551e"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #29: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 29,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.029
+      },
+      "blockchainData": {
+        "expectedValue": 2900000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #29: Expected 2900000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 30,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000000000003d94cd64"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #30: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 30,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.03
+      },
+      "blockchainData": {
+        "expectedValue": 3000000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #30: Expected 3000000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 31,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000000000007d4fe747"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #31: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 31,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.031
+      },
+      "blockchainData": {
+        "expectedValue": 3100000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #31: Expected 3100000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 32,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000000000b862a62e"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #32: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 32,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.032
+      },
+      "blockchainData": {
+        "expectedValue": 3200000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #32: Expected 3200000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 33,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000000001a96ca8d8"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #33: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 33,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.033
+      },
+      "blockchainData": {
+        "expectedValue": 3300000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #33: Expected 3300000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 34,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000000000034a65911d"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #34: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 34,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.034
+      },
+      "blockchainData": {
+        "expectedValue": 3400000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #34: Expected 3400000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 35,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000000004aed21170"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #35: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 35,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.035
+      },
+      "blockchainData": {
+        "expectedValue": 3500000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #35: Expected 3500000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 36,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000000009de820a7c"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #36: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 36,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.036
+      },
+      "blockchainData": {
+        "expectedValue": 3600000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #36: Expected 3600000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 37,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000001757756a93"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #37: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 37,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.037
+      },
+      "blockchainData": {
+        "expectedValue": 3700000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #37: Expected 3700000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 38,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000000022382facd0"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #38: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 38,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.038
+      },
+      "blockchainData": {
+        "expectedValue": 3800000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #38: Expected 3800000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 39,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000004b5f8303e9"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #39: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 39,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.039
+      },
+      "blockchainData": {
+        "expectedValue": 3900000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #39: Expected 3900000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 40,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000000000e9ae4933d6"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #40: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 40,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.04
+      },
+      "blockchainData": {
+        "expectedValue": 4000000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #40: Expected 4000000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 41,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000000153869acc5b"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #41: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 41,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.041
+      },
+      "blockchainData": {
+        "expectedValue": 4100000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #41: Expected 4100000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 42,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000000002a221c58d8f"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #42: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 42,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.042
+      },
+      "blockchainData": {
+        "expectedValue": 4200000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #42: Expected 4200000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 43,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000000006bd3b27c591"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #43: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 43,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.043
+      },
+      "blockchainData": {
+        "expectedValue": 4300000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #43: Expected 4300000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 44,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000000e02b35a358f"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #44: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 44,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.044
+      },
+      "blockchainData": {
+        "expectedValue": 4400000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #44: Expected 4400000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 45,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000122fca143c05"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #45: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 45,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.045
+      },
+      "blockchainData": {
+        "expectedValue": 4500000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #45: Expected 4500000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 46,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000002ec18388d544"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #46: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 46,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.046
+      },
+      "blockchainData": {
+        "expectedValue": 4600000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #46: Expected 4600000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 47,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000006cd610b53cba"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #47: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 47,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.047
+      },
+      "blockchainData": {
+        "expectedValue": 4700000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #47: Expected 4700000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 48,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000000ade6d7ce3b9b"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #48: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 48,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.048
+      },
+      "blockchainData": {
+        "expectedValue": 4800000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #48: Expected 4800000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 49,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000000174176b015f4d"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #49: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 49,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.049
+      },
+      "blockchainData": {
+        "expectedValue": 4900000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #49: Expected 4900000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 50,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000022bd43c2e9354"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #50: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 50,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.05
+      },
+      "blockchainData": {
+        "expectedValue": 5000000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #50: Expected 5000000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 51,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000075070a1a009d4"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #51: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 51,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.051
+      },
+      "blockchainData": {
+        "expectedValue": 5100000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #51: Expected 5100000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 52,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000000efae164cb9e3c"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #52: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 52,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.052
+      },
+      "blockchainData": {
+        "expectedValue": 5200000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #52: Expected 5200000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 53,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000180788e47e326c"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #53: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 53,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.53
+      },
+      "blockchainData": {
+        "expectedValue": 5300000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #53: Expected 5300000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 54,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000000236fb6d5ad1f43"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #54: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 54,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.54
+      },
+      "blockchainData": {
+        "expectedValue": 5400000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #54: Expected 5400000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 55,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000006abe1f9b67e114"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #55: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 55,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.55
+      },
+      "blockchainData": {
+        "expectedValue": 5500000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #55: Expected 5500000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 56,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000009d18b63ac4ffdf"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #56: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 56,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.56
+      },
+      "blockchainData": {
+        "expectedValue": 5600000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #56: Expected 5600000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 57,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000001eb25c90795d61c"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #57: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 57,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.57
+      },
+      "blockchainData": {
+        "expectedValue": 5700000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #57: Expected 5700000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 58,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000002c675b852189a21"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #58: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 58,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.58
+      },
+      "blockchainData": {
+        "expectedValue": 5800000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #58: Expected 5800000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 59,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000007496cbb87cab44f"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #59: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 59,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.59
+      },
+      "blockchainData": {
+        "expectedValue": 5900000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #59: Expected 5900000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 60,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000000fc07a1825367bbe"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #60: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 60,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.6
+      },
+      "blockchainData": {
+        "expectedValue": 6000000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #60: Expected 6000000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 61,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000013c96a3742f64906"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #61: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 61,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.61
+      },
+      "blockchainData": {
+        "expectedValue": 6100000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #61: Expected 6100000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 62,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000363d541eb611abee"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #62: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 62,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.62
+      },
+      "blockchainData": {
+        "expectedValue": 6200000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #62: Expected 6200000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 63,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000007cce5efdaccf6808"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #63: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 63,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.63
+      },
+      "blockchainData": {
+        "expectedValue": 6300000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #63: Expected 6300000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 64,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000000f7051f27b09112d4"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #64: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 64,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.64
+      },
+      "blockchainData": {
+        "expectedValue": 6400000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #64: Expected 6400000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 65,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000001a838b13505b26867"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #65: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 65,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.65
+      },
+      "blockchainData": {
+        "expectedValue": 6500000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #65: Expected 6500000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 66,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000000000002832ed74f2b5e35ee"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #66: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 66,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 6.6
+      },
+      "blockchainData": {
+        "expectedValue": 6600000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #66: Expected 6600000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 67,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000730fc235c1942c1ae"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #67: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 67,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 6.7
+      },
+      "blockchainData": {
+        "expectedValue": 6700000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #67: Expected 6700000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 68,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000000bebb3940cd0fc1491"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #68: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 68,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 6.8
+      },
+      "blockchainData": {
+        "expectedValue": 6800000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #68: Expected 6800000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 69,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000101d83275fb2bc7e0c"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #69: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 69,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 6.9
+      },
+      "blockchainData": {
+        "expectedValue": 6900000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #69: Expected 6900000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 70,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000000349b84b6431a6c4ef1"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #70: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 70,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.7
+      },
+      "blockchainData": {
+        "expectedValue": 7000000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #70: Expected 7000000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 71,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 7.1
+      },
+      "blockchainData": {
+        "expectedValue": 7100000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #71: Expected 7100000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 72,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 7.2
+      },
+      "blockchainData": {
+        "expectedValue": 7200000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #72: Expected 7200000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 73,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 7.3
+      },
+      "blockchainData": {
+        "expectedValue": 7300000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #73: Expected 7300000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 74,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 7.4
+      },
+      "blockchainData": {
+        "expectedValue": 7400000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #74: Expected 7400000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 75,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000000004c5ce114686a1336e07"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #75: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 75,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.75
+      },
+      "blockchainData": {
+        "expectedValue": 7500000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #75: Expected 7500000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 76,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 7.6
+      },
+      "blockchainData": {
+        "expectedValue": 7600000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #76: Expected 7600000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 77,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 7.7
+      },
+      "blockchainData": {
+        "expectedValue": 7700000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #77: Expected 7700000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 78,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 7.8
+      },
+      "blockchainData": {
+        "expectedValue": 7800000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #78: Expected 7800000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 79,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 7.9
+      },
+      "blockchainData": {
+        "expectedValue": 7900000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #79: Expected 7900000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 80,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000000ea1a5c66dcc11b5ad180"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #80: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 80,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.8
+      },
+      "blockchainData": {
+        "expectedValue": 8000000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #80: Expected 8000000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 81,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 8.1
+      },
+      "blockchainData": {
+        "expectedValue": 8100000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #81: Expected 8100000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 82,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 8.2
+      },
+      "blockchainData": {
+        "expectedValue": 8200000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #82: Expected 8200000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 83,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 8.3
+      },
+      "blockchainData": {
+        "expectedValue": 8300000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #83: Expected 8300000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 84,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 8.4
+      },
+      "blockchainData": {
+        "expectedValue": 8400000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #84: Expected 8400000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 85,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000000000011720c4f018d51b8cebba8"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #85: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 85,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.85
+      },
+      "blockchainData": {
+        "expectedValue": 8500000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #85: Expected 8500000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 86,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 8.6
+      },
+      "blockchainData": {
+        "expectedValue": 8600000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #86: Expected 8600000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 87,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 8.7
+      },
+      "blockchainData": {
+        "expectedValue": 8700000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #87: Expected 8700000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 88,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 8.8
+      },
+      "blockchainData": {
+        "expectedValue": 8800000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #88: Expected 8800000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 89,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 8.9
+      },
+      "blockchainData": {
+        "expectedValue": 8900000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #89: Expected 8900000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 90,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000002ce00bb2136a445c71e85bf"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #90: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 90,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.9
+      },
+      "blockchainData": {
+        "expectedValue": 9000000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #90: Expected 9000000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 91,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 9.1
+      },
+      "blockchainData": {
+        "expectedValue": 9100000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #91: Expected 9100000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 92,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 9.2
+      },
+      "blockchainData": {
+        "expectedValue": 9200000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #92: Expected 9200000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 93,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 9.3
+      },
+      "blockchainData": {
+        "expectedValue": 9300000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #93: Expected 9300000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 94,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 9.4
+      },
+      "blockchainData": {
+        "expectedValue": 9400000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #94: Expected 9400000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 95,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000000000527a792b183c7f64a0e8b1f4"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #95: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 95,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 0.95
+      },
+      "blockchainData": {
+        "expectedValue": 9500000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #95: Expected 9500000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 96,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 9.6
+      },
+      "blockchainData": {
+        "expectedValue": 9600000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #96: Expected 9600000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 97,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 9.7
+      },
+      "blockchainData": {
+        "expectedValue": 9700000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #97: Expected 9700000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 98,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 9.8
+      },
+      "blockchainData": {
+        "expectedValue": 9800000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #98: Expected 9800000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 99,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 9.9
+      },
+      "blockchainData": {
+        "expectedValue": 9900000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #99: Expected 9900000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 100,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000000af55fc59c335c8ec67ed24826"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #100: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 100,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 1
+      },
+      "blockchainData": {
+        "expectedValue": 10000000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #100: Expected 10000000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 101,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 10.1
+      },
+      "blockchainData": {
+        "expectedValue": 10100000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #101: Expected 10100000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 102,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 10.2
+      },
+      "blockchainData": {
+        "expectedValue": 10200000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #102: Expected 10200000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 103,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 10.3
+      },
+      "blockchainData": {
+        "expectedValue": 10300000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #103: Expected 10300000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 104,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 10.4
+      },
+      "blockchainData": {
+        "expectedValue": 10400000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #104: Expected 10400000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 105,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000000000016f14fc2054cd87ee6396b33df3"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #105: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 105,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 1.05
+      },
+      "blockchainData": {
+        "expectedValue": 10500000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #105: Expected 10500000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 106,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 10.6
+      },
+      "blockchainData": {
+        "expectedValue": 10600000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #106: Expected 10600000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 107,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 10.7
+      },
+      "blockchainData": {
+        "expectedValue": 10700000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #107: Expected 10700000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 108,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 10.8
+      },
+      "blockchainData": {
+        "expectedValue": 10800000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #108: Expected 10800000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 109,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 10.9
+      },
+      "blockchainData": {
+        "expectedValue": 10900000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #109: Expected 10900000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 110,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "00000000000000000000000000000000000035c0d7234df7deb0f20cf7062444"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #110: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 110,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 1.1
+      },
+      "blockchainData": {
+        "expectedValue": 11000000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #110: Expected 11000000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 111,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 11.1
+      },
+      "blockchainData": {
+        "expectedValue": 11100000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #111: Expected 11100000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 112,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 11.2
+      },
+      "blockchainData": {
+        "expectedValue": 11200000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #112: Expected 11200000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 113,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 11.3
+      },
+      "blockchainData": {
+        "expectedValue": 11300000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #113: Expected 11300000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 114,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 11.4
+      },
+      "blockchainData": {
+        "expectedValue": 11400000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #114: Expected 11400000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 115,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000060f4d11574f5deee49961d9609ac6"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #115: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 115,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 1.15
+      },
+      "blockchainData": {
+        "expectedValue": 11500000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #115: Expected 11500000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 116,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 11.6
+      },
+      "blockchainData": {
+        "expectedValue": 11600000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #116: Expected 11600000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 117,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 11.7
+      },
+      "blockchainData": {
+        "expectedValue": 11700000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #117: Expected 11700000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 118,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 11.8
+      },
+      "blockchainData": {
+        "expectedValue": 11800000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #118: Expected 11800000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 119,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 11.9
+      },
+      "blockchainData": {
+        "expectedValue": 11900000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #119: Expected 11900000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 120,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "0000000000000000000000000000000000b10f22572c497a836ea187f2e1fc23"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #120: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 120,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 1.2
+      },
+      "blockchainData": {
+        "expectedValue": 12000000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #120: Expected 12000000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 121,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 12.1
+      },
+      "blockchainData": {
+        "expectedValue": 12100000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #121: Expected 12100000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 122,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 12.2
+      },
+      "blockchainData": {
+        "expectedValue": 12200000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #122: Expected 12200000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 123,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 12.3
+      },
+      "blockchainData": {
+        "expectedValue": 12300000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #123: Expected 12300000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 124,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 12.4
+      },
+      "blockchainData": {
+        "expectedValue": 12400000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #124: Expected 12400000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 125,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000001c533b6bb7f0804e09960225e44877ac"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #125: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 125,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 12.5
+      },
+      "blockchainData": {
+        "expectedValue": 12500000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #125: Expected 12500000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 126,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 12.6
+      },
+      "blockchainData": {
+        "expectedValue": 12600000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #126: Expected 12600000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 127,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 12.7
+      },
+      "blockchainData": {
+        "expectedValue": 12700000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #127: Expected 12700000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 128,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 12.8
+      },
+      "blockchainData": {
+        "expectedValue": 12800000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #128: Expected 12800000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 129,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 12.9
+      },
+      "blockchainData": {
+        "expectedValue": 12900000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #129: Expected 12900000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 130,
+      "type": "status_mismatch",
+      "mainData": {
+        "status": "solved",
+        "privateKey": "000000000000000000000000000000033e7665705359f04f28b88cf897c603c9"
+      },
+      "blockchainData": {
+        "status": "unsolved"
+      },
+      "description": "Status mismatch for puzzle #130: Main says solved, blockchain says unsolved"
+    },
+    {
+      "puzzleNum": 130,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 13
+      },
+      "blockchainData": {
+        "expectedValue": 13000000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #130: Expected 13000000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 131,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 13.1
+      },
+      "blockchainData": {
+        "expectedValue": 13100000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #131: Expected 13100000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 132,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 13.2
+      },
+      "blockchainData": {
+        "expectedValue": 13200000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #132: Expected 13200000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 133,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 13.3
+      },
+      "blockchainData": {
+        "expectedValue": 13300000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #133: Expected 13300000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 134,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 13.4
+      },
+      "blockchainData": {
+        "expectedValue": 13400000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #134: Expected 13400000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 135,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 13.5
+      },
+      "blockchainData": {
+        "expectedValue": 13500000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #135: Expected 13500000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 136,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 13.6
+      },
+      "blockchainData": {
+        "expectedValue": 13600000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #136: Expected 13600000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 137,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 13.7
+      },
+      "blockchainData": {
+        "expectedValue": 13700000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #137: Expected 13700000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 138,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 13.8
+      },
+      "blockchainData": {
+        "expectedValue": 13800000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #138: Expected 13800000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 139,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 13.9
+      },
+      "blockchainData": {
+        "expectedValue": 13900000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #139: Expected 13900000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 140,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 14
+      },
+      "blockchainData": {
+        "expectedValue": 14000000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #140: Expected 14000000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 141,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 14.1
+      },
+      "blockchainData": {
+        "expectedValue": 14100000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #141: Expected 14100000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 142,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 14.2
+      },
+      "blockchainData": {
+        "expectedValue": 14200000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #142: Expected 14200000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 143,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 14.3
+      },
+      "blockchainData": {
+        "expectedValue": 14300000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #143: Expected 14300000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 144,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 14.4
+      },
+      "blockchainData": {
+        "expectedValue": 14400000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #144: Expected 14400000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 145,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 14.5
+      },
+      "blockchainData": {
+        "expectedValue": 14500000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #145: Expected 14500000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 146,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 14.6
+      },
+      "blockchainData": {
+        "expectedValue": 14600000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #146: Expected 14600000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 147,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 14.7
+      },
+      "blockchainData": {
+        "expectedValue": 14700000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #147: Expected 14700000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 148,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 14.8
+      },
+      "blockchainData": {
+        "expectedValue": 14800000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #148: Expected 14800000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 149,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 14.9
+      },
+      "blockchainData": {
+        "expectedValue": 14900000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #149: Expected 14900000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 150,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 15
+      },
+      "blockchainData": {
+        "expectedValue": 15000000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #150: Expected 15000000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 151,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 15.1
+      },
+      "blockchainData": {
+        "expectedValue": 15100000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #151: Expected 15100000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 152,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 15.2
+      },
+      "blockchainData": {
+        "expectedValue": 15200000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #152: Expected 15200000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 153,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 15.3
+      },
+      "blockchainData": {
+        "expectedValue": 15300000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #153: Expected 15300000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 154,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 15.4
+      },
+      "blockchainData": {
+        "expectedValue": 15400000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #154: Expected 15400000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 155,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 15.5
+      },
+      "blockchainData": {
+        "expectedValue": 15500000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #155: Expected 15500000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 156,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 15.6
+      },
+      "blockchainData": {
+        "expectedValue": 15600000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #156: Expected 15600000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 157,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 15.7
+      },
+      "blockchainData": {
+        "expectedValue": 15700000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #157: Expected 15700000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 158,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 15.8
+      },
+      "blockchainData": {
+        "expectedValue": 15800000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #158: Expected 15800000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 159,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 15.9
+      },
+      "blockchainData": {
+        "expectedValue": 15900000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #159: Expected 15900000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 160,
+      "type": "balance_mismatch",
+      "mainData": {
+        "btcValue": 16
+      },
+      "blockchainData": {
+        "expectedValue": 16000000,
+        "actualBalance": 0
+      },
+      "description": "Balance discrepancy for puzzle #160: Expected 16000000 satoshis, found 0"
+    },
+    {
+      "puzzleNum": 161,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 161,
+        "address": "1JkqBQcC4tHcb1JfdCH6nrWYwTPGznHANh",
+        "expectedValue": 16100000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #161 (1JkqBQcC4tHcb1JfdCH6nrWYwTPGznHANh) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 162,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 162,
+        "address": "17DTUTXUcUYEgrr5GhivxYei4Lrs1xMnS2",
+        "expectedValue": 16200000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #162 (17DTUTXUcUYEgrr5GhivxYei4Lrs1xMnS2) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 163,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 163,
+        "address": "1H6e7SLxv6ZUbuAaZpeUdVNfh3cKBWJRmx",
+        "expectedValue": 16300000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #163 (1H6e7SLxv6ZUbuAaZpeUdVNfh3cKBWJRmx) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 164,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 164,
+        "address": "1LjQKurNtEDgMdqeCoWRFhHp1FPnLU77Q4",
+        "expectedValue": 16400000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #164 (1LjQKurNtEDgMdqeCoWRFhHp1FPnLU77Q4) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 165,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 165,
+        "address": "1F7ZjibYug9bLW3YvkkwBZLrhfLtNjgYrX",
+        "expectedValue": 16500000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #165 (1F7ZjibYug9bLW3YvkkwBZLrhfLtNjgYrX) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 166,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 166,
+        "address": "12BtvPaamiBCpXmoDrsCxAa1b6hMRnASZ4",
+        "expectedValue": 16600000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #166 (12BtvPaamiBCpXmoDrsCxAa1b6hMRnASZ4) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 167,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 167,
+        "address": "1AvLwGpkwTZH4qiwy1L4v6TuWXLMNrATN5",
+        "expectedValue": 16700000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #167 (1AvLwGpkwTZH4qiwy1L4v6TuWXLMNrATN5) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 168,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 168,
+        "address": "1PojqbbzJHnn1X2mv6DCECNLUaD2nMssDp",
+        "expectedValue": 16800000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #168 (1PojqbbzJHnn1X2mv6DCECNLUaD2nMssDp) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 169,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 169,
+        "address": "1G3uazv67BcKRmPFvgvX4ijBTa2898cvCm",
+        "expectedValue": 16900000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #169 (1G3uazv67BcKRmPFvgvX4ijBTa2898cvCm) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 170,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 170,
+        "address": "1EW9W5sGdxVDxAtjRbCjgkZNtPH8ZzikeP",
+        "expectedValue": 17000000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #170 (1EW9W5sGdxVDxAtjRbCjgkZNtPH8ZzikeP) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 171,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 171,
+        "address": "17zzMMnj5h8StLhnrXpw8iBP21uujNC4Ap",
+        "expectedValue": 17100000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #171 (17zzMMnj5h8StLhnrXpw8iBP21uujNC4Ap) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 172,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 172,
+        "address": "15LJKhwQJ7dYMBZX1mktskZqxX1aUCibkr",
+        "expectedValue": 17200000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #172 (15LJKhwQJ7dYMBZX1mktskZqxX1aUCibkr) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 173,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 173,
+        "address": "1Mkodin3C3drVaV9JNk1o3i4n4gVGe9GVx",
+        "expectedValue": 17300000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #173 (1Mkodin3C3drVaV9JNk1o3i4n4gVGe9GVx) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 174,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 174,
+        "address": "1C6dHU1gQtVUXZmeXQuQc3EgDJbiLbxFZJ",
+        "expectedValue": 17400000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #174 (1C6dHU1gQtVUXZmeXQuQc3EgDJbiLbxFZJ) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 175,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 175,
+        "address": "1DxZJy7AkqLVAQ5rtSUKfrR3yPE5u5ygk6",
+        "expectedValue": 17500000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #175 (1DxZJy7AkqLVAQ5rtSUKfrR3yPE5u5ygk6) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 176,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 176,
+        "address": "1NcytLwdqJa8DsQPa9NwkxJTQcx1rZy85A",
+        "expectedValue": 17600000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #176 (1NcytLwdqJa8DsQPa9NwkxJTQcx1rZy85A) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 177,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 177,
+        "address": "163vG9mKmAsrvmq42MBDPjf9axZyEgBc9R",
+        "expectedValue": 17700000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #177 (163vG9mKmAsrvmq42MBDPjf9axZyEgBc9R) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 178,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 178,
+        "address": "12ATwA5VvoPDinSymcQpCAXPLApAVLN24z",
+        "expectedValue": 17800000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #178 (12ATwA5VvoPDinSymcQpCAXPLApAVLN24z) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 179,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 179,
+        "address": "12fXbBE7kTfqYk8dYyU9bw7XfKVwEqXnzg",
+        "expectedValue": 17900000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #179 (12fXbBE7kTfqYk8dYyU9bw7XfKVwEqXnzg) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 180,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 180,
+        "address": "1EkYsB1C7deWxiVUULeZpr42AdYWhv4PEX",
+        "expectedValue": 18000000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #180 (1EkYsB1C7deWxiVUULeZpr42AdYWhv4PEX) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 181,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 181,
+        "address": "1MPQyhXBT2FpUMCiv5YX3yacKvmc9P5x6S",
+        "expectedValue": 18100000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #181 (1MPQyhXBT2FpUMCiv5YX3yacKvmc9P5x6S) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 182,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 182,
+        "address": "1GZyxmpgtRJNaW1zEhPAa81xZDEJSdwbbZ",
+        "expectedValue": 18200000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #182 (1GZyxmpgtRJNaW1zEhPAa81xZDEJSdwbbZ) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 183,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 183,
+        "address": "12E2HWQVHzuGKAQVvPUkHWwibAJfnmcHW1",
+        "expectedValue": 18300000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #183 (12E2HWQVHzuGKAQVvPUkHWwibAJfnmcHW1) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 184,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 184,
+        "address": "14J1fXY2E3fbxjp1zpfqRhk5BNQ4pb97Rs",
+        "expectedValue": 18400000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #184 (14J1fXY2E3fbxjp1zpfqRhk5BNQ4pb97Rs) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 185,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 185,
+        "address": "1HqHHuFzZhtTtyGbAWCS49qGnCBSEhBSFT",
+        "expectedValue": 18500000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #185 (1HqHHuFzZhtTtyGbAWCS49qGnCBSEhBSFT) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 186,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 186,
+        "address": "1BJXBDt4e1uaorXPototucUGNRme57nAqt",
+        "expectedValue": 18600000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #186 (1BJXBDt4e1uaorXPototucUGNRme57nAqt) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 187,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 187,
+        "address": "19ct7Egfi5j6jSefj8X4d5eXJQUmyhtXjC",
+        "expectedValue": 18700000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #187 (19ct7Egfi5j6jSefj8X4d5eXJQUmyhtXjC) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 188,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 188,
+        "address": "1DyWSY1dA3wyjo4eMuQCPfrm3dV96xDDSU",
+        "expectedValue": 18800000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #188 (1DyWSY1dA3wyjo4eMuQCPfrm3dV96xDDSU) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 189,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 189,
+        "address": "1PiLrDyeXtncnsvcVAGGcNnpzQVRCG3fwS",
+        "expectedValue": 18900000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #189 (1PiLrDyeXtncnsvcVAGGcNnpzQVRCG3fwS) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 190,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 190,
+        "address": "1HUoYzoEn2a4WxKvnYYbnR9GKrVqAfq7oY",
+        "expectedValue": 19000000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #190 (1HUoYzoEn2a4WxKvnYYbnR9GKrVqAfq7oY) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 191,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 191,
+        "address": "19vnME8b28SzJDuEFNShAG5JCR63V1zzV",
+        "expectedValue": 19100000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #191 (19vnME8b28SzJDuEFNShAG5JCR63V1zzV) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 192,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 192,
+        "address": "1GWTEv76C8cusq4h5gV3rLjeFhBkGBHSKg",
+        "expectedValue": 19200000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #192 (1GWTEv76C8cusq4h5gV3rLjeFhBkGBHSKg) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 193,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 193,
+        "address": "1NHh2fQDm7KyBs8HRFkVtHgMzkmufk6mNW",
+        "expectedValue": 19300000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #193 (1NHh2fQDm7KyBs8HRFkVtHgMzkmufk6mNW) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 194,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 194,
+        "address": "1oW8VFRNVKhbzzq8NWNutDYDzv1CzAHAj",
+        "expectedValue": 19400000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #194 (1oW8VFRNVKhbzzq8NWNutDYDzv1CzAHAj) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 195,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 195,
+        "address": "16q15tpaHQFUENUmRPLgiidCMWLcDpVEgs",
+        "expectedValue": 19500000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #195 (16q15tpaHQFUENUmRPLgiidCMWLcDpVEgs) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 196,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 196,
+        "address": "1AH4d8Bss6eFyugZaN2qPXMBH69T946dSK",
+        "expectedValue": 19600000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #196 (1AH4d8Bss6eFyugZaN2qPXMBH69T946dSK) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 197,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 197,
+        "address": "12gDPuHvZBh6FSjyhHhyDDkM38Y2wyDGQt",
+        "expectedValue": 19700000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #197 (12gDPuHvZBh6FSjyhHhyDDkM38Y2wyDGQt) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 198,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 198,
+        "address": "12jFRwZFUrxUTtuyVzw9FNJsJa7mjBgfca",
+        "expectedValue": 19800000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #198 (12jFRwZFUrxUTtuyVzw9FNJsJa7mjBgfca) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 199,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 199,
+        "address": "1BNkFNU3eJz8jDfTkTwe7XmF18BfQwfqW7",
+        "expectedValue": 19900000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #199 (1BNkFNU3eJz8jDfTkTwe7XmF18BfQwfqW7) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 200,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 200,
+        "address": "1DEDEKJVEmXvEqwg3wbq8c1ZNobo4tNw4h",
+        "expectedValue": 20000000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #200 (1DEDEKJVEmXvEqwg3wbq8c1ZNobo4tNw4h) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 201,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 201,
+        "address": "1DA2RexqNkbVhzfkmQDHRMfKrdesgyMMdQ",
+        "expectedValue": 20100000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #201 (1DA2RexqNkbVhzfkmQDHRMfKrdesgyMMdQ) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 202,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 202,
+        "address": "19Ho5YB6y8qRCdUMxWpXqrm8N4AKAq7ZWS",
+        "expectedValue": 20200000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #202 (19Ho5YB6y8qRCdUMxWpXqrm8N4AKAq7ZWS) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 203,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 203,
+        "address": "1DVWn7PuRBmsdTBKiboBdSREHdAtSoN6BB",
+        "expectedValue": 20300000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #203 (1DVWn7PuRBmsdTBKiboBdSREHdAtSoN6BB) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 204,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 204,
+        "address": "14CMU6qvv55Y7xJdVw64ey5yfUP4BZAjct",
+        "expectedValue": 20400000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #204 (14CMU6qvv55Y7xJdVw64ey5yfUP4BZAjct) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 205,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 205,
+        "address": "1DHL5NuXPjwDsNnXyzAgZTAMM4aYUc1zFW",
+        "expectedValue": 20500000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #205 (1DHL5NuXPjwDsNnXyzAgZTAMM4aYUc1zFW) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 206,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 206,
+        "address": "1UwsEPMF1NZTWJAuymsLVJpqetBZ3Q9sJ",
+        "expectedValue": 20600000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #206 (1UwsEPMF1NZTWJAuymsLVJpqetBZ3Q9sJ) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 207,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 207,
+        "address": "16aELF1f75o464ZhtAZUwbc4ctFQZxS8qi",
+        "expectedValue": 20700000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #207 (16aELF1f75o464ZhtAZUwbc4ctFQZxS8qi) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 208,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 208,
+        "address": "15TJ3wPvdviupvKQFm8hLeXSzeMSq7LSJ2",
+        "expectedValue": 20800000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #208 (15TJ3wPvdviupvKQFm8hLeXSzeMSq7LSJ2) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 209,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 209,
+        "address": "1JgrGoQbvJS7UnX6j4myiCxo6Q3gyo5Ujk",
+        "expectedValue": 20900000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #209 (1JgrGoQbvJS7UnX6j4myiCxo6Q3gyo5Ujk) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 210,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 210,
+        "address": "14Xm5DjBUQTJCzeGhyrhVsxkK8p35srk1S",
+        "expectedValue": 21000000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #210 (14Xm5DjBUQTJCzeGhyrhVsxkK8p35srk1S) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 211,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 211,
+        "address": "19yhSoza8oK3ioCSydMuAGJs4Mm3FwCTht",
+        "expectedValue": 21100000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #211 (19yhSoza8oK3ioCSydMuAGJs4Mm3FwCTht) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 212,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 212,
+        "address": "1JXw9i8dEZGH29mUiuKjWXK9L27r2TerLQ",
+        "expectedValue": 21200000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #212 (1JXw9i8dEZGH29mUiuKjWXK9L27r2TerLQ) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 213,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 213,
+        "address": "1CNNth43uiVypxHmZLC8hWZsb7UiP7wSkY",
+        "expectedValue": 21300000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #213 (1CNNth43uiVypxHmZLC8hWZsb7UiP7wSkY) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 214,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 214,
+        "address": "16ocVeZDpqcvyMvzAH1r2LR75uEzRhkyV2",
+        "expectedValue": 21400000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #214 (16ocVeZDpqcvyMvzAH1r2LR75uEzRhkyV2) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 215,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 215,
+        "address": "15x3tRVyn9SRaxfbFUzqETmCJiz46Vs247",
+        "expectedValue": 21500000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #215 (15x3tRVyn9SRaxfbFUzqETmCJiz46Vs247) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 216,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 216,
+        "address": "197K7MdYhnN88gcJouJRxMiSAHHfWuPrXC",
+        "expectedValue": 21600000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #216 (197K7MdYhnN88gcJouJRxMiSAHHfWuPrXC) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 217,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 217,
+        "address": "1MDsNYfC4LErgwUDqfQ5BgFJqv5bs4Frkn",
+        "expectedValue": 21700000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #217 (1MDsNYfC4LErgwUDqfQ5BgFJqv5bs4Frkn) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 218,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 218,
+        "address": "1BDTXmiyyzq9i79RGGTW7cjmYJbxKoV27e",
+        "expectedValue": 21800000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #218 (1BDTXmiyyzq9i79RGGTW7cjmYJbxKoV27e) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 219,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 219,
+        "address": "1EiJ59LPWDezXwfAGFTcoEKdNhvRTriBXy",
+        "expectedValue": 21900000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #219 (1EiJ59LPWDezXwfAGFTcoEKdNhvRTriBXy) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 220,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 220,
+        "address": "1rirV4Y2NxGwKNQNojJhz61jEctni8fvb",
+        "expectedValue": 22000000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #220 (1rirV4Y2NxGwKNQNojJhz61jEctni8fvb) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 221,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 221,
+        "address": "1NxgWntAdMugSNFHEXYizYwk3UjxKPxcDF",
+        "expectedValue": 22100000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #221 (1NxgWntAdMugSNFHEXYizYwk3UjxKPxcDF) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 222,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 222,
+        "address": "17A75vEkPPVeY9MMMXUY9M2JUHbbNyVAWC",
+        "expectedValue": 22200000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #222 (17A75vEkPPVeY9MMMXUY9M2JUHbbNyVAWC) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 223,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 223,
+        "address": "1NUVBXgX35Uax4fpziV7VGMJyji3mUzZbt",
+        "expectedValue": 22300000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #223 (1NUVBXgX35Uax4fpziV7VGMJyji3mUzZbt) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 224,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 224,
+        "address": "1F6yxcbDzjumeN77DiABMXzPcvtAdnaoPF",
+        "expectedValue": 22400000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #224 (1F6yxcbDzjumeN77DiABMXzPcvtAdnaoPF) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 225,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 225,
+        "address": "16YvGEYhAwjf2duwvH8jbFMfVCnY6XiQTq",
+        "expectedValue": 22500000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #225 (16YvGEYhAwjf2duwvH8jbFMfVCnY6XiQTq) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 226,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 226,
+        "address": "1HtbZg9mPjYcMDMDNyXaFjHX5e7ZPUwWAp",
+        "expectedValue": 22600000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #226 (1HtbZg9mPjYcMDMDNyXaFjHX5e7ZPUwWAp) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 227,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 227,
+        "address": "15a9nXpjnQzw2o5kmvGyKzv7anZkYFHwdK",
+        "expectedValue": 22700000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #227 (15a9nXpjnQzw2o5kmvGyKzv7anZkYFHwdK) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 228,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 228,
+        "address": "18zsQK8ezT32qCqgLJQMkhqyKNwpCP3JU3",
+        "expectedValue": 22800000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #228 (18zsQK8ezT32qCqgLJQMkhqyKNwpCP3JU3) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 229,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 229,
+        "address": "1AaBhpTnfCin9nCrai2msXzCHoVmwkAe2N",
+        "expectedValue": 22900000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #229 (1AaBhpTnfCin9nCrai2msXzCHoVmwkAe2N) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 230,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 230,
+        "address": "13Jtm1mm33Uke7PbmTBYGNZGU7rXUsVs3e",
+        "expectedValue": 23000000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #230 (13Jtm1mm33Uke7PbmTBYGNZGU7rXUsVs3e) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 231,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 231,
+        "address": "18aBXRctVrWN9naDGhKrLdZViNfLJfCdbF",
+        "expectedValue": 23100000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #231 (18aBXRctVrWN9naDGhKrLdZViNfLJfCdbF) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 232,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 232,
+        "address": "1MEEjd99pkEyCdiqVSCa8Jqjaun7fsEXaG",
+        "expectedValue": 23200000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #232 (1MEEjd99pkEyCdiqVSCa8Jqjaun7fsEXaG) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 233,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 233,
+        "address": "1NnefTEeKQQAts37cQHzVx8oPrUu8LWyUK",
+        "expectedValue": 23300000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #233 (1NnefTEeKQQAts37cQHzVx8oPrUu8LWyUK) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 234,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 234,
+        "address": "1FYbLcutmRbvu4yUeLmC4TES2Q3ChhXYY",
+        "expectedValue": 23400000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #234 (1FYbLcutmRbvu4yUeLmC4TES2Q3ChhXYY) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 235,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 235,
+        "address": "1Pp61TfkztZ9ckpdeUVCzbyA7vMqXAVsdV",
+        "expectedValue": 23500000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #235 (1Pp61TfkztZ9ckpdeUVCzbyA7vMqXAVsdV) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 236,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 236,
+        "address": "1PytbQzRaf9eTpGax3c6ofKwtbxaLLSNy1",
+        "expectedValue": 23600000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #236 (1PytbQzRaf9eTpGax3c6ofKwtbxaLLSNy1) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 237,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 237,
+        "address": "194bRtNQVRq4xi26UJZYTHexvLXijpzp3e",
+        "expectedValue": 23700000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #237 (194bRtNQVRq4xi26UJZYTHexvLXijpzp3e) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 238,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 238,
+        "address": "1DxBvzRMdvzop21DhnDJv4xJDYFGVtu7KZ",
+        "expectedValue": 23800000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #238 (1DxBvzRMdvzop21DhnDJv4xJDYFGVtu7KZ) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 239,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 239,
+        "address": "1QLHLvM6XKwygyWqo2cCPbfbf6woZzGEKH",
+        "expectedValue": 23900000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #239 (1QLHLvM6XKwygyWqo2cCPbfbf6woZzGEKH) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 240,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 240,
+        "address": "1C8Hw6T5jypz92cNFr9Lkx4Xmr4DtP7zGA",
+        "expectedValue": 24000000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #240 (1C8Hw6T5jypz92cNFr9Lkx4Xmr4DtP7zGA) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 241,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 241,
+        "address": "1L7ZNx5gFPvdVPfdgFBnEUgA64woQwopqr",
+        "expectedValue": 24100000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #241 (1L7ZNx5gFPvdVPfdgFBnEUgA64woQwopqr) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 242,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 242,
+        "address": "1EMhTbC4Kp8DYBk5zoLsTqZ2YakhiTgQYh",
+        "expectedValue": 24200000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #242 (1EMhTbC4Kp8DYBk5zoLsTqZ2YakhiTgQYh) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 243,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 243,
+        "address": "19CqmBBJ3H8FjxSSeSjv2Kn1cVQFXMY6AM",
+        "expectedValue": 24300000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #243 (19CqmBBJ3H8FjxSSeSjv2Kn1cVQFXMY6AM) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 244,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 244,
+        "address": "1KMHDrCGho2QuK59UNvfjuiPdDZSgRbneC",
+        "expectedValue": 24400000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #244 (1KMHDrCGho2QuK59UNvfjuiPdDZSgRbneC) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 245,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 245,
+        "address": "1HzpmnHxpu4tCJ23ZS9TfWCoX8mXfpdHiq",
+        "expectedValue": 24500000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #245 (1HzpmnHxpu4tCJ23ZS9TfWCoX8mXfpdHiq) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 246,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 246,
+        "address": "1LrrNP28PYg1N1z5Uo1gR8cmoPc8h4orBZ",
+        "expectedValue": 24600000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #246 (1LrrNP28PYg1N1z5Uo1gR8cmoPc8h4orBZ) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 247,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 247,
+        "address": "14D2d3WnHThUxyPhGoj2AabBTxpZcoHy3t",
+        "expectedValue": 24700000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #247 (14D2d3WnHThUxyPhGoj2AabBTxpZcoHy3t) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 248,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 248,
+        "address": "18oqrdP6uBKsn57gvmWzLuKMAY4ShapiAU",
+        "expectedValue": 24800000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #248 (18oqrdP6uBKsn57gvmWzLuKMAY4ShapiAU) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 249,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 249,
+        "address": "1Bun4VzuBJ7SUoQn97dinVfDyWAS336Ldg",
+        "expectedValue": 24900000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #249 (1Bun4VzuBJ7SUoQn97dinVfDyWAS336Ldg) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 250,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 250,
+        "address": "1Ruu3JwvGeSmhQV9GzWAnyLCz6g3evmTY",
+        "expectedValue": 25000000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #250 (1Ruu3JwvGeSmhQV9GzWAnyLCz6g3evmTY) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 251,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 251,
+        "address": "1M3u4q5Q35qtQPmDHeubVbk7APYi3VVoBX",
+        "expectedValue": 25100000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #251 (1M3u4q5Q35qtQPmDHeubVbk7APYi3VVoBX) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 252,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 252,
+        "address": "1CaTxB3YwmXZkDnTK4rRvq61SRqs48xmui",
+        "expectedValue": 25200000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #252 (1CaTxB3YwmXZkDnTK4rRvq61SRqs48xmui) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 253,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 253,
+        "address": "1JqRqUPHHcQu2yrr8JZzxSYDx2jbZxEqFj",
+        "expectedValue": 25300000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #253 (1JqRqUPHHcQu2yrr8JZzxSYDx2jbZxEqFj) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 254,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 254,
+        "address": "1NKkjFvXmovmjwgUujw655n3BbEvnncyza",
+        "expectedValue": 25400000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #254 (1NKkjFvXmovmjwgUujw655n3BbEvnncyza) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 255,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 255,
+        "address": "17PEUvQmgqPkkvRkMowoR1wRDXYzre4b9Z",
+        "expectedValue": 25500000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #255 (17PEUvQmgqPkkvRkMowoR1wRDXYzre4b9Z) exists in blockchain data but not in main dataset"
+    },
+    {
+      "puzzleNum": 256,
+      "type": "missing_in_main",
+      "blockchainData": {
+        "puzzleNum": 256,
+        "address": "1FMcotmnqqE5M2x9DDX3VfPAPuBWArGisa",
+        "expectedValue": 25600000,
+        "actualBalance": 0,
+        "txCount": 0,
+        "status": "unsolved"
+      },
+      "description": "Puzzle #256 (1FMcotmnqqE5M2x9DDX3VfPAPuBWArGisa) exists in blockchain data but not in main dataset"
+    }
+  ],
+  "newSolvedPuzzles": [],
+  "statusChanges": [
+    {
+      "puzzleNum": 1,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH"
+    },
+    {
+      "puzzleNum": 2,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1CUNEBjYrCn2y1SdiUMohaKUi4wpP326Lb"
+    },
+    {
+      "puzzleNum": 3,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "19ZewH8Kk1PDbSNdJ97FP4EiCjTRaZMZQA"
+    },
+    {
+      "puzzleNum": 4,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1EhqbyUMvvs7BfL8goY6qcPbD6YKfPqb7e"
+    },
+    {
+      "puzzleNum": 5,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1E6NuFjCi27W5zoXg8TRdcSRq84zJeBW3k"
+    },
+    {
+      "puzzleNum": 6,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1PitScNLyp2HCygzadCh7FveTnfmpPbfp8"
+    },
+    {
+      "puzzleNum": 7,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1McVt1vMtCC7yn5b9wgX1833yCcLXzueeC"
+    },
+    {
+      "puzzleNum": 8,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1M92tSqNmQLYw33fuBvjmeadirh1ysMBxK"
+    },
+    {
+      "puzzleNum": 9,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1CQFwcjw1dwhtkVWBttNLDtqL7ivBonGPV"
+    },
+    {
+      "puzzleNum": 10,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1LeBZP5QCwwgXRtmVUvTVrraqPUokyLHqe"
+    },
+    {
+      "puzzleNum": 11,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1PgQVLmst3Z314JrQn5TNiys8Hc38TcXJu"
+    },
+    {
+      "puzzleNum": 12,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1DBaumZxUkM4qMQRt2LVWyFJq5kDtSZQot"
+    },
+    {
+      "puzzleNum": 13,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1Pie8JkxBT6MGPz9Nvi3fsPkr2D8q3GBc1"
+    },
+    {
+      "puzzleNum": 14,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1ErZWg5cFCe4Vw5BzgfzB74VNLaXEiEkhk"
+    },
+    {
+      "puzzleNum": 15,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1QCbW9HWnwQWiQqVo5exhAnmfqKRrCRsvW"
+    },
+    {
+      "puzzleNum": 16,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1BDyrQ6WoF8VN3g9SAS1iKZcPzFfnDVieY"
+    },
+    {
+      "puzzleNum": 17,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1HduPEXZRdG26SUT5Yk83mLkPyjnZuJ7Bm"
+    },
+    {
+      "puzzleNum": 18,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1GnNTmTVLZiqQfLbAdp9DVdicEnB5GoERE"
+    },
+    {
+      "puzzleNum": 19,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1NWmZRpHH4XSPwsW6dsS3nrNWfL1yrJj4w"
+    },
+    {
+      "puzzleNum": 20,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1HsMJxNiV7TLxmoF6uJNkydxPFDog4NQum"
+    },
+    {
+      "puzzleNum": 21,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "14oFNXucftsHiUMY8uctg6N487riuyXs4h"
+    },
+    {
+      "puzzleNum": 22,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1CfZWK1QTQE3eS9qn61dQjV89KDjZzfNcv"
+    },
+    {
+      "puzzleNum": 23,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1L2GM8eE7mJWLdo3HZS6su1832NX2txaac"
+    },
+    {
+      "puzzleNum": 24,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1rSnXMr63jdCuegJFuidJqWxUPV7AtUf7"
+    },
+    {
+      "puzzleNum": 25,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "15JhYXn6Mx3oF4Y7PcTAv2wVVAuCFFQNiP"
+    },
+    {
+      "puzzleNum": 26,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1JVnST957hGztonaWK6FougdtjxzHzRMMg"
+    },
+    {
+      "puzzleNum": 27,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "128z5d7nN7PkCuX5qoA4Ys6pmxUYnEy86k"
+    },
+    {
+      "puzzleNum": 28,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "12jbtzBb54r97TCwW3G1gCFoumpckRAPdY"
+    },
+    {
+      "puzzleNum": 29,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "19EEC52krRUK1RkUAEZmQdjTyHT7Gp1TYT"
+    },
+    {
+      "puzzleNum": 30,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1LHtnpd8nU5VHEMkG2TMYYNUjjLc992bps"
+    },
+    {
+      "puzzleNum": 31,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1LhE6sCTuGae42Axu1L1ZB7L96yi9irEBE"
+    },
+    {
+      "puzzleNum": 32,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1FRoHA9xewq7DjrZ1psWJVeTer8gHRqEvR"
+    },
+    {
+      "puzzleNum": 33,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "187swFMjz1G54ycVU56B7jZFHFTNVQFDiu"
+    },
+    {
+      "puzzleNum": 34,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1PWABE7oUahG2AFFQhhvViQovnCr4rEv7Q"
+    },
+    {
+      "puzzleNum": 35,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1PWCx5fovoEaoBowAvF5k91m2Xat9bMgwb"
+    },
+    {
+      "puzzleNum": 36,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1Be2UF9NLfyLFbtm3TCbmuocc9N1Kduci1"
+    },
+    {
+      "puzzleNum": 37,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "14iXhn8bGajVWegZHJ18vJLHhntcpL4dex"
+    },
+    {
+      "puzzleNum": 38,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1HBtApAFA9B2YZw3G2YKSMCtb3dVnjuNe2"
+    },
+    {
+      "puzzleNum": 39,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "122AJhKLEfkFBaGAd84pLp1kfE7xK3GdT8"
+    },
+    {
+      "puzzleNum": 40,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1EeAxcprB2PpCnr34VfZdFrkUWuxyiNEFv"
+    },
+    {
+      "puzzleNum": 41,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1L5sU9qvJeuwQUdt4y1eiLmquFxKjtHr3E"
+    },
+    {
+      "puzzleNum": 42,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1E32GPWgDyeyQac4aJxm9HVoLrrEYPnM4N"
+    },
+    {
+      "puzzleNum": 43,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1PiFuqGpG8yGM5v6rNHWS3TjsG6awgEGA1"
+    },
+    {
+      "puzzleNum": 44,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1CkR2uS7LmFwc3T2jV8C1BhWb5mQaoxedF"
+    },
+    {
+      "puzzleNum": 45,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1NtiLNGegHWE3Mp9g2JPkgx6wUg4TW7bbk"
+    },
+    {
+      "puzzleNum": 46,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1F3JRMWudBaj48EhwcHDdpeuy2jwACNxjP"
+    },
+    {
+      "puzzleNum": 47,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1Pd8VvT49sHKsmqrQiP61RsVwmXCZ6ay7Z"
+    },
+    {
+      "puzzleNum": 48,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1DFYhaB2J9q1LLZJWKTnscPWos9VBqDHzv"
+    },
+    {
+      "puzzleNum": 49,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "12CiUhYVTTH33w3SPUBqcpMoqnApAV4WCF"
+    },
+    {
+      "puzzleNum": 50,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1MEzite4ReNuWaL5Ds17ePKt2dCxWEofwk"
+    },
+    {
+      "puzzleNum": 51,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1NpnQyZ7x24ud82b7WiRNvPm6N8bqGQnaS"
+    },
+    {
+      "puzzleNum": 52,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "15z9c9sVpu6fwNiK7dMAFgMYSK4GqsGZim"
+    },
+    {
+      "puzzleNum": 53,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "15K1YKJMiJ4fpesTVUcByoz334rHmknxmT"
+    },
+    {
+      "puzzleNum": 54,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1KYUv7nSvXx4642TKeuC2SNdTk326uUpFy"
+    },
+    {
+      "puzzleNum": 55,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1LzhS3k3e9Ub8i2W1V8xQFdB8n2MYCHPCa"
+    },
+    {
+      "puzzleNum": 56,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "17aPYR1m6pVAacXg1PTDDU7XafvK1dxvhi"
+    },
+    {
+      "puzzleNum": 57,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "15c9mPGLku1HuW9LRtBf4jcHVpBUt8txKz"
+    },
+    {
+      "puzzleNum": 58,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1Dn8NF8qDyyfHMktmuoQLGyjWmZXgvosXf"
+    },
+    {
+      "puzzleNum": 59,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1HAX2n9Uruu9YDt4cqRgYcvtGvZj1rbUyt"
+    },
+    {
+      "puzzleNum": 60,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1Kn5h2qpgw9mWE5jKpk8PP4qvvJ1QVy8su"
+    },
+    {
+      "puzzleNum": 61,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1AVJKwzs9AskraJLGHAZPiaZcrpDr1U6AB"
+    },
+    {
+      "puzzleNum": 62,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1Me6EfpwZK5kQziBwBfvLiHjaPGxCKLoJi"
+    },
+    {
+      "puzzleNum": 63,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1NpYjtLira16LfGbGwZJ5JbDPh3ai9bjf4"
+    },
+    {
+      "puzzleNum": 64,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "16jY7qLJnxb7CHZyqBP8qca9d51gAjyXQN"
+    },
+    {
+      "puzzleNum": 65,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "18ZMbwUFLMHoZBbfpCjUJQTCMCbktshgpe"
+    },
+    {
+      "puzzleNum": 66,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "13zb1hQbWVsc2S7ZTZnP2G4undNNpdh5so"
+    },
+    {
+      "puzzleNum": 67,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1BY8GQbnueYofwSuFAT3USAhGjPrkxDdW9"
+    },
+    {
+      "puzzleNum": 68,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1MVDYgVaSN6iKKEsbzRUAYFrYJadLYZvvZ"
+    },
+    {
+      "puzzleNum": 69,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "19vkiEajfhuZ8bs8Zu2jgmC6oqZbWqhxhG"
+    },
+    {
+      "puzzleNum": 70,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "19YZECXj3SxEZMoUeJ1yiPsw8xANe7M7QR"
+    },
+    {
+      "puzzleNum": 75,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1J36UjUByGroXcCvmj13U6uwaVv9caEeAt"
+    },
+    {
+      "puzzleNum": 80,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1BCf6rHUW6m3iH2ptsvnjgLruAiPQQepLe"
+    },
+    {
+      "puzzleNum": 85,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1Kh22PvXERd2xpTQk3ur6pPEqFeckCJfAr"
+    },
+    {
+      "puzzleNum": 90,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1L12FHH2FHjvTviyanuiFVfmzCy46RRATU"
+    },
+    {
+      "puzzleNum": 95,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "19eVSDuizydXxhohGh8Ki9WY9KsHdSwoQC"
+    },
+    {
+      "puzzleNum": 100,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1KCgMv8fo2TPBpddVi9jqmMmcne9uSNJ5F"
+    },
+    {
+      "puzzleNum": 105,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1CMjscKB3QW7SDyQ4c3C3DEUHiHRhiZVib"
+    },
+    {
+      "puzzleNum": 110,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "12JzYkkN76xkwvcPT6AWKZtGX6w2LAgsJg"
+    },
+    {
+      "puzzleNum": 115,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1NLbHuJebVwUZ1XqDjsAyfTRUPwDQbemfv"
+    },
+    {
+      "puzzleNum": 120,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "17s2b9ksz5y7abUm92cHwG8jEPCzK3dLnT"
+    },
+    {
+      "puzzleNum": 125,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1PXAyUB8ZoH3WD8n5zoAthYjN15yN5CVq5"
+    },
+    {
+      "puzzleNum": 130,
+      "oldStatus": "solved",
+      "newStatus": "unsolved",
+      "address": "1Fo65aKq8s8iquMt6weF1rku1moWVEd5Ua"
+    }
+  ],
+  "balanceChanges": [
+    {
+      "puzzleNum": 1,
+      "address": "1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH",
+      "expectedBalance": 100000,
+      "actualBalance": 0,
+      "difference": 100000
+    },
+    {
+      "puzzleNum": 2,
+      "address": "1CUNEBjYrCn2y1SdiUMohaKUi4wpP326Lb",
+      "expectedBalance": 200000,
+      "actualBalance": 0,
+      "difference": 200000
+    },
+    {
+      "puzzleNum": 3,
+      "address": "19ZewH8Kk1PDbSNdJ97FP4EiCjTRaZMZQA",
+      "expectedBalance": 300000,
+      "actualBalance": 0,
+      "difference": 300000
+    },
+    {
+      "puzzleNum": 4,
+      "address": "1EhqbyUMvvs7BfL8goY6qcPbD6YKfPqb7e",
+      "expectedBalance": 400000,
+      "actualBalance": 0,
+      "difference": 400000
+    },
+    {
+      "puzzleNum": 5,
+      "address": "1E6NuFjCi27W5zoXg8TRdcSRq84zJeBW3k",
+      "expectedBalance": 500000,
+      "actualBalance": 0,
+      "difference": 500000
+    },
+    {
+      "puzzleNum": 6,
+      "address": "1PitScNLyp2HCygzadCh7FveTnfmpPbfp8",
+      "expectedBalance": 600000,
+      "actualBalance": 0,
+      "difference": 600000
+    },
+    {
+      "puzzleNum": 7,
+      "address": "1McVt1vMtCC7yn5b9wgX1833yCcLXzueeC",
+      "expectedBalance": 700000,
+      "actualBalance": 0,
+      "difference": 700000
+    },
+    {
+      "puzzleNum": 8,
+      "address": "1M92tSqNmQLYw33fuBvjmeadirh1ysMBxK",
+      "expectedBalance": 800000,
+      "actualBalance": 0,
+      "difference": 800000
+    },
+    {
+      "puzzleNum": 9,
+      "address": "1CQFwcjw1dwhtkVWBttNLDtqL7ivBonGPV",
+      "expectedBalance": 900000,
+      "actualBalance": 0,
+      "difference": 900000
+    },
+    {
+      "puzzleNum": 10,
+      "address": "1LeBZP5QCwwgXRtmVUvTVrraqPUokyLHqe",
+      "expectedBalance": 1000000,
+      "actualBalance": 0,
+      "difference": 1000000
+    },
+    {
+      "puzzleNum": 11,
+      "address": "1PgQVLmst3Z314JrQn5TNiys8Hc38TcXJu",
+      "expectedBalance": 1100000,
+      "actualBalance": 0,
+      "difference": 1100000
+    },
+    {
+      "puzzleNum": 12,
+      "address": "1DBaumZxUkM4qMQRt2LVWyFJq5kDtSZQot",
+      "expectedBalance": 1200000,
+      "actualBalance": 0,
+      "difference": 1200000
+    },
+    {
+      "puzzleNum": 13,
+      "address": "1Pie8JkxBT6MGPz9Nvi3fsPkr2D8q3GBc1",
+      "expectedBalance": 1300000,
+      "actualBalance": 0,
+      "difference": 1300000
+    },
+    {
+      "puzzleNum": 14,
+      "address": "1ErZWg5cFCe4Vw5BzgfzB74VNLaXEiEkhk",
+      "expectedBalance": 1400000,
+      "actualBalance": 0,
+      "difference": 1400000
+    },
+    {
+      "puzzleNum": 15,
+      "address": "1QCbW9HWnwQWiQqVo5exhAnmfqKRrCRsvW",
+      "expectedBalance": 1500000,
+      "actualBalance": 0,
+      "difference": 1500000
+    },
+    {
+      "puzzleNum": 16,
+      "address": "1BDyrQ6WoF8VN3g9SAS1iKZcPzFfnDVieY",
+      "expectedBalance": 1600000,
+      "actualBalance": 0,
+      "difference": 1600000
+    },
+    {
+      "puzzleNum": 17,
+      "address": "1HduPEXZRdG26SUT5Yk83mLkPyjnZuJ7Bm",
+      "expectedBalance": 1700000,
+      "actualBalance": 0,
+      "difference": 1700000
+    },
+    {
+      "puzzleNum": 18,
+      "address": "1GnNTmTVLZiqQfLbAdp9DVdicEnB5GoERE",
+      "expectedBalance": 1800000,
+      "actualBalance": 0,
+      "difference": 1800000
+    },
+    {
+      "puzzleNum": 19,
+      "address": "1NWmZRpHH4XSPwsW6dsS3nrNWfL1yrJj4w",
+      "expectedBalance": 1900000,
+      "actualBalance": 0,
+      "difference": 1900000
+    },
+    {
+      "puzzleNum": 20,
+      "address": "1HsMJxNiV7TLxmoF6uJNkydxPFDog4NQum",
+      "expectedBalance": 2000000,
+      "actualBalance": 0,
+      "difference": 2000000
+    },
+    {
+      "puzzleNum": 21,
+      "address": "14oFNXucftsHiUMY8uctg6N487riuyXs4h",
+      "expectedBalance": 2100000,
+      "actualBalance": 0,
+      "difference": 2100000
+    },
+    {
+      "puzzleNum": 22,
+      "address": "1CfZWK1QTQE3eS9qn61dQjV89KDjZzfNcv",
+      "expectedBalance": 2200000,
+      "actualBalance": 0,
+      "difference": 2200000
+    },
+    {
+      "puzzleNum": 23,
+      "address": "1L2GM8eE7mJWLdo3HZS6su1832NX2txaac",
+      "expectedBalance": 2300000,
+      "actualBalance": 0,
+      "difference": 2300000
+    },
+    {
+      "puzzleNum": 24,
+      "address": "1rSnXMr63jdCuegJFuidJqWxUPV7AtUf7",
+      "expectedBalance": 2400000,
+      "actualBalance": 0,
+      "difference": 2400000
+    },
+    {
+      "puzzleNum": 25,
+      "address": "15JhYXn6Mx3oF4Y7PcTAv2wVVAuCFFQNiP",
+      "expectedBalance": 2500000,
+      "actualBalance": 0,
+      "difference": 2500000
+    },
+    {
+      "puzzleNum": 26,
+      "address": "1JVnST957hGztonaWK6FougdtjxzHzRMMg",
+      "expectedBalance": 2600000,
+      "actualBalance": 0,
+      "difference": 2600000
+    },
+    {
+      "puzzleNum": 27,
+      "address": "128z5d7nN7PkCuX5qoA4Ys6pmxUYnEy86k",
+      "expectedBalance": 2700000,
+      "actualBalance": 0,
+      "difference": 2700000
+    },
+    {
+      "puzzleNum": 28,
+      "address": "12jbtzBb54r97TCwW3G1gCFoumpckRAPdY",
+      "expectedBalance": 2800000,
+      "actualBalance": 0,
+      "difference": 2800000
+    },
+    {
+      "puzzleNum": 29,
+      "address": "19EEC52krRUK1RkUAEZmQdjTyHT7Gp1TYT",
+      "expectedBalance": 2900000,
+      "actualBalance": 0,
+      "difference": 2900000
+    },
+    {
+      "puzzleNum": 30,
+      "address": "1LHtnpd8nU5VHEMkG2TMYYNUjjLc992bps",
+      "expectedBalance": 3000000,
+      "actualBalance": 0,
+      "difference": 3000000
+    },
+    {
+      "puzzleNum": 31,
+      "address": "1LhE6sCTuGae42Axu1L1ZB7L96yi9irEBE",
+      "expectedBalance": 3100000,
+      "actualBalance": 0,
+      "difference": 3100000
+    },
+    {
+      "puzzleNum": 32,
+      "address": "1FRoHA9xewq7DjrZ1psWJVeTer8gHRqEvR",
+      "expectedBalance": 3200000,
+      "actualBalance": 0,
+      "difference": 3200000
+    },
+    {
+      "puzzleNum": 33,
+      "address": "187swFMjz1G54ycVU56B7jZFHFTNVQFDiu",
+      "expectedBalance": 3300000,
+      "actualBalance": 0,
+      "difference": 3300000
+    },
+    {
+      "puzzleNum": 34,
+      "address": "1PWABE7oUahG2AFFQhhvViQovnCr4rEv7Q",
+      "expectedBalance": 3400000,
+      "actualBalance": 0,
+      "difference": 3400000
+    },
+    {
+      "puzzleNum": 35,
+      "address": "1PWCx5fovoEaoBowAvF5k91m2Xat9bMgwb",
+      "expectedBalance": 3500000,
+      "actualBalance": 0,
+      "difference": 3500000
+    },
+    {
+      "puzzleNum": 36,
+      "address": "1Be2UF9NLfyLFbtm3TCbmuocc9N1Kduci1",
+      "expectedBalance": 3600000,
+      "actualBalance": 0,
+      "difference": 3600000
+    },
+    {
+      "puzzleNum": 37,
+      "address": "14iXhn8bGajVWegZHJ18vJLHhntcpL4dex",
+      "expectedBalance": 3700000,
+      "actualBalance": 0,
+      "difference": 3700000
+    },
+    {
+      "puzzleNum": 38,
+      "address": "1HBtApAFA9B2YZw3G2YKSMCtb3dVnjuNe2",
+      "expectedBalance": 3800000,
+      "actualBalance": 0,
+      "difference": 3800000
+    },
+    {
+      "puzzleNum": 39,
+      "address": "122AJhKLEfkFBaGAd84pLp1kfE7xK3GdT8",
+      "expectedBalance": 3900000,
+      "actualBalance": 0,
+      "difference": 3900000
+    },
+    {
+      "puzzleNum": 40,
+      "address": "1EeAxcprB2PpCnr34VfZdFrkUWuxyiNEFv",
+      "expectedBalance": 4000000,
+      "actualBalance": 0,
+      "difference": 4000000
+    },
+    {
+      "puzzleNum": 41,
+      "address": "1L5sU9qvJeuwQUdt4y1eiLmquFxKjtHr3E",
+      "expectedBalance": 4100000,
+      "actualBalance": 0,
+      "difference": 4100000
+    },
+    {
+      "puzzleNum": 42,
+      "address": "1E32GPWgDyeyQac4aJxm9HVoLrrEYPnM4N",
+      "expectedBalance": 4200000,
+      "actualBalance": 0,
+      "difference": 4200000
+    },
+    {
+      "puzzleNum": 43,
+      "address": "1PiFuqGpG8yGM5v6rNHWS3TjsG6awgEGA1",
+      "expectedBalance": 4300000,
+      "actualBalance": 0,
+      "difference": 4300000
+    },
+    {
+      "puzzleNum": 44,
+      "address": "1CkR2uS7LmFwc3T2jV8C1BhWb5mQaoxedF",
+      "expectedBalance": 4400000,
+      "actualBalance": 0,
+      "difference": 4400000
+    },
+    {
+      "puzzleNum": 45,
+      "address": "1NtiLNGegHWE3Mp9g2JPkgx6wUg4TW7bbk",
+      "expectedBalance": 4500000,
+      "actualBalance": 0,
+      "difference": 4500000
+    },
+    {
+      "puzzleNum": 46,
+      "address": "1F3JRMWudBaj48EhwcHDdpeuy2jwACNxjP",
+      "expectedBalance": 4600000,
+      "actualBalance": 0,
+      "difference": 4600000
+    },
+    {
+      "puzzleNum": 47,
+      "address": "1Pd8VvT49sHKsmqrQiP61RsVwmXCZ6ay7Z",
+      "expectedBalance": 4700000,
+      "actualBalance": 0,
+      "difference": 4700000
+    },
+    {
+      "puzzleNum": 48,
+      "address": "1DFYhaB2J9q1LLZJWKTnscPWos9VBqDHzv",
+      "expectedBalance": 4800000,
+      "actualBalance": 0,
+      "difference": 4800000
+    },
+    {
+      "puzzleNum": 49,
+      "address": "12CiUhYVTTH33w3SPUBqcpMoqnApAV4WCF",
+      "expectedBalance": 4900000,
+      "actualBalance": 0,
+      "difference": 4900000
+    },
+    {
+      "puzzleNum": 50,
+      "address": "1MEzite4ReNuWaL5Ds17ePKt2dCxWEofwk",
+      "expectedBalance": 5000000,
+      "actualBalance": 0,
+      "difference": 5000000
+    },
+    {
+      "puzzleNum": 51,
+      "address": "1NpnQyZ7x24ud82b7WiRNvPm6N8bqGQnaS",
+      "expectedBalance": 5100000,
+      "actualBalance": 0,
+      "difference": 5100000
+    },
+    {
+      "puzzleNum": 52,
+      "address": "15z9c9sVpu6fwNiK7dMAFgMYSK4GqsGZim",
+      "expectedBalance": 5200000,
+      "actualBalance": 0,
+      "difference": 5200000
+    },
+    {
+      "puzzleNum": 53,
+      "address": "15K1YKJMiJ4fpesTVUcByoz334rHmknxmT",
+      "expectedBalance": 5300000,
+      "actualBalance": 0,
+      "difference": 5300000
+    },
+    {
+      "puzzleNum": 54,
+      "address": "1KYUv7nSvXx4642TKeuC2SNdTk326uUpFy",
+      "expectedBalance": 5400000,
+      "actualBalance": 0,
+      "difference": 5400000
+    },
+    {
+      "puzzleNum": 55,
+      "address": "1LzhS3k3e9Ub8i2W1V8xQFdB8n2MYCHPCa",
+      "expectedBalance": 5500000,
+      "actualBalance": 0,
+      "difference": 5500000
+    },
+    {
+      "puzzleNum": 56,
+      "address": "17aPYR1m6pVAacXg1PTDDU7XafvK1dxvhi",
+      "expectedBalance": 5600000,
+      "actualBalance": 0,
+      "difference": 5600000
+    },
+    {
+      "puzzleNum": 57,
+      "address": "15c9mPGLku1HuW9LRtBf4jcHVpBUt8txKz",
+      "expectedBalance": 5700000,
+      "actualBalance": 0,
+      "difference": 5700000
+    },
+    {
+      "puzzleNum": 58,
+      "address": "1Dn8NF8qDyyfHMktmuoQLGyjWmZXgvosXf",
+      "expectedBalance": 5800000,
+      "actualBalance": 0,
+      "difference": 5800000
+    },
+    {
+      "puzzleNum": 59,
+      "address": "1HAX2n9Uruu9YDt4cqRgYcvtGvZj1rbUyt",
+      "expectedBalance": 5900000,
+      "actualBalance": 0,
+      "difference": 5900000
+    },
+    {
+      "puzzleNum": 60,
+      "address": "1Kn5h2qpgw9mWE5jKpk8PP4qvvJ1QVy8su",
+      "expectedBalance": 6000000,
+      "actualBalance": 0,
+      "difference": 6000000
+    },
+    {
+      "puzzleNum": 61,
+      "address": "1AVJKwzs9AskraJLGHAZPiaZcrpDr1U6AB",
+      "expectedBalance": 6100000,
+      "actualBalance": 0,
+      "difference": 6100000
+    },
+    {
+      "puzzleNum": 62,
+      "address": "1Me6EfpwZK5kQziBwBfvLiHjaPGxCKLoJi",
+      "expectedBalance": 6200000,
+      "actualBalance": 0,
+      "difference": 6200000
+    },
+    {
+      "puzzleNum": 63,
+      "address": "1NpYjtLira16LfGbGwZJ5JbDPh3ai9bjf4",
+      "expectedBalance": 6300000,
+      "actualBalance": 0,
+      "difference": 6300000
+    },
+    {
+      "puzzleNum": 64,
+      "address": "16jY7qLJnxb7CHZyqBP8qca9d51gAjyXQN",
+      "expectedBalance": 6400000,
+      "actualBalance": 0,
+      "difference": 6400000
+    },
+    {
+      "puzzleNum": 65,
+      "address": "18ZMbwUFLMHoZBbfpCjUJQTCMCbktshgpe",
+      "expectedBalance": 6500000,
+      "actualBalance": 0,
+      "difference": 6500000
+    },
+    {
+      "puzzleNum": 66,
+      "address": "13zb1hQbWVsc2S7ZTZnP2G4undNNpdh5so",
+      "expectedBalance": 6600000,
+      "actualBalance": 0,
+      "difference": 6600000
+    },
+    {
+      "puzzleNum": 67,
+      "address": "1BY8GQbnueYofwSuFAT3USAhGjPrkxDdW9",
+      "expectedBalance": 6700000,
+      "actualBalance": 0,
+      "difference": 6700000
+    },
+    {
+      "puzzleNum": 68,
+      "address": "1MVDYgVaSN6iKKEsbzRUAYFrYJadLYZvvZ",
+      "expectedBalance": 6800000,
+      "actualBalance": 0,
+      "difference": 6800000
+    },
+    {
+      "puzzleNum": 69,
+      "address": "19vkiEajfhuZ8bs8Zu2jgmC6oqZbWqhxhG",
+      "expectedBalance": 6900000,
+      "actualBalance": 0,
+      "difference": 6900000
+    },
+    {
+      "puzzleNum": 70,
+      "address": "19YZECXj3SxEZMoUeJ1yiPsw8xANe7M7QR",
+      "expectedBalance": 7000000,
+      "actualBalance": 0,
+      "difference": 7000000
+    },
+    {
+      "puzzleNum": 71,
+      "address": "1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU",
+      "expectedBalance": 7100000,
+      "actualBalance": 0,
+      "difference": 7100000
+    },
+    {
+      "puzzleNum": 72,
+      "address": "1JTK7s9YVYywfm5XUH7RNhHJH1LshCaRFR",
+      "expectedBalance": 7200000,
+      "actualBalance": 0,
+      "difference": 7200000
+    },
+    {
+      "puzzleNum": 73,
+      "address": "12VVRNPi4SJqUTsp6FmqDqY5sGosDtysn4",
+      "expectedBalance": 7300000,
+      "actualBalance": 0,
+      "difference": 7300000
+    },
+    {
+      "puzzleNum": 74,
+      "address": "1FWGcVDK3JGzCC3WtkYetULPszMaK2Jksv",
+      "expectedBalance": 7400000,
+      "actualBalance": 0,
+      "difference": 7400000
+    },
+    {
+      "puzzleNum": 75,
+      "address": "1J36UjUByGroXcCvmj13U6uwaVv9caEeAt",
+      "expectedBalance": 7500000,
+      "actualBalance": 0,
+      "difference": 7500000
+    },
+    {
+      "puzzleNum": 76,
+      "address": "1DJh2eHFYQfACPmrvpyWc8MSTYKh7w9eRF",
+      "expectedBalance": 7600000,
+      "actualBalance": 0,
+      "difference": 7600000
+    },
+    {
+      "puzzleNum": 77,
+      "address": "1Bxk4CQdqL9p22JEtDfdXMsng1XacifUtE",
+      "expectedBalance": 7700000,
+      "actualBalance": 0,
+      "difference": 7700000
+    },
+    {
+      "puzzleNum": 78,
+      "address": "15qF6X51huDjqTmF9BJgxXdt1xcj46Jmhb",
+      "expectedBalance": 7800000,
+      "actualBalance": 0,
+      "difference": 7800000
+    },
+    {
+      "puzzleNum": 79,
+      "address": "1ARk8HWJMn8js8tQmGUJeQHjSE7KRkn2t8",
+      "expectedBalance": 7900000,
+      "actualBalance": 0,
+      "difference": 7900000
+    },
+    {
+      "puzzleNum": 80,
+      "address": "1BCf6rHUW6m3iH2ptsvnjgLruAiPQQepLe",
+      "expectedBalance": 8000000,
+      "actualBalance": 0,
+      "difference": 8000000
+    },
+    {
+      "puzzleNum": 81,
+      "address": "15qsCm78whspNQFydGJQk5rexzxTQopnHZ",
+      "expectedBalance": 8100000,
+      "actualBalance": 0,
+      "difference": 8100000
+    },
+    {
+      "puzzleNum": 82,
+      "address": "13zYrYhhJxp6Ui1VV7pqa5WDhNWM45ARAC",
+      "expectedBalance": 8200000,
+      "actualBalance": 0,
+      "difference": 8200000
+    },
+    {
+      "puzzleNum": 83,
+      "address": "14MdEb4eFcT3MVG5sPFG4jGLuHJSnt1Dk2",
+      "expectedBalance": 8300000,
+      "actualBalance": 0,
+      "difference": 8300000
+    },
+    {
+      "puzzleNum": 84,
+      "address": "1CMq3SvFcVEcpLMuuH8PUcNiqsK1oicG2D",
+      "expectedBalance": 8400000,
+      "actualBalance": 0,
+      "difference": 8400000
+    },
+    {
+      "puzzleNum": 85,
+      "address": "1Kh22PvXERd2xpTQk3ur6pPEqFeckCJfAr",
+      "expectedBalance": 8500000,
+      "actualBalance": 0,
+      "difference": 8500000
+    },
+    {
+      "puzzleNum": 86,
+      "address": "1K3x5L6G57Y494fDqBfrojD28UJv4s5JcK",
+      "expectedBalance": 8600000,
+      "actualBalance": 0,
+      "difference": 8600000
+    },
+    {
+      "puzzleNum": 87,
+      "address": "1PxH3K1Shdjb7gSEoTX7UPDZ6SH4qGPrvq",
+      "expectedBalance": 8700000,
+      "actualBalance": 0,
+      "difference": 8700000
+    },
+    {
+      "puzzleNum": 88,
+      "address": "16AbnZjZZipwHMkYKBSfswGWKDmXHjEpSf",
+      "expectedBalance": 8800000,
+      "actualBalance": 0,
+      "difference": 8800000
+    },
+    {
+      "puzzleNum": 89,
+      "address": "19QciEHbGVNY4hrhfKXmcBBCrJSBZ6TaVt",
+      "expectedBalance": 8900000,
+      "actualBalance": 0,
+      "difference": 8900000
+    },
+    {
+      "puzzleNum": 90,
+      "address": "1L12FHH2FHjvTviyanuiFVfmzCy46RRATU",
+      "expectedBalance": 9000000,
+      "actualBalance": 0,
+      "difference": 9000000
+    },
+    {
+      "puzzleNum": 91,
+      "address": "1EzVHtmbN4fs4MiNk3ppEnKKhsmXYJ4s74",
+      "expectedBalance": 9100000,
+      "actualBalance": 0,
+      "difference": 9100000
+    },
+    {
+      "puzzleNum": 92,
+      "address": "1AE8NzzgKE7Yhz7BWtAcAAxiFMbPo82NB5",
+      "expectedBalance": 9200000,
+      "actualBalance": 0,
+      "difference": 9200000
+    },
+    {
+      "puzzleNum": 93,
+      "address": "17Q7tuG2JwFFU9rXVj3uZqRtioH3mx2Jad",
+      "expectedBalance": 9300000,
+      "actualBalance": 0,
+      "difference": 9300000
+    },
+    {
+      "puzzleNum": 94,
+      "address": "1K6xGMUbs6ZTXBnhw1pippqwK6wjBWtNpL",
+      "expectedBalance": 9400000,
+      "actualBalance": 0,
+      "difference": 9400000
+    },
+    {
+      "puzzleNum": 95,
+      "address": "19eVSDuizydXxhohGh8Ki9WY9KsHdSwoQC",
+      "expectedBalance": 9500000,
+      "actualBalance": 0,
+      "difference": 9500000
+    },
+    {
+      "puzzleNum": 96,
+      "address": "15ANYzzCp5BFHcCnVFzXqyibpzgPLWaD8b",
+      "expectedBalance": 9600000,
+      "actualBalance": 0,
+      "difference": 9600000
+    },
+    {
+      "puzzleNum": 97,
+      "address": "18ywPwj39nGjqBrQJSzZVq2izR12MDpDr8",
+      "expectedBalance": 9700000,
+      "actualBalance": 0,
+      "difference": 9700000
+    },
+    {
+      "puzzleNum": 98,
+      "address": "1CaBVPrwUxbQYYswu32w7Mj4HR4maNoJSX",
+      "expectedBalance": 9800000,
+      "actualBalance": 0,
+      "difference": 9800000
+    },
+    {
+      "puzzleNum": 99,
+      "address": "1JWnE6p6UN7ZJBN7TtcbNDoRcjFtuDWoNL",
+      "expectedBalance": 9900000,
+      "actualBalance": 0,
+      "difference": 9900000
+    },
+    {
+      "puzzleNum": 100,
+      "address": "1KCgMv8fo2TPBpddVi9jqmMmcne9uSNJ5F",
+      "expectedBalance": 10000000,
+      "actualBalance": 0,
+      "difference": 10000000
+    },
+    {
+      "puzzleNum": 101,
+      "address": "1CKCVdbDJasYmhswB6HKZHEAnNaDpK7W4n",
+      "expectedBalance": 10100000,
+      "actualBalance": 0,
+      "difference": 10100000
+    },
+    {
+      "puzzleNum": 102,
+      "address": "1PXv28YxmYMaB8zxrKeZBW8dt2HK7RkRPX",
+      "expectedBalance": 10200000,
+      "actualBalance": 0,
+      "difference": 10200000
+    },
+    {
+      "puzzleNum": 103,
+      "address": "1AcAmB6jmtU6AiEcXkmiNE9TNVPsj9DULf",
+      "expectedBalance": 10300000,
+      "actualBalance": 0,
+      "difference": 10300000
+    },
+    {
+      "puzzleNum": 104,
+      "address": "1EQJvpsmhazYCcKX5Au6AZmZKRnzarMVZu",
+      "expectedBalance": 10400000,
+      "actualBalance": 0,
+      "difference": 10400000
+    },
+    {
+      "puzzleNum": 105,
+      "address": "1CMjscKB3QW7SDyQ4c3C3DEUHiHRhiZVib",
+      "expectedBalance": 10500000,
+      "actualBalance": 0,
+      "difference": 10500000
+    },
+    {
+      "puzzleNum": 106,
+      "address": "18KsfuHuzQaBTNLASyj15hy4LuqPUo1FNB",
+      "expectedBalance": 10600000,
+      "actualBalance": 0,
+      "difference": 10600000
+    },
+    {
+      "puzzleNum": 107,
+      "address": "15EJFC5ZTs9nhsdvSUeBXjLAuYq3SWaxTc",
+      "expectedBalance": 10700000,
+      "actualBalance": 0,
+      "difference": 10700000
+    },
+    {
+      "puzzleNum": 108,
+      "address": "1HB1iKUqeffnVsvQsbpC6dNi1XKbyNuqao",
+      "expectedBalance": 10800000,
+      "actualBalance": 0,
+      "difference": 10800000
+    },
+    {
+      "puzzleNum": 109,
+      "address": "1GvgAXVCbA8FBjXfWiAms4ytFeJcKsoyhL",
+      "expectedBalance": 10900000,
+      "actualBalance": 0,
+      "difference": 10900000
+    },
+    {
+      "puzzleNum": 110,
+      "address": "12JzYkkN76xkwvcPT6AWKZtGX6w2LAgsJg",
+      "expectedBalance": 11000000,
+      "actualBalance": 0,
+      "difference": 11000000
+    },
+    {
+      "puzzleNum": 111,
+      "address": "1824ZJQ7nKJ9QFTRBqn7z7dHV5EGpzUpH3",
+      "expectedBalance": 11100000,
+      "actualBalance": 0,
+      "difference": 11100000
+    },
+    {
+      "puzzleNum": 112,
+      "address": "18A7NA9FTsnJxWgkoFfPAFbQzuQxpRtCos",
+      "expectedBalance": 11200000,
+      "actualBalance": 0,
+      "difference": 11200000
+    },
+    {
+      "puzzleNum": 113,
+      "address": "1NeGn21dUDDeqFQ63xb2SpgUuXuBLA4WT4",
+      "expectedBalance": 11300000,
+      "actualBalance": 0,
+      "difference": 11300000
+    },
+    {
+      "puzzleNum": 114,
+      "address": "174SNxfqpdMGYy5YQcfLbSTK3MRNZEePoy",
+      "expectedBalance": 11400000,
+      "actualBalance": 0,
+      "difference": 11400000
+    },
+    {
+      "puzzleNum": 115,
+      "address": "1NLbHuJebVwUZ1XqDjsAyfTRUPwDQbemfv",
+      "expectedBalance": 11500000,
+      "actualBalance": 0,
+      "difference": 11500000
+    },
+    {
+      "puzzleNum": 116,
+      "address": "1MnJ6hdhvK37VLmqcdEwqC3iFxyWH2PHUV",
+      "expectedBalance": 11600000,
+      "actualBalance": 0,
+      "difference": 11600000
+    },
+    {
+      "puzzleNum": 117,
+      "address": "1KNRfGWw7Q9Rmwsc6NT5zsdvEb9M2Wkj5Z",
+      "expectedBalance": 11700000,
+      "actualBalance": 0,
+      "difference": 11700000
+    },
+    {
+      "puzzleNum": 118,
+      "address": "1PJZPzvGX19a7twf5HyD2VvNiPdHLzm9F6",
+      "expectedBalance": 11800000,
+      "actualBalance": 0,
+      "difference": 11800000
+    },
+    {
+      "puzzleNum": 119,
+      "address": "1GuBBhf61rnvRe4K8zu8vdQB3kHzwFqSy7",
+      "expectedBalance": 11900000,
+      "actualBalance": 0,
+      "difference": 11900000
+    },
+    {
+      "puzzleNum": 120,
+      "address": "17s2b9ksz5y7abUm92cHwG8jEPCzK3dLnT",
+      "expectedBalance": 12000000,
+      "actualBalance": 0,
+      "difference": 12000000
+    },
+    {
+      "puzzleNum": 121,
+      "address": "1GDSuiThEV64c166LUFC9uDcVdGjqkxKyh",
+      "expectedBalance": 12100000,
+      "actualBalance": 0,
+      "difference": 12100000
+    },
+    {
+      "puzzleNum": 122,
+      "address": "1Me3ASYt5JCTAK2XaC32RMeH34PdprrfDx",
+      "expectedBalance": 12200000,
+      "actualBalance": 0,
+      "difference": 12200000
+    },
+    {
+      "puzzleNum": 123,
+      "address": "1CdufMQL892A69KXgv6UNBD17ywWqYpKut",
+      "expectedBalance": 12300000,
+      "actualBalance": 0,
+      "difference": 12300000
+    },
+    {
+      "puzzleNum": 124,
+      "address": "1BkkGsX9ZM6iwL3zbqs7HWBV7SvosR6m8N",
+      "expectedBalance": 12400000,
+      "actualBalance": 0,
+      "difference": 12400000
+    },
+    {
+      "puzzleNum": 125,
+      "address": "1PXAyUB8ZoH3WD8n5zoAthYjN15yN5CVq5",
+      "expectedBalance": 12500000,
+      "actualBalance": 0,
+      "difference": 12500000
+    },
+    {
+      "puzzleNum": 126,
+      "address": "1AWCLZAjKbV1P7AHvaPNCKiB7ZWVDMxFiz",
+      "expectedBalance": 12600000,
+      "actualBalance": 0,
+      "difference": 12600000
+    },
+    {
+      "puzzleNum": 127,
+      "address": "1G6EFyBRU86sThN3SSt3GrHu1sA7w7nzi4",
+      "expectedBalance": 12700000,
+      "actualBalance": 0,
+      "difference": 12700000
+    },
+    {
+      "puzzleNum": 128,
+      "address": "1MZ2L1gFrCtkkn6DnTT2e4PFUTHw9gNwaj",
+      "expectedBalance": 12800000,
+      "actualBalance": 0,
+      "difference": 12800000
+    },
+    {
+      "puzzleNum": 129,
+      "address": "1Hz3uv3nNZzBVMXLGadCucgjiCs5W9vaGz",
+      "expectedBalance": 12900000,
+      "actualBalance": 0,
+      "difference": 12900000
+    },
+    {
+      "puzzleNum": 130,
+      "address": "1Fo65aKq8s8iquMt6weF1rku1moWVEd5Ua",
+      "expectedBalance": 13000000,
+      "actualBalance": 0,
+      "difference": 13000000
+    },
+    {
+      "puzzleNum": 131,
+      "address": "16zRPnT8znwq42q7XeMkZUhb1bKqgRogyy",
+      "expectedBalance": 13100000,
+      "actualBalance": 0,
+      "difference": 13100000
+    },
+    {
+      "puzzleNum": 132,
+      "address": "1KrU4dHE5WrW8rhWDsTRjR21r8t3dsrS3R",
+      "expectedBalance": 13200000,
+      "actualBalance": 0,
+      "difference": 13200000
+    },
+    {
+      "puzzleNum": 133,
+      "address": "17uDfp5r4n441xkgLFmhNoSW1KWp6xVLD",
+      "expectedBalance": 13300000,
+      "actualBalance": 0,
+      "difference": 13300000
+    },
+    {
+      "puzzleNum": 134,
+      "address": "13A3JrvXmvg5w9XGvyyR4JEJqiLz8ZySY3",
+      "expectedBalance": 13400000,
+      "actualBalance": 0,
+      "difference": 13400000
+    },
+    {
+      "puzzleNum": 135,
+      "address": "16RGFo6hjq9ym6Pj7N5H7L1NR1rVPJyw2v",
+      "expectedBalance": 13500000,
+      "actualBalance": 0,
+      "difference": 13500000
+    },
+    {
+      "puzzleNum": 136,
+      "address": "1UDHPdovvR985NrWSkdWQDEQ1xuRiTALq",
+      "expectedBalance": 13600000,
+      "actualBalance": 0,
+      "difference": 13600000
+    },
+    {
+      "puzzleNum": 137,
+      "address": "15nf31J46iLuK1ZkTnqHo7WgN5cARFK3RA",
+      "expectedBalance": 13700000,
+      "actualBalance": 0,
+      "difference": 13700000
+    },
+    {
+      "puzzleNum": 138,
+      "address": "1Ab4vzG6wEQBDNQM1B2bvUz4fqXXdFk2WT",
+      "expectedBalance": 13800000,
+      "actualBalance": 0,
+      "difference": 13800000
+    },
+    {
+      "puzzleNum": 139,
+      "address": "1Fz63c775VV9fNyj25d9Xfw3YHE6sKCxbt",
+      "expectedBalance": 13900000,
+      "actualBalance": 0,
+      "difference": 13900000
+    },
+    {
+      "puzzleNum": 140,
+      "address": "1QKBaU6WAeycb3DbKbLBkX7vJiaS8r42Xo",
+      "expectedBalance": 14000000,
+      "actualBalance": 0,
+      "difference": 14000000
+    },
+    {
+      "puzzleNum": 141,
+      "address": "1CD91Vm97mLQvXhrnoMChhJx4TP9MaQkJo",
+      "expectedBalance": 14100000,
+      "actualBalance": 0,
+      "difference": 14100000
+    },
+    {
+      "puzzleNum": 142,
+      "address": "15MnK2jXPqTMURX4xC3h4mAZxyCcaWWEDD",
+      "expectedBalance": 14200000,
+      "actualBalance": 0,
+      "difference": 14200000
+    },
+    {
+      "puzzleNum": 143,
+      "address": "13N66gCzWWHEZBxhVxG18P8wyjEWF9Yoi1",
+      "expectedBalance": 14300000,
+      "actualBalance": 0,
+      "difference": 14300000
+    },
+    {
+      "puzzleNum": 144,
+      "address": "1NevxKDYuDcCh1ZMMi6ftmWwGrZKC6j7Ux",
+      "expectedBalance": 14400000,
+      "actualBalance": 0,
+      "difference": 14400000
+    },
+    {
+      "puzzleNum": 145,
+      "address": "19GpszRNUej5yYqxXoLnbZWKew3KdVLkXg",
+      "expectedBalance": 14500000,
+      "actualBalance": 0,
+      "difference": 14500000
+    },
+    {
+      "puzzleNum": 146,
+      "address": "1M7ipcdYHey2Y5RZM34MBbpugghmjaV89P",
+      "expectedBalance": 14600000,
+      "actualBalance": 0,
+      "difference": 14600000
+    },
+    {
+      "puzzleNum": 147,
+      "address": "18aNhurEAJsw6BAgtANpexk5ob1aGTwSeL",
+      "expectedBalance": 14700000,
+      "actualBalance": 0,
+      "difference": 14700000
+    },
+    {
+      "puzzleNum": 148,
+      "address": "1FwZXt6EpRT7Fkndzv6K4b4DFoT4trbMrV",
+      "expectedBalance": 14800000,
+      "actualBalance": 0,
+      "difference": 14800000
+    },
+    {
+      "puzzleNum": 149,
+      "address": "1CXvTzR6qv8wJ7eprzUKeWxyGcHwDYP1i2",
+      "expectedBalance": 14900000,
+      "actualBalance": 0,
+      "difference": 14900000
+    },
+    {
+      "puzzleNum": 150,
+      "address": "1MUJSJYtGPVGkBCTqGspnxyHahpt5Te8jy",
+      "expectedBalance": 15000000,
+      "actualBalance": 0,
+      "difference": 15000000
+    },
+    {
+      "puzzleNum": 151,
+      "address": "13Q84TNNvgcL3HJiqQPvyBb9m4hxjS3jkV",
+      "expectedBalance": 15100000,
+      "actualBalance": 0,
+      "difference": 15100000
+    },
+    {
+      "puzzleNum": 152,
+      "address": "1LuUHyrQr8PKSvbcY1v1PiuGuqFjWpDumN",
+      "expectedBalance": 15200000,
+      "actualBalance": 0,
+      "difference": 15200000
+    },
+    {
+      "puzzleNum": 153,
+      "address": "18192XpzzdDi2K11QVHR7td2HcPS6Qs5vg",
+      "expectedBalance": 15300000,
+      "actualBalance": 0,
+      "difference": 15300000
+    },
+    {
+      "puzzleNum": 154,
+      "address": "1NgVmsCCJaKLzGyKLFJfVequnFW9ZvnMLN",
+      "expectedBalance": 15400000,
+      "actualBalance": 0,
+      "difference": 15400000
+    },
+    {
+      "puzzleNum": 155,
+      "address": "1AoeP37TmHdFh8uN72fu9AqgtLrUwcv2wJ",
+      "expectedBalance": 15500000,
+      "actualBalance": 0,
+      "difference": 15500000
+    },
+    {
+      "puzzleNum": 156,
+      "address": "1FTpAbQa4h8trvhQXjXnmNhqdiGBd1oraE",
+      "expectedBalance": 15600000,
+      "actualBalance": 0,
+      "difference": 15600000
+    },
+    {
+      "puzzleNum": 157,
+      "address": "14JHoRAdmJg3XR4RjMDh6Wed6ft6hzbQe9",
+      "expectedBalance": 15700000,
+      "actualBalance": 0,
+      "difference": 15700000
+    },
+    {
+      "puzzleNum": 158,
+      "address": "19z6waranEf8CcP8FqNgdwUe1QRxvUNKBG",
+      "expectedBalance": 15800000,
+      "actualBalance": 0,
+      "difference": 15800000
+    },
+    {
+      "puzzleNum": 159,
+      "address": "14u4nA5sugaswb6SZgn5av2vuChdMnD9E5",
+      "expectedBalance": 15900000,
+      "actualBalance": 0,
+      "difference": 15900000
+    },
+    {
+      "puzzleNum": 160,
+      "address": "1NBC8uXJy1GiJ6drkiZa1WuKn51ps7EPTv",
+      "expectedBalance": 16000000,
+      "actualBalance": 0,
+      "difference": 16000000
+    }
+  ]
+}
