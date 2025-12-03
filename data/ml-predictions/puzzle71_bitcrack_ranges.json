@@ -10,7 +10,8 @@
     "high_priority": {
       "start": "5999999999999A0000",
       "end": "7999999999999A0000",
-      "coverage": 50.0,
+      "coverage": 50,
+      "priority": 1,
       "description": "ML-optimized 40-90% range"
     },
     "multi_gpu_splits": [
@@ -18,32 +19,64 @@
         "gpu": 0,
         "start": "5999999999999A0000",
         "end": "633333333333340000",
-        "description": "Lower third"
+        "description": "Lower third (40-55%)"
       },
       {
         "gpu": 1,
         "start": "633333333333340000",
         "end": "6CCCCCCCCCCCCC0000",
-        "description": "Middle third"
+        "description": "Middle third (55-70%)"
       },
       {
         "gpu": 2,
         "start": "6CCCCCCCCCCCCC0000",
         "end": "7999999999999A0000",
-        "description": "Upper third"
+        "description": "Upper third (70-90%)"
       }
     ],
     "fallback": [
       {
         "start": "400000000000000000",
         "end": "5999999999999A0000",
-        "description": "Bottom 40%"
+        "coverage": 40,
+        "priority": 2,
+        "description": "Bottom 40% (fallback)"
       },
       {
         "start": "7999999999999A0000",
         "end": "800000000000000000",
-        "description": "Top 10%"
+        "coverage": 10,
+        "priority": 3,
+        "description": "Top 10% (fallback)"
       }
     ]
+  },
+  "strategies": {
+    "single_gpu": [
+      "./cuBitCrack -d 0 --keyspace 5999999999999A0000:7999999999999A0000 1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU",
+      "./vanitysearch -d 0 --keyspace 5999999999999A0000:7999999999999A0000 1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU"
+    ],
+    "multi_gpu": [
+      "./cuBitCrack -d 0 --keyspace 5999999999999A0000:633333333333340000 1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU &",
+      "./cuBitCrack -d 1 --keyspace 633333333333340000:6CCCCCCCCCCCCC0000 1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU &",
+      "./cuBitCrack -d 2 --keyspace 6CCCCCCCCCCCCC0000:7999999999999A0000 1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU &"
+    ],
+    "pool_config": {
+      "target_puzzle": 71,
+      "custom_range": "5999999999999A0000:7999999999999A0000",
+      "scan_type": "includeDefeated",
+      "api_url": "https://btc.poolserver.address",
+      "user_token": "<your_token_here>"
+    },
+    "private_relay": {
+      "recommended": true,
+      "theft_risk": 0.7,
+      "providers": [
+        "Flashbots Protect (Ethereum-style, needs Bitcoin equivalent)",
+        "Lightning Network HTLCs (if available)",
+        "Direct miner connection (most secure)",
+        "Private pool submission (10% fee but safe)"
+      ]
+    }
   }
 }
