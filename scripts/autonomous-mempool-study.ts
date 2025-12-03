@@ -108,11 +108,12 @@ export class AutonomousMempoolStudy {
       
       const data = await response.json();
       return data[0] as MempoolBlock; // First element is next block
-    } catch (error: any) {
-      if (error.response?.status) {
-        console.error(`Failed to fetch next block: API returned ${error.response.status}`);
+    } catch (error: unknown) {
+      const err = error as Error;
+      if ('response' in err && (err as any).response?.status) {
+        console.error(`Failed to fetch next block: API returned ${(err as any).response.status}`);
       } else {
-        console.error(`Failed to fetch next block: ${error.message || 'Network error'}`);
+        console.error(`Failed to fetch next block: ${err.message || 'Network error'}`);
       }
       return null;
     }
@@ -135,8 +136,8 @@ export class AutonomousMempoolStudy {
         value: tx.value || 0,
         time: tx.time
       }));
-    } catch (error: any) {
-      console.error('Failed to fetch recent transactions:', error.message);
+    } catch (error: unknown) {
+      console.error('Failed to fetch recent transactions:', (error as Error).message || 'Unknown error');
       return [];
     }
   }
@@ -499,8 +500,8 @@ export class AutonomousMempoolStudy {
         if (observationCount % 5 === 0) {
           this.saveStudy();
         }
-      } catch (error: any) {
-        console.error(`❌ Observation failed: ${error.message}`);
+      } catch (error: unknown) {
+        console.error(`❌ Observation failed: ${(error as Error).message || 'Unknown error'}`);
       }
     };
     
