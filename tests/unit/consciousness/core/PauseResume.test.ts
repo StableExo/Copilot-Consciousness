@@ -584,14 +584,14 @@ describe('PauseResumeManager', () => {
       vi.useRealTimers();
     });
 
-    it('should remove all event listeners on cleanup', () => {
+    it('should remove all event listeners on cleanup', async () => {
       const listener = vi.fn();
       manager.on('pause:started', listener);
 
       manager.cleanup();
 
       // This should not emit to the listener
-      manager.pause({ type: PauseConditionType.IMMEDIATE });
+      await manager.pause({ type: PauseConditionType.IMMEDIATE });
       expect(listener).not.toHaveBeenCalled();
     });
   });

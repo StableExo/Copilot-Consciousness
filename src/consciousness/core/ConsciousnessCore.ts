@@ -118,6 +118,13 @@ export class ConsciousnessCore {
   }
 
   /**
+   * Check if the system is active
+   */
+  isActive(): boolean {
+    return this.pauseResumeManager.isActive();
+  }
+
+  /**
    * Get pause/resume status
    */
   getPauseStatus() {
