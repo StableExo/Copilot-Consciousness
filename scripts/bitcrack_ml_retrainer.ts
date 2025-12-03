@@ -227,7 +227,7 @@ export class BitCrackMLRetrainer {
       next_retrain_recommendation: this.getNextRetrainRecommendation(newSolutions.length)
     };
     
-    this.saveReport(report);
+    await this.saveReport(report);
     this.updateLastKnownState(newSolutions);
     
     console.log('\n' + '='.repeat(80));
@@ -257,7 +257,7 @@ export class BitCrackMLRetrainer {
   private loadLastKnownState(): { max_solved_puzzle: number; last_check: string } {
     if (!existsSync(this.lastCheckPath)) {
       return {
-        max_solved_puzzle: 70, // Known solved as of Dec 2025
+        max_solved_puzzle: 70, // Known solved as of Dec 2024
         last_check: new Date(0).toISOString()
       };
     }
@@ -355,10 +355,10 @@ export class BitCrackMLRetrainer {
   /**
    * Save retraining report
    */
-  private saveReport(report: RetrainingReport): void {
+  private async saveReport(report: RetrainingReport): Promise<void> {
     // Ensure reports directory exists
     if (!existsSync(this.reportsDir)) {
-      execAsync(`mkdir -p ${this.reportsDir}`);
+      await execAsync(`mkdir -p ${this.reportsDir}`);
     }
     
     const reportPath = join(this.reportsDir, `retrain_${Date.now()}.json`);

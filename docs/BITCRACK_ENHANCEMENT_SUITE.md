@@ -93,6 +93,36 @@ npx tsx scripts/bitcrack_hardware_profiler.ts monitor 60
 
 ---
 
+#### ✅ 6. Bitcoin Path Analyzer (`bitcoin_path_analyzer.ts`)
+**Purpose**: Track Bitcoin fund flow and address connections
+
+**Integrated Tools**:
+- BitcoinPaths.com: https://bitcoinpaths.com/ (path visualization)
+- TxGraph.info: https://txgraph.info/ (transaction graph)
+
+**Features**:
+- Address information lookup
+- Fund flow tracking
+- Puzzle spending pattern analysis
+- Address clustering based on ownership heuristics
+- Visual connection mapping
+
+**Usage**:
+```bash
+# Display integration info
+npx tsx scripts/bitcoin_path_analyzer.ts info
+
+# Track puzzle #71 funds
+npx tsx scripts/bitcoin_path_analyzer.ts track 71 1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU
+
+# Compare multiple addresses
+npx tsx scripts/bitcoin_path_analyzer.ts compare 1PWo3... 1Fo65... 1CD91...
+```
+
+**Workflow**: Blockchain API → Transaction graph → Path visualization → Pattern detection
+
+---
+
 #### ✅ 4. Model Retraining Automation (`bitcrack_ml_retrainer.ts`)
 **Purpose**: Automatically retrain ML models when new puzzles are solved
 

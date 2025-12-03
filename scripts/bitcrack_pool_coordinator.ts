@@ -114,7 +114,7 @@ export class BitCrackPoolCoordinator {
     
     // Simulated assignment (would come from API)
     const assignment: PoolAssignment = {
-      assignment_id: `assign_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      assignment_id: `assign_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
       puzzle: this.config.puzzle_number,
       start_hex: this.config.custom_range?.start || '400000000000000000',
       end_hex: this.config.custom_range?.end || '800000000000000000',
@@ -364,7 +364,7 @@ export class BitCrackPoolCoordinator {
     // Create default configuration
     const config: PoolConfig = {
       pool_url: 'https://bitcrackrandomiser.com', // Example - replace with actual
-      client_id: `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      client_id: `client_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
       puzzle_number: 71,
       scan_type: customRange ? 'customRange' : 'includeDefeated',
       custom_range: customRange,
