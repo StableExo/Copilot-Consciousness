@@ -53,4 +53,30 @@ describe('Metacognition', () => {
         expect(log[0].type).toBe('question_for_future');
         expect(log[0].data.question).toBe('test question');
     });
+
+    it('should handle corrupted JSON file gracefully with backup', () => {
+        // Create a corrupted JSON file
+        const memoryDir = path.dirname(METACOGNITION_LOG_PATH);
+        if (!fs.existsSync(memoryDir)) {
+            fs.mkdirSync(memoryDir, { recursive: true });
+        }
+        fs.writeFileSync(METACOGNITION_LOG_PATH, '{ "corrupted": JSON }', 'utf-8');
+        
+        // Should not throw, but initialize with empty log
+        const metacognition = new Metacognition();
+        
+        // Verify it started with empty log and auto-repaired
+        const log = JSON.parse(fs.readFileSync(METACOGNITION_LOG_PATH, 'utf-8'));
+        expect(log).toEqual([]);
+        
+        // Verify backup was created
+        const backupFiles = fs.readdirSync(memoryDir)
+            .filter(f => f.startsWith('metacognition_log.json.corrupted.') && f.endsWith('.bak'));
+        expect(backupFiles.length).toBeGreaterThan(0);
+        
+        // Clean up backup files
+        backupFiles.forEach(f => {
+            fs.unlinkSync(path.join(memoryDir, f));
+        });
+    });
 });

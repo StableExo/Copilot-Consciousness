@@ -37,6 +37,16 @@ export class Metacognition {
                 console.error('[Metacognition] Failed to parse metacognition log. Starting with empty log.');
                 console.error('[Metacognition] Error:', error instanceof Error ? error.message : String(error));
                 console.error('[Metacognition] This may indicate a corrupted or conflicted JSON file.');
+                
+                // Create backup before overwriting
+                try {
+                    const backupPath = METACOGNITION_LOG_PATH + `.corrupted.${Date.now()}.bak`;
+                    fs.copyFileSync(METACOGNITION_LOG_PATH, backupPath);
+                    console.error(`[Metacognition] Corrupted file backed up to: ${backupPath}`);
+                } catch (backupError) {
+                    console.error('[Metacognition] Failed to back up corrupted file:', backupError instanceof Error ? backupError.message : String(backupError));
+                }
+                
                 // Start with empty log rather than crashing
                 this.log = [];
                 // Save the empty log to fix the corrupted file
