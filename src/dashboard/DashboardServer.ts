@@ -445,6 +445,14 @@ export class DashboardServer {
   }
 
   /**
+   * Broadcast an event to all connected WebSocket clients
+   * Provides controlled access to WebSocket broadcasting without exposing the handler
+   */
+  broadcastEvent(eventName: string, data: any): void {
+    this.wsHandler.broadcast(eventName, data);
+  }
+
+  /**
    * Get TimeSeriesDB
    */
   getTimeSeriesDB(): TimeSeriesDB | undefined {

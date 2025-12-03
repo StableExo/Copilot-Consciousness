@@ -66,6 +66,18 @@ import { ArbitragePath } from './arbitrage/types';
 import { PoolDataStore } from './arbitrage/PoolDataStore';
 import { Metacognition } from '../consciousness/metacognition';
 
+// Type-safe event definitions for TheWarden
+interface TheWardenEvents {
+  'scan:start': (data: { chainId: number; cycle: number }) => void;
+  'scan:complete': (data: { chainId: number; cycle: number; opportunitiesFound: number }) => void;
+  'scan:no-opportunities': (data: { chainId: number; cycle: number }) => void;
+  'opportunities:found': (data: { opportunities: any[] }) => void;
+  'consciousness:activate': (data: any) => void;
+  'scan_error': (error: Error) => void;
+  'started': () => void;
+  'shutdown': () => void;
+}
+
 // Phase 3 Imports
 import {
   loadPhase3Config,
@@ -1872,17 +1884,11 @@ class EnhancedTheWarden extends EventEmitter {
     // Run first scan asynchronously (don't block startup)
     // This prevents hanging if RPC endpoints are slow or unavailable
     logger.info('TheWarden is now running and scanning for opportunities', 'MAIN');
-    this.scanCycle().catch((error) => {
-      logger.error(`Error in initial scan cycle: ${error}`, 'MAIN');
-    });
+    this.scanCycle(); // Fire and forget - errors handled internally
 
     // Set up interval for continuous scanning
-    this.scanInterval = setInterval(async () => {
-      try {
-        await this.scanCycle();
-      } catch (error) {
-        logger.error(`Error in scan cycle: ${error}`, 'MAIN');
-      }
+    this.scanInterval = setInterval(() => {
+      this.scanCycle(); // Errors handled internally by scanCycle
     }, scanInterval);
   }
 
@@ -2016,8 +2022,8 @@ async function main() {
   );
   // =================================================================
   let theWarden: TheWarden | EnhancedTheWarden | undefined;
-  // Store event listener references for cleanup
-  const eventListeners: Map<string, (...args: any[]) => void> = new Map();
+  // Store event listener references for cleanup with type safety
+  const eventListeners: Map<keyof TheWardenEvents, TheWardenEvents[keyof TheWardenEvents]> = new Map();
 
   try {
     // Choose which initializer pattern to use
@@ -2125,50 +2131,50 @@ async function main() {
         logger.info('Dashboard server started successfully', 'MAIN');
         
         // Connect TheWarden events to dashboard WebSocket for live updates
-        if (theWarden && dashboardServer && dashboardServer.wsHandler) {
+        if (theWarden && dashboardServer) {
           logger.info('Connecting TheWarden events to dashboard...', 'MAIN');
           
-          // Capture dashboard reference for use in callbacks
-          const dashboard = dashboardServer;
+          // Capture wsHandler reference in closure to avoid null reference issues
+          const wsHandler = dashboardServer.wsHandler;
           
           // Create event listener functions and store references for cleanup
           const scanStartListener = (data: any) => {
-            dashboard.wsHandler.broadcast('warden:scan:start', data);
+            wsHandler.broadcast('warden:scan:start', data);
           };
           eventListeners.set('scan:start', scanStartListener);
           
           const scanCompleteListener = (data: any) => {
-            dashboard.wsHandler.broadcast('warden:scan:complete', data);
+            wsHandler.broadcast('warden:scan:complete', data);
           };
           eventListeners.set('scan:complete', scanCompleteListener);
           
           const scanNoOpportunitiesListener = (data: any) => {
-            dashboard.wsHandler.broadcast('warden:scan:no-opportunities', data);
+            wsHandler.broadcast('warden:scan:no-opportunities', data);
           };
           eventListeners.set('scan:no-opportunities', scanNoOpportunitiesListener);
           
           const opportunitiesFoundListener = (data: any) => {
-            dashboard.wsHandler.broadcast('warden:opportunities', data);
+            wsHandler.broadcast('warden:opportunities', data);
           };
           eventListeners.set('opportunities:found', opportunitiesFoundListener);
           
           const consciousnessActivateListener = (data: any) => {
-            dashboard.wsHandler.broadcast('warden:consciousness', data);
+            wsHandler.broadcast('warden:consciousness', data);
           };
           eventListeners.set('consciousness:activate', consciousnessActivateListener);
           
           const scanErrorListener = (data: any) => {
-            dashboard.wsHandler.broadcast('warden:error', data);
+            wsHandler.broadcast('warden:error', data);
           };
           eventListeners.set('scan_error', scanErrorListener);
           
           const startedListener = () => {
-            dashboard.wsHandler.broadcast('warden:status', { status: 'running', timestamp: Date.now() });
+            wsHandler.broadcast('warden:status', { status: 'running', timestamp: Date.now() });
           };
           eventListeners.set('started', startedListener);
           
           const shutdownListener = () => {
-            dashboard.wsHandler.broadcast('warden:status', { status: 'stopped', timestamp: Date.now() });
+            wsHandler.broadcast('warden:status', { status: 'stopped', timestamp: Date.now() });
           };
           eventListeners.set('shutdown', shutdownListener);
           
