@@ -1,0 +1,49 @@
+{
+  "puzzle": 71,
+  "target_address": "1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU",
+  "ml_prediction": {
+    "position": 64.9572188082712,
+    "ci_lower": 13.22807239954414,
+    "ci_upper": 100
+  },
+  "ranges": {
+    "high_priority": {
+      "start": "5999999999999A0000",
+      "end": "7999999999999A0000",
+      "coverage": 50.0,
+      "description": "ML-optimized 40-90% range"
+    },
+    "multi_gpu_splits": [
+      {
+        "gpu": 0,
+        "start": "5999999999999A0000",
+        "end": "633333333333340000",
+        "description": "Lower third"
+      },
+      {
+        "gpu": 1,
+        "start": "633333333333340000",
+        "end": "6CCCCCCCCCCCCC0000",
+        "description": "Middle third"
+      },
+      {
+        "gpu": 2,
+        "start": "6CCCCCCCCCCCCC0000",
+        "end": "7999999999999A0000",
+        "description": "Upper third"
+      }
+    ],
+    "fallback": [
+      {
+        "start": "400000000000000000",
+        "end": "5999999999999A0000",
+        "description": "Bottom 40%"
+      },
+      {
+        "start": "7999999999999A0000",
+        "end": "800000000000000000",
+        "description": "Top 10%"
+      }
+    ]
+  }
+}
