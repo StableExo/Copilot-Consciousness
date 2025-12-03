@@ -1,10 +1,10 @@
 /**
  * PauseResume.ts
- * 
+ *
  * Implements pause and resume functionality for the consciousness system.
  * This module allows controlled suspension and restoration of cognitive processes
  * with configurable interaction models and state preservation.
- * 
+ *
  * Design decisions based on Jules AI collaboration:
  * 1. Partial suspension: Sensory input continues, actions halted
  * 2. Full state serialization with critical component priority
@@ -20,39 +20,39 @@ import * as path from 'path';
  * Pause state enum
  */
 export enum PauseState {
-  ACTIVE = 'ACTIVE',           // Normal operation
-  PAUSING = 'PAUSING',         // Transitioning to paused
-  PAUSED = 'PAUSED',           // Fully paused
-  RESUMING = 'RESUMING',       // Transitioning to active
+  ACTIVE = 'ACTIVE', // Normal operation
+  PAUSING = 'PAUSING', // Transitioning to paused
+  PAUSED = 'PAUSED', // Fully paused
+  RESUMING = 'RESUMING', // Transitioning to active
 }
 
 /**
  * Interaction mode during pause
  */
 export enum PauseInteractionMode {
-  NONE = 'NONE',                   // Completely unresponsive
-  READ_ONLY = 'READ_ONLY',         // Can query memory, no actions
-  QUEUE = 'QUEUE',                 // Accept input, queue for resume
+  NONE = 'NONE', // Completely unresponsive
+  READ_ONLY = 'READ_ONLY', // Can query memory, no actions
+  QUEUE = 'QUEUE', // Accept input, queue for resume
 }
 
 /**
  * Pause condition type
  */
 export enum PauseConditionType {
-  IMMEDIATE = 'IMMEDIATE',                     // Pause immediately
-  AFTER_CURRENT_TASK = 'AFTER_CURRENT_TASK',  // Complete current task first
-  ON_ERROR = 'ON_ERROR',                       // Pause on critical error
-  ON_MILESTONE = 'ON_MILESTONE',               // Pause after milestone reached
-  SCHEDULED = 'SCHEDULED',                     // Pause at specific time
+  IMMEDIATE = 'IMMEDIATE', // Pause immediately
+  AFTER_CURRENT_TASK = 'AFTER_CURRENT_TASK', // Complete current task first
+  ON_ERROR = 'ON_ERROR', // Pause on critical error
+  ON_MILESTONE = 'ON_MILESTONE', // Pause after milestone reached
+  SCHEDULED = 'SCHEDULED', // Pause at specific time
 }
 
 /**
  * Resume condition type
  */
 export enum ResumeConditionType {
-  MANUAL = 'MANUAL',                 // Manual resume command
-  SCHEDULED = 'SCHEDULED',           // Resume at specific time
-  ON_EVENT = 'ON_EVENT',             // Resume on external event
+  MANUAL = 'MANUAL', // Manual resume command
+  SCHEDULED = 'SCHEDULED', // Resume at specific time
+  ON_EVENT = 'ON_EVENT', // Resume on external event
   AFTER_DURATION = 'AFTER_DURATION', // Resume after time elapsed
 }
 
@@ -62,8 +62,8 @@ export enum ResumeConditionType {
 export interface PauseCondition {
   type: PauseConditionType;
   message?: string;
-  timestamp?: number;      // For scheduled pauses
-  milestone?: string;      // For milestone-based pauses
+  timestamp?: number; // For scheduled pauses
+  milestone?: string; // For milestone-based pauses
   errorThreshold?: number; // For error-triggered pauses
 }
 
@@ -72,9 +72,9 @@ export interface PauseCondition {
  */
 export interface ResumeCondition {
   type: ResumeConditionType;
-  timestamp?: number;      // For scheduled resumes
-  duration?: number;       // For duration-based resumes (milliseconds)
-  event?: string;          // For event-based resumes
+  timestamp?: number; // For scheduled resumes
+  duration?: number; // For duration-based resumes (milliseconds)
+  event?: string; // For event-based resumes
   message?: string;
 }
 
@@ -85,21 +85,21 @@ export interface SerializedCognitiveState {
   version: string;
   timestamp: number;
   pauseReason?: string;
-  
+
   // Memory subsystem states
   sensoryMemory: unknown[];
   shortTermMemory: unknown[];
   workingMemory: unknown[];
-  
+
   // Active cognitive processes
   activeThoughts: unknown[];
   goals: unknown[];
   emotionalState: unknown;
-  
+
   // Session context
   sessionId?: string;
   collaboratorContext?: unknown;
-  
+
   // Metadata
   cognitiveLoad: number;
   pauseDuration?: number;
@@ -112,7 +112,7 @@ export interface PauseResumeConfig {
   interactionMode: PauseInteractionMode;
   persistStateToDisk: boolean;
   statePath?: string;
-  maxPauseDuration?: number;  // Auto-resume after duration (ms)
+  maxPauseDuration?: number; // Auto-resume after duration (ms)
   allowConditionalPause: boolean;
   allowConditionalResume: boolean;
 }
@@ -186,8 +186,10 @@ export class PauseResumeManager extends EventEmitter {
       return true;
     }
     if (this.state === PauseState.PAUSED) {
-      return this.config.interactionMode === PauseInteractionMode.READ_ONLY ||
-             this.config.interactionMode === PauseInteractionMode.QUEUE;
+      return (
+        this.config.interactionMode === PauseInteractionMode.READ_ONLY ||
+        this.config.interactionMode === PauseInteractionMode.QUEUE
+      );
     }
     return false;
   }
@@ -202,7 +204,9 @@ export class PauseResumeManager extends EventEmitter {
   /**
    * Pause the system
    */
-  async pause(condition: PauseCondition = { type: PauseConditionType.IMMEDIATE }): Promise<boolean> {
+  async pause(
+    condition: PauseCondition = { type: PauseConditionType.IMMEDIATE }
+  ): Promise<boolean> {
     if (this.state !== PauseState.ACTIVE) {
       return false;
     }
@@ -218,22 +222,22 @@ export class PauseResumeManager extends EventEmitter {
     switch (condition.type) {
       case PauseConditionType.IMMEDIATE:
         return this.executePause(condition.message);
-      
+
       case PauseConditionType.AFTER_CURRENT_TASK:
         this.state = PauseState.PAUSING;
         this.emit('pause:waiting_for_task');
         // Caller should call executePause() when task completes
         return true;
-      
+
       case PauseConditionType.ON_ERROR:
         // Pause immediately on error
         return this.executePause(`Error threshold exceeded: ${condition.message}`);
-      
+
       case PauseConditionType.ON_MILESTONE:
         this.state = PauseState.PAUSING;
         this.emit('pause:waiting_for_milestone', condition.milestone);
         return true;
-      
+
       case PauseConditionType.SCHEDULED:
         if (condition.timestamp) {
           const delay = condition.timestamp - Date.now();
@@ -244,7 +248,7 @@ export class PauseResumeManager extends EventEmitter {
           }
         }
         return this.executePause(condition.message);
-      
+
       default:
         return false;
     }
@@ -291,7 +295,9 @@ export class PauseResumeManager extends EventEmitter {
   /**
    * Resume the system
    */
-  async resume(condition: ResumeCondition = { type: ResumeConditionType.MANUAL }): Promise<boolean> {
+  async resume(
+    condition: ResumeCondition = { type: ResumeConditionType.MANUAL }
+  ): Promise<boolean> {
     if (this.state !== PauseState.PAUSED && this.state !== PauseState.PAUSING) {
       return false;
     }
@@ -307,7 +313,7 @@ export class PauseResumeManager extends EventEmitter {
     switch (condition.type) {
       case ResumeConditionType.MANUAL:
         return this.executeResume(condition.message);
-      
+
       case ResumeConditionType.SCHEDULED:
         if (condition.timestamp) {
           const delay = condition.timestamp - Date.now();
@@ -320,16 +326,16 @@ export class PauseResumeManager extends EventEmitter {
           }
         }
         return this.executeResume(condition.message);
-      
+
       case ResumeConditionType.AFTER_DURATION:
         // Already handled by auto-resume timer
         return this.executeResume('Auto-resume after duration');
-      
+
       case ResumeConditionType.ON_EVENT:
         // Event-based resume will be triggered externally
         this.emit('resume:waiting_for_event', condition.event);
         return true;
-      
+
       default:
         return false;
     }
@@ -363,7 +369,10 @@ export class PauseResumeManager extends EventEmitter {
       }
 
       // Process queued inputs if in queue mode
-      if (this.config.interactionMode === PauseInteractionMode.QUEUE && this.inputQueue.length > 0) {
+      if (
+        this.config.interactionMode === PauseInteractionMode.QUEUE &&
+        this.inputQueue.length > 0
+      ) {
         this.emit('resume:processing_queue', this.inputQueue.length);
         // Queue will be processed by the consciousness system
       }
@@ -490,16 +499,13 @@ export class PauseResumeManager extends EventEmitter {
 
     try {
       this.ensureStateDirectory();
-      
+
       const stateFile = path.join(this.config.statePath, 'latest_pause_state.json');
-      const archiveFile = path.join(
-        this.config.statePath,
-        `pause_state_${state.timestamp}.json`
-      );
+      const archiveFile = path.join(this.config.statePath, `pause_state_${state.timestamp}.json`);
 
       // Save as latest
       fs.writeFileSync(stateFile, JSON.stringify(state, null, 2));
-      
+
       // Archive copy
       fs.writeFileSync(archiveFile, JSON.stringify(state, null, 2));
 

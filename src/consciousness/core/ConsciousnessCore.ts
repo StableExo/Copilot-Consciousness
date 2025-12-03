@@ -83,7 +83,7 @@ export class ConsciousnessCore {
     }
 
     const success = await this.pauseResumeManager.pause(condition);
-    
+
     if (success && this.pauseResumeManager.isPaused()) {
       // Capture current cognitive state
       const state = this.captureCurrentState();
@@ -98,7 +98,7 @@ export class ConsciousnessCore {
    */
   async resume(condition?: ResumeCondition): Promise<boolean> {
     const success = await this.pauseResumeManager.resume(condition);
-    
+
     if (success && this.pauseResumeManager.isActive()) {
       // Restore cognitive state if available
       const savedState = await this.pauseResumeManager.loadStateFromDisk();
@@ -141,9 +141,9 @@ export class ConsciousnessCore {
     const workingMemory = this.memorySystem.searchMemories({ type: MemoryType.WORKING });
 
     return {
-      sensoryMemory: sensoryMemory.map(m => m.content),
-      shortTermMemory: shortTermMemory.map(m => m.content),
-      workingMemory: workingMemory.map(m => m.content),
+      sensoryMemory: sensoryMemory.map((m) => m.content),
+      shortTermMemory: shortTermMemory.map((m) => m.content),
+      workingMemory: workingMemory.map((m) => m.content),
       emotionalState: this.emotionalState.getCurrent(),
       cognitiveLoad: this.calculateCognitiveLoad(workingMemory.length),
     };
