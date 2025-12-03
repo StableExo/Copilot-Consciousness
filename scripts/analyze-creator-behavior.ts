@@ -67,7 +67,7 @@ function parsePuzzleData(csvPath: string): PuzzleSolve[] {
 
 async function main() {
   console.log('👤 Creator Behavior Pattern Analysis');
-  console.log('=' .repeat(80));
+  console.log('='.repeat(80));
   console.log();
   
   const csvPath = path.join(process.cwd(), 'bitcoin-puzzle-all-20251203.csv');

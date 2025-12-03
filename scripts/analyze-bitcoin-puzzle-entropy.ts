@@ -136,7 +136,7 @@ function parsePuzzleData(csvPath: string): PuzzleData[] {
  */
 async function main() {
   console.log('🔍 Bitcoin Puzzle Entropy Analysis');
-  console.log('=' .repeat(80));
+  console.log('='.repeat(80));
   console.log();
   
   const csvPath = path.join(process.cwd(), 'bitcoin-puzzle-all-20251203.csv');
@@ -318,7 +318,7 @@ async function main() {
   console.log('   Timeline shows periodic activity spanning 10 years.');
   console.log('   Recent solves suggest creator still monitoring.');
   console.log();
-  console.log('=' .repeat(80));
+  console.log('='.repeat(80));
   console.log();
   console.log('✅ Analysis complete! Patterns confirmed.');
   console.log('📝 See BREAKTHROUGH_DISCOVERIES.md for full context.');
