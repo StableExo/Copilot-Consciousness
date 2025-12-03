@@ -65,6 +65,12 @@ npx tsx scripts/bitcrack_pool_coordinator.ts status
 
 **Pool Reference**: https://github.com/iceland2k14/BitCrackRandomiser
 
+**⚠️ CRITICAL SECURITY NOTE:**
+- Monitor public mempool: https://mempool.space/mempool-block/0
+- If your transaction appears there, it WILL be front-run
+- 70% of puzzle solves are stolen this way
+- ALWAYS use private relay for actual solving
+
 ---
 
 #### ✅ 3. Hardware Performance Profiling (`bitcrack_hardware_profiler.ts`)
