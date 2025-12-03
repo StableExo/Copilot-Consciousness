@@ -119,10 +119,12 @@
     "speakeasy": "2.0.0",
     "uuid": "13.0.0",
     "viem": "2.40.3",
+    "ws": "8.18.0",
     "zod": "4.1.13"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.3",
+    "@types/ws": "8.5.13",
     "@eslint/js": "9.39.1",
     "@nomicfoundation/hardhat-ethers": "4.0.3",
     "@nomicfoundation/hardhat-verify": "3.0.7",
@@ -159,7 +161,7 @@
     "flat": "5.0.1",
     "minimatch": "3.0.5",
     "body-parser": "1.20.3",
-    "ws": "8.17.1",
+    "ws": "8.18.0",
     "braces": "3.0.3",
     "js-yaml": "4.1.1",
     "cookie": "0.7.2",

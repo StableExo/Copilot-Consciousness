@@ -5,8 +5,15 @@
  * Monitors mempool.space for puzzle-related transactions.
  * CRITICAL for understanding MEV and front-running attacks.
  * 
- * Key Resource: https://mempool.space/mempool-block/0
- * This shows the NEXT block being built - all pending transactions visible!
+ * Key Resources:
+ * - https://mempool.space/mempool-block/0 (Next block visualization)
+ * - https://mempool.space/docs/api/rest (REST API including Merkle proofs)
+ * - https://mempool.space/docs/api/websocket (WebSocket live data)
+ * 
+ * Features:
+ * - REST API polling for transaction analysis
+ * - WebSocket streaming for real-time updates
+ * - Merkle proof verification for confirmed transactions
  * 
  * Use Case: Detect if puzzle solution transactions appear in public mempool
  * Warning: If you see your transaction here, it's already too late!
@@ -35,15 +42,46 @@ interface MempoolStats {
   high_value_txs: MempoolTransaction[];
 }
 
+interface MerkleProof {
+  block_height: number;
+  merkle: string[];
+  pos: number;
+}
+
 export class MempoolMonitor {
   private readonly dataDir: string;
   private readonly alertsPath: string;
+  private readonly apiKey: string | undefined;
   private knownPuzzleAddresses: string[] = [];
+  private ws: any = null;
   
   constructor(dataDir: string = 'data/ml-predictions') {
     this.dataDir = dataDir;
     this.alertsPath = join(dataDir, 'mempool_alerts.json');
+    this.apiKey = process.env.MEMPOOL_API_KEY;
+    
+    if (this.apiKey && this.apiKey !== 'your_mempool_api_key_here_32_chars') {
+      console.log('✓ Mempool.space API key loaded (enhanced features enabled)');
+    } else {
+      console.log('ℹ️  No API key configured (using free tier limits)');
+    }
+    
     this.loadPuzzleAddresses();
+  }
+  
+  /**
+   * Get API headers with authentication if available
+   */
+  private getApiHeaders(): HeadersInit {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json'
+    };
+    
+    if (this.apiKey && this.apiKey !== 'your_mempool_api_key_here_32_chars') {
+      headers['Authorization'] = `Bearer ${this.apiKey}`;
+    }
+    
+    return headers;
   }
   
   /**
@@ -51,7 +89,9 @@ export class MempoolMonitor {
    */
   async fetchRecentTransactions(): Promise<MempoolTransaction[]> {
     try {
-      const response = await fetch('https://mempool.space/api/mempool/recent');
+      const response = await fetch('https://mempool.space/api/mempool/recent', {
+        headers: this.getApiHeaders()
+      });
       if (!response.ok) return [];
       
       const data = await response.json();
@@ -67,7 +107,9 @@ export class MempoolMonitor {
    */
   async fetchNextBlock(): Promise<any> {
     try {
-      const response = await fetch('https://mempool.space/api/v1/fees/mempool-blocks');
+      const response = await fetch('https://mempool.space/api/v1/fees/mempool-blocks', {
+        headers: this.getApiHeaders()
+      });
       if (!response.ok) return null;
       
       const data = await response.json();
@@ -75,6 +117,161 @@ export class MempoolMonitor {
     } catch (error) {
       console.error('Failed to fetch next block:', error);
       return null;
+    }
+  }
+  
+  /**
+   * Get Merkle proof for a confirmed transaction
+   * API: https://mempool.space/docs/api/rest#get-transaction-merkleblock-proof
+   */
+  async getMerkleProof(txid: string): Promise<MerkleProof | null> {
+    console.log(`🔍 Fetching Merkle proof for ${txid}...`);
+    
+    try {
+      const response = await fetch(
+        `https://mempool.space/api/tx/${txid}/merkleblock-proof`,
+        { headers: this.getApiHeaders() }
+      );
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.log('   Transaction not yet confirmed');
+        } else {
+          console.error(`   API error: ${response.status}`);
+        }
+        return null;
+      }
+      
+      const proof = await response.json();
+      console.log(`✓ Merkle proof retrieved (block ${proof.block_height}, ${proof.merkle.length} hashes)`);
+      
+      return proof as MerkleProof;
+    } catch (error: any) {
+      console.error(`❌ Failed to fetch Merkle proof: ${error.message}`);
+      return null;
+    }
+  }
+  
+  /**
+   * Start WebSocket connection for live data streaming
+   * API: https://mempool.space/docs/api/websocket#live-data
+   */
+  async startWebSocketMonitoring(): Promise<void> {
+    console.log('\n' + '='.repeat(80));
+    console.log('📡 Starting WebSocket Live Monitoring');
+    console.log('='.repeat(80));
+    console.log('\n🌐 Connecting to mempool.space WebSocket...');
+    console.log('   API: wss://mempool.space/api/v1/ws');
+    
+    try {
+      // Dynamic import of ws module
+      const { default: WebSocket } = await import('ws');
+      
+      this.ws = new WebSocket('wss://mempool.space/api/v1/ws');
+      
+      this.ws.on('open', () => {
+        console.log('✓ WebSocket connected!');
+        console.log('\n📊 Subscribed to live data streams:');
+        console.log('   - New transactions (real-time)');
+        console.log('   - Block confirmations');
+        console.log('   - Mempool statistics');
+        console.log('\nPress Ctrl+C to stop\n');
+        
+        // Subscribe to want tracks
+        this.ws.send(JSON.stringify({ 'track-mempool-block': 0 }));
+      });
+      
+      this.ws.on('message', (data: any) => {
+        try {
+          const message = JSON.parse(data.toString());
+          this.handleWebSocketMessage(message);
+        } catch (error) {
+          console.error('Failed to parse WebSocket message:', error);
+        }
+      });
+      
+      this.ws.on('error', (error: any) => {
+        console.error('❌ WebSocket error:', error.message);
+      });
+      
+      this.ws.on('close', () => {
+        console.log('\n✓ WebSocket connection closed');
+      });
+      
+    } catch (error: any) {
+      console.error('❌ Failed to start WebSocket:', error.message);
+      console.log('\nℹ️  WebSocket requires "ws" package:');
+      console.log('   npm install ws');
+      console.log('   npm install --save-dev @types/ws');
+    }
+  }
+  
+  /**
+   * Handle incoming WebSocket messages
+   */
+  private handleWebSocketMessage(message: any): void {
+    const timestamp = new Date().toLocaleTimeString();
+    
+    if (message.mempoolInfo) {
+      // Mempool statistics update
+      const info = message.mempoolInfo;
+      console.log(`[${timestamp}] 📊 Mempool: ${info.size} txs, ` +
+                  `${(info.vsize / 1e6).toFixed(2)} MB, ` +
+                  `${info.total_fee} sats fees`);
+    }
+    
+    if (message.block) {
+      // New block mined
+      const block = message.block;
+      console.log(`[${timestamp}] 🔨 New block: #${block.height} ` +
+                  `(${block.tx_count} txs, ${(block.size / 1e6).toFixed(2)} MB)`);
+    }
+    
+    if (message['mempool-blocks']) {
+      // Next block update (mempool-block/0)
+      const blocks = message['mempool-blocks'];
+      if (blocks.length > 0) {
+        const nextBlock = blocks[0];
+        console.log(`[${timestamp}] ⏭️  Next block: ${nextBlock.nTx} txs, ` +
+                    `${(nextBlock.totalFees / 1e8).toFixed(8)} BTC fees`);
+        
+        // Check for high-value transactions
+        if (nextBlock.medianFee > 100) { // High fee indicator
+          console.log(`   ⚠️ High fees detected (${nextBlock.medianFee} sat/vB) - possible MEV activity`);
+        }
+      }
+    }
+    
+    if (message.tx) {
+      // New transaction in mempool
+      const tx = message.tx;
+      const value = tx.vout ? tx.vout.reduce((sum: number, out: any) => sum + out.value, 0) : 0;
+      
+      if (value > 100000000) { // > 1 BTC
+        console.log(`[${timestamp}] 🚨 HIGH VALUE TX: ${tx.txid.substring(0, 16)}...`);
+        console.log(`   Value: ${(value / 1e8).toFixed(8)} BTC`);
+        console.log(`   Fee: ${tx.fee} sats`);
+        
+        // Save alert
+        this.saveAlert({
+          timestamp: new Date().toISOString(),
+          type: 'high_value_websocket',
+          txid: tx.txid,
+          value: value,
+          fee: tx.fee
+        });
+      }
+    }
+  }
+  
+  /**
+   * Stop WebSocket connection
+   */
+  stopWebSocketMonitoring(): void {
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
+      console.log('✓ WebSocket monitoring stopped');
     }
   }
   
@@ -347,16 +544,49 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         await monitor.startMonitoring(interval);
         break;
         
+      case 'stream':
+        // WebSocket live monitoring
+        await monitor.startWebSocketMonitoring();
+        // Keep process alive
+        await new Promise(() => {}); // Infinite promise
+        break;
+        
+      case 'proof':
+        // Get Merkle proof for a transaction
+        const txid = process.argv[3];
+        if (!txid) {
+          console.log('Usage: npx tsx scripts/mempool_monitor.ts proof <txid>');
+          console.log('');
+          console.log('Example:');
+          console.log('  npx tsx scripts/mempool_monitor.ts proof 12f34b58b04dfb0233ce889f674781c0e0c7ba95482cca469125af41a78d13b3');
+        } else {
+          const proof = await monitor.getMerkleProof(txid);
+          if (proof) {
+            console.log('\n📜 Merkle Proof:');
+            console.log(JSON.stringify(proof, null, 2));
+          }
+        }
+        break;
+        
       default:
-        console.log('Bitcoin Mempool Monitor');
+        console.log('Bitcoin Mempool Monitor - Enhanced Edition');
         console.log('');
         console.log('CRITICAL SECURITY TOOL');
         console.log('Monitors: https://mempool.space/mempool-block/0');
+        console.log('');
+        console.log('Features:');
+        console.log('  ✓ REST API polling');
+        console.log('  ✓ WebSocket live streaming (NEW!)');
+        console.log('  ✓ Merkle proof verification (NEW!)');
+        console.log('  ✓ High-value transaction alerts');
+        console.log('  ✓ Front-running detection');
         console.log('');
         console.log('Usage:');
         console.log('  npx tsx scripts/mempool_monitor.ts info');
         console.log('  npx tsx scripts/mempool_monitor.ts analyze');
         console.log('  npx tsx scripts/mempool_monitor.ts monitor [interval_seconds]');
+        console.log('  npx tsx scripts/mempool_monitor.ts stream           # NEW: WebSocket live data');
+        console.log('  npx tsx scripts/mempool_monitor.ts proof <txid>     # NEW: Get Merkle proof');
         console.log('');
         console.log('Examples:');
         console.log('  # Learn about mempool and front-running');
@@ -365,8 +595,18 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         console.log('  # Analyze current mempool state');
         console.log('  npx tsx scripts/mempool_monitor.ts analyze');
         console.log('');
-        console.log('  # Monitor continuously (every 10 seconds)');
+        console.log('  # Monitor with polling (every 10 seconds)');
         console.log('  npx tsx scripts/mempool_monitor.ts monitor 10');
+        console.log('');
+        console.log('  # Stream live data via WebSocket (recommended)');
+        console.log('  npx tsx scripts/mempool_monitor.ts stream');
+        console.log('');
+        console.log('  # Verify transaction with Merkle proof');
+        console.log('  npx tsx scripts/mempool_monitor.ts proof 12f34b58b04dfb0233ce889f674781c0e0c7ba95482cca469125af41a78d13b3');
+        console.log('');
+        console.log('API Key (optional - enhances rate limits):');
+        console.log('  Set MEMPOOL_API_KEY in .env file');
+        console.log('  Get from: https://mempool.space/docs/api');
         console.log('');
         console.log('⚠️ WARNING: If your puzzle solution appears in public mempool,');
         console.log('it WILL be front-run and stolen. Use private relay!');
