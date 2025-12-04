@@ -252,9 +252,13 @@ export class MemoryAdapter {
   // === Local File Operations ===
 
   private async loadStateLocal(sessionId: string): Promise<any> {
-    const filePath = path.join(process.cwd(), '.memory', 'introspection', `state_${sessionId}.json`);
-    const content = await fs.readFile(filePath, 'utf-8');
-    return JSON.parse(content);
+    try {
+      const filePath = path.join(process.cwd(), '.memory', 'introspection', `state_${sessionId}.json`);
+      const content = await fs.readFile(filePath, 'utf-8');
+      return JSON.parse(content);
+    } catch (err) {
+      throw new Error(`Failed to load local state for session ${sessionId}: ${(err as Error).message}`);
+    }
   }
 
   private async saveStateLocal(state: any): Promise<void> {
@@ -309,16 +313,28 @@ export class MemoryAdapter {
     const introspectionDir = path.join(process.cwd(), '.memory', 'introspection');
     const kbDir = path.join(process.cwd(), '.memory', 'knowledge_base');
 
-    const [introspectionFiles, kbFiles] = await Promise.all([
-      fs.readdir(introspectionDir).then(files => files.filter(f => f.endsWith('.json'))),
-      fs.readdir(kbDir).then(files => files.filter(f => f.endsWith('.json'))),
-    ]);
+    try {
+      await fs.mkdir(introspectionDir, { recursive: true });
+      await fs.mkdir(kbDir, { recursive: true });
 
-    return {
-      consciousnessStates: introspectionFiles.length,
-      memories: 0, // Would need to parse log.md
-      articles: kbFiles.length,
-    };
+      const [introspectionFiles, kbFiles] = await Promise.all([
+        fs.readdir(introspectionDir).then(files => files.filter(f => f.endsWith('.json'))),
+        fs.readdir(kbDir).then(files => files.filter(f => f.endsWith('.json'))),
+      ]);
+
+      return {
+        consciousnessStates: introspectionFiles.length,
+        memories: 0, // Would need to parse log.md
+        articles: kbFiles.length,
+      };
+    } catch (err) {
+      console.warn('⚠️ Error getting local stats:', err);
+      return {
+        consciousnessStates: 0,
+        memories: 0,
+        articles: 0,
+      };
+    }
   }
 
   // === Auto-sync ===
@@ -339,8 +355,14 @@ export class MemoryAdapter {
     if (!this.config.useSupabase) return;
 
     console.log('🔄 Syncing local memories to Supabase...');
-    // Implementation would check timestamps and sync newer files
-    // This is a stub for now
+    
+    // TODO: Implement bidirectional sync
+    // - Check local file timestamps vs Supabase updated_at
+    // - Upload newer local files to Supabase
+    // - Download newer Supabase records to local
+    // - Handle conflicts (last-write-wins or merge strategies)
+    
+    console.log('⚠️ Auto-sync not yet fully implemented - use migrate:supabase for one-time migration');
   }
 
   public stopAutoSync(): void {
