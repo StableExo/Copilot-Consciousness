@@ -175,3 +175,6 @@ wallet.json
 web_modules/
 yarn-debug.log*
 yarn-error.log*
+
+# Memory backups (local only)
+.memory-exports/

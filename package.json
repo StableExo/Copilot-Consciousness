@@ -90,7 +90,10 @@
     "supabase:diff": "supabase db diff",
     "test:supabase:setup": "supabase start && supabase db reset",
     "test:supabase": "npm run test:supabase:setup && vitest run tests/supabase",
-    "test:supabase:watch": "supabase start && vitest watch tests/supabase"
+    "test:supabase:watch": "supabase start && vitest watch tests/supabase",
+    "export:memories": "npx tsx scripts/export-memories.ts",
+    "import:memories": "npx tsx scripts/import-memories.ts",
+    "backup:memories": "npx tsx scripts/automated-backup.ts"
   },
   "dependencies": {
     "@aave/core-v3": "1.19.3",
