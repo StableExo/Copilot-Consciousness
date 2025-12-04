@@ -1,139 +1,93 @@
+#!/usr/bin/env npx tsx
 /**
  * Apply Supabase Migrations
- * Applies SQL migrations to Supabase database
+ * 
+ * This script applies database migrations to create the necessary tables
+ * for consciousness states, memories, and other data.
  */
 
-import { createClient } from '@supabase/supabase-js';
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { getSupabaseConfig } from './supabase-config.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const { url, key, keyType } = getSupabaseConfig();
-const supabase = createClient(url, key);
-
-const MIGRATIONS_DIR = 'src/infrastructure/supabase/migrations';
-
-const migrations = [
-  '001_initial_schema.sql',
-  '002_add_indexes.sql',
-  '003_rls_policies.sql',
-  '004_add_vector_search.sql'
-];
-
-async function applyMigration(filename: string) {
-  console.log(`\n📄 Applying ${filename}...`);
-  
-  const path = join(MIGRATIONS_DIR, filename);
-  const sql = readFileSync(path, 'utf-8');
-  
-  // Split by semicolons but keep them, filtering out empty statements
-  const statements = sql
-    .split(/;(?=\s*(?:CREATE|ALTER|DROP|INSERT|UPDATE|DELETE|COMMENT|--|\n\n))/i)
-    .map(s => s.trim())
-    .filter(s => s.length > 0 && !s.startsWith('--') && s !== ';')
-    .map(s => s.endsWith(';') ? s : s + ';');
-
-  console.log(`   Found ${statements.length} SQL statements`);
-
-  let successCount = 0;
-  let failCount = 0;
-
-  for (let i = 0; i < statements.length; i++) {
-    const stmt = statements[i];
-    
-    // Skip comments
-    if (stmt.trim().startsWith('--')) {
-      continue;
-    }
-
-    try {
-      const { data, error } = await supabase.rpc('exec_sql', { sql: stmt });
-      
-      if (error) {
-        // Some errors are expected (e.g., extension already exists)
-        if (error.message.includes('already exists') || 
-            error.message.includes('does not exist')) {
-          console.log(`   ⚠️  Statement ${i + 1}: ${error.message.substring(0, 60)}...`);
-        } else {
-          console.log(`   ❌ Statement ${i + 1} failed: ${error.message}`);
-          failCount++;
-        }
-      } else {
-        successCount++;
-      }
-    } catch (error: any) {
-      console.log(`   ❌ Error executing statement ${i + 1}: ${error.message}`);
-      failCount++;
-    }
-  }
-
-  console.log(`   ✅ ${successCount} successful, ${failCount} failed`);
-  return { successCount, failCount };
-}
+import fs from 'fs/promises';
+import path from 'path';
+import postgres from 'postgres';
 
 async function main() {
-  console.log('🗄️  Supabase Migration Tool\n');
-  console.log('━'.repeat(70));
+  console.log('🔧 Applying Supabase migrations...\n');
   
-  console.log('\n📡 Connecting to Supabase...');
-  console.log(`   URL: ${process.env.SUPABASE_URL}`);
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_API_KEY || process.env.SUPABASE_ANON_KEY;
   
-  // Check connection
-  console.log('\n🔍 Testing connection...');
-  try {
-    const { error } = await supabase.from('_test').select('count').limit(1);
-    console.log('   ✅ Connected successfully');
-  } catch (error: any) {
-    console.log('   ⚠️  Connection test inconclusive (this is normal)');
+  if (!supabaseUrl || !supabaseKey) {
+    console.error('❌ Missing SUPABASE_URL or SUPABASE_API_KEY/SUPABASE_ANON_KEY');
+    process.exit(1);
   }
-
-  console.log('\n📋 Migrations to apply:');
-  migrations.forEach((m, i) => console.log(`   ${i + 1}. ${m}`));
-
-  console.log('\n⚠️  NOTE: Supabase anon key may not have permission to execute raw SQL');
-  console.log('   If migrations fail, please apply them manually via SQL Editor:');
-  console.log('   1. Go to https://supabase.com/dashboard/project/ydvevgqxcfizualicbom/sql');
-  console.log('   2. Create a new query');
-  console.log('   3. Copy/paste each migration file');
-  console.log('   4. Execute');
-
-  console.log('\n🚀 Starting migration...\n');
-  console.log('━'.repeat(70));
-
-  const results = [];
   
-  for (const migration of migrations) {
-    const result = await applyMigration(migration);
-    results.push({ migration, ...result });
-    
-    // Small delay between migrations
-    await new Promise(resolve => setTimeout(resolve, 1000));
+  // Extract project ID from Supabase URL
+  const projectId = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1];
+  if (!projectId) {
+    console.error('❌ Invalid SUPABASE_URL format');
+    process.exit(1);
   }
-
-  console.log('\n━'.repeat(70));
-  console.log('\n📊 Migration Summary\n');
   
-  results.forEach((r, i) => {
-    console.log(`   ${i + 1}. ${r.migration}`);
-    console.log(`      Success: ${r.successCount}, Failed: ${r.failCount}`);
+  // Construct PostgreSQL connection string for Supabase
+  // Format: postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres
+  const dbUrl = process.env.DATABASE_URL || `postgresql://postgres:${supabaseKey}@db.${projectId}.supabase.co:5432/postgres`;
+  
+  console.log('📍 Project:', projectId);
+  console.log('🔗 Connecting to database...\n');
+  
+  const sql = postgres(dbUrl, {
+    max: 1,
+    ssl: 'prefer'
   });
-
-  const totalSuccess = results.reduce((sum, r) => sum + r.successCount, 0);
-  const totalFail = results.reduce((sum, r) => sum + r.failCount, 0);
-
-  console.log(`\n   Total: ${totalSuccess} successful, ${totalFail} failed`);
-
-  console.log('\n━'.repeat(70));
   
-  if (totalFail > 0) {
-    console.log('\n⚠️  Some migrations failed. This is expected if using anon key.');
-    console.log('   Please apply migrations manually via Supabase SQL Editor.');
-  } else {
-    console.log('\n✅ All migrations applied successfully!');
+  try {
+    // Check connection
+    const [{ version }] = await sql`SELECT version()`;
+    console.log('✅ Connected to PostgreSQL');
+    console.log('   Version:', version.split(' ')[0], version.split(' ')[1]);
+    console.log('');
+    
+    // Get migration files
+    const migrationsDir = path.join(process.cwd(), 'src/infrastructure/supabase/migrations');
+    const files = (await fs.readdir(migrationsDir)).filter(f => f.endsWith('.sql')).sort();
+    
+    console.log(`📂 Found ${files.length} migration files:\n`);
+    
+    for (const file of files) {
+      const filePath = path.join(migrationsDir, file);
+      const sqlContent = await fs.readFile(filePath, 'utf-8');
+      
+      console.log(`   🔄 Applying ${file}...`);
+      
+      try {
+        // Execute the migration SQL
+        await sql.unsafe(sqlContent);
+        console.log(`   ✅ ${file} applied successfully\n`);
+      } catch (error: any) {
+        // Check if error is due to already existing objects (which is OK)
+        if (error.code === '42P07' || // Table already exists
+            error.code === '42710' || // Object already exists  
+            error.message?.includes('already exists')) {
+          console.log(`   ⚠️  ${file} - objects already exist (skipping)\n`);
+        } else {
+          console.error(`   ❌ Failed to apply ${file}:`);
+          console.error(`      ${error.message}\n`);
+          throw error;
+        }
+      }
+    }
+    
+    console.log('✅ All migrations applied successfully!');
+    
+  } catch (error) {
+    console.error('❌ Migration failed:', error);
+    process.exit(1);
+  } finally {
+    await sql.end();
   }
-
-  console.log('\n💡 Next: Run test again to verify tables exist');
-  console.log('   node --import tsx scripts/test-supabase-interaction.ts\n');
 }
 
-main().catch(console.error);
+main();
