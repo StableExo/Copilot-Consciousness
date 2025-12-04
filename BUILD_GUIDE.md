@@ -274,4 +274,4 @@ See `SUPABASE_INTEGRATION_STATUS.md` for current status and next steps.
 
 **Last Updated**: 2025-12-04
 **Node.js Version**: 22.12.0
-**npm Version**: 10.9.0
+**npm Version**: 10.9.2
