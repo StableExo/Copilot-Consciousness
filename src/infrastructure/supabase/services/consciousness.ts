@@ -92,14 +92,18 @@ export class ConsciousnessStateService {
       metadata: state.metadata as any,
     };
 
-    const { data, error } = await this.supabase
+    const { data, error } = await (this.supabase
       .from('consciousness_states')
-      .insert(stateInsert)
+      .insert(stateInsert as any)
       .select()
-      .single();
+      .single() as any);
 
     if (error) {
       throw new Error(`Failed to save consciousness state: ${error.message}`);
+    }
+
+    if (!data) {
+      throw new Error('No data returned from consciousness state insert');
     }
 
     // Save individual thoughts for better querying
@@ -107,7 +111,7 @@ export class ConsciousnessStateService {
       await this.saveThoughts(data.id, state.thoughts);
     }
 
-    return data;
+    return data as ConsciousnessStateRow;
   }
 
   /**
@@ -129,7 +133,7 @@ export class ConsciousnessStateService {
       metadata: thought.metadata as any,
     }));
 
-    const { error } = await this.supabase.from('thoughts').insert(thoughtInserts);
+    const { error } = await (this.supabase.from('thoughts').insert(thoughtInserts as any) as any);
 
     if (error) {
       console.error('Failed to save thoughts:', error);

@@ -3,9 +3,12 @@
  * 
  * Implements error handling, retries, connection management, and performance optimization
  * based on Supabase official best practices.
+ * 
+ * Connection method: JavaScript client library with connection pooling
+ * See: https://supabase.com/docs/guides/database/connecting-to-postgres
  */
 
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient, SupabaseClientOptions } from '@supabase/supabase-js';
 import type { Database } from './schemas/database.types';
 
 /**
@@ -15,25 +18,7 @@ export interface SupabaseConfig {
   url: string;
   anonKey: string;
   serviceKey?: string;
-  options?: {
-    auth?: {
-      autoRefreshToken?: boolean;
-      persistSession?: boolean;
-      detectSessionInUrl?: boolean;
-      flowType?: 'implicit' | 'pkce';
-    };
-    db?: {
-      schema?: string;
-    };
-    global?: {
-      headers?: Record<string, string>;
-      fetch?: typeof fetch;
-    };
-    realtime?: {
-      timeout?: number;
-      heartbeatIntervalMs?: number;
-    };
-  };
+  options?: SupabaseClientOptions<'public'>;
 }
 
 /**
@@ -70,18 +55,20 @@ const DEFAULT_RETRY_CONFIG: RetryConfig = {
 
 /**
  * Get Supabase configuration from environment variables
+ * Supports both new (SUPABASE_PUBLISHABLE_KEY) and legacy (SUPABASE_ANON_KEY) key formats
  */
 function getSupabaseConfig(): SupabaseConfig {
   const url = process.env.SUPABASE_URL;
-  const anonKey = process.env.SUPABASE_ANON_KEY;
-  const serviceKey = process.env.SUPABASE_SERVICE_KEY;
+  // Support both new and legacy key formats
+  const anonKey = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY;
+  const serviceKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_KEY;
 
   if (!url) {
     throw new Error('SUPABASE_URL environment variable is required');
   }
 
   if (!anonKey) {
-    throw new Error('SUPABASE_ANON_KEY environment variable is required');
+    throw new Error('SUPABASE_PUBLISHABLE_KEY or SUPABASE_ANON_KEY environment variable is required');
   }
 
   return {
@@ -117,7 +104,8 @@ export class EnhancedSupabaseClient {
     const config = getSupabaseConfig();
     const key = useServiceRole && config.serviceKey ? config.serviceKey : config.anonKey;
 
-    this.client = createClient<Database>(config.url, key, config.options);
+    // Type cast to handle complex Supabase generic type inference
+    this.client = createClient<Database>(config.url, key, config.options as any) as SupabaseClient<Database>;
     this.retryConfig = { ...DEFAULT_RETRY_CONFIG, ...retryConfig };
   }
 
@@ -327,7 +315,8 @@ export function getEnhancedSupabaseClient(
  */
 export function createSupabaseClient(config?: Partial<SupabaseConfig>): SupabaseClient<Database> {
   const fullConfig = { ...getSupabaseConfig(), ...config };
-  return createClient<Database>(fullConfig.url, fullConfig.anonKey, fullConfig.options);
+  // Type cast to handle complex Supabase generic type inference
+  return createClient<Database>(fullConfig.url, fullConfig.anonKey, fullConfig.options as any) as SupabaseClient<Database>;
 }
 
 /**

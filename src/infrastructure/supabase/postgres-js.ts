@@ -144,9 +144,12 @@ export async function executePostgresTransaction<T>(
 ): Promise<T> {
   const db = createPostgresJsConnection();
   
-  return await db.begin(async (tx) => {
+  // Type cast to handle postgres.js transaction return type complexity
+  const result = await db.begin(async (tx) => {
     return await transactionFn(tx);
   });
+  
+  return result as T;
 }
 
 // Type-safe query helpers

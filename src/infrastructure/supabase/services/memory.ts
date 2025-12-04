@@ -71,17 +71,21 @@ export class MemoryService {
       context: memory.context as any,
     };
 
-    const { data, error } = await this.supabase
+    const { data, error } = await (this.supabase
       .from('semantic_memories')
-      .insert(insert)
+      .insert(insert as any)
       .select()
-      .single();
+      .single() as any);
 
     if (error) {
       throw new Error(`Failed to save semantic memory: ${error.message}`);
     }
 
-    return data;
+    if (!data) {
+      throw new Error('No data returned from semantic memory insert');
+    }
+
+    return data as any; // Type cast due to Supabase type inference complexity
   }
 
   /**
@@ -164,7 +168,7 @@ export class MemoryService {
   async activateSemanticMemory(memoryId: string): Promise<void> {
     const { error } = await this.supabase.rpc('activate_semantic_memory', {
       memory_id: memoryId,
-    });
+    } as any); // Type cast for RPC parameters
 
     if (error) {
       console.error('Failed to activate memory:', error);
@@ -196,17 +200,21 @@ export class MemoryService {
       metadata: memory.metadata as any,
     };
 
-    const { data, error } = await this.supabase
+    const { data, error } = await (this.supabase
       .from('episodic_memories')
-      .insert(insert)
+      .insert(insert as any)
       .select()
-      .single();
+      .single() as any);
 
     if (error) {
       throw new Error(`Failed to save episodic memory: ${error.message}`);
     }
 
-    return data;
+    if (!data) {
+      throw new Error('No data returned from episodic memory insert');
+    }
+
+    return data as any; // Type cast due to Supabase type inference complexity
   }
 
   /**
@@ -273,13 +281,16 @@ export class MemoryService {
       .single();
 
     if (!error && data) {
-      await this.supabase
-        .from('episodic_memories')
-        .update({
-          recall_count: data.recall_count + 1,
-          last_recalled: new Date().toISOString(),
-        })
-        .eq('episode_id', episodeId);
+      const updatedRecallCount = (data as any).recall_count + 1;
+      const updatedTime = new Date().toISOString();
+      
+      // Type-safe workaround for Supabase generic type inference
+      const updateQuery: any = this.supabase.from('episodic_memories');
+      const eq: any = updateQuery.update({
+        recall_count: updatedRecallCount,
+        last_recalled: updatedTime,
+      });
+      await eq.eq('episode_id', episodeId);
     }
   }
 
@@ -302,10 +313,12 @@ export class MemoryService {
 
     const semanticCount = semanticResult.count || 0;
     const episodicCount = episodicResult.count || 0;
+    const semanticData: any = semanticResult.data || [];
+    const episodicData: any = episodicResult.data || [];
     const semanticImportance =
-      semanticResult.data?.reduce((sum, row) => sum + row.importance, 0) || 0;
+      semanticData.reduce((sum: number, row: any) => sum + row.importance, 0) || 0;
     const episodicImportance =
-      episodicResult.data?.reduce((sum, row) => sum + row.importance, 0) || 0;
+      episodicData.reduce((sum: number, row: any) => sum + row.importance, 0) || 0;
 
     return {
       semanticCount,
