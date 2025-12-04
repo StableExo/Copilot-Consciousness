@@ -17,7 +17,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { getSupabaseClient, shouldUseSupabase } from '../src/infrastructure/supabase/client';
-import { ConsciousnessService } from '../src/infrastructure/supabase/services/consciousness';
+import { ConsciousnessStateService } from '../src/infrastructure/supabase/services/consciousness';
 import { MemoryService } from '../src/infrastructure/supabase/services/memory';
 
 interface MigrationStats {
@@ -38,7 +38,7 @@ interface MigrationStats {
 class MemoryMigrator {
   private dryRun: boolean;
   private stats: MigrationStats;
-  private consciousnessService?: ConsciousnessService;
+  private consciousnessService?: ConsciousnessStateService;
   private memoryService?: MemoryService;
 
   constructor(dryRun: boolean = false) {
@@ -62,9 +62,8 @@ class MemoryMigrator {
     console.log('✅ Supabase connection configured');
     
     if (!this.dryRun) {
-      const supabase = getSupabaseClient();
-      this.consciousnessService = new ConsciousnessService(supabase);
-      this.memoryService = new MemoryService(supabase);
+      this.consciousnessService = new ConsciousnessStateService();
+      this.memoryService = new MemoryService();
       console.log('✅ Migration services initialized');
     } else {
       console.log('🔍 DRY RUN MODE - No data will be written');
