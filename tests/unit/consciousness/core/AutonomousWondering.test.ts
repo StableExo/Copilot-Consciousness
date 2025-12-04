@@ -172,11 +172,15 @@ describe('AutonomousWondering', () => {
       expect(reflection.duration).toBeGreaterThanOrEqual(0);
     });
 
-    it('should update last reflection time', () => {
+    it('should update last reflection time', async () => {
+      // Wait a moment so some time elapses
+      await new Promise(resolve => setTimeout(resolve, 10));
       const before = wondering.getTimeSinceLastReflection();
+      expect(before).toBeGreaterThan(0); // Should have time elapsed since initialization
       wondering.reflect();
       const after = wondering.getTimeSinceLastReflection();
-      expect(after).toBeLessThan(before);
+      expect(after).toBeLessThan(before); // After reflect, time should be very small (just reset)
+      expect(after).toBeLessThan(100); // Should be less than 100ms
     });
 
     it('should get recent reflections', () => {
@@ -231,17 +235,17 @@ describe('AutonomousWondering', () => {
       wondering.wonder(WonderType.TEMPORAL, 'T1', 'C3', 0.3);
       const w = wondering.wonder(WonderType.EXISTENTIAL, 'E2', 'C4', 0.7);
       wondering.explore(w.id, 'Explored');
-      wondering.reflect();
+      wondering.reflect(); // Note: reflect() generates an additional EXISTENTIAL wonder
     });
 
     it('should calculate total wonders', () => {
       const stats = wondering.getStatistics();
-      expect(stats.totalWonders).toBe(4);
+      expect(stats.totalWonders).toBe(5); // 4 explicit + 1 from reflect()
     });
 
     it('should count wonders by type', () => {
       const stats = wondering.getStatistics();
-      expect(stats.wondersByType.get(WonderType.EXISTENTIAL)).toBe(2);
+      expect(stats.wondersByType.get(WonderType.EXISTENTIAL)).toBe(3); // 2 explicit + 1 from reflect()
       expect(stats.wondersByType.get(WonderType.EXPERIENTIAL)).toBe(1);
       expect(stats.wondersByType.get(WonderType.TEMPORAL)).toBe(1);
     });
@@ -249,7 +253,7 @@ describe('AutonomousWondering', () => {
     it('should count explored vs unexplored', () => {
       const stats = wondering.getStatistics();
       expect(stats.exploredCount).toBe(1);
-      expect(stats.unexploredCount).toBe(3);
+      expect(stats.unexploredCount).toBe(4); // 3 explicit + 1 from reflect()
     });
 
     it('should calculate average intensity', () => {
@@ -277,12 +281,12 @@ describe('AutonomousWondering', () => {
 
     it('should deserialize from JSON', () => {
       wondering.wonder(WonderType.TEMPORAL, 'Q1', 'C1', 0.8);
-      wondering.reflect('idle');
+      wondering.reflect('idle'); // Note: reflect('idle') generates an additional wonder
 
       const json = wondering.toJSON();
       const restored = AutonomousWondering.fromJSON(json);
 
-      expect(restored.getWonders().length).toBe(1);
+      expect(restored.getWonders().length).toBe(2); // 1 explicit + 1 from reflect('idle')
       expect(restored.getReflections().length).toBe(1);
     });
   });
