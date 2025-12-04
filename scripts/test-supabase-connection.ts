@@ -63,13 +63,14 @@ async function runTests() {
     });
     console.log('   ✅ PASS: Client created');
   } catch (error) {
+    const err = error as Error;
     results.push({
       test: 'Client Creation',
       status: 'FAIL',
-      message: `Error: ${error.message}`,
+      message: `Error: ${err.message}`,
       duration: Date.now() - startClient
     });
-    console.log(`   ❌ FAIL: ${error.message}`);
+    console.log(`   ❌ FAIL: ${err.message}`);
     return;
   }
 
@@ -92,13 +93,14 @@ async function runTests() {
     });
     console.log('   ✅ PASS: API connection successful');
   } catch (error) {
+    const err = error as Error;
     results.push({
       test: 'API Connection',
       status: 'FAIL',
-      message: `Error: ${error.message}`,
+      message: `Error: ${err.message}`,
       duration: Date.now() - startApi
     });
-    console.log(`   ❌ FAIL: ${error.message}`);
+    console.log(`   ❌ FAIL: ${err.message}`);
     return;
   }
 
@@ -108,10 +110,8 @@ async function runTests() {
   
   try {
     // Query information_schema to list tables
-    const { data, error } = await supabase.rpc('tables_list', {}).catch(() => {
-      // Fallback: try to query a known table
-      return supabase.from('todos').select('count').limit(1);
-    });
+    const response = await supabase.from('todos').select('count').limit(1);
+    const { data, error } = response;
     
     results.push({
       test: 'List Tables',
@@ -121,13 +121,14 @@ async function runTests() {
     });
     console.log('   ✅ PASS: Database schema accessible');
   } catch (error) {
+    const err = error as Error;
     results.push({
       test: 'List Tables',
       status: 'FAIL',
-      message: `Error: ${error.message}`,
+      message: `Error: ${err.message}`,
       duration: Date.now() - startTables
     });
-    console.log(`   ⚠️  WARNING: ${error.message}`);
+    console.log(`   ⚠️  WARNING: ${err.message}`);
   }
 
   // Test 5: Check Example Table
@@ -159,13 +160,14 @@ async function runTests() {
       });
     }
   } catch (error) {
+    const err = error as Error;
     results.push({
       test: 'Todos Table',
       status: 'FAIL',
-      message: `Error: ${error.message}`,
+      message: `Error: ${err.message}`,
       duration: Date.now() - startTodos
     });
-    console.log(`   ❌ FAIL: ${error.message}`);
+    console.log(`   ❌ FAIL: ${err.message}`);
   }
 
   // Test 6: Check Consciousness Tables

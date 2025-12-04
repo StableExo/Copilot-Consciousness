@@ -162,11 +162,11 @@ export class ConsciousnessVectorStore {
 
     // Get the original memory content
     const supabase = getSupabaseClient(true);
-    const { data: memory, error } = await supabase
+    const { data: memory, error } = await (supabase
       .from('semantic_memories')
       .select('content')
       .eq('memory_id', memoryId)
-      .single();
+      .single() as any);
 
     if (error || !memory) {
       console.error('Failed to fetch memory:', error);
@@ -174,7 +174,7 @@ export class ConsciousnessVectorStore {
     }
 
     // Search for similar memories (excluding the original)
-    const results = await this.searchMemories(memory.content, limit + 1);
+    const results = await this.searchMemories((memory as any).content, limit + 1);
     return results.filter((r) => r.memoryId !== memoryId).slice(0, limit);
   }
 

@@ -106,8 +106,8 @@ export class AutonomousMempoolStudy {
       const response = await fetch('https://mempool.space/api/v1/fees/mempool-blocks');
       if (!response.ok) return null;
       
-      const data = await response.json();
-      return data[0] as MempoolBlock; // First element is next block
+      const data = await response.json() as unknown;
+      return (data as any[])[0] as MempoolBlock; // First element is next block
     } catch (error: unknown) {
       const err = error as Error;
       if ('response' in err && (err as any).response?.status) {
@@ -127,8 +127,8 @@ export class AutonomousMempoolStudy {
       const response = await fetch('https://mempool.space/api/mempool/recent');
       if (!response.ok) return [];
       
-      const data = await response.json();
-      return data.map((tx: any) => ({
+      const data = await response.json() as unknown;
+      return (data as any[]).map((tx: any) => ({
         txid: tx.txid,
         fee: tx.fee,
         vsize: tx.vsize || tx.size,

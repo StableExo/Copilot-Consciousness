@@ -35,7 +35,6 @@
     "scripts/bitcoin_path_analyzer.ts",
     "scripts/bitcoin_transaction_analyzer.ts",
     "scripts/fetch-blockchain-data.ts",
-    "scripts/mempool_monitor.ts",
-    "src/infrastructure/supabase/**/*"
+    "scripts/mempool_monitor.ts"
   ]
 }
