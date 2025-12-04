@@ -4,18 +4,15 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
+import { getSupabaseConfig } from './supabase-config.js';
 
-dotenv.config();
-
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
-);
+const { url, key, keyType } = getSupabaseConfig();
+const supabase = createClient(url, key);
 
 async function main() {
   console.log('🧪 Supabase Demo - Insert Test Data\n');
   console.log('━'.repeat(70));
+  console.log(`\n🔑 Using ${keyType} key\n`);
 
   // Test 1: Insert a test session
   console.log('\n📝 Test 1: Insert Test Session');

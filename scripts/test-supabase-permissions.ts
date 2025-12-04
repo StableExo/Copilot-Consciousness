@@ -4,14 +4,10 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
+import { getSupabaseConfig } from './supabase-config.js';
 
-dotenv.config();
-
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
-);
+const { url, key, keyType } = getSupabaseConfig();
+const supabase = createClient(url, key);
 
 async function main() {
   console.log('🔐 Supabase Permissions & Features Test\n');
@@ -21,11 +17,12 @@ async function main() {
 
   // Test 1: Basic API Access
   console.log('\n1️⃣  Testing Basic API Access...');
+  console.log(`   Key Type: ${keyType}`);
   try {
-    const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/`, {
+    const response = await fetch(`${url}/rest/v1/`, {
       headers: {
-        'apikey': process.env.SUPABASE_ANON_KEY!,
-        'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY}`
+        'apikey': key,
+        'Authorization': `Bearer ${key}`
       }
     });
     

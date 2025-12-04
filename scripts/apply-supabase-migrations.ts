@@ -6,14 +6,10 @@
 import { createClient } from '@supabase/supabase-js';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import dotenv from 'dotenv';
+import { getSupabaseConfig } from './supabase-config.js';
 
-dotenv.config();
-
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
-);
+const { url, key, keyType } = getSupabaseConfig();
+const supabase = createClient(url, key);
 
 const MIGRATIONS_DIR = 'src/infrastructure/supabase/migrations';
 

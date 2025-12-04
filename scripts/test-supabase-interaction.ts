@@ -4,14 +4,10 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
+import { getSupabaseConfig } from './supabase-config.js';
 
-dotenv.config();
-
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
-);
+const { url, key, keyType } = getSupabaseConfig();
+const supabase = createClient(url, key);
 
 async function main() {
   console.log('🧪 Supabase Interactive Tests\n');
@@ -19,8 +15,9 @@ async function main() {
 
   // Test 1: Connection
   console.log('\n✅ Test 1: Basic Connection');
-  console.log(`   URL: ${process.env.SUPABASE_URL}`);
-  console.log(`   Key: ${process.env.SUPABASE_ANON_KEY!.substring(0, 20)}...`);
+  console.log(`   URL: ${url}`);
+  console.log(`   Key Type: ${keyType}`);
+  console.log(`   Key: ${key.substring(0, 20)}...`);
 
   // Test 2: Query existing todos table
   console.log('\n✅ Test 2: Query Existing "todos" Table');
