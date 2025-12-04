@@ -1,0 +1,109 @@
+{
+  "studyStarted": "2025-12-03T23:48:11.667Z",
+  "lastUpdated": "2025-12-03T23:49:11.756Z",
+  "totalObservations": 2,
+  "rulesLearned": [
+    "fee_rate_priority",
+    "variable_activity"
+  ],
+  "observations": [
+    {
+      "timestamp": "2025-12-03T23:48:11.667Z",
+      "blockNumber": 0,
+      "stats": {
+        "transactions": 4306,
+        "totalSize": 997604.5,
+        "totalFees": 549043,
+        "medianFeeRate": 4.036697247706422,
+        "minFeeRate": 1.2110091743119267,
+        "maxFeeRate": 15.056603773584905,
+        "avgTxSize": 231.67777519739897
+      },
+      "patterns": {
+        "feeDistribution": {
+          "low (1-10 sat/vB)": 8,
+          "medium (10-50 sat/vB)": 2,
+          "high (50-100 sat/vB)": 0,
+          "urgent (100+ sat/vB)": 0
+        },
+        "sizeDistribution": {
+          "tiny (<250 vB)": 8,
+          "small (250-500 vB)": 2,
+          "medium (500-1000 vB)": 0,
+          "large (1000+ vB)": 0
+        },
+        "highValueTxCount": 1,
+        "rbfEnabledCount": 0,
+        "segwitAdoption": 0
+      },
+      "rules": [
+        {
+          "observedRule": "RULE 1: Fee rate (sat/vB) determines transaction priority",
+          "evidence": "Median fee: 4.04 sat/vB, Range: 1.21-15.06",
+          "confidence": 1
+        },
+        {
+          "observedRule": "RULE 5: Network activity affects block composition",
+          "evidence": "Current: 4306 TXs (172% of average)",
+          "confidence": 0.8
+        }
+      ],
+      "mevOpportunities": [
+        {
+          "type": "FRONT_RUNNING",
+          "description": "1 high-value TX(s) with below-median fees (potential front-run targets)",
+          "estimatedValue": 1408885171
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-12-03T23:48:41.984Z",
+      "blockNumber": 0,
+      "stats": {
+        "transactions": 4325,
+        "totalSize": 997593,
+        "totalFees": 626827,
+        "medianFeeRate": 2.3489583333333335,
+        "minFeeRate": 1.0071428571428571,
+        "maxFeeRate": 8.935779816513762,
+        "avgTxSize": 230.65734104046243
+      },
+      "patterns": {
+        "feeDistribution": {
+          "low (1-10 sat/vB)": 10,
+          "medium (10-50 sat/vB)": 0,
+          "high (50-100 sat/vB)": 0,
+          "urgent (100+ sat/vB)": 0
+        },
+        "sizeDistribution": {
+          "tiny (<250 vB)": 8,
+          "small (250-500 vB)": 0,
+          "medium (500-1000 vB)": 1,
+          "large (1000+ vB)": 1
+        },
+        "highValueTxCount": 0,
+        "rbfEnabledCount": 0,
+        "segwitAdoption": 0
+      },
+      "rules": [
+        {
+          "observedRule": "RULE 1: Fee rate (sat/vB) determines transaction priority",
+          "evidence": "Median fee: 2.35 sat/vB, Range: 1.01-8.94",
+          "confidence": 1
+        },
+        {
+          "observedRule": "RULE 5: Network activity affects block composition",
+          "evidence": "Current: 4325 TXs (173% of average)",
+          "confidence": 0.8
+        }
+      ],
+      "mevOpportunities": [
+        {
+          "type": "FRONT_RUNNING",
+          "description": "1 high-value TX(s) with below-median fees (potential front-run targets)",
+          "estimatedValue": 10685854
+        }
+      ]
+    }
+  ]
+}
