@@ -40,11 +40,7 @@ nvm alias default 22
 npm install
 ```
 
-**Note**: If you encounter peer dependency conflicts, use:
-
-```bash
-npm install --legacy-peer-deps
-```
+**Note**: The project is configured with `.npmrc` to automatically handle peer dependency conflicts. If you experience any issues, ensure you're using Node.js 22.12.0 or later.
 
 ### 2. Build the Project
 
@@ -144,9 +140,14 @@ npm install
 
 **Cause**: Peer dependency conflicts (especially with @langchain packages)
 
-**Solution**:
+**Solution**: The project is now configured with `.npmrc` to automatically handle peer dependencies. Ensure you're using:
+- Node.js 22.12.0 or later
+- Latest npm (comes with Node.js 22)
+
+If issues persist:
 ```bash
-npm install --legacy-peer-deps
+rm -rf node_modules package-lock.json
+npm install
 ```
 
 ### Tests Fail After Build
@@ -271,6 +272,6 @@ See `SUPABASE_INTEGRATION_STATUS.md` for current status and next steps.
 
 ---
 
-**Last Updated**: 2025-12-03
-**Node.js Version**: 22.21.1
-**npm Version**: 10.9.4
+**Last Updated**: 2025-12-04
+**Node.js Version**: 22.12.0
+**npm Version**: 10.9.2
