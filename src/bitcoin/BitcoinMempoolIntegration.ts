@@ -71,7 +71,7 @@ export interface BitcoinMempoolConfig {
  */
 export class BitcoinMempoolIntegration extends EventEmitter {
   private config: BitcoinMempoolConfig;
-  private ws: any = null;
+  private ws: any | null = null; // WebSocket type from 'ws' package (optional dependency)
   private pollingTimer?: NodeJS.Timeout;
   private isRunning = false;
   private currentStats: MempoolStats | null = null;
@@ -81,9 +81,13 @@ export class BitcoinMempoolIntegration extends EventEmitter {
   private historicalMedianFees: number[] = [];
   private readonly MAX_HISTORY_SIZE = 100;
   
+  // Constants
+  private readonly HIGH_FEE_THRESHOLD: number;
+  
   constructor(config: BitcoinMempoolConfig) {
     super();
     this.config = config;
+    this.HIGH_FEE_THRESHOLD = config.maxFeeRateThreshold || 50;
     
     logger.info('Bitcoin Mempool Integration initialized', {
       enableWebSocket: config.enableWebSocket,
@@ -294,7 +298,7 @@ export class BitcoinMempoolIntegration extends EventEmitter {
         this.ws.send(JSON.stringify({ 'track-mempool-block': 0 }));
       });
       
-      this.ws.on('message', (data: any) => {
+      this.ws.on('message', (data: Buffer | ArrayBuffer | Buffer[]) => {
         try {
           const message = JSON.parse(data.toString());
           this.handleWebSocketMessage(message);
@@ -434,8 +438,8 @@ export class BitcoinMempoolIntegration extends EventEmitter {
       return false;
     }
     
-    // Pause if median fee > 50 sat/vB (too expensive)
-    if (this.currentStats.medianFeeRate > 50) {
+    // Pause if median fee > configured threshold (default 50 sat/vB)
+    if (this.currentStats.medianFeeRate > this.HIGH_FEE_THRESHOLD) {
       return true;
     }
     
@@ -465,11 +469,11 @@ export class BitcoinMempoolIntegration extends EventEmitter {
     
     const stats = this.currentStats;
     
-    // High fees - pause operations
-    if (stats.medianFeeRate > 50) {
+    // High fees - pause operations (using configured threshold)
+    if (stats.medianFeeRate > this.HIGH_FEE_THRESHOLD) {
       return {
         action: 'PAUSE',
-        reason: `Fees too high (${stats.medianFeeRate.toFixed(2)} sat/vB)`,
+        reason: `Fees too high (${stats.medianFeeRate.toFixed(2)} sat/vB, threshold: ${this.HIGH_FEE_THRESHOLD})`,
         feeRate: stats.medianFeeRate,
       };
     }

@@ -2,7 +2,7 @@
 
 **Date**: 2025-12-04  
 **Context**: Transition from Base Network (EVM) to Bitcoin Network  
-**Key**: API Key `5d063afd314264c4b46da85342fe2555` provided for mempool integration  
+**API Authentication**: Mempool.space API key configured for authenticated access  
 
 ---
 
@@ -392,7 +392,7 @@ Exploitability: HIGH (we could front-run)
 
 ### What Makes This Work:
 
-**The key you provided** (`5d063afd314264c4b46da85342fe2555`) unlocks:
+**The authenticated API key** unlocks:
 - Enhanced API rate limits
 - WebSocket streaming
 - Merkle proof verification
