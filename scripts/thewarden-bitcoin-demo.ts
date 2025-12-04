@@ -6,10 +6,12 @@
  * This script shows the transition from Base Network to Bitcoin Network.
  * 
  * Usage:
- *   MEMPOOL_API_KEY=5d063afd314264c4b46da85342fe2555 npx tsx scripts/thewarden-bitcoin-demo.ts [duration_minutes]
+ *   MEMPOOL_API_KEY=your_api_key_here npx tsx scripts/thewarden-bitcoin-demo.ts [duration_minutes]
  * 
  * Example:
- *   MEMPOOL_API_KEY=5d063afd314264c4b46da85342fe2555 npx tsx scripts/thewarden-bitcoin-demo.ts 5
+ *   MEMPOOL_API_KEY=your_api_key_here npx tsx scripts/thewarden-bitcoin-demo.ts 5
+ * 
+ * Get your API key from: https://mempool.space/docs/api
  */
 
 import { BitcoinMempoolIntegration, BitcoinMempoolConfig } from '../src/bitcoin/BitcoinMempoolIntegration.js';

@@ -11,7 +11,8 @@
  * - Transaction timing strategies
  * - Integration with consciousness system for learning
  * 
- * Uses mempool.space API with authentication key: 5d063afd314264c4b46da85342fe2555
+ * API Key: Configure via MEMPOOL_API_KEY environment variable
+ * Get your key from: https://mempool.space/docs/api
  */
 
 import { EventEmitter } from 'events';
@@ -303,7 +304,8 @@ export class BitcoinMempoolIntegration extends EventEmitter {
       });
       
       this.ws.on('error', (error: unknown) => {
-        logger.error('WebSocket error:', (error as Error).message);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown WebSocket error';
+        logger.error('WebSocket error:', errorMessage);
       });
       
       this.ws.on('close', () => {

@@ -125,11 +125,12 @@ export function getBitcoinNetworkName(network: string): string {
 
 /**
  * Get default configuration for quick start
+ * Note: API key should be configured via environment variable MEMPOOL_API_KEY
  */
 export function getDefaultBitcoinConfig(): BitcoinNetworkConfig {
   return {
     enabled: true,
-    mempoolApiKey: '5d063afd314264c4b46da85342fe2555',
+    mempoolApiKey: process.env.MEMPOOL_API_KEY || '',
     network: 'mainnet',
     enableWebSocket: true,
     pollingInterval: 30,
