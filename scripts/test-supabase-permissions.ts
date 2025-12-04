@@ -52,8 +52,8 @@ async function main() {
 
     const contentType = response.headers.get('content-type');
     if (contentType?.includes('application/openapi+json')) {
-      const schema = await response.json();
-      const tables = Object.keys(schema.definitions || {});
+      const schema = await response.json() as any;
+      const tables = Object.keys(schema?.definitions || {});
       
       results.push({ 
         test: 'List Tables', 

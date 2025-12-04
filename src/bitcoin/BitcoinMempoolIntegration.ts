@@ -18,6 +18,9 @@
 import { EventEmitter } from 'events';
 import { logger } from '../utils/logger';
 
+// Define HeadersInit type for fetch API
+type HeadersInit = Record<string, string>;
+
 interface MempoolTransaction {
   txid: string;
   fee: number;
@@ -87,13 +90,9 @@ export class BitcoinMempoolIntegration extends EventEmitter {
   constructor(config: BitcoinMempoolConfig) {
     super();
     this.config = config;
-    this.HIGH_FEE_THRESHOLD = config.maxFeeRateThreshold || 50;
+    this.HIGH_FEE_THRESHOLD = config.minFeeRateThreshold || 50;
     
-    logger.info('Bitcoin Mempool Integration initialized', {
-      enableWebSocket: config.enableWebSocket,
-      pollingInterval: config.pollingInterval,
-      apiKey: config.apiKey ? '***configured***' : 'not configured',
-    });
+    logger.info('Bitcoin Mempool Integration initialized', 'Initialized with WebSocket: ' + config.enableWebSocket + ', Polling: ' + config.pollingInterval + 's');
   }
   
   /**
@@ -123,7 +122,7 @@ export class BitcoinMempoolIntegration extends EventEmitter {
       this.emit('started');
       logger.info('Bitcoin Mempool Integration started successfully');
     } catch (error) {
-      logger.error('Failed to start Bitcoin Mempool Integration:', error);
+      logger.error('Failed to start Bitcoin Mempool Integration:', error instanceof Error ? error.message : String(error));
       this.isRunning = false;
       throw error;
     }
@@ -169,14 +168,14 @@ export class BitcoinMempoolIntegration extends EventEmitter {
         throw new Error(`API returned ${response.status}`);
       }
       
-      const data = await response.json();
-      const nextBlock = data[0] as MempoolBlock;
+      const data = await response.json() as unknown;
+      const nextBlock = (data as any[])[0] as MempoolBlock;
       
       if (nextBlock) {
         await this.processBlockData(nextBlock);
       }
     } catch (error) {
-      logger.error('Failed to fetch mempool snapshot:', error);
+      logger.error('Failed to fetch mempool snapshot:', error instanceof Error ? error.message : String(error));
     }
   }
   
@@ -210,12 +209,7 @@ export class BitcoinMempoolIntegration extends EventEmitter {
     }
     
     // Log periodic summary
-    logger.debug('Mempool stats updated', {
-      medianFee: stats.medianFeeRate.toFixed(2),
-      txCount: stats.txCount,
-      utilization: stats.blockUtilization.toFixed(1) + '%',
-      activityLevel: (stats.activityLevel * 100).toFixed(0) + '%',
-    });
+    logger.debug('Mempool stats updated', 'Median Fee: ' + stats.medianFeeRate.toFixed(2) + ' sat/vB, Tx: ' + stats.txCount);
   }
   
   /**
@@ -267,11 +261,7 @@ export class BitcoinMempoolIntegration extends EventEmitter {
         this.detectedOpportunities.push(opp);
         this.emit('mev:opportunity', opp);
         
-        logger.info('MEV opportunity detected', {
-          type: opp.type,
-          description: opp.description,
-          risk: opp.risk,
-        });
+        logger.info('MEV opportunity detected', 'Type: ' + opp.type + ', Risk: ' + opp.risk);
       }
     }
     
@@ -303,7 +293,7 @@ export class BitcoinMempoolIntegration extends EventEmitter {
           const message = JSON.parse(data.toString());
           this.handleWebSocketMessage(message);
         } catch (error) {
-          logger.error('Failed to parse WebSocket message:', error);
+          logger.error('Failed to parse WebSocket message:', error instanceof Error ? error.message : String(error));
         }
       });
       
@@ -326,7 +316,7 @@ export class BitcoinMempoolIntegration extends EventEmitter {
         }
       });
     } catch (error) {
-      logger.error('Failed to start WebSocket:', error);
+      logger.error('Failed to start WebSocket:', error instanceof Error ? error.message : String(error));
       logger.info('Falling back to polling only');
     }
   }
