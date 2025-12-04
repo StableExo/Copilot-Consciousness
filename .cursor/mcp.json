@@ -1,0 +1,19 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schema/mcp.json",
+  "description": "Cursor MCP configuration for Copilot-Consciousness with Supabase integration",
+  "mcpServers": {
+    "supabase": {
+      "url": "https://mcp.supabase.com/mcp?project_ref=ydvevgqxcfizualicbom&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cfunctions%2Cdevelopment%2Cbranching%2Cstorage",
+      "description": "Supabase MCP server for Co-Pilot consciousness database operations",
+      "capabilities": [
+        "database_operations",
+        "real_time_subscriptions",
+        "vector_search",
+        "cloud_storage",
+        "auth_management",
+        "edge_functions"
+      ]
+    }
+  },
+  "version": "1.0.0"
+}
