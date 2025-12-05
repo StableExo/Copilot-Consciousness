@@ -34,7 +34,7 @@ RETURNS TABLE (
   category text,
   tags text[],
   importance int,
-  timestamp timestamptz,
+  created_at timestamptz,
   similarity float
 )
 LANGUAGE plpgsql
@@ -47,7 +47,7 @@ BEGIN
     sm.category,
     sm.tags,
     sm.importance,
-    sm.timestamp,
+    sm.timestamp AS created_at,
     1 - (sm.embedding <=> query_embedding) as similarity
   FROM semantic_memories sm
   WHERE 
