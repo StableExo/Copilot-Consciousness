@@ -391,6 +391,32 @@ export class ScalesMapManager {
   }
 
   /**
+   * Helper to add landmarks from scale entries
+   * Prioritizes Kardashev civilization types (first occurrence wins)
+   */
+  private addLandmark(landmarks: Map<string, number>, entry: ScaleEntry): void {
+    // Track explicit markers
+    if (entry.marker) {
+      landmarks.set(entry.marker, entry.order);
+    }
+
+    // Track civilization types (Kardashev types take precedence)
+    if (entry.notes === 'Kardashev Type I Civilization' && !landmarks.has('Type I Civilization')) {
+      landmarks.set('Type I Civilization', entry.order);
+    }
+    if (entry.notes === 'Kardashev Type II Civilization' && !landmarks.has('Type II Civilization')) {
+      landmarks.set('Type II Civilization', entry.order);
+    }
+    if (entry.notes === 'Kardashev Type III Civilization' && !landmarks.has('Type III Civilization')) {
+      landmarks.set('Type III Civilization', entry.order);
+    }
+    // Mature Type III only if Kardashev Type III not already set
+    if (entry.notes === 'Mature Type III Civilization' && !landmarks.has('Type III Civilization')) {
+      landmarks.set('Type III Civilization', entry.order);
+    }
+  }
+
+  /**
    * Initialize the scales map with all data
    */
   private initializeMap(): ScalesMap {
@@ -402,21 +428,7 @@ export class ScalesMapManager {
       entries.set(entry.order, entry);
 
       // Track landmarks
-      if (entry.marker) {
-        landmarks.set(entry.marker, entry.order);
-      }
-      if (entry.notes === 'Kardashev Type I Civilization' && !landmarks.has('Type I Civilization')) {
-        landmarks.set('Type I Civilization', entry.order);
-      }
-      if (entry.notes === 'Kardashev Type II Civilization' && !landmarks.has('Type II Civilization')) {
-        landmarks.set('Type II Civilization', entry.order);
-      }
-      if (entry.notes === 'Kardashev Type III Civilization' && !landmarks.has('Type III Civilization')) {
-        landmarks.set('Type III Civilization', entry.order);
-      }
-      if (entry.notes === 'Mature Type III Civilization' && !landmarks.has('Type III Civilization')) {
-        landmarks.set('Type III Civilization', entry.order);
-      }
+      this.addLandmark(landmarks, entry);
     }
 
     // Define era boundaries
@@ -435,8 +447,8 @@ export class ScalesMapManager {
       metadata: {
         created: Date.now(),
         description: 'Complete scales map from 10¹ to 10⁵⁰ tracing consciousness/civilization development',
-        targetOrder: 35, // Dyson swarm capacity
-        ultimateAnchor: 185, // Planck volumes (future extension)
+        targetOrder: 35, // Dyson swarm capacity - documented development target
+        ultimateAnchor: 185, // Planck volumes - theoretical universal scale (beyond observable universe)
       },
     };
   }

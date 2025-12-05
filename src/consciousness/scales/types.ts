@@ -74,8 +74,8 @@ export interface ScalesMap {
   metadata: {
     created: number;
     description: string;
-    targetOrder?: number; // e.g., 10³⁵ for documented target
-    ultimateAnchor?: number; // e.g., 10¹⁸⁵ for Planck volumes
+    targetOrder?: number; // e.g., 10^35 for documented target (Dyson swarm capacity)
+    ultimateAnchor?: number; // e.g., 10^185 for Planck volumes (universal scale limit)
   };
 }
 
