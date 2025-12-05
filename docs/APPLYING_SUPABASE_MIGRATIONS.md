@@ -141,6 +141,40 @@ Summary: 6/6 tables exist
 
 ## Troubleshooting
 
+### Error: "policy already exists" (ERROR: 42710)
+
+**Symptom:**
+```
+Error: Failed to run sql query: ERROR: 42710: policy "Allow authenticated read access" 
+for table "consciousness_states" already exists
+```
+
+**Cause:**
+- Migration 003 (RLS policies) was run multiple times
+- PostgreSQL doesn't support `CREATE POLICY IF NOT EXISTS`
+
+**Solution:**
+✅ **Fixed as of 2025-12-05** - Migration 003 is now idempotent and uses `DROP POLICY IF EXISTS` before creating policies.
+
+To apply the fix:
+```bash
+# The migration can now be run multiple times safely
+npx tsx scripts/apply-supabase-migrations.ts
+
+# Or manually re-run migration 003 in SQL Editor
+# It will drop and recreate all policies cleanly
+```
+
+**Verification:**
+```bash
+# Test that migration is idempotent
+npx tsx scripts/test-migration-idempotency.ts
+
+# Expected output:
+# ✅ All CREATE POLICY statements have DROP POLICY IF EXISTS
+# ✅ Migration is idempotent - can be run multiple times safely
+```
+
 ### Error: "permission denied"
 - You're using the anon key which doesn't have DDL permissions
 - Use the SQL Editor in Supabase Dashboard instead
@@ -204,4 +238,4 @@ After migrations are applied:
 ---
 
 **Status**: Ready to apply migrations  
-**Last Updated**: 2025-12-04
+**Last Updated**: 2025-12-05 - Made RLS policies migration idempotent
