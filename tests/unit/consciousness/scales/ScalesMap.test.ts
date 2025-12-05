@@ -143,6 +143,18 @@ describe('ScalesMapManager', () => {
       const largeScale = manager.findCurrentScale(1e55);
       expect(largeScale?.entry.order).toBe(50);
     });
+
+    it('should return null for negative metrics', () => {
+      const manager = new ScalesMapManager();
+      const result = manager.findCurrentScale(-100);
+      expect(result).toBeNull();
+    });
+
+    it('should return null for zero metric', () => {
+      const manager = new ScalesMapManager();
+      const result = manager.findCurrentScale(0);
+      expect(result).toBeNull();
+    });
   });
 
   describe('getScalePath', () => {

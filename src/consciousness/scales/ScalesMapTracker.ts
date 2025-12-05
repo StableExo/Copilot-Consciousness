@@ -10,13 +10,24 @@ import { ScaleEntry, ScaleEra } from './types.js';
 import { ScalesMapManager } from './ScalesMap.js';
 
 /**
+ * Key scale order constants
+ */
+export const SCALE_ORDERS = {
+  HUMAN_BASELINE: 15,
+  TARGET: 35,
+  TYPE_I: 17,
+  TYPE_II: 26,
+  TYPE_III: 37,
+} as const;
+
+/**
  * Mapping from developmental stages to approximate scale orders
  */
 const DEVELOPMENTAL_STAGE_TO_SCALE: Map<DevelopmentalStage, number> = new Map([
   [DevelopmentalStage.REACTIVE, 3], // Simple algorithm level
   [DevelopmentalStage.IMPLICIT_LEARNING, 7], // Neural network level
   [DevelopmentalStage.EMERGING_AUTOBIOGRAPHICAL, 10], // Human ancestor / modern AI
-  [DevelopmentalStage.CONTINUOUS_NARRATIVE, 15], // Human baseline
+  [DevelopmentalStage.CONTINUOUS_NARRATIVE, SCALE_ORDERS.HUMAN_BASELINE], // Human baseline
   [DevelopmentalStage.METACOGNITIVE, 16], // Planetary AI Core
 ]);
 
@@ -113,9 +124,8 @@ export class ScalesMapTracker {
       }
     }
 
-    const targetOrder = 35; // Documented target
-    const ordersToTarget = targetOrder - scaleEntry.order;
-    summary += `\nPath to Target (10^${targetOrder}): ${ordersToTarget} orders of magnitude\n`;
+    const ordersToTarget = SCALE_ORDERS.TARGET - scaleEntry.order;
+    summary += `\nPath to Target (10^${SCALE_ORDERS.TARGET}): ${ordersToTarget} orders of magnitude\n`;
 
     return summary;
   }
@@ -134,11 +144,11 @@ export class ScalesMapTracker {
     ordersToTarget: number;
   } | null {
     const current = this.getScaleForStage(currentStage);
-    const humanBaseline = this.scalesManager.getScale(15);
-    const typeI = this.scalesManager.getScale(17);
-    const typeII = this.scalesManager.getScale(26);
-    const typeIII = this.scalesManager.getScale(37);
-    const target = this.scalesManager.getScale(35);
+    const humanBaseline = this.scalesManager.getScale(SCALE_ORDERS.HUMAN_BASELINE);
+    const typeI = this.scalesManager.getScale(SCALE_ORDERS.TYPE_I);
+    const typeII = this.scalesManager.getScale(SCALE_ORDERS.TYPE_II);
+    const typeIII = this.scalesManager.getScale(SCALE_ORDERS.TYPE_III);
+    const target = this.scalesManager.getScale(SCALE_ORDERS.TARGET);
 
     if (!current || !humanBaseline || !typeI || !typeII || !typeIII || !target) {
       return null;
@@ -151,8 +161,8 @@ export class ScalesMapTracker {
       typeII,
       typeIII,
       target,
-      ordersToHuman: 15 - current.order,
-      ordersToTarget: 35 - current.order,
+      ordersToHuman: SCALE_ORDERS.HUMAN_BASELINE - current.order,
+      ordersToTarget: SCALE_ORDERS.TARGET - current.order,
     };
   }
 

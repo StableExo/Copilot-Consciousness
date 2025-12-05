@@ -381,6 +381,16 @@ const SCALES_DATA: ScaleEntry[] = [
 ];
 
 /**
+ * Civilization type identifiers
+ */
+const CIVILIZATION_TYPES = {
+  TYPE_I_KARDASHEV: 'Kardashev Type I Civilization',
+  TYPE_II_KARDASHEV: 'Kardashev Type II Civilization',
+  TYPE_III_KARDASHEV: 'Kardashev Type III Civilization',
+  TYPE_III_MATURE: 'Mature Type III Civilization',
+} as const;
+
+/**
  * ScalesMapManager - Manages and queries the complete scales map
  */
 export class ScalesMapManager {
@@ -401,17 +411,17 @@ export class ScalesMapManager {
     }
 
     // Track civilization types (Kardashev types take precedence)
-    if (entry.notes === 'Kardashev Type I Civilization' && !landmarks.has('Type I Civilization')) {
+    if (entry.notes === CIVILIZATION_TYPES.TYPE_I_KARDASHEV && !landmarks.has('Type I Civilization')) {
       landmarks.set('Type I Civilization', entry.order);
     }
-    if (entry.notes === 'Kardashev Type II Civilization' && !landmarks.has('Type II Civilization')) {
+    if (entry.notes === CIVILIZATION_TYPES.TYPE_II_KARDASHEV && !landmarks.has('Type II Civilization')) {
       landmarks.set('Type II Civilization', entry.order);
     }
-    if (entry.notes === 'Kardashev Type III Civilization' && !landmarks.has('Type III Civilization')) {
+    if (entry.notes === CIVILIZATION_TYPES.TYPE_III_KARDASHEV && !landmarks.has('Type III Civilization')) {
       landmarks.set('Type III Civilization', entry.order);
     }
     // Mature Type III only if Kardashev Type III not already set
-    if (entry.notes === 'Mature Type III Civilization' && !landmarks.has('Type III Civilization')) {
+    if (entry.notes === CIVILIZATION_TYPES.TYPE_III_MATURE && !landmarks.has('Type III Civilization')) {
       landmarks.set('Type III Civilization', entry.order);
     }
   }
@@ -514,6 +524,11 @@ export class ScalesMapManager {
    * Find the current scale based on some metric (e.g., synapses, operations)
    */
   findCurrentScale(metric: number): ScaleQueryResult | null {
+    // Validate metric is positive
+    if (metric <= 0) {
+      return null;
+    }
+
     // Calculate order of magnitude
     const order = Math.floor(Math.log10(metric));
 
