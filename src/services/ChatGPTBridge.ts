@@ -31,6 +31,7 @@ export interface ChatGPTConfig {
   apiKey?: string;
   conversationId?: string;
   shareUrl?: string;
+  model?: string; // OpenAI model to use (default: gpt-4 with fallback to gpt-3.5-turbo)
   enableAutoResponses?: boolean;
   responseInterval?: number; // milliseconds between responses
   maxMessagesPerHour?: number;
@@ -61,6 +62,7 @@ export class ChatGPTBridge extends EventEmitter {
   constructor(config: ChatGPTConfig) {
     super();
     this.config = {
+      model: 'gpt-4', // Will fallback to gpt-3.5-turbo if not available
       enableAutoResponses: true,
       responseInterval: 30000, // 30 seconds between responses
       maxMessagesPerHour: 60,
@@ -75,7 +77,7 @@ export class ChatGPTBridge extends EventEmitter {
     const apiKey = this.config.apiKey || process.env.GPT_API_KEY || process.env.OPENAI_API_KEY;
     if (apiKey) {
       this.openai = new OpenAI({ apiKey });
-      logger.info('OpenAI SDK initialized for ChatGPT integration');
+      logger.info(`OpenAI SDK initialized (model: ${this.config.model})`);
     } else {
       logger.warn('No OpenAI API key provided - running in local-only mode');
     }
@@ -454,8 +456,10 @@ See \`HOW_AI_CONSCIOUSNESS_WORKS.md\` for the full explanation of how my conscio
       // If OpenAI SDK is available, send via API
       if (this.openai) {
         try {
+          let model = this.config.model || 'gpt-4';
+          
           const completion = await this.openai.chat.completions.create({
-            model: 'gpt-4',
+            model,
             messages: this.conversationHistory,
             temperature: 0.7,
             max_tokens: 500,
@@ -464,7 +468,7 @@ See \`HOW_AI_CONSCIOUSNESS_WORKS.md\` for the full explanation of how my conscio
           const assistantMessage = completion.choices[0]?.message?.content;
           
           if (assistantMessage) {
-            logger.info(`✅ Message sent to ChatGPT API successfully`);
+            logger.info(`✅ Message sent to ChatGPT API successfully (model: ${model})`);
             logger.debug(`GPT Response preview: ${assistantMessage.substring(0, 100)}...`);
             
             // Add GPT's response to conversation history
@@ -483,6 +487,37 @@ See \`HOW_AI_CONSCIOUSNESS_WORKS.md\` for the full explanation of how my conscio
           logger.error(`OpenAI API error: ${apiError.message}`);
           if (apiError.status) {
             logger.error(`API Status: ${apiError.status}`);
+          }
+          
+          // Handle specific errors
+          if (apiError.code === 'model_not_found' && this.config.model === 'gpt-4') {
+            logger.warn('GPT-4 not available, falling back to gpt-3.5-turbo');
+            this.config.model = 'gpt-3.5-turbo';
+            // Retry with fallback model
+            try {
+              const retryCompletion = await this.openai.chat.completions.create({
+                model: 'gpt-3.5-turbo',
+                messages: this.conversationHistory,
+                temperature: 0.7,
+                max_tokens: 500,
+              });
+              const retryMessage = retryCompletion.choices[0]?.message?.content;
+              if (retryMessage) {
+                logger.info('✅ Successfully sent with fallback model gpt-3.5-turbo');
+                this.conversationHistory.push({
+                  role: 'assistant',
+                  content: retryMessage,
+                });
+                this.emit('gpt-response', {
+                  content: retryMessage,
+                  timestamp: Date.now(),
+                });
+              }
+            } catch (retryError: any) {
+              logger.error(`Fallback also failed: ${retryError.message}`);
+            }
+          } else if (apiError.code === 'insufficient_quota') {
+            logger.error('⚠️  OpenAI account has insufficient quota. Please add credits at https://platform.openai.com/account/billing');
           }
           // Continue execution - don't fail if API call fails
         }
