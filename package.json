@@ -19,6 +19,8 @@
     "cycles:1min": "node --import tsx scripts/autonomous-1min-cycles.ts",
     "warden:collab": "node --import tsx scripts/live-collaboration-interface.ts",
     "warden:collab:auto": "node --import tsx scripts/live-collaboration-interface.ts --auto-start",
+    "warden:chatgpt": "node --import tsx scripts/warden-chatgpt-integration.ts",
+    "warden:chatgpt:auto": "node --import tsx scripts/warden-chatgpt-integration.ts --auto-start",
     "add:dex": "node --import tsx scripts/add-dex.ts",
     "preload:pools": "node --import tsx scripts/preload-pools.ts",
     "preload:pools:force": "node --import tsx scripts/preload-pools.ts --force",
