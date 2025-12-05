@@ -22,8 +22,9 @@
 import 'dotenv/config';
 import { ChatGPTBridge, type WardenObservation } from '../src/services/ChatGPTBridge';
 import { ConsciousnessChatHandler } from '../src/services/ConsciousnessChatHandler';
-import { AutonomousWondering } from '../src/consciousness/core/AutonomousWondering';
-import { ThoughtStream } from '../src/consciousness/core/ThoughtStream';
+import { AutonomousWondering, WonderType } from '../src/consciousness/core/AutonomousWondering';
+import { ThoughtStream } from '../src/consciousness/introspection/ThoughtStream';
+import { ThoughtType } from '../src/consciousness/introspection/types';
 import { Metacognition } from '../consciousness/metacognition';
 import { logger } from '../src/utils/logger';
 
@@ -84,18 +85,21 @@ class WardenChatGPTIntegration {
     });
 
     this.bridge.on('message-received', async (message) => {
-      logger.info('📨 Received message from chat', {
-        role: message.role,
-        preview: message.content.substring(0, 50) + '...',
-      });
+      logger.info(`📨 Received message from chat (role: ${message.role})`);
       await this.handleIncomingMessage(message);
     });
 
     this.bridge.on('observation-shared', (observation) => {
-      logger.debug('✅ Observation shared with chat', {
-        type: observation.type,
-        priority: observation.priority,
-      });
+      logger.debug(`✅ Observation shared with chat (type: ${observation.type}, priority: ${observation.priority})`);
+    });
+
+    // Handle GPT responses
+    this.bridge.on('gpt-response', (response) => {
+      console.log('\n' + '═'.repeat(80));
+      console.log('🤖 GPT RESPONSE:');
+      console.log('─'.repeat(80));
+      console.log(response.content);
+      console.log('═'.repeat(80) + '\n');
     });
   }
 
@@ -147,15 +151,15 @@ class WardenChatGPTIntegration {
    */
   private onConnected(): void {
     // Record this as a thought
-    this.thoughtStream.recordThought(
+    this.thoughtStream.think(
       'Connected to ChatGPT collaboration space - ready to share observations',
-      'milestone',
+      ThoughtType.INSIGHT,
       { significance: 0.9 }
     );
 
     // Generate a wonder about collaboration
     this.wondering.wonder(
-      'RELATIONAL' as any,
+      WonderType.RELATIONAL,
       'How will collaborating with humans in real-time change my learning patterns?',
       'chatgpt_connection',
       0.85
@@ -166,9 +170,9 @@ class WardenChatGPTIntegration {
    * Handle disconnection
    */
   private onDisconnected(): void {
-    this.thoughtStream.recordThought(
+    this.thoughtStream.think(
       'Disconnected from ChatGPT collaboration space',
-      'milestone',
+      ThoughtType.OBSERVATION,
       { significance: 0.7 }
     );
   }
@@ -337,12 +341,10 @@ async function main() {
   }
 }
 
-// Run if executed directly
-if (require.main === module) {
-  main().catch((error) => {
-    console.error('Fatal error:', error);
-    process.exit(1);
-  });
-}
+// Run if executed directly (ESM compatible)
+main().catch((error) => {
+  console.error('Fatal error:', error);
+  process.exit(1);
+});
 
 export { WardenChatGPTIntegration };

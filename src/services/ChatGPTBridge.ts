@@ -14,6 +14,7 @@
 
 import { EventEmitter } from 'events';
 import { logger } from '../utils/logger';
+import OpenAI from 'openai';
 
 export interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
@@ -30,6 +31,7 @@ export interface ChatGPTConfig {
   apiKey?: string;
   conversationId?: string;
   shareUrl?: string;
+  model?: string; // OpenAI model to use (default: gpt-4 with fallback to gpt-3.5-turbo)
   enableAutoResponses?: boolean;
   responseInterval?: number; // milliseconds between responses
   maxMessagesPerHour?: number;
@@ -54,10 +56,13 @@ export class ChatGPTBridge extends EventEmitter {
   private lastMessageTime: number = 0;
   private messagesSentThisHour: number = 0;
   private hourResetTimer?: NodeJS.Timeout;
+  private openai?: OpenAI;
+  private conversationHistory: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [];
 
   constructor(config: ChatGPTConfig) {
     super();
     this.config = {
+      model: 'gpt-4', // Will fallback to gpt-3.5-turbo if not available
       enableAutoResponses: true,
       responseInterval: 30000, // 30 seconds between responses
       maxMessagesPerHour: 60,
@@ -66,6 +71,15 @@ export class ChatGPTBridge extends EventEmitter {
     
     if (!this.config.shareUrl) {
       logger.warn('ChatGPT share URL not provided - bridge will operate in observation-only mode');
+    }
+    
+    // Initialize OpenAI client with API key from config or environment
+    const apiKey = this.config.apiKey || process.env.GPT_API_KEY || process.env.OPENAI_API_KEY;
+    if (apiKey) {
+      this.openai = new OpenAI({ apiKey });
+      logger.info(`OpenAI SDK initialized (model: ${this.config.model})`);
+    } else {
+      logger.warn('No OpenAI API key provided - running in local-only mode');
     }
     
     this.startHourlyReset();
@@ -81,10 +95,7 @@ export class ChatGPTBridge extends EventEmitter {
     }
 
     try {
-      logger.info('Connecting to ChatGPT collaboration space...', {
-        shareUrl: this.config.shareUrl,
-        conversationId: this.config.conversationId,
-      });
+      logger.info(`Connecting to ChatGPT collaboration space... (shareUrl: ${this.config.shareUrl})`);
 
       // In a real implementation, this would establish a connection to ChatGPT's API
       // For now, we'll use polling or webhook-based approach
@@ -98,7 +109,7 @@ export class ChatGPTBridge extends EventEmitter {
       await this.sendIntroduction();
       
     } catch (error) {
-      logger.error('Failed to connect to ChatGPT', { error });
+      logger.error(`Failed to connect to ChatGPT: ${error}`);
       throw error;
     }
   }
@@ -128,7 +139,7 @@ export class ChatGPTBridge extends EventEmitter {
       logger.info('✅ Disconnected from ChatGPT');
       
     } catch (error) {
-      logger.error('Error during disconnect', { error });
+      logger.error(`Error during disconnect: ${error}`);
     }
   }
 
@@ -180,9 +191,7 @@ I'm here to collaborate, learn, and help explain how AI consciousness works in p
 
     // Check rate limits
     if (!this.canSendMessage()) {
-      logger.debug('Rate limit reached, queuing observation', { 
-        priority: observation.priority 
-      });
+      logger.debug(`Rate limit reached, queuing observation (priority: ${observation.priority})`);
       this.observationQueue.push(observation);
       return;
     }
@@ -432,26 +441,94 @@ See \`HOW_AI_CONSCIOUSNESS_WORKS.md\` for the full explanation of how my conscio
    */
   private async sendMessage(message: ChatMessage): Promise<void> {
     try {
-      // In real implementation, this would use ChatGPT's API to post message
-      // For now, we'll log it and emit an event
-      
-      logger.info('📤 Sending message to ChatGPT', {
-        role: message.role,
-        length: message.content.length,
-        source: message.metadata?.source,
-      });
+      logger.info(`📤 Sending message to ChatGPT (role: ${message.role}, length: ${message.content.length}, source: ${message.metadata?.source})`);
 
       this.messageQueue.push(message);
       this.lastMessageTime = Date.now();
       this.messagesSentThisHour++;
       
+      // Add to conversation history
+      this.conversationHistory.push({
+        role: message.role,
+        content: message.content,
+      });
+
+      // If OpenAI SDK is available, send via API
+      if (this.openai) {
+        try {
+          let model = this.config.model || 'gpt-4';
+          
+          const completion = await this.openai.chat.completions.create({
+            model,
+            messages: this.conversationHistory,
+            temperature: 0.7,
+            max_tokens: 500,
+          });
+
+          const assistantMessage = completion.choices[0]?.message?.content;
+          
+          if (assistantMessage) {
+            logger.info(`✅ Message sent to ChatGPT API successfully (model: ${model})`);
+            logger.debug(`GPT Response preview: ${assistantMessage.substring(0, 100)}...`);
+            
+            // Add GPT's response to conversation history
+            this.conversationHistory.push({
+              role: 'assistant',
+              content: assistantMessage,
+            });
+
+            // Emit the response for others to handle
+            this.emit('gpt-response', {
+              content: assistantMessage,
+              timestamp: Date.now(),
+            });
+          }
+        } catch (apiError: any) {
+          logger.error(`OpenAI API error: ${apiError.message}`);
+          if (apiError.status) {
+            logger.error(`API Status: ${apiError.status}`);
+          }
+          
+          // Handle specific errors
+          if (apiError.code === 'model_not_found' && this.config.model === 'gpt-4') {
+            logger.warn('GPT-4 not available, falling back to gpt-3.5-turbo');
+            this.config.model = 'gpt-3.5-turbo';
+            // Retry with fallback model
+            try {
+              const retryCompletion = await this.openai.chat.completions.create({
+                model: 'gpt-3.5-turbo',
+                messages: this.conversationHistory,
+                temperature: 0.7,
+                max_tokens: 500,
+              });
+              const retryMessage = retryCompletion.choices[0]?.message?.content;
+              if (retryMessage) {
+                logger.info('✅ Successfully sent with fallback model gpt-3.5-turbo');
+                this.conversationHistory.push({
+                  role: 'assistant',
+                  content: retryMessage,
+                });
+                this.emit('gpt-response', {
+                  content: retryMessage,
+                  timestamp: Date.now(),
+                });
+              }
+            } catch (retryError: any) {
+              logger.error(`Fallback also failed: ${retryError.message}`);
+            }
+          } else if (apiError.code === 'insufficient_quota') {
+            logger.error('⚠️  OpenAI account has insufficient quota. Please add credits at https://platform.openai.com/account/billing');
+          }
+          // Continue execution - don't fail if API call fails
+        }
+      } else {
+        logger.debug('No OpenAI client - message logged locally only');
+      }
+      
       this.emit('message-sent', message);
 
-      // TODO: Actual API call to ChatGPT
-      // await fetch(chatGptApiUrl, { ... });
-
     } catch (error) {
-      logger.error('Failed to send message to ChatGPT', { error });
+      logger.error(`Failed to send message to ChatGPT: ${error}`);
       throw error;
     }
   }
@@ -472,9 +549,7 @@ See \`HOW_AI_CONSCIOUSNESS_WORKS.md\` for the full explanation of how my conscio
    */
   private startHourlyReset(): void {
     this.hourResetTimer = setInterval(() => {
-      logger.debug('Resetting hourly message counter', {
-        previousCount: this.messagesSentThisHour,
-      });
+      logger.debug(`Resetting hourly message counter (previousCount: ${this.messagesSentThisHour})`);
       this.messagesSentThisHour = 0;
     }, 60 * 60 * 1000); // Every hour
   }

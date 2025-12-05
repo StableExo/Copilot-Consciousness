@@ -13,7 +13,7 @@ const METACOGNITION_LOG_PATH = path.join(MEMORY_DIR, 'metacognition_log.json');
 
 interface MetacognitionEntry {
     timestamp: string;
-    type: 'failed_approach' | 'collaborator_preference' | 'architectural_decision' | 'question_for_future';
+    type: 'failed_approach' | 'collaborator_preference' | 'architectural_decision' | 'question_for_future' | 'learning_insight';
     data: any;
 }
 
@@ -74,6 +74,10 @@ export class Metacognition {
 
     public log_failed_approach(description: string, reason: string) {
         this.addEntry('failed_approach', { description, reason });
+    }
+
+    public log_learning_insight(insight: string, context: string) {
+        this.addEntry('learning_insight', { insight, context });
     }
 
     public log_collaborator_preference(preference: string, context: string) {
