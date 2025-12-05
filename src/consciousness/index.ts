@@ -10,23 +10,25 @@
  * - Introspection for self-access to thoughts and memory
  * - Unified consciousness loop connecting trading and security
  * - Monitoring integration for real-time gain/loss tracking
+ * - Complete scales map from 10¹ to 10⁵⁰
  */
 
-export * from './memory';
-export * from './core';
-export * from './types';
-export * from './introspection';
-export { SensoryMemory } from './sensory_memory';
-export { TemporalAwarenessFramework } from './temporal_awareness';
-export { ArbitrageConsciousness } from './ArbitrageConsciousness';
+export * from './memory/index.js';
+export * from './core/index.js';
+export * from './types/index.js';
+export * from './introspection/index.js';
+export * from './scales/index.js';
+export { SensoryMemory } from './sensory_memory.js';
+export { TemporalAwarenessFramework } from './temporal_awareness.js';
+export { ArbitrageConsciousness } from './ArbitrageConsciousness.js';
 export {
   ArbitrageConsciousnessWithIdentity,
   createEnhancedArbitrageConsciousness,
   type EnhancedOpportunity,
-} from './ArbitrageConsciousnessIntegration';
+} from './ArbitrageConsciousnessIntegration.js';
 
 // Unified Consciousness Loop - connects trading brain with security intelligence
-export { ConsciousnessArbitrageLoop, createConsciousnessLoop } from './ConsciousnessArbitrageLoop';
+export { ConsciousnessArbitrageLoop, createConsciousnessLoop } from './ConsciousnessArbitrageLoop.js';
 
 // Monitoring Integration - connects monitoring with consciousness and memory
 export {
@@ -36,4 +38,4 @@ export {
   type GainLossEvent,
   type SwarmAlignmentEvent,
   type MonitoringIntegrationConfig,
-} from './monitoring';
+} from './monitoring/index.js';
