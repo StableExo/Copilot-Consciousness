@@ -325,6 +325,34 @@ CREATE TRIGGER autonomous_goals_update_timestamp
   BEFORE UPDATE ON autonomous_goals
   FOR EACH ROW EXECUTE FUNCTION update_goal_timestamp();
 
+-- 10. agent_config: Store environment variables and configuration for AI agents
+CREATE TABLE agent_config (
+  id TEXT PRIMARY KEY,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  version TEXT NOT NULL,
+  environment TEXT NOT NULL DEFAULT 'production',
+  
+  -- Configuration data (JSONB for flexibility)
+  config JSONB NOT NULL DEFAULT '{}',
+  
+  -- Metadata
+  metadata JSONB
+);
+
+-- Trigger to update agent_config timestamp
+CREATE OR REPLACE FUNCTION update_agent_config_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER agent_config_update_timestamp
+  BEFORE UPDATE ON agent_config
+  FOR EACH ROW EXECUTE FUNCTION update_agent_config_timestamp();
+
 -- ============================================================================
 -- COMMENTS
 -- ============================================================================
@@ -338,5 +366,6 @@ COMMENT ON TABLE market_patterns IS 'Detected patterns in market behavior';
 COMMENT ON TABLE sessions IS 'Session tracking and management';
 COMMENT ON TABLE autonomous_goals IS 'Goal tracking and progress management';
 COMMENT ON TABLE learning_events IS 'Learning and adaptation events';
+COMMENT ON TABLE agent_config IS 'Environment variables and configuration for AI agents across sessions';
 
 SELECT 'Initial schema migration completed successfully' AS status;
