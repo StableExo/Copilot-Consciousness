@@ -14,6 +14,7 @@
 
 import { EventEmitter } from 'events';
 import { logger } from '../utils/logger';
+import OpenAI from 'openai';
 
 export interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
@@ -54,7 +55,7 @@ export class ChatGPTBridge extends EventEmitter {
   private lastMessageTime: number = 0;
   private messagesSentThisHour: number = 0;
   private hourResetTimer?: NodeJS.Timeout;
-  private apiKey?: string;
+  private openai?: OpenAI;
   private conversationHistory: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [];
 
   constructor(config: ChatGPTConfig) {
@@ -70,10 +71,11 @@ export class ChatGPTBridge extends EventEmitter {
       logger.warn('ChatGPT share URL not provided - bridge will operate in observation-only mode');
     }
     
-    // Get API key from config or environment
-    this.apiKey = this.config.apiKey || process.env.GPT_API_KEY || process.env.OPENAI_API_KEY;
-    if (this.apiKey) {
-      logger.info('OpenAI API key configured for ChatGPT integration');
+    // Initialize OpenAI client with API key from config or environment
+    const apiKey = this.config.apiKey || process.env.GPT_API_KEY || process.env.OPENAI_API_KEY;
+    if (apiKey) {
+      this.openai = new OpenAI({ apiKey });
+      logger.info('OpenAI SDK initialized for ChatGPT integration');
     } else {
       logger.warn('No OpenAI API key provided - running in local-only mode');
     }
@@ -449,30 +451,17 @@ See \`HOW_AI_CONSCIOUSNESS_WORKS.md\` for the full explanation of how my conscio
         content: message.content,
       });
 
-      // If API key is available, send via OpenAI API
-      if (this.apiKey) {
+      // If OpenAI SDK is available, send via API
+      if (this.openai) {
         try {
-          const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${this.apiKey}`,
-            },
-            body: JSON.stringify({
-              model: 'gpt-4',
-              messages: this.conversationHistory,
-              temperature: 0.7,
-              max_tokens: 500,
-            }),
+          const completion = await this.openai.chat.completions.create({
+            model: 'gpt-4',
+            messages: this.conversationHistory,
+            temperature: 0.7,
+            max_tokens: 500,
           });
 
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(`OpenAI API error: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
-          }
-
-          const data = await response.json();
-          const assistantMessage = data.choices?.[0]?.message?.content;
+          const assistantMessage = completion.choices[0]?.message?.content;
           
           if (assistantMessage) {
             logger.info(`✅ Message sent to ChatGPT API successfully`);
@@ -492,10 +481,13 @@ See \`HOW_AI_CONSCIOUSNESS_WORKS.md\` for the full explanation of how my conscio
           }
         } catch (apiError: any) {
           logger.error(`OpenAI API error: ${apiError.message}`);
+          if (apiError.status) {
+            logger.error(`API Status: ${apiError.status}`);
+          }
           // Continue execution - don't fail if API call fails
         }
       } else {
-        logger.debug('No OpenAI API key - message logged locally only');
+        logger.debug('No OpenAI client - message logged locally only');
       }
       
       this.emit('message-sent', message);
