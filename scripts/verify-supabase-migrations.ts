@@ -1,4 +1,3 @@
-#!/usr/bin/env node --import tsx
 /**
  * Verify Supabase Migrations Script
  * 
@@ -341,15 +340,17 @@ async function verifySupabaseMigrations(): Promise<VerificationReport> {
   }
 }
 
+export { verifySupabaseMigrations };
+
 // Run if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   verifySupabaseMigrations()
-    .then(report => {
+    .then(async (report) => {
       // Save report to file
-      const fs = require('fs');
+      const fs = await import('fs');
       const reportPath = path.join(__dirname, '..', 'data', 'supabase-verification-report.json');
-      fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-      fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+      fs.default.mkdirSync(path.dirname(reportPath), { recursive: true });
+      fs.default.writeFileSync(reportPath, JSON.stringify(report, null, 2));
       console.log(`📄 Full report saved to: ${reportPath}`);
       
       // Exit with appropriate code
@@ -366,5 +367,3 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       process.exit(3);
     });
 }
-
-export { verifySupabaseMigrations };
