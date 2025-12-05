@@ -1666,6 +1666,78 @@ Also discussed in the dialogue as part of the 10^36 engineering capabilities:
 
 **Impact on Dialogue**: The claim represents an excellent summary of scientific consensus on traversable wormholes - accurately presenting a theoretical "yes, if" scenario rooted in real physics while honestly acknowledging monumental practical hurdles. The 10^36 framework positioning this as "just another infrastructure project" is aspirational rather than evidence-based, but the underlying physics is solid.
 
+### Fact-Check #7: Closed Timelike Curves (CTCs) for Acausal Computation
+
+**Original Claim (from analysis):**
+> "**Closed timelike curves (CTCs) for acausal computation** - MAYBE. CTCs exist in certain spacetime geometries (Kerr black holes, Alcubierre drives), but Novikov self-consistency principle may prevent paradoxes OR quantum mechanics may resolve them. Not proven impossible. **Verdict: Edge of theoretical physics, no experimental evidence.**"
+
+Also discussed in the dialogue's advanced concepts:
+> "With wormholes + reversible timelines + energy beyond stellar, you can now close timelike curves at will (or at least send information backward). The light cone stops being a prison. You can literally reach back and hand your past self the winning lottery numbers... or the next 10^36."
+
+**Verification Result**: ✅ **ACCURATE** (Well-balanced summary of speculative theoretical physics)
+
+**Supporting Evidence**:
+
+1. **CTCs in Spacetime Geometries**: Correct - CTCs are valid, non-contradictory mathematical solutions to Einstein's field equations of general relativity. Specific examples include:
+   - The **Gödel universe** (rotating cosmological model)
+   - Interior region of **rotating Kerr black hole**
+   - Theoretical constructs like **Tipler cylinder** and certain **wormhole configurations**
+   - Note: These solutions often require unrealistic conditions (infinite length, exotic matter) and CTCs in Kerr metric are believed hidden behind horizons in physically unrealistic regions
+
+2. **Paradox Prevention Mechanisms**: The statement correctly identifies two main theoretical frameworks:
+   - **Novikov Self-Consistency Principle**: Any actions on CTC must be self-consistent, forming single non-paradoxical loop in time. Physics would conspire to prevent any inconsistent event, effectively constraining "free will" on a CTC
+   - **Quantum mechanical models**: Models like Deutsch's D-CTCs provide formal framework where interactions are inherently consistent. Recent theoretical studies using quantum statistical mechanics concluded system state on CTC is forced into consistency, preventing paradoxes
+
+3. **Acausal Computation Context**: Valid theoretical exploration. Research into quantum models of CTCs has explored computational consequences. Theoretical results indicate access to CTCs could dramatically increase computational power, though this remains purely theoretical
+
+**Truth Score**: 88%
+- **Mathematical validity (95%)**: CTCs are rigorous solutions to general relativity field equations in specific geometries
+- **Paradox resolution frameworks (90%)**: Both Novikov principle and quantum mechanical approaches are established theoretical proposals
+- **Physical realizability (75%)**: Known CTC solutions require unrealistic conditions (infinite cylinders, exotic matter, hidden horizons); no experimental evidence or practical path to creation
+- **Acausal computation (85%)**: Theoretical framework exists, computational implications explored, but entirely speculative
+
+**Assessment Categories**:
+- ✅ **Proven**: CTCs are mathematically valid solutions to Einstein's equations
+- ✅ **Proven**: Novikov principle and quantum mechanical models provide paradox-free frameworks (theoretically)
+- ⚠️ **Theoretical**: CTCs can be created or accessed in practice
+- ⚠️ **Highly Speculative**: "Closing timelike curves at will" with sufficient energy
+- ❓ **Unknown**: Whether physical reality permits CTC exploitation even if mathematically valid
+
+**Impact on Dialogue**: The claim accurately characterizes CTCs as "edge of theoretical physics" - they're not ruled out by known physics but remain firmly in speculative territory. The dialogue's suggestion that 10^36 energy could "close timelike curves at will" is aspirational extrapolation, but the underlying acknowledgment that CTCs are theoretically possible (if not practically achievable) is sound.
+
+### Fact-Check #8: Shkadov Thrusters / Stellar Engines
+
+**Original Claim (from analysis):**
+> "**Shkadov thrusters / stellar engines** - YES, theoretically possible with Type II energy. No physics violations, just engineering at absurd scale. **Verdict: Plausible with sufficient resources.**"
+
+Also discussed in Grok's cosmic engineering breakdown:
+> "Shkadov thruster or niched black-hole drives: You now have the energy to asymmetrically radiate the Sun and turn it into a stellar engine (Shkadov-class thruster). The entire solar system starts moving at ~10–100 km/s toward wherever you want."
+
+**Verification Result**: ✅ **FULLY ACCURATE** (Sound theoretical proposal requiring no new physics)
+
+**Supporting Evidence**:
+
+1. **Theoretical Foundation & Physics**: Shkadov thruster, first proposed by physicist Leonid Shkadov in 1987, is based entirely on established physics: Newtonian gravity and radiation pressure of starlight. Concept: massive mirror (statite) positioned near star where radiation pressure balances gravitational pull, allowing it to hover. By reflecting portion of star's radiation back, creates asymmetry resulting in net thrust. **No new physics or exotic matter required** [Sources: https://en.wikipedia.org/wiki/Stellar_engine, https://www.centauri-dreams.org/2013/11/26/moving-stars-the-shkadov-thruster/]
+
+2. **Type II Civilization Scale**: Creation of stellar engine explicitly linked to **Type II civilization on Kardashev scale** (harnesses total energy output of star). Calculations show Shkadov thruster for Sun-like star reflecting half its output would generate thrust of **1.28 × 10^18 Newtons** [Source: https://www.gregschool.org/space-transportation/2017/9/21/shkadov-thruster]
+
+3. **Engineering at Absurd Scale**: Sources unanimously emphasize monumental engineering challenge. Structure would be colossal - solar-system-sized megastructure requiring astronomical amounts of material, potentially sourced from disassembling planets. Effects incredibly slow: velocity change of only **~20 m/s after 1 million years**. Perfectly aligns with "engineering at absurd scale" description [Source: https://www.watchmojo.com/articles/what-if-we-could-move-the-stars-unveiled]
+
+**Truth Score**: 95%
+- **Theoretical & physical plausibility (100%)**: Concept robust, grounded in known physics (radiation pressure + Newtonian gravity), widely accepted in theoretical astrophysics as valid possibility
+- **Context and feasibility (90%)**: Correctly identifies barrier as unimaginable engineering and timescale. Minor deduction: more recent concepts (Caplan thruster) propose methods for greater acceleration using star mass as fuel, though more complex/destructive. Shkadov remains simplest and most stable conceptual design
+
+**Assessment Categories**:
+- ✅ **Proven**: Physics principles (radiation pressure, gravity balance) are established
+- ✅ **Proven**: Thrust calculations are valid for given mirror sizes
+- ✅ **Theoretically sound**: No violations of known physics
+- ⚠️ **Engineering challenge**: Solar-system-scale megastructure, planetary disassembly for materials
+- ⚠️ **Practical limitation**: Extremely slow acceleration (20 m/s per million years)
+
+**Notable Detail**: Grok's claim of "10-100 km/s" movement is achievable but requires **millions to billions of years** of thrust, not immediate result. The physics is correct but timescale was understated in the dialogue.
+
+**Impact on Dialogue**: This claim is one of the most solidly grounded in the entire conversation. Shkadov thrusters represent legitimate Type II civilization engineering - no speculative physics required, just extraordinary scale. The dialogue's characterization as "plausible with sufficient resources" is perfectly accurate. This validates that not all cosmic-scale proposals in the dialogue are equally speculative.
+
 **Status of Fact-Checking**: 🔄 **IN PROGRESS**
 - Fact #1 (Planck volumes): ❌ Corrected (10% truth score - 149 orders of magnitude error)
 - Fact #2 (Kardashev Type II): ✅ Verified (100% truth score - perfectly accurate)
@@ -1673,9 +1745,11 @@ Also discussed in the dialogue as part of the 10^36 engineering capabilities:
 - Fact #4 (Bitcoin keyspace): ✅ Verified (95% truth score - mathematically correct, minor terminology clarification)
 - Fact #5 (Recursive self-improvement): ✅ Verified (90% truth score - core mechanism proven, extreme scenarios theoretical)
 - Fact #6 (Traversable wormholes): ✅ Theoretically sound (85% truth score - physics correct, engineering highly speculative)
+- Fact #7 (Closed timelike curves): ✅ Accurate (88% truth score - valid GR solutions, paradox frameworks exist, no experimental evidence)
+- Fact #8 (Shkadov thrusters): ✅ Fully accurate (95% truth score - no new physics required, just extraordinary engineering)
 - Remaining claims: ⏳ Awaiting verification
 
-**Running Average**: 6 fact-checks completed, **75.8% average truth score**
+**Running Average**: 8 fact-checks completed, **78.6% average truth score**
 
 ---
 
