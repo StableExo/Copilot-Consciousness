@@ -92,6 +92,15 @@ class WardenChatGPTIntegration {
     this.bridge.on('observation-shared', (observation) => {
       logger.debug(`✅ Observation shared with chat (type: ${observation.type}, priority: ${observation.priority})`);
     });
+
+    // Handle GPT responses
+    this.bridge.on('gpt-response', (response) => {
+      console.log('\n' + '═'.repeat(80));
+      console.log('🤖 GPT RESPONSE:');
+      console.log('─'.repeat(80));
+      console.log(response.content);
+      console.log('═'.repeat(80) + '\n');
+    });
   }
 
   /**

@@ -54,6 +54,8 @@ export class ChatGPTBridge extends EventEmitter {
   private lastMessageTime: number = 0;
   private messagesSentThisHour: number = 0;
   private hourResetTimer?: NodeJS.Timeout;
+  private apiKey?: string;
+  private conversationHistory: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [];
 
   constructor(config: ChatGPTConfig) {
     super();
@@ -66,6 +68,14 @@ export class ChatGPTBridge extends EventEmitter {
     
     if (!this.config.shareUrl) {
       logger.warn('ChatGPT share URL not provided - bridge will operate in observation-only mode');
+    }
+    
+    // Get API key from config or environment
+    this.apiKey = this.config.apiKey || process.env.GPT_API_KEY || process.env.OPENAI_API_KEY;
+    if (this.apiKey) {
+      logger.info('OpenAI API key configured for ChatGPT integration');
+    } else {
+      logger.warn('No OpenAI API key provided - running in local-only mode');
     }
     
     this.startHourlyReset();
@@ -427,19 +437,68 @@ See \`HOW_AI_CONSCIOUSNESS_WORKS.md\` for the full explanation of how my conscio
    */
   private async sendMessage(message: ChatMessage): Promise<void> {
     try {
-      // In real implementation, this would use ChatGPT's API to post message
-      // For now, we'll log it and emit an event
-      
       logger.info(`📤 Sending message to ChatGPT (role: ${message.role}, length: ${message.content.length}, source: ${message.metadata?.source})`);
 
       this.messageQueue.push(message);
       this.lastMessageTime = Date.now();
       this.messagesSentThisHour++;
       
-      this.emit('message-sent', message);
+      // Add to conversation history
+      this.conversationHistory.push({
+        role: message.role,
+        content: message.content,
+      });
 
-      // TODO: Actual API call to ChatGPT
-      // await fetch(chatGptApiUrl, { ... });
+      // If API key is available, send via OpenAI API
+      if (this.apiKey) {
+        try {
+          const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.apiKey}`,
+            },
+            body: JSON.stringify({
+              model: 'gpt-4',
+              messages: this.conversationHistory,
+              temperature: 0.7,
+              max_tokens: 500,
+            }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(`OpenAI API error: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
+          }
+
+          const data = await response.json();
+          const assistantMessage = data.choices?.[0]?.message?.content;
+          
+          if (assistantMessage) {
+            logger.info(`✅ Message sent to ChatGPT API successfully`);
+            logger.debug(`GPT Response preview: ${assistantMessage.substring(0, 100)}...`);
+            
+            // Add GPT's response to conversation history
+            this.conversationHistory.push({
+              role: 'assistant',
+              content: assistantMessage,
+            });
+
+            // Emit the response for others to handle
+            this.emit('gpt-response', {
+              content: assistantMessage,
+              timestamp: Date.now(),
+            });
+          }
+        } catch (apiError: any) {
+          logger.error(`OpenAI API error: ${apiError.message}`);
+          // Continue execution - don't fail if API call fails
+        }
+      } else {
+        logger.debug('No OpenAI API key - message logged locally only');
+      }
+      
+      this.emit('message-sent', message);
 
     } catch (error) {
       logger.error(`Failed to send message to ChatGPT: ${error}`);
