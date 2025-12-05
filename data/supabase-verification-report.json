@@ -1,0 +1,98 @@
+{
+  "timestamp": "2025-12-05T06:01:52.468Z",
+  "projectUrl": "https://ydvevgqxcfizualicbom.supabase.co",
+  "tables": [
+    {
+      "name": "consciousness_states",
+      "exists": true,
+      "migration": "001_initial_schema.sql"
+    },
+    {
+      "name": "thoughts",
+      "exists": true,
+      "migration": "001_initial_schema.sql"
+    },
+    {
+      "name": "semantic_memories",
+      "exists": true,
+      "migration": "001_initial_schema.sql"
+    },
+    {
+      "name": "episodic_memories",
+      "exists": true,
+      "migration": "001_initial_schema.sql"
+    },
+    {
+      "name": "arbitrage_executions",
+      "exists": true,
+      "migration": "001_initial_schema.sql"
+    },
+    {
+      "name": "market_patterns",
+      "exists": true,
+      "migration": "001_initial_schema.sql"
+    },
+    {
+      "name": "sessions",
+      "exists": true,
+      "migration": "001_initial_schema.sql"
+    },
+    {
+      "name": "autonomous_goals",
+      "exists": true,
+      "migration": "001_initial_schema.sql"
+    },
+    {
+      "name": "learning_events",
+      "exists": true,
+      "migration": "001_initial_schema.sql"
+    }
+  ],
+  "extensions": [
+    {
+      "name": "uuid-ossp",
+      "exists": false,
+      "migration": "001_initial_schema.sql"
+    },
+    {
+      "name": "pg_trgm",
+      "exists": true,
+      "migration": "001_initial_schema.sql"
+    },
+    {
+      "name": "vector (pgvector)",
+      "exists": true,
+      "migration": "004_add_vector_search.sql"
+    }
+  ],
+  "indexes": [],
+  "functions": [
+    {
+      "name": "match_semantic_memories",
+      "exists": true,
+      "migration": "004_add_vector_search.sql"
+    },
+    {
+      "name": "hybrid_search_memories",
+      "exists": false,
+      "migration": "004_add_vector_search.sql"
+    },
+    {
+      "name": "find_related_memories",
+      "exists": false,
+      "migration": "004_add_vector_search.sql"
+    }
+  ],
+  "rlsEnabled": [
+    {
+      "table": "consciousness_states",
+      "enabled": true
+    },
+    {
+      "table": "semantic_memories",
+      "enabled": true
+    }
+  ],
+  "overallStatus": "PARTIAL",
+  "summary": "⚠️  Partial migration detected. 9/9 tables, 1/3 functions."
+}
