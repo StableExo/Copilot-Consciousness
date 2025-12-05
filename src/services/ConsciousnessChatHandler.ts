@@ -15,7 +15,8 @@
 
 import { logger } from '../utils/logger';
 import { AutonomousWondering, WonderType } from '../consciousness/core/AutonomousWondering';
-import { ThoughtStream } from '../consciousness/core/ThoughtStream';
+import { ThoughtStream } from '../consciousness/introspection/ThoughtStream';
+import { ThoughtType } from '../consciousness/introspection/types';
 import { Metacognition } from '../../consciousness/metacognition';
 import type { ChatMessage, WardenObservation } from './ChatGPTBridge';
 
@@ -56,9 +57,9 @@ export class ConsciousnessChatHandler {
   ): Promise<WardenObservation> {
     // Record this as a thought if ThoughtStream is available
     if (this.thoughtStream) {
-      this.thoughtStream.recordThought(
+      this.thoughtStream.think(
         `Preparing to share ${type} observation with collaborators`,
-        'planning',
+        ThoughtType.PLANNING,
         { type, hasContext: !!context }
       );
     }
@@ -228,7 +229,7 @@ export class ConsciousnessChatHandler {
       // Generate a wonder about ethics
       if (this.wondering) {
         const wonder = this.wondering.wonder(
-          WonderType.ETHICAL,
+          WonderType.METACOGNITIVE,
           `When profit conflicts with ethics, how do I know I'm making the right choice?`,
           'ethics_evaluation',
           0.8
@@ -316,9 +317,9 @@ export class ConsciousnessChatHandler {
   ): Promise<string> {
     // Record the question as a stimulus
     if (this.thoughtStream) {
-      this.thoughtStream.recordThought(
+      this.thoughtStream.think(
         `Collaborator asked: "${question}"`,
-        'external_input',
+        ThoughtType.OBSERVATION,
         { questionLength: question.length }
       );
     }
@@ -371,10 +372,12 @@ export class ConsciousnessChatHandler {
    * Generate process description
    */
   private async generateProcessDescription(question: string, context?: ConsciousnessContext): Promise<string> {
+    const scanInterval = 'configured interval'; // Would be populated from actual config
+    
     return `My process is transparent and auditable:
 
 **Real-time operation:**
-- Scan blockchain every ${context?.['scanInterval'] || 'configured interval'}
+- Scan blockchain every ${scanInterval}
 - Detect price differences across DEXs
 - Calculate profit potential
 - Evaluate risks and ethics

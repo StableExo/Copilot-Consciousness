@@ -133,6 +133,15 @@ export class AutonomousWondering {
   }
 
   /**
+   * Get recent wonders (most recent first)
+   */
+  getRecentWonders(limit: number = 10): Wonder[] {
+    return Array.from(this.wonders.values())
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(0, limit);
+  }
+
+  /**
    * Perform autonomous reflection (unprompted thinking)
    */
   reflect(trigger: AutonomousReflection['trigger'] = 'spontaneous'): AutonomousReflection {

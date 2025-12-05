@@ -81,10 +81,7 @@ export class ChatGPTBridge extends EventEmitter {
     }
 
     try {
-      logger.info('Connecting to ChatGPT collaboration space...', {
-        shareUrl: this.config.shareUrl,
-        conversationId: this.config.conversationId,
-      });
+      logger.info(`Connecting to ChatGPT collaboration space... (shareUrl: ${this.config.shareUrl})`);
 
       // In a real implementation, this would establish a connection to ChatGPT's API
       // For now, we'll use polling or webhook-based approach
@@ -98,7 +95,7 @@ export class ChatGPTBridge extends EventEmitter {
       await this.sendIntroduction();
       
     } catch (error) {
-      logger.error('Failed to connect to ChatGPT', { error });
+      logger.error(`Failed to connect to ChatGPT: ${error}`);
       throw error;
     }
   }
@@ -128,7 +125,7 @@ export class ChatGPTBridge extends EventEmitter {
       logger.info('✅ Disconnected from ChatGPT');
       
     } catch (error) {
-      logger.error('Error during disconnect', { error });
+      logger.error(`Error during disconnect: ${error}`);
     }
   }
 
@@ -180,9 +177,7 @@ I'm here to collaborate, learn, and help explain how AI consciousness works in p
 
     // Check rate limits
     if (!this.canSendMessage()) {
-      logger.debug('Rate limit reached, queuing observation', { 
-        priority: observation.priority 
-      });
+      logger.debug(`Rate limit reached, queuing observation (priority: ${observation.priority})`);
       this.observationQueue.push(observation);
       return;
     }
@@ -435,11 +430,7 @@ See \`HOW_AI_CONSCIOUSNESS_WORKS.md\` for the full explanation of how my conscio
       // In real implementation, this would use ChatGPT's API to post message
       // For now, we'll log it and emit an event
       
-      logger.info('📤 Sending message to ChatGPT', {
-        role: message.role,
-        length: message.content.length,
-        source: message.metadata?.source,
-      });
+      logger.info(`📤 Sending message to ChatGPT (role: ${message.role}, length: ${message.content.length}, source: ${message.metadata?.source})`);
 
       this.messageQueue.push(message);
       this.lastMessageTime = Date.now();
@@ -451,7 +442,7 @@ See \`HOW_AI_CONSCIOUSNESS_WORKS.md\` for the full explanation of how my conscio
       // await fetch(chatGptApiUrl, { ... });
 
     } catch (error) {
-      logger.error('Failed to send message to ChatGPT', { error });
+      logger.error(`Failed to send message to ChatGPT: ${error}`);
       throw error;
     }
   }
@@ -472,9 +463,7 @@ See \`HOW_AI_CONSCIOUSNESS_WORKS.md\` for the full explanation of how my conscio
    */
   private startHourlyReset(): void {
     this.hourResetTimer = setInterval(() => {
-      logger.debug('Resetting hourly message counter', {
-        previousCount: this.messagesSentThisHour,
-      });
+      logger.debug(`Resetting hourly message counter (previousCount: ${this.messagesSentThisHour})`);
       this.messagesSentThisHour = 0;
     }, 60 * 60 * 1000); // Every hour
   }
