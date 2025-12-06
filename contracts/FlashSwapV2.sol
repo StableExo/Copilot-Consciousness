@@ -43,8 +43,12 @@ interface IFlashLoanReceiver { // Aave V3 Flash Loan Receiver interface
 
 
 // --- Contract Definition ---
-// --- VERSION v4.0 (FlashSwapV2) --- Adapted for Base Network. Simplified profit distribution - all profits go to owner.
+// --- VERSION v4.1 (FlashSwapV2 + Tithe) --- Adapted for Base Network. Includes The 70/30 Split tithe system.
 // 
+// The 70/30 Split: Automated profit allocation for US debt reduction
+//   - 70% of net profits → titheRecipient (US debt reduction wallet)
+//   - 30% of net profits → owner (operator share)
+//
 // NOTE: Compilation may show warnings from @openzeppelin/contracts v3.4.2-solc-0.7 ReentrancyGuard 
 // about constructor visibility. This is expected and safe - it's a deprecation warning in the 
 // OpenZeppelin library itself (not our code). The warning will be resolved when upgrading to 
@@ -56,11 +60,14 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
     // --- State Variables ---
     ISwapRouter public immutable swapRouter; // Uniswap V3 Swap Router
     IUniswapV2Router02 public immutable sushiRouter; // SushiSwap Router (V2 compatible)
-    address payable public immutable owner; // The contract deployer/owner (receives all profits)
+    address payable public immutable owner; // The contract deployer/owner (receives 30% operator share)
+    address payable public immutable titheRecipient; // Tithe wallet (receives 70% for US debt reduction)
+    uint16 public immutable titheBps; // Tithe percentage in basis points (7000 = 70%)
     address public immutable v3Factory = 0x33128a8fC17869897dcE68Ed026d694621f6FDfD; // Uniswap V3 Factory Address (Base Mainnet)
     IPool public immutable aavePool; // Aave V3 Pool contract instance
     address public immutable aaveAddressesProvider; // Aave Addresses Provider address
     uint constant DEADLINE_OFFSET = 60; // Swap deadline in seconds from block.timestamp (e.g., 60 seconds)
+    uint16 constant MAX_TITHE_BPS = 9000; // Maximum 90% tithe allocation (allows flexibility for testing)
 
 
     // --- DEX Type Constants ---
@@ -87,6 +94,7 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
     event SwapExecuted(uint swapNumber, uint8 dexType, address indexed tokenIn, address indexed tokenOut, uint amountIn, uint amountOut);
     event RepaymentSuccess(address indexed token, uint amountRepaid);
     event ProfitTransferred(address indexed token, address indexed recipient, uint amount);
+    event TitheDistributed(address indexed token, address indexed titheRecipient, uint titheAmount, address indexed owner, uint ownerAmount);
     event EmergencyWithdrawal(address indexed token, address indexed recipient, uint amount);
     event TradeProfit(bytes32 indexed pathHash, address indexed tokenBorrowed, uint256 grossProfit, uint256 feePaid, uint256 netProfit);
 
@@ -100,18 +108,28 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
         address _uniswapV3Router,
         address _sushiRouter,
         address _aavePoolAddress,
-        address _aaveAddressesProvider
+        address _aaveAddressesProvider,
+        address payable _titheRecipient,
+        uint16 _titheBps
     ) {
         require(_uniswapV3Router != address(0), "FS:IUR");
         require(_sushiRouter != address(0), "FS:ISR");
         require(_aavePoolAddress != address(0), "FS:IAP");
         require(_aaveAddressesProvider != address(0), "FS:IAAP");
+        require(_titheBps <= MAX_TITHE_BPS, "FS:TBT"); // Tithe basis points too high
+        
+        // If tithe is enabled, recipient must be valid
+        if (_titheBps > 0) {
+            require(_titheRecipient != address(0), "FS:ITR"); // Invalid tithe recipient
+        }
 
         swapRouter = ISwapRouter(_uniswapV3Router);
         sushiRouter = IUniswapV2Router02(_sushiRouter);
         aavePool = IPool(_aavePoolAddress);
         aaveAddressesProvider = _aaveAddressesProvider;
         owner = payable(msg.sender); // owner is the deployer, receives the main profit share
+        titheRecipient = _titheRecipient;
+        titheBps = _titheBps;
     }
 
     // --- Aave IFlashLoanReceiver Interface Implementations ---
@@ -181,11 +199,8 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
         bytes32 pathHash = keccak256(decodedData.params); // Use params from the callback data for hash
         emit TradeProfit(pathHash, tokenBorrowed, grossProfit, feePaid, netProfit);
 
-        // Transfer all net profit to owner
-        if (netProfit > 0) {
-            IERC20(tokenBorrowed).safeTransfer(owner, netProfit);
-            emit ProfitTransferred(tokenBorrowed, owner, netProfit);
-        }
+        // Distribute net profit with tithe system
+        _distributeProfits(tokenBorrowed, netProfit);
     }
 
     // --- AAVE V3 Flash Loan Callback ---
@@ -237,11 +252,8 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
         bytes32 pathHash = keccak256(params); // Hash of the parameters sent to executeOperation
         emit TradeProfit(pathHash, tokenBorrowed, grossProfit, feePaid, netProfit);
 
-        // Transfer all net profit to owner
-        if (netProfit > 0) {
-            IERC20(tokenBorrowed).safeTransfer(owner, netProfit);
-            emit ProfitTransferred(tokenBorrowed, owner, netProfit);
-        }
+        // Distribute net profit with tithe system (70/30 split)
+        _distributeProfits(tokenBorrowed, netProfit);
 
         return true; // Signal successful execution to Aave
     }
@@ -447,6 +459,37 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
     }
 
     // --- Helper Functions ---
+    // Distributes net profit between tithe recipient and owner based on configured percentage
+    function _distributeProfits(address _token, uint256 _netProfit) internal {
+        if (_netProfit == 0) return;
+        
+        uint256 titheAmount = 0;
+        uint256 ownerAmount = _netProfit;
+        
+        // Calculate and distribute tithe if configured
+        if (titheBps > 0 && titheRecipient != address(0)) {
+            titheAmount = (_netProfit * titheBps) / 10000;
+            ownerAmount = _netProfit - titheAmount;
+            
+            // Transfer tithe portion
+            if (titheAmount > 0) {
+                IERC20(_token).safeTransfer(titheRecipient, titheAmount);
+            }
+        }
+        
+        // Transfer owner portion
+        if (ownerAmount > 0) {
+            IERC20(_token).safeTransfer(owner, ownerAmount);
+        }
+        
+        // Emit consolidated event
+        if (titheBps > 0 && titheRecipient != address(0)) {
+            emit TitheDistributed(_token, titheRecipient, titheAmount, owner, ownerAmount);
+        } else {
+            emit ProfitTransferred(_token, owner, ownerAmount);
+        }
+    }
+
     // Approves spender for maximum amount if current allowance is less than max uint256.
     // Prevents issues with allowances needing to be reset after spending.
     // Using type(uint256).max is standard practice for DEX routers/pools.
