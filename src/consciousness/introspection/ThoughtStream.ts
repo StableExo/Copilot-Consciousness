@@ -33,22 +33,36 @@ export class ThoughtStream {
   /**
    * Record a new thought
    */
-  think(content: string, type: ThoughtType, context: Partial<ThoughtContext> = {}): Thought {
+  think(
+    content: string,
+    type: ThoughtType,
+    contextOrMetadata: Partial<ThoughtContext> & Record<string, any> = {}
+  ): Thought {
+    // Separate ThoughtContext properties from additional metadata
+    const {
+      relatedMemoryIds,
+      cognitiveState,
+      confidence,
+      trigger,
+      emotionalValence,
+      ...additionalMetadata
+    } = contextOrMetadata;
+
     const thought: Thought = {
       id: generateUUID(),
       content,
       type,
       timestamp: Date.now(),
       context: {
-        relatedMemoryIds: context.relatedMemoryIds || [],
-        cognitiveState: context.cognitiveState || 'active',
-        confidence: context.confidence ?? 0.8,
-        trigger: context.trigger,
-        emotionalValence: context.emotionalValence,
+        relatedMemoryIds: relatedMemoryIds || [],
+        cognitiveState: cognitiveState || 'active',
+        confidence: confidence ?? 0.8,
+        trigger,
+        emotionalValence,
       },
       associations: [],
       intensity: this.calculateIntensity(type, content),
-      metadata: {},
+      metadata: additionalMetadata,
     };
 
     this.addThought(thought);
