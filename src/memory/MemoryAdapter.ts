@@ -93,11 +93,12 @@ export class MemoryAdapter {
           .from('consciousness_states')
           .upsert({
             session_id: state.sessionId,
+            version: state.version || '1.0.0',
+            saved_at: new Date(state.savedAt).toISOString(),
             thoughts: state.thoughts || [],
             self_awareness_state: state.selfAwarenessState || {},
             metadata: state.metadata || {},
-            created_at: new Date(state.savedAt).toISOString(),
-          });
+          } as any);
 
         if (error) {
           throw error;
@@ -136,10 +137,12 @@ export class MemoryAdapter {
         const { error } = await supabase
           .from('episodic_memories')
           .insert({
-            content: entry,
+            episode_id: `log_${Date.now()}`,
+            type: 'memory_log',
             context: { source: 'memory_log' },
+            description: entry,
             importance: 0.5,
-          });
+          } as any);
 
         if (!error) {
           console.log(`✅ Appended to Supabase log`);
@@ -164,11 +167,13 @@ export class MemoryAdapter {
         const { error } = await supabase
           .from('semantic_memories')
           .insert({
+            memory_id: article.id || `kb_${Date.now()}`,
             content: article.content,
             category: article.tags?.[0] || 'general',
-            confidence: 0.8,
+            tags: article.tags || [],
+            importance: 0.8,
             metadata: article,
-          });
+          } as any);
 
         if (!error) {
           console.log(`✅ Saved article to Supabase: ${article.id}`);
