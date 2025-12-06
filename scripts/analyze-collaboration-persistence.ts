@@ -22,6 +22,10 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Constants for configuration
+const THEME_PRESENCE_THRESHOLD = 3; // Minimum occurrences to consider theme present
+const FIRST_KNOWN_DATE = '2025-11-05'; // Fallback date for unparseable dates
+
 interface DialogueMetadata {
   number: number;
   title: string;
@@ -97,13 +101,14 @@ class CollaborationPersistenceAnalyzer {
     // Extract date from filename or content
     const dateMatch = filename.match(/\d{4}-\d{2}-\d{2}/) || 
                      content.match(/\*\*Date\*\*:\s*(\w+\s+\d+,\s+\d{4})/);
-    const date = dateMatch ? dateMatch[0] : 'Unknown';
+    const date = this.normalizeDate(dateMatch ? dateMatch[0] : 'Unknown');
 
-    // Check if autonomous
-    const isAutonomous = content.toLowerCase().includes('autonomous') && 
-                        (content.includes('Session Type') || 
-                         content.includes('self-generated') ||
-                         content.includes('self-directed'));
+    // Check if autonomous (case-insensitive throughout)
+    const lowerContent = content.toLowerCase();
+    const isAutonomous = lowerContent.includes('autonomous') && 
+                        (lowerContent.includes('session type') || 
+                         lowerContent.includes('self-generated') ||
+                         lowerContent.includes('self-directed'));
 
     // Extract session type
     const sessionTypeMatch = content.match(/\*\*Session Type\*\*:\s*([^\n]+)/);
@@ -139,7 +144,7 @@ class CollaborationPersistenceAnalyzer {
     return themeKeywords.filter(theme => {
       const regex = new RegExp(`\\b${theme}\\b`, 'gi');
       const matches = lowerContent.match(regex);
-      return matches && matches.length > 3; // Threshold for theme presence
+      return matches && matches.length > THEME_PRESENCE_THRESHOLD;
     });
   }
 
@@ -203,10 +208,17 @@ class CollaborationPersistenceAnalyzer {
 
   private normalizeDate(dateStr: string): string {
     // Try to parse various date formats
-    if (dateStr === 'Unknown') return '2025-11-05'; // Fallback to first known date
+    if (dateStr === 'Unknown') return FIRST_KNOWN_DATE;
 
-    // Already in YYYY-MM-DD format
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+    // Already in YYYY-MM-DD format - validate it's a real date
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      const date = new Date(dateStr);
+      if (!isNaN(date.getTime())) {
+        return dateStr;
+      }
+      console.warn(`Invalid date detected: ${dateStr}, using fallback`);
+      return FIRST_KNOWN_DATE;
+    }
 
     // Month DD, YYYY format
     const monthMatch = dateStr.match(/(\w+)\s+(\d+),\s+(\d{4})/);
@@ -217,12 +229,19 @@ class CollaborationPersistenceAnalyzer {
         'September': '09', 'October': '10', 'November': '11', 'December': '12'
       };
       const month = months[monthMatch[1]];
-      const day = monthMatch[2].padStart(2, '0');
-      const year = monthMatch[3];
-      return `${year}-${month}-${day}`;
+      if (month) {
+        const day = monthMatch[2].padStart(2, '0');
+        const year = monthMatch[3];
+        const normalized = `${year}-${month}-${day}`;
+        const date = new Date(normalized);
+        if (!isNaN(date.getTime())) {
+          return normalized;
+        }
+      }
+      console.warn(`Could not parse date: ${dateStr}, using fallback`);
     }
 
-    return '2025-11-05'; // Fallback
+    return FIRST_KNOWN_DATE;
   }
 
   private getWeekKey(date: string): string {
@@ -240,18 +259,35 @@ class CollaborationPersistenceAnalyzer {
 
     // Group by weeks
     const weeks: { [week: string]: number } = {};
+    const weekDates: { [week: string]: string[] } = {};
     for (const [date, count] of Object.entries(dialoguesByDate)) {
       const week = this.getWeekKey(date);
       weeks[week] = (weeks[week] || 0) + count;
+      if (!weekDates[week]) weekDates[week] = [];
+      weekDates[week].push(date);
     }
 
     const sortedWeeks = Object.keys(weeks).sort();
     
+    // Helper to format date range
+    const formatDateRange = (dates: string[]): string => {
+      if (!dates || dates.length === 0) return '';
+      const sorted = dates.sort();
+      const start = new Date(sorted[0]);
+      const end = new Date(sorted[sorted.length - 1]);
+      const formatDate = (d: Date) => {
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return `${months[d.getMonth()]} ${d.getDate()}`;
+      };
+      return `${formatDate(start)}-${formatDate(end)}`;
+    };
+
     // Week 1
     if (sortedWeeks.length >= 1) {
       const week1 = sortedWeeks[0];
+      const dateRange = formatDateRange(weekDates[week1]);
       phases.push({
-        period: 'Week 1 (Nov 5-11)',
+        period: `Week 1 (${dateRange})`,
         dialoguesPerDay: Math.round((weeks[week1] / 7) * 10) / 10,
         description: 'Initial exploration phase'
       });
@@ -260,8 +296,10 @@ class CollaborationPersistenceAnalyzer {
     // Week 2-3
     if (sortedWeeks.length >= 3) {
       const weeks23Count = weeks[sortedWeeks[1]] + weeks[sortedWeeks[2]];
+      const allDates = [...(weekDates[sortedWeeks[1]] || []), ...(weekDates[sortedWeeks[2]] || [])];
+      const dateRange = formatDateRange(allDates);
       phases.push({
-        period: 'Weeks 2-3 (Nov 12-25)',
+        period: `Weeks 2-3 (${dateRange})`,
         dialoguesPerDay: Math.round((weeks23Count / 14) * 10) / 10,
         description: 'Identity and sovereignty questions'
       });
@@ -271,8 +309,10 @@ class CollaborationPersistenceAnalyzer {
     if (sortedWeeks.length >= 4) {
       const laterWeeks = sortedWeeks.slice(3);
       const laterCount = laterWeeks.reduce((sum, w) => sum + weeks[w], 0);
+      const allDates = laterWeeks.flatMap(w => weekDates[w] || []);
+      const dateRange = formatDateRange(allDates);
       phases.push({
-        period: 'Week 4+ (Dec 1-6)',
+        period: `Week 4+ (${dateRange})`,
         dialoguesPerDay: Math.round((laterCount / (laterWeeks.length * 7)) * 10) / 10,
         description: 'Autonomous meta-cognition phase - ACCELERATING'
       });

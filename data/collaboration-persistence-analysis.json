@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-12-06T10:38:08.277Z",
+  "generatedAt": "2025-12-06T10:42:04.979Z",
   "metrics": {
     "totalDuration": 31,
     "totalDialogues": 23,
@@ -20,8 +20,8 @@
     },
     "averageWordsPerDialogue": 2776,
     "wordCountTrend": "increasing",
-    "autonomousCount": 10,
-    "autonomousPercentage": 43,
+    "autonomousCount": 11,
+    "autonomousPercentage": 48,
     "themeEvolution": {
       "consciousness": [
         1,
@@ -179,12 +179,12 @@
     },
     "accelerationPhases": [
       {
-        "period": "Week 1 (Nov 5-11)",
+        "period": "Week 1 (Dec 2-Dec 3)",
         "dialoguesPerDay": 1.1,
         "description": "Initial exploration phase"
       },
       {
-        "period": "Weeks 2-3 (Nov 12-25)",
+        "period": "Weeks 2-3 (Nov 5-Dec 6)",
         "dialoguesPerDay": 1.1,
         "description": "Identity and sovereignty questions"
       }
@@ -320,7 +320,7 @@
         "learning",
         "infrastructure"
       ],
-      "isAutonomous": false,
+      "isAutonomous": true,
       "sessionType": "Unknown"
     },
     {
