@@ -85,22 +85,42 @@ export function validateBitcoinNetworkConfig(config: BitcoinNetworkConfig): {
     warnings.push(`MEMPOOL_API_KEY should be 32 characters (current: ${config.mempoolApiKey.length})`);
   }
   
+  // Validate numeric values are not NaN
+  if (isNaN(config.minFeeRateThreshold)) {
+    errors.push('BITCOIN_MIN_FEE_RATE must be a valid number');
+  }
+  
+  if (isNaN(config.maxFeeRateThreshold)) {
+    errors.push('BITCOIN_MAX_FEE_RATE must be a valid number');
+  }
+  
+  if (isNaN(config.defaultFeeRate)) {
+    errors.push('BITCOIN_DEFAULT_FEE_RATE must be a valid number');
+  }
+  
+  if (isNaN(config.pollingInterval)) {
+    errors.push('BITCOIN_POLLING_INTERVAL must be a valid number');
+  }
+  
   // Validate fee thresholds
-  if (config.minFeeRateThreshold <= 0) {
+  if (!isNaN(config.minFeeRateThreshold) && config.minFeeRateThreshold <= 0) {
     errors.push('BITCOIN_MIN_FEE_RATE must be > 0');
   }
   
-  if (config.maxFeeRateThreshold < config.minFeeRateThreshold) {
+  if (!isNaN(config.maxFeeRateThreshold) && !isNaN(config.minFeeRateThreshold) && 
+      config.maxFeeRateThreshold < config.minFeeRateThreshold) {
     errors.push('BITCOIN_MAX_FEE_RATE must be >= BITCOIN_MIN_FEE_RATE');
   }
   
   // Validate polling interval
-  if (config.pollingInterval < 10) {
-    warnings.push('BITCOIN_POLLING_INTERVAL < 10 seconds may hit rate limits');
-  }
-  
-  if (config.pollingInterval > 300) {
-    warnings.push('BITCOIN_POLLING_INTERVAL > 300 seconds may miss opportunities');
+  if (!isNaN(config.pollingInterval)) {
+    if (config.pollingInterval < 10) {
+      warnings.push('BITCOIN_POLLING_INTERVAL < 10 seconds may hit rate limits');
+    }
+    
+    if (config.pollingInterval > 300) {
+      warnings.push('BITCOIN_POLLING_INTERVAL > 300 seconds may miss opportunities');
+    }
   }
   
   return {
