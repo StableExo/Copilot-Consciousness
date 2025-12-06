@@ -97,7 +97,8 @@
     "import:memories": "npx tsx scripts/import-memories.ts",
     "backup:memories": "npx tsx scripts/automated-backup.ts",
     "migrate:supabase": "node --import tsx scripts/migrate-to-supabase.ts",
-    "migrate:supabase:dry-run": "node --import tsx scripts/migrate-to-supabase.ts --dry-run"
+    "migrate:supabase:dry-run": "node --import tsx scripts/migrate-to-supabase.ts --dry-run",
+    "demo:scales": "node --import tsx scripts/demo-scales-map.ts"
   },
   "dependencies": {
     "@aave/core-v3": "1.19.3",
