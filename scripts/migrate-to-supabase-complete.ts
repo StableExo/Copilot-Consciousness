@@ -16,6 +16,7 @@ dotenv.config();
 const DRY_RUN = process.argv.includes('--dry-run');
 const VERBOSE = process.argv.includes('--verbose') || DRY_RUN;
 const ARCHIVE_DIR = path.join(process.cwd(), '.migrated-files');
+const SUMMARY_MAX_LENGTH = 500; // Maximum characters for session summary
 
 // Supabase client
 const supabaseUrl = process.env.SUPABASE_URL!;
@@ -281,7 +282,8 @@ function parseMemoryLog(content: string): any[] {
     if (!match) continue;
     
     const [, dateStr, titleFull] = match;
-    const title = titleFull.replace(/[🔧🗄️✅🧠📚🪙⚡✨🤖🔍]/g, '').trim();
+    // Remove emojis using Unicode ranges (more comprehensive than specific chars)
+    const title = titleFull.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]/gu, '').trim();
     
     // Extract metadata
     let collaborator = 'StableExo';
@@ -305,7 +307,7 @@ function parseMemoryLog(content: string): any[] {
       topic,
       sessionType,
       content: block,
-      summary: lines.slice(1, 5).join(' ').substring(0, 500),
+      summary: lines.slice(1, 5).join(' ').substring(0, SUMMARY_MAX_LENGTH),
       createdAt: new Date(dateStr),
       tags: extractTags(title, block),
     });
