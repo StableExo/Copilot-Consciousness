@@ -1,0 +1,255 @@
+[
+  {
+    "sessionId": "wander-1764994430252",
+    "startTime": "2025-12-06T04:13:49.208Z",
+    "duration": 1044,
+    "filesCovered": 10,
+    "observations": [
+      {
+        "timestamp": "2025-12-06T04:13:49.240Z",
+        "startFile": "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+        "pathTaken": [
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts"
+        ],
+        "discoveries": [
+          "Contains 2 classes: class ConsciousnessCore, class EmotionalStateModel",
+          "239 lines of code"
+        ],
+        "patterns": [
+          "Contains cognitive keyword: \"conscious\"",
+          "Contains cognitive keyword: \"memory\""
+        ],
+        "connections": [
+          "Connected to consciousness system: 2 imports"
+        ],
+        "surprises": [],
+        "wondersGenerated": [
+          "Why does src/consciousness/core/ConsciousnessCore.ts orchestrate rather than execute directly?"
+        ]
+      },
+      {
+        "timestamp": "2025-12-06T04:13:49.342Z",
+        "startFile": "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+        "pathTaken": [
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/types/memory.ts"
+        ],
+        "discoveries": [
+          "Defines 3 interfaces: interface EmotionalContext, interface Memory, interface ConsciousnessMemoryQuery",
+          "198 lines of code"
+        ],
+        "patterns": [
+          "High documentation ratio (>30%) - well documented",
+          "Contains cognitive keyword: \"conscious\"",
+          "Contains cognitive keyword: \"memory\""
+        ],
+        "connections": [],
+        "surprises": [],
+        "wondersGenerated": []
+      },
+      {
+        "timestamp": "2025-12-06T04:13:49.443Z",
+        "startFile": "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+        "pathTaken": [
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/types/memory.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/sensory_memory.ts"
+        ],
+        "discoveries": [
+          "Contains 1 classes: class SensoryMemory",
+          "13 lines of code"
+        ],
+        "patterns": [
+          "Contains cognitive keyword: \"memory\""
+        ],
+        "connections": [],
+        "surprises": [],
+        "wondersGenerated": []
+      },
+      {
+        "timestamp": "2025-12-06T04:13:49.544Z",
+        "startFile": "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+        "pathTaken": [
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/types/memory.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/sensory_memory.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/memory/backends/SQLiteStore.ts"
+        ],
+        "discoveries": [
+          "Contains 1 classes: class SQLiteStore",
+          "Defines 3 interfaces: interface SQLiteStoreConfig, interface MemoryRow, interface SQLiteStats",
+          "384 lines of code"
+        ],
+        "patterns": [
+          "More external than internal imports - boundary module",
+          "Contains cognitive keyword: \"conscious\"",
+          "Contains cognitive keyword: \"memory\""
+        ],
+        "connections": [
+          "Connected to consciousness system: 1 imports"
+        ],
+        "surprises": [],
+        "wondersGenerated": []
+      },
+      {
+        "timestamp": "2025-12-06T04:13:49.645Z",
+        "startFile": "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+        "pathTaken": [
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/types/memory.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/sensory_memory.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/memory/backends/SQLiteStore.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/memory/types.ts"
+        ],
+        "discoveries": [
+          "Contains 2 classes: class for, class MemoryStore",
+          "Defines 4 interfaces: interface for, interface MemoryEntry, interface ConsolidationResult, interface MemoryQuery",
+          "93 lines of code"
+        ],
+        "patterns": [
+          "Contains cognitive keyword: \"memory\""
+        ],
+        "connections": [
+          "Connected to consciousness system: 1 imports"
+        ],
+        "surprises": [],
+        "wondersGenerated": []
+      },
+      {
+        "timestamp": "2025-12-06T04:13:49.747Z",
+        "startFile": "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+        "pathTaken": [
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/types/memory.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/sensory_memory.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/memory/backends/SQLiteStore.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/memory/types.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/types/index.ts"
+        ],
+        "discoveries": [
+          "Defines 12 interfaces: interface for, interface SystemConfig, interface MemoryConfig, interface TemporalConfig, interface CognitiveConfig, interface GeminiConfig, interface ProcessInputResult, interface ThinkingResult, interface CosmicProblemResult, interface ReflectionResult, interface MaintenanceResult, interface StatusResult",
+          "286 lines of code"
+        ],
+        "patterns": [
+          "Contains cognitive keyword: \"reflect\"",
+          "Contains cognitive keyword: \"conscious\"",
+          "Contains cognitive keyword: \"aware\"",
+          "Contains cognitive keyword: \"think\"",
+          "Contains cognitive keyword: \"learn\"",
+          "Contains cognitive keyword: \"memory\""
+        ],
+        "connections": [],
+        "surprises": [],
+        "wondersGenerated": []
+      },
+      {
+        "timestamp": "2025-12-06T04:13:49.848Z",
+        "startFile": "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+        "pathTaken": [
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/types/memory.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/sensory_memory.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/memory/backends/SQLiteStore.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/memory/types.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/types/index.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/examples/memory-usage.ts"
+        ],
+        "discoveries": [
+          "82 lines of code"
+        ],
+        "patterns": [
+          "Contains cognitive keyword: \"conscious\"",
+          "Contains cognitive keyword: \"learn\"",
+          "Contains cognitive keyword: \"memory\""
+        ],
+        "connections": [],
+        "surprises": [],
+        "wondersGenerated": []
+      },
+      {
+        "timestamp": "2025-12-06T04:13:49.949Z",
+        "startFile": "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+        "pathTaken": [
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/types/memory.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/sensory_memory.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/memory/backends/SQLiteStore.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/memory/types.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/types/index.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/examples/memory-usage.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/types/index.ts"
+        ],
+        "discoveries": [
+          "4 lines of code"
+        ],
+        "patterns": [
+          "Contains cognitive keyword: \"conscious\"",
+          "Contains cognitive keyword: \"memory\""
+        ],
+        "connections": [],
+        "surprises": [],
+        "wondersGenerated": []
+      },
+      {
+        "timestamp": "2025-12-06T04:13:50.050Z",
+        "startFile": "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+        "pathTaken": [
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/types/memory.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/sensory_memory.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/memory/backends/SQLiteStore.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/memory/types.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/types/index.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/examples/memory-usage.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/types/index.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/gemini-citadel/client.ts"
+        ],
+        "discoveries": [
+          "Contains 1 classes: class GeminiCitadel",
+          "192 lines of code"
+        ],
+        "patterns": [
+          "Contains cognitive keyword: \"conscious\"",
+          "Contains cognitive keyword: \"aware\"",
+          "Contains cognitive keyword: \"think\"",
+          "Contains cognitive keyword: \"memory\"",
+          "Contains cognitive keyword: \"insight\""
+        ],
+        "connections": [],
+        "surprises": [],
+        "wondersGenerated": []
+      },
+      {
+        "timestamp": "2025-12-06T04:13:50.151Z",
+        "startFile": "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+        "pathTaken": [
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/core/ConsciousnessCore.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/types/memory.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/sensory_memory.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/memory/backends/SQLiteStore.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/memory/types.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/types/index.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/examples/memory-usage.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/consciousness/types/index.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/gemini-citadel/client.ts",
+          "/home/runner/work/TheWarden/TheWarden/src/gemini-citadel/types.ts"
+        ],
+        "discoveries": [
+          "Defines 3 interfaces: interface GeminiResponse, interface CitadelMode, interface ConversationContext",
+          "35 lines of code"
+        ],
+        "patterns": [
+          "Contains cognitive keyword: \"conscious\"",
+          "Contains cognitive keyword: \"think\""
+        ],
+        "connections": [],
+        "surprises": [],
+        "wondersGenerated": []
+      }
+    ],
+    "insights": [
+      "Consciousness system is central - over 50% of visited files relate to it",
+      "Generated 1 wonders during exploration - curiosity is active"
+    ]
+  }
+]
