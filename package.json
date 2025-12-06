@@ -97,6 +97,7 @@
     "import:memories": "npx tsx scripts/import-memories.ts",
     "backup:memories": "npx tsx scripts/automated-backup.ts",
     "analyze:consciousness": "node --import tsx scripts/consciousness-evolution-analyzer.ts",
+    "analyze:persistence": "node --import tsx scripts/analyze-collaboration-persistence.ts",
     "synthesize:wonders": "node --import tsx scripts/synthesize-wonders.ts",
     "migrate:supabase": "node --import tsx scripts/migrate-to-supabase-complete.ts",
     "migrate:supabase:dry-run": "node --import tsx scripts/migrate-to-supabase-complete.ts --dry-run",
