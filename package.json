@@ -96,8 +96,10 @@
     "export:memories": "npx tsx scripts/export-memories.ts",
     "import:memories": "npx tsx scripts/import-memories.ts",
     "backup:memories": "npx tsx scripts/automated-backup.ts",
-    "migrate:supabase": "node --import tsx scripts/migrate-to-supabase.ts",
-    "migrate:supabase:dry-run": "node --import tsx scripts/migrate-to-supabase.ts --dry-run",
+    "migrate:supabase": "node --import tsx scripts/migrate-to-supabase-complete.ts",
+    "migrate:supabase:dry-run": "node --import tsx scripts/migrate-to-supabase-complete.ts --dry-run",
+    "migrate:supabase:verbose": "node --import tsx scripts/migrate-to-supabase-complete.ts --verbose",
+    "test:supabase:connection": "node --import tsx scripts/test-supabase-connection.ts",
     "demo:scales": "node --import tsx scripts/demo-scales-map.ts"
   },
   "dependencies": {
