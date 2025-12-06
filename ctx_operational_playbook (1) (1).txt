@@ -1,0 +1,1081 @@
+# Axion Citadel: Operational Playbook
+
+**Document Version:** 0.5
+**Date:** June 10, 2025
+
+## 1. Introduction
+
+### 1.1. Purpose
+This document outlines the standard operating procedures (SOPs) for deploying, running, monitoring, troubleshooting, and securing the Axion Citadel arbitrage bot and its associated smart contracts. It aims to ensure operational consistency, safety, and efficiency. This is a living document and will be updated as the project evolves. Ultimately, all procedures and operational goals herein are designed to serve Axion Citadel's core mission: the unwavering execution of its Two Foundational Principles—The Law of Perpetual Motion for enduring survival, and The Law of Generative Power for radiating value and capability.
+
+### 1.2. Document Version & Date
+- Version: 0.4
+- Date: June 8, 2025
+
+## Table of Contents
+
+1.  **Introduction**
+    *   1.1. Purpose
+    *   1.2. Document Version & Date
+2.  **Core Operational Principles**
+    *   2.1. Safety First (See also `docs/SECURITY.md`)
+    *   2.2. Reproducibility
+    *   2.3. Observability
+    *   2.4. Version Control Hygiene (See `docs/DEVELOPMENT_WORKFLOWS.md`)
+    *   2.5. Dependency Management with Yarn ("The Yarn Mandate")
+    *   **2.5. Dependency Management with Yarn ("The Yarn Mandate")**
+        *   **Principle:** All project dependency management tasks must be performed exclusively using `yarn`. This includes installing, adding, removing, or updating dependencies.
+        *   **Rationale:** The consistent use of `yarn` and its lockfile (`yarn.lock`) is mandated to avoid dependency resolution inconsistencies that can arise when mixing package managers (like `npm` and `yarn`) within the same project. `yarn.lock` ensures deterministic builds by pinning down the exact versions of all direct and transitive dependencies, leading to more stable and predictable behavior across different development and deployment environments. This helps prevent "works on my machine" issues and streamlines collaboration. (Refer to `docs/DEVELOPMENT_WORKFLOWS.md` for more on build processes).
+    *   **2.6. Core Code Dependency Integration (Git Submodules)**
+        *   **Standard Procedure:** The standard procedure for adding a new core code dependency (e.g., an external library of Solidity contracts like OpenZeppelin or Aave) is via Git Submodules.
+        *   **Command:** `git submodule add <repository_url> lib/<library_name>`
+        *   **Example:** `git submodule add https://github.com/OpenZeppelin/openzeppelin-contracts.git lib/openzeppelin-contracts`
+        *   **Rationale:** This method integrates external repositories directly into the project's `lib/` directory (the "Shipwright's Workshop"). It allows for specific versions of these external libraries to be tracked and version-controlled alongside the main project codebase. This ensures that the Citadel uses precise, known versions of its core dependencies, enhancing stability and reproducibility. Updates to these submodules must be managed explicitly.
+        *   **Documentation:** All integrated submodules must be cataloged in `docs/reference/external_toolchain_codex.md`.
+3.  **Pre-Deployment / Pre-Run Checklist**
+    *   3.1. Code Repository & Dependencies
+    *   3.2. Environment & Network Configuration (See `guides/core_concepts/CONFIGURATION.MD`)
+    *   3.3. Operational Parameters & Thresholds
+    *   3.4. Wallet & Node Preparations
+    *   3.5. Configuration Management Best Practices (See `guides/core_concepts/CONFIGURATION.MD`)
+    *   3.6. Mandatory Build Step
+    *   **3.6. Mandatory Build Step**
+        *   **Requirement:** Before any execution of the bot (e.g., `node dist/bot.js`, `node runBot.js`) or related scripts that depend on the compiled codebase, the `yarn build` command must be successfully executed.
+        *   **Process:** This command invokes the TypeScript compiler (`tsc`). `tsc` transpiles the TypeScript source code located in the `src/` directory into executable JavaScript.
+        *   **Output:** The resulting JavaScript files are placed into the `dist/` directory.
+        *   **Rationale:** The bot and its associated tooling are developed in TypeScript for its strong typing and improved developer experience. However, Node.js executes JavaScript. The build step is therefore essential to convert the TypeScript code into a format that the Node.js runtime environment can understand and execute. All operational scripts are designed to run from the `dist/` directory. Failure to run `yarn build` after code changes will result in running stale code or encountering errors if `dist/` is missing or outdated.
+    *   3.7. The Keystone Protocol (Standard Environment Initialization)
+        *   The Keystone Protocol is the single, authoritative script for initializing a clean project environment for any operator (human or AI). It ensures all dependencies are correct, configurations are in place, and the project is in a buildable and testable state.
+        *   **Command:** From the project root, execute: `./scripts/tools/keystone.sh`
+        *   **Process:** This script performs a sequence of critical operations:
+            1.  Prerequisites Check: Verifies that `node` and `yarn` are available.
+            2.  Configuration: Creates a default `.env` file from `.env.example` if one does not exist.
+            3.  Dependency Sync: Runs `yarn install --frozen-lockfile` to ensure the exact dependencies from the lockfile are installed.
+            4.  Contract Compilation: Runs `npx hardhat compile` to compile Solidity contracts and, crucially, generate the `typechain-types` needed by TypeScript.
+            5.  Project Build: Runs `yarn build` to compile the application source code.
+            6.  Core Diagnostics: Runs the unit test suite (`yarn test test/unit/**/*.test.ts`) to validate the core logic.
+        *   **Outcome:** A successful run will end with the message "PORTAL STABLE. AWAITING OPERATOR COMMAND." Any failure in the Keystone script points to a foundational issue that must be resolved before proceeding.
+    *   **3.8. CRITICAL: Wallet Address Verification (Mainnet Operations)**
+        *   **Non-Negotiable Step:** Before any mainnet execution or deployment involving live funds, it is **MANDATORY** to **TRIPLE-VERIFY** all critical wallet addresses from a secure, air-gapped source of truth. This includes, but is not limited to:
+            *   `PRIVATE_KEY` (implicitly, the address derived from it)
+            *   `PROFIT_WALLET_ADDRESS`
+            *   `TITHE_WALLET_ADDRESS`
+        *   **Rationale:** An incorrect address can lead to irreversible loss of funds. This verification step must be performed with extreme diligence. Do not rely on recently copied/pasted values or environment files that have not been independently cross-checked against the master source of truth.
+
+4.  **Deployment Procedures** (See also `docs/DEVELOPMENT_WORKFLOWS.md` for CI/CD integration)
+    *   4.1. Smart Contract Deployment (See `docs/SMART_CONTRACTS.md` for contract details)
+    *   4.2. Bot Deployment (Server-Based)
+    *   4.3. CI/CD Pipeline Considerations
+    *   4.4. CI/CD Pipeline (GitHub Actions) - Full Example
+    *   **4.4. CI/CD Pipeline (GitHub Actions) - Full Example**
+        *   A well-structured CI/CD pipeline is crucial for ensuring code quality, consistency, and reliable deployments. GitHub Actions is a common choice for automating these workflows. (Current workflow at `.github/workflows/ci.yml`).
+        *   **Conceptual `ci.yml` Example:**
+            ```yaml
+            name: Axion Citadel CI/CD
+
+            on:
+              push:
+                branches: [ main, develop ]
+              pull_request:
+                branches: [ main, develop ]
+
+            jobs:
+              build-and-test:
+                runs-on: ubuntu-latest
+                strategy:
+                  matrix:
+                    node-version: [18.x, 20.x] # Example: test on multiple Node.js versions
+
+                steps:
+                - name: 1. Checkout Repository
+                  uses: actions/checkout@v3
+
+                - name: 2. Setup Node.js ${{ matrix.node-version }}
+                  uses: actions/setup-node@v3
+                  with:
+                    node-version: ${{ matrix.node-version }}
+                    cache: 'yarn'
+
+                - name: 3. Install Dependencies
+                  run: yarn install --frozen-lockfile # Ensures exact dependencies from yarn.lock
+
+                - name: 4. Lint Code
+                  run: yarn lint # Assuming 'lint' script is defined in package.json
+
+                - name: 5. Run Tests (Hardhat)
+                  env: # Pass necessary secrets/env vars for tests
+                    ALCHEMY_ARBITRUM_RPC_URL: ${{ secrets.ALCHEMY_ARBITRUM_RPC_URL_CI }}
+                    NETWORK: hardhat # Ensure tests run in hardhat context
+                    # Add other env vars required by tests
+                  run: yarn test # Assuming 'test' script runs Hardhat tests
+
+                - name: 6. Build Project
+                  run: yarn build
+
+                - name: 7. Smoke Test (Conceptual)
+                  # This step runs a basic check on the compiled output.
+                  # It could be starting the bot with a specific 'smoke test' flag or running a minimal script.
+                  # Example: node dist/index.js --smoke-test (or dist/bot.js if index.js is the entry point)
+                  # The actual command depends on your project's entry point and smoke test implementation.
+                  run: |
+                    echo "Attempting conceptual smoke test..."
+                    # Ensure environment variables needed for the smoke test are set
+                    # For example, if bot.js is the entry point:
+                    # node dist/bot.js --smoke-test || exit 1
+                    # If your entry point is index.js:
+                    node dist/index.js --smoke-test-flag-if-any || exit 1
+                    echo "Conceptual smoke test passed."
+                  env: # Pass minimal env vars required for the bot to start in a smoke test mode
+                    LOG_LEVEL: debug # Example
+                    # Add other essential env vars for a minimal run
+            ```
+        *   **Critical Steps Explained:**
+            1.  **Checkout:** Fetches the latest code from the repository.
+            2.  **Install (`--frozen-lockfile`):** Installs dependencies using `yarn`. The `--frozen-lockfile` flag is critical as it ensures that the exact versions specified in the `yarn.lock` file are installed, preventing unexpected changes in dependencies and ensuring reproducible builds.
+            3.  **Lint:** Runs linters (e.g., ESLint, Prettier) to check for code style violations and potential errors.
+            4.  **Test (Hardhat):** Executes the automated test suite (unit, integration, and fork tests) using Hardhat. This step often requires environment variables for RPC URLs or test-specific configurations.
+            5.  **Build (`yarn build`):** Transpiles TypeScript to JavaScript, creating the executable code in the `dist/` directory. This is the same mandatory build step discussed in section 3.6.
+            6.  **Smoke Test (`node dist/index.js` or `node dist/bot.js`):** A crucial final step that runs a basic, lightweight test on the compiled application (e.g., `dist/index.js` or `dist/bot.js` depending on the project's entry point). This isn't a full E2E test but aims to catch critical runtime errors, incorrect configurations, or issues with the build process itself. It might involve checking if the application starts, initializes core components without crashing, or responds to a basic health check. The actual command and any flags (`--smoke-test`) depend on how the application is structured to support such a test.
+5.  **Bot Operation**
+    *   5.1. Starting the Bot
+    *   5.2. Monitoring Bot Activity
+    *   5.3. Stopping the Bot
+    *   5.4. Core Transaction Lifecycle Management
+6. Testing Protocols
+====================
+
+Testing is a non-negotiable pillar of the Citadel's operational doctrine. It is governed by the Two-Tiered Testing Paradigm and initiated through standardized commands. (Refer to `docs/ANVIL_TESTING_GUIDE.md` for Anvil-specific details and `docs/architecture/03_mev_proving_ground_strategy.md` for the strategic overview).
+
+6.1. Two-Tiered Testing Paradigm (Official Doctrine)
+-----------------------------------------------------
+Our testing strategy formally adopts a two-tiered approach to leverage the distinct strengths of different environments, ensuring both rapid development and high-fidelity simulation.
+
+- **Tier 1 (Hardhat - The Development Foundry):**
+  - **Role:** Hardhat is the primary environment for all **unit tests** and initial **integration tests**. It is optimized for speed, debugging (via `console.log` in Solidity), and rapid iteration.
+  - **Execution:** All tests run via `npx hardhat test` or `yarn test` commands operate within this tier.
+
+- **Tier 2 (Anvil - The Proving Ground):**
+  - **Role:** Anvil is our designated high-fidelity environment for validating **MEV strategies**, complex **end-to-end (E2E) cycles**, and strategic backtesting under realistic mainnet fork conditions. It is essential for bridging the "Simulation Gap." (See `docs/ANVIL_TESTING_GUIDE.md`).
+
+6.2. Standard Test Execution Commands
+------------------------------------
+- **Run ALL Tests:** Executes every test file in the `/test` directory.
+  `yarn test`
+
+- **Run ONLY Unit Tests:** Executes the fastest-running tests that validate core logic in isolation. This is part of the Keystone Protocol.
+  `yarn test test/unit/**/*.test.ts`
+
+- **Run a Specific Test File:** To focus on a single component during development.
+  `yarn test <path/to/your/test/file.test.ts>`
+
+6.3. Test Configuration (`tsconfig.json`)
+-----------------------------------------
+The project utilizes a dual-tsconfig setup to manage the complexities of a Hardhat/TypeChain environment:
+
+- **`tsconfig.json` (Development):** This is the master configuration for IDEs (VS Code) and the `npx hardhat test` runner. It has a broad `include` scope to provide full type-checking and autocompletion across source, test, and script files.
+
+- **`tsconfig.build.json` (Production Build):** This is a specialized, lean configuration used exclusively by the `yarn build` command. It inherits from the main tsconfig but **excludes** all test-related directories. This ensures that test-only dependencies and types do not contaminate the final production build in the `/dist` directory.
+
+- **Path Aliases:** The system uses path aliases (e.g., `@config`, `@src`) for clean imports. These are configured in both `tsconfig.json` (for compile-time resolution) and `package.json` under the `_moduleAliases` key (for runtime resolution via the `module-alias` package).
+*   **6.9. Note on Test File Types (`.js` vs. `.ts`)**
+    *   **Context:** Following the "Operation: TypeScript Unification" and "Green Suite" initiatives, the project's primary development language for both source code and testing is TypeScript.
+    *   **Current Status:** While the vast majority of new and refactored tests are written in TypeScript (`.ts`), some legacy test files may still exist in JavaScript (`.js`). The current test runner and configuration (`hardhat.config.cjs`) are configured to discover and execute both file types, ensuring full test suite coverage.
+    *   **Forward Direction:** The long-term strategic goal is the eventual migration of all remaining `.js` tests to TypeScript to maintain maximum consistency across the codebase. However, the current mixed state is stable, functional, and does not impede development.
+7.  **Incident Response Framework**
+    *   7.1. Severity Levels & Escalation Matrix
+    *   7.2. Triage & Diagnosis Procedures (See `docs/troubleshooting/triage_guide.md`)
+    *   7.3. Communication Plan
+    *   7.4. Post-Mortem Analysis & Reporting
+8.  **Security Procedures** (Refer to `docs/SECURITY.md`, `docs/security/defensive_measures.md`, and `docs/security/threat_model.md` for comprehensive details)
+    *   8.1. Private Key Management
+    *   8.2. Dependency Management & Audits (See `security/AUDITS.MD` for audit information)
+    *   8.3. Smart Contract Security (See `docs/SMART_CONTRACTS.md`)
+    *   8.4. Access Control & Permissions
+    *   8.5. Off-Chain Data Security
+    *   8.6. Upgradeability Security (Diamond Standard Risks - Solidity & Ethers Intelligence) (See `docs/architecture/04_diamond_standard_path.md`)
+    *   8.7. Advanced Smart Contract Security (Assume Adversarial State Doctrine - Solidity Intelligence)
+    *   8.8. Gas Optimization as a Security Practice (Reverse Memory Allocation - Solidity Intelligence)
+    *   8.9. Environment Variable & Secrets Management Doctrine (See `guides/core_concepts/CONFIGURATION.MD`)
+9.  **Risk Mitigation Tactics**
+    *   9.1. Slippage Control Mechanisms
+    *   9.2. Circuit Breakers & Automated Halts
+    *   9.3. Capital Exposure & Profitability Controls
+    *   9.4. Gas Price Volatility Management
+    *   **9.5. Dynamic Gas Price Management**
+        *   The `GasFeeService` provides a mechanism for dynamic gas price calculation based on urgency levels. This service is integrated into the `TransactionManager`.
+        *   **Urgency Levels:** The service's `getFeeData(urgency)` method accepts "low", "medium", or "high" urgency parameters.
+            *   "low": Applies a 0.9x multiplier to the provider-suggested `maxFeePerGas` and `maxPriorityFeePerGas`.
+            *   "medium": Applies a 1.1x multiplier. This is the default used by `TransactionManager`.
+            *   "high": Applies a 1.3x multiplier.
+        *   **Functionality:** This allows the system to respond to varying network conditions or transaction priorities by adjusting the aggressiveness of gas pricing. For standard operations, a "medium" urgency provides a slight boost over provider defaults. For less critical or background tasks, "low" can be used to save on gas, while "high" can be used for time-sensitive transactions requiring faster confirmation.
+        *   **Considerations:** While this provides dynamic adjustment, the resulting fees are based on the provider's current view of the network. It does not yet incorporate broader historical analysis or more complex predictive models for gas pricing. The multipliers are configurable within the `GasFeeService` code (`src/core/execution/gas/gasFeeService.js`).
+    *   9.6. Comprehensive Simulation & Dry-Run Modes
+    *   9.7. Robust Retry Mechanisms for Transient Issues
+    *   9.8. RPC Redundancy with FallbackProvider
+    *   **9.9. Sentinel Protocol (Runtime Pool Address Validation)**
+        *   **Purpose:** The Sentinel Protocol is a runtime safety mechanism designed to prevent the bot from interacting with potentially invalid or malicious pool contract addresses.
+        *   **Mechanism:** Before engaging with a pool contract (e.g., for fetching data or executing a swap), the bot's `PoolScanner` (or relevant data fetching module) uses the `provider.getCode(poolAddress)` method.
+        *   **Validation:** If `provider.getCode()` returns `'0x'` or an empty string, it indicates that no bytecode is deployed at the given `poolAddress` on the current network. Such an address is considered invalid.
+        *   **Action:** Upon detecting an invalid pool address, the system will:
+            1.  Log a critical warning identifying the invalid address.
+            2.  Exclude this address from any further interaction during the current operational cycle.
+            3.  Potentially trigger an alert for operator review, depending on system configuration.
+        *   **Rationale:** This proactive check helps to identify configuration errors (e.g., incorrect pool addresses in config files), issues with dynamic pool data feeds, or attempts to introduce malicious addresses. It enhances the bot's resilience by preventing wasted gas on calls to non-existent contracts and reducing the risk of interacting with unintended addresses.
+10. **MEV (Maximal Extractable Value) Strategy**
+    *   10.1. MEV Risk & The Dark Forest
+    *   10.2. Defensive Strategy: Private Relays
+11. **Toolchain and Integrations**
+    *   11.1. Blockchain Interaction & Development Frameworks
+    *   11.2. Monitoring, Alerting & Incident Management
+    *   11.3. Debugging, Simulation & Local Networks
+    *   11.4. Automation, Orchestration & CI/CD
+    *   11.5. Smart Contract Analysis & Security
+    *   11.6. Oracles & External Data Feeds
+    *   11.7. Wallet & Key Management
+    *   11.8. Gas Price Information
+    *   11.9. General Development & Knowledge Management
+    *   11.10. RPC Redundancy
+    *   11.11. MEV Protection Relays
+    *   11.12. Labeled Console Logging
+12. **Profit and Tithe Management**
+    *   12.1. Post-Trade Verification Procedures
+    *   12.2. Secure Sweeping and Storage Strategies
+13. **General Troubleshooting**
+14. **Triage Guide for Common Test Failures**
+
+## 15. Citadel Codex: The Interactive Knowledge Base
+
+The Citadel Codex is the project's official, interactive knowledge base and single source of truth. It is powered by an AI-driven query engine that has ingested all documentation in the `docs/` and `ctx/` directories.
+
+### 15.1. Purpose
+The Codex is the primary tool for all agents (human and AI) to ask questions, verify procedures, and understand project history and doctrine. It replaces the need for manual file searching.
+
+### 15.2. Core Commands
+
+*   **To Build or Rebuild the Index:**
+    This command must be run after significant documentation changes to update the Codex's knowledge.
+    ```bash
+    python codex_manager.py --force-reindex
+    ```
+
+*   **To Query the Codex:**
+    This is the standard command for asking questions. Enclose your question in quotes.
+    ```bash
+    python codex_manager.py "Your question goes here"
+    ```
+
+16. **Future Additions & Roadmap**
+
+    *   **4.1. Smart Contract Deployment**
+        *   **A. General Phased Deployment Approach:** Adhere to a structured deployment progression across environments:
+            1.  **Testnet Dry-Run:** Simulate deployments and interactions on a testnet fork or live testnet without state changes.
+            2.  **Testnet Send:** Execute actual deployments and limited-functionality tests on a live testnet.
+            3.  **Mainnet Simulate:** Thoroughly simulate deployment and all critical interactions against a mainnet fork or using mainnet simulation tools.
+            4.  **Mainnet Deploy (Low-Capital/Canary):** Initial mainnet deployment with limited capital or functionality to observe real-world behavior.
+            5.  **Mainnet Production:** Full operational deployment.
+            *   *Key practices for each step: Employ consistent signer abstractions, pair gas estimations with simulations, and use retry-safe wrappers with telemetry hooks for transactions.*
+        *   **B. Pre-Deployment Configuration:**
+            *   **Target Network:** Ensure deployment scripts and environment files (e.g., `hardhat.config.js`, `.env`) correctly specify the `NETWORK` for deployment.
+            *   **Funding Deployer:** Confirm the designated deployer account is sufficiently funded with native currency for gas costs on the target network. (Local Hardhat nodes often auto-fund, testnets/mainnet require manual funding).
+        *   **C. Execution & Verification:**
+            *   **Deployment Script:** Utilize version-controlled scripts for deploying contracts. For example, using Hardhat:
+                ```bash
+                npx hardhat run deployments/scripts/deploy-core.js --network <targetNetworkName>
+                ```
+            *   **Post-Deployment Actions:**
+                *   [ ] Securely record all deployed contract addresses (e.g., `FlashSwap.sol`, core logic contracts, proxy admin addresses).
+                *   [ ] Update relevant environment variables (e.g., `LOCALFORK_FLASH_SWAP_CONTRACT_ADDRESS`, `ARBITRUM_FLASH_SWAP_CONTRACT_ADDRESS`) in `.env` files or chain-specific configuration files.
+                *   [ ] (Recommended) Verify deployed contract source code on a block explorer (e.g., Etherscan, Arbiscan) if deploying to a public network.
+
+    *   **4.2. Bot Deployment (Server-Based)**
+        *   The following checklist outlines steps for deploying the bot to a server environment:
+            *   [ ] Clone the latest version of the code repository to the server.
+            *   [ ] Install all necessary dependencies (e.g., `yarn install --production`).
+            *   [ ] Configure all required environment variables securely (e.g., using system-level environment variables, a secrets management vault, or an encrypted configuration file not committed to version control).
+            *   [ ] Set up and configure a process manager (e.g., PM2) to ensure robust, continuous operation of the bot. Example PM2 startup:
+                ```bash
+                pm2 start ecosystem.config.js --env <environmentName>
+                ```
+
+    *   **4.3. CI/CD Pipeline Considerations**
+        *   **Automated Deployment Example:** Implement CI/CD pipelines (e.g., using GitHub Actions) for automated contract deployment to testnets. Example (using Brownie):
+            ```yaml
+            # .github/workflows/deploy.yml
+            - name: Deploy to Testnet (e.g., Sepolia)
+              run: brownie run deploy_script --network sepolia
+              env:
+                WEB3_INFURA_PROJECT_ID: ${{ secrets.INFURA_KEY }}
+                DEPLOYER_MNEMONIC: ${{ secrets.TESTNET_MNEMONIC }}
+            ```
+        *   **Automation Opportunities:** Develop CLI scripts or enhance CI/CD pipelines to automate the simulate → estimateGas → send transaction sequence for deployments and critical operations, reducing manual intervention.
+5.  **Bot Operation**
+
+    *   **5.1. Starting the Bot**
+        Prior to any execution of the bot, a build step is mandatory. Run the command `yarn build`. This command transpiles the TypeScript source code into executable JavaScript, placing the output in the `/dist` directory. All subsequent `runBot.js` or `bot.js` commands rely on this compiled output.
+
+        *   **A. Local Fork (Full Bot Run using runBot.js - Recommended for E2E Testing):**
+            `runBot.js` (located in the project root) is now the primary script for executing full end-to-end (E2E) runs of the bot on a local Hardhat fork, especially when testing scenarios involving market skewing. It streamlines the process of setting up the environment, conditionally skewing markets, launching the bot, and capturing its logs.
+
+            **Automated Market Skewing:**
+            `runBot.js` uses environment variables to control automated market skewing prior to launching `bot.js`:
+            *   `SKEW_MARKET=true`: If this variable is set to true, `runBot.js` will execute a predefined skewing script.
+            *   `SKEW_SCRIPT_PATH`: This variable should specify the path to the market skewing script (e.g., `scripts/tools/skew-pools-sushi-only.js`). If `SKEW_MARKET` is true, this script will be executed to manipulate market conditions on the local fork, creating artificial arbitrage opportunities.
+
+            **Bot Initialization and Logging:**
+            1.  Ensure a local Hardhat node is running (typically in a dedicated terminal).
+            2.  Set the necessary environment variables, including `SKEW_MARKET` and `SKEW_SCRIPT_PATH` if market skewing is desired.
+            3.  Execute `runBot.js`. This script handles:
+                *   Launching `dist/bot.js` as a child process (note the execution from the `/dist` directory after a `yarn build`).
+                *   The initialization of `dist/bot.js`, which is managed internally by the `initializeBot` function (typically found in `src/core/initializer.js` and compiled to `dist/core/initializer.js`).
+                *   Capturing all standard output (stdout) and standard error (stderr) from the `dist/bot.js` process into a timestamped log file. The log file is usually saved in a `logs/` directory, with a name like `bot_run_temp.log` or `bot_run_YYYY-MM-DD_HH-MM-SS.log` (refer to `runBot.js` for the exact naming convention).
+
+            Example command:
+                ```bash
+                # Example: In a new terminal, after starting a Hardhat node
+                SKEW_MARKET=true SKEW_SCRIPT_PATH=scripts/tools/skew-pools-sushi-only.js node runBot.js
+                ```
+            While `runBot.js` is recommended, the core bot logic can still be run directly (e.g., `node dist/bot.js > bot_run_direct_$(date +%Y-%m-%d_%H-%M-%S).log 2>&1` after a `yarn build`), but this will bypass the automated setup and logging features provided by the `runBot.js` wrapper.
+
+        *   **B. Local Fork (Hardhat Runtime Environment Script Tests):**
+            *   Ensure a local Hardhat node is running.
+            *   Set any required environment variables for the script (e.g., `SKEW_SUSHI=true`).
+            *   Execute the Hardhat script, redirecting output:
+                ```bash
+                SKEW_SUSHI=true yarn hardhat run scripts/diagnostics/bot-full-cycle-revert-check.js --network localhost > log_file.log 2>&1
+                ```
+        *   **C. Testnet/Mainnet (Continuous Operation):**
+            *   For continuous operation on testnets or mainnet, use a process manager like PM2.
+            *   **The standard command for initiating a mainnet production run is `yarn pm2 start ecosystem.config.js --env production`.** The `ecosystem.config.js` file serves as the manifest for PM2, detailing application configuration, logging, and restart strategies.
+            *   For other environments (e.g., testnets), the command would be:
+                ```bash
+                pm2 start ecosystem.config.js --env <environmentName>
+                ```
+            *   *(Ensure `ecosystem.config.js` is appropriately configured for the target environment, especially for production settings related to restart strategy and logging.)*
+
+    *   **5.2. Monitoring Bot Activity**
+        *   **5.2.1. Log Analysis:**
+            **Logging Configuration:** The Axion Citadel bot employs the `pino` library for high-performance, structured logging. The system is configured for dual output:
+            *   **Console Output:** Logs are sent to the console using `pino-pretty` for colorized, human-readable output, which is invaluable during development and for real-time monitoring.
+            *   **File Output:** Logs are simultaneously written to a persistent file (e.g., `logs/combined.log`).
+            The log level (e.g., debug, info, warn, error) is configurable via the `LOG_LEVEL` environment variable (typically in the `.env` file).
+            *   **Log files when using `runBot.js`:** When the bot is started using `runBot.js` (see Section 5.1.A), `runBot.js` itself captures all stdout and stderr output from the `dist/bot.js` child process into a dedicated, timestamped log file (e.g., `logs/bot_run_temp.log` or similar, as defined in `runBot.js`). This file becomes the primary log for analyzing that specific run.
+            *   **Log files when running `bot.js` directly:** If `dist/bot.js` is run directly (not via `runBot.js`), and if persistent file logging isn't automatically handled by a process manager like PM2, ensure console output is captured to a file, e.g., `node dist/bot.js > bot_run_direct_$(date +%Y-%m-%d_%H-%M-%S).log 2>&1`.
+
+            *   Continuously monitor bot logs for activity and errors:
+                ```bash
+                tail -f bot_run_*.log
+                ```
+            *   **Key Log Signatures to Watch For:**
+                *   Successful initialization of all components and connections.
+                *   Provider connection status and current block number updates (e.g., `[Provider Singleton] Connected...`, `[ArbBot.runCycle] Current block...`).
+                *   Logs from data fetching modules (e.g., `[PoolScanner]`).
+                *   Logs from arbitrage opportunity detection engines (e.g., `[SpatialArbEngine]`, `[TriangularArbEngine]`).
+                *   Profitability assessments from calculation modules (e.g., `[ProfitCalculator]`).
+                *   Transaction submission events (e.g., `[FlashSwapExecutor] Flash loan transaction submitted. Hash: ...`).
+                *   Transaction confirmation events (e.g., `[FlashSwapExecutor] Flash loan transaction CONFIRMED! Hash: ...`).
+                *   Successful trade execution logs, including profit and tithe details (e.g., `[TradeLogger] TRADE EXECUTED & CONFIRMED...`).
+                *   Any messages logged at `ERROR` or `WARN` levels.
+            *   For local fork balance checks using Hardhat Console, refer to Section 11.1 for verification details.
+        *   **5.2.2. Dashboarding:**
+            *   Utilize dashboards (e.g., Grafana) to track key operational metrics, including:
+                *   Node health (e.g., disk space, CPU/memory usage, RPC latency).
+                *   Pending transaction queue depth for the operational wallet.
+                *   Gas price volatility (e.g., 1-hour and 24-hour moving averages).
+        *   **5.2.3. Blockchain Interaction Monitoring:**
+            *   Implement mandatory logging for critical blockchain interactions, capturing at least: transaction hashes, detailed gas usage profiles (estimated vs. actual), and observed slippage.
+            *   Leverage provider events (e.g., Ethers.js `provider.on("block", ...)`) to trace operational progress and trigger actions based on new blocks.
+            *   For in-depth debugging of specific transactions, use RPC methods like `debug_traceTransaction` (if supported by the RPC provider).
+
+    *   **5.3. Stopping the Bot**
+        *   **Local Fork (running via `node dist/bot.js` or `node runBot.js`):** Press `Ctrl+C` in the terminal where the bot process is active.
+        *   **Testnet/Mainnet (managed by PM2):** Use PM2 commands to stop or delete the application:
+            ```bash
+            pm2 stop <appNameOrId>
+            # or
+            pm2 delete <appNameOrId>
+            ```
+
+    *   **5.4. Core Transaction Lifecycle Management**
+        *   Adhere to a consistent, multi-step process for preparing and sending transactions:
+            1.  **Populate Transaction:** Construct the transaction object with all necessary parameters (to, data, value, etc.).
+                ```javascript
+                // Example: Using Ethers.js
+                const tx = await contract.populateTransaction.yourFunction(...args);
+                ```
+            2.  **Estimate Gas:** Accurately estimate the gas required for the transaction.
+                ```javascript
+                // Example: Using Ethers.js
+                const estimatedGas = await provider.estimateGas(tx);
+                tx.gasLimit = estimatedGas; // Set the gas limit based on estimation, consider adding a small buffer (e.g., 10-20%) if network conditions are volatile or estimations are tight.
+                ```
+            3.  **Set Fees Explicitly:** Define gas fees using current network conditions (e.g., EIP-1559 `maxFeePerGas` and `maxPriorityFeePerGas`).
+                ```javascript
+                // Example: Using Ethers.js for EIP-1559
+                const feeData = await provider.getFeeData();
+                tx.maxFeePerGas = feeData.maxFeePerGas;
+                tx.maxPriorityFeePerGas = feeData.maxPriorityFeePerGas;
+                ```
+            4.  **Simulate Before Sending (Crucial):** Simulate the transaction to verify its outcome and detect potential reverts before broadcasting.
+                ```javascript
+                // Example: Using Ethers.js
+                await contract.simulate.yourFunction(...args);
+                // For read-only checks or functions not modifying state:
+                // const result = await contract.callStatic.yourFunction(...args);
+                ```
+            5.  **Send Transaction:** Sign and broadcast the transaction using a securely managed signer.
+                ```javascript
+                // Example: Using Ethers.js
+                const response = await signer.sendTransaction(tx);
+                ```
+        *   **Important Notes:**
+            *   Always validate returned values and gas estimations from `populateTransaction`, `estimateGas`, and `simulate` calls.
+            *   Implement retry mechanisms with appropriate backoff strategies for critical transactions to handle transient network issues. Ensure these wrappers include telemetry hooks for observability.
+
+    *   **5.5. Key Operational Milestones**
+        *   **Operation "First Light" (Date of Log: Approx. June 2025) - Successful Maiden Voyage:**
+            *   **Objective:** First comprehensive end-to-end test run of the Citadel bot on the Arbitrum mainnet, configured with `DRY_RUN=true` and `STOP_ON_FIRST_EXECUTION=true`.
+            *   **Key Outcomes & Validations:**
+                *   **Successful Initialization:** All core components, including `ConfigLoader v1.2.1` and `Initializer v2.1.7`, loaded and initialized correctly. Provider successfully initialized for Arbitrum (Chain ID: 42161).
+                *   **Successful Mainnet Connection:** Bot connected to the live Arbitrum network and received real-time block data (e.g., `Current Block: 352926705`).
+                *   **Correct PoolScanner Execution:** `PoolScanner` correctly iterated through all configured DEXs (DODOV2, UNISWAP_V3, SUSHISWAP, CAMELOT) and attempted to find pools for all 78 configured token pairs.
+                *   **"Regulator" (p-queue) Validation:** The p-queue mechanism successfully prevented "Too Many Requests" errors from RPC providers, indicating the rate-limiting/throttling problem is SOLVED. A new, minor error (`[PoolScanner] An error occurred during the pool scan`) was observed, attributed to data parsing within a specific pool fetcher, which is considered a manageable engineering task.
+                *   **Graceful Failure Handling:** The system demonstrated robustness by correctly identifying that the (failed) pool scan returned no data (`No pool states received from poolProvider. Graph will be empty.`), logged a warning, and continued to operate with an empty dataset without crashing, finding 0 opportunities as expected.
+                *   **Successful & Clean Shutdown:** The `STOP_ON_FIRST_EXECUTION=true` flag functioned perfectly. The bot completed one full cycle (`Cycle Ended. Status: COMPLETED`) and then shut down cleanly and gracefully as commanded.
+            *   **Overall Assessment:** This initial run was a complete success, proving the Citadel's capability to connect to and understand mainnet, the correct functioning of its core components and communication pathways, the resolution of critical rate-limiting issues, its resilience to data failures, and the reliability of its operational flags. This milestone secured the "bridge to mainnet." The next engineering task identified was to debug the minor data parsing error within the `PoolScanner`'s fetch logic.
+
+6.  **Testing Protocols**
+
+    *   **6.1. Local Fork Testing**
+        *   **6.1.1. Environment Setup & Configuration**
+            *   Utilize forked mainnet environments for realistic testing. Common tools include Anvil or a local Hardhat Node.
+                ```bash
+                # Example: Start Anvil forking mainnet
+                anvil --fork-url $YOUR_ALCHEMY_MAINNET_URL
+                # Example: Start a Hardhat Node
+                yarn hardhat node
+                ```
+            *   **Market Condition Simulation (Skewing & Snapshots):**
+                *   For scenarios requiring specific market conditions (e.g., price disparities), use scripting to skew pool reserves or token balances on the local fork.
+                *   If using Hardhat snapshots for full bot runs (e.g., with `bot.js`): Execute scripts like `node scripts/tools/skew-pools-sushi-only.js` (or other relevant skewing scripts from `scripts/tools/`) and note the generated snapshot ID and final block number.
+                *   **Note on SushiSwap V2 & `evm_revert`:** Be aware that Hardhat's `evm_revert` might not reliably restore SushiSwap V2 pool states after large swaps in a forked environment. Due to this, the current best practice and preferred workaround for reliably testing against skewed V2 pools is to perform in-memory state manipulation. This involves calling the relevant skewing functions (e.g., `executeSushiSkew(hre)`) directly within the Hardhat test script or the bot's execution cycle for the local fork environment, ensuring the bot operates on the intended, freshly manipulated state.
+                *   **LESSON LEARNED: Target known liquid pools for local fork testing. During initial end-to-end tests, using WETH/USDT (a pair with fragmented liquidity on SushiSwap) caused on-chain data inconsistencies. Switching to WETH/USDC.e (a pair with deeper, more stable liquidity on SushiSwap for the Goerli fork data) resolved these issues and allowed for successful transaction simulation and execution.**
+
+        *   **6.1.2. Execution & Verification**
+            *   **Smoke Testing:** Conduct initial smoke tests to quickly validate core functionalities.
+                ```bash
+                # Example: Using Brownie against an Anvil fork
+                brownie test tests/smoke/ --network anvil-mainnet-fork
+                ```
+            *   **Full Bot Simulation:** Run the complete bot logic against the local fork (ensure `yarn build` has been run first).
+                ```bash
+                node dist/bot.js > bot_simulation_$(date +%Y-%m-%d_%H-%M-%S).log 2>&1
+                ```
+            *   **Targeted HRE Diagnostic Scripts:** Execute specific Hardhat Runtime Environment scripts for focused testing.
+                ```bash
+                # Example: Set script-specific environment variables if needed
+                SKEW_SUSHI=true yarn hardhat run scripts/diagnostics/bot-full-cycle-revert-check.js --network localhost > diagnostic_run.log 2>&1
+                ```
+            *   **Verification Steps:**
+                *   Thoroughly analyze log files for: successful snapshot reverts (if applicable), correct block number processing, accurate price fetching (reflecting skewed prices if used), profitable opportunity detection, successful gas estimation, transaction submission, and on-chain confirmation.
+                *   Verify ETH and token balance changes in the Tithe wallet and the bot's operational wallet using Hardhat console interactions (see Section 11.1 for detailed verification procedures).
+
+        *   **6.1.3. Advanced Local Testing Techniques**
+            *   **State Simulation with Ethers.js:** Use `contract.simulate.functionName(...args)` for off-chain simulation of state-changing functions. This helps validate return values and gas usage, complementing `estimateGas` and `populateTransaction`.
+            *   **Minimalist Signer for Safety:** For static simulations or tests not requiring a private key's signing capability, use `ethers.VoidSigner(address, provider)`. This avoids unnecessary exposure or handling of actual private keys.
+            *   **Memory Management for Intensive Tests (NODE_OPTIONS):** For complex local fork tests or scenarios involving extensive contract deployments and interactions, Node.js default memory limits might be exceeded. Use the `NODE_OPTIONS` environment variable to increase the memory available to the Hardhat process:
+                ```bash
+                NODE_OPTIONS="--max-old-space-size=8192" yarn hardhat test your_test_file.js
+                ```
+                This allocates 8GB of memory, adjust as needed. This is particularly relevant when using `hardhat-tracer` or running large test suites.
+            *   **Reliable Test State with `createFixture` (hardhat-deploy):** For creating hermetic and reliable test setups, especially when testing against a complex set of deployed contracts, leverage the `createFixture` function provided by `hardhat-deploy`. A fixture is a setup function that is executed only once; its state is snapshotted and then restored for each subsequent test, ensuring test isolation and faster execution times. This aligns with Hardhat best practices for robust testing.
+                ```javascript
+                // Example in a test file
+                const { deployments } = require('hardhat');
+                const { createFixture } = deployments;
+
+                const setupFixture = createFixture(async ({ deployments, getNamedAccounts }) => {
+                  await deployments.fixture(['MyContractFamily']); // Deploy contracts tagged 'MyContractFamily'
+                  const { deployer } = await getNamedAccounts();
+                  const myContract = await ethers.getContract('MyContract', deployer);
+                  // ... further setup
+                  return { myContract, deployer };
+                });
+
+                describe('MyContract Tests', function () {
+                  it('should perform an action', async function () {
+                    const { myContract } = await setupFixture();
+                    // ... test logic using myContract
+                  });
+                });
+                ```
+
+        *   **6.1.4. End-to-End Local Fork Testing with runBot.js**
+            *   The `runBot.js` script (located in the project root) is the standard and recommended tool for conducting comprehensive end-to-end (E2E) tests of the bot's full operational cycle on a local Hardhat fork. It provides a controlled environment for simulating complete arbitrage scenarios.
+            *   **Process Overview:** `runBot.js` automates several key steps:
+                *   **Market Skewing (Conditional):** It checks for the `SKEW_MARKET=true` environment variable. If true, it executes a specified skew script (defined by `SKEW_SCRIPT_PATH`, e.g., `scripts/tools/skew-pools-sushi-only.js`) to manipulate market conditions on the fork, creating testable arbitrage opportunities.
+                *   **Bot Launch:** It launches `dist/bot.js` (from the `dist` directory, after `yarn build`) as a child process.
+                *   **Bot Initialization:** The `dist/bot.js` instance, when launched by `runBot.js`, is initialized using the `initializeBot` function (compiled to `dist/core/initializer.js`), which sets up all necessary components, services, and blockchain connections.
+                *   **Execution & Logging:** It runs the bot's main loop for a configurable duration (e.g., using `MAX_RUNTIME_MINUTES` from `.env`). All output (stdout and stderr) from `dist/bot.js` is captured into a timestamped log file (see Section 5.1.A for logging details).
+                *   **Shutdown:** Finally, it gracefully shuts down the bot process.
+            *   This script is crucial for validating the entire system flow from market observation and opportunity identification through to simulated or actual trade execution and logging. It ensures that tests are run consistently and that the bot behaves as expected under various conditions, including those with artificially skewed markets. Refer to Section 5.1.A for operational details on starting the bot with `runBot.js`.
+
+        *   **6.1.5. Environment Variable Precedence (Critical Insight)**
+            *   **The `.env` file takes priority.** It is crucial to understand that the `NETWORK` variable set in the project's `.env` file (e.g., `NETWORK=hardhat`) **overrides** the `--network` flag passed in the command line (e.g., `yarn hardhat run ... --network arbitrum`).
+            *   **Rationale:** This behavior, enforced by the `ConfigLoader` and Hardhat's environment loading, is a critical safety feature. It ensures that development scripts and tests are always run against the intended, isolated environment specified in the configuration, preventing accidental execution on a live or unintended network.
+            *   **Operational Procedure:** To run a script against a different network (e.g., `arbitrum`), the `NETWORK` variable in the `.env` file must be temporarily changed or commented out, allowing the command-line flag to take effect.
+
+        *   **6.1.6. Test Environment Configuration (`NETWORK=hardhat`)**
+            *   **Crucial Setting for Test Suite:** Setting `NETWORK=hardhat` in the `.env` file is absolutely essential for the proper execution of the automated test suite (e.g., when running `npx hardhat test` or `yarn test`).
+            *   **Why `NETWORK=hardhat` is Required:**
+                *   **Directs `ConfigLoader`:** This specific environment variable value instructs the `ConfigLoader` (located at `src/core/config/ConfigLoader.js`) to load the chain-specific configuration from `configs/chains/hardhat/`. This directory contains settings tailored for the Hardhat local testing environment, such as local RPC URLs, pre-funded account addresses (if any), and addresses of mock contracts or specific test deployments.
+                *   **Activates `HARDHAT_` Prefixed Variables:** When `NETWORK=hardhat` is active, the `ConfigLoader` and other parts of the system are programmed to look for and prioritize environment variables prefixed with `HARDHAT_`. For example, it will use `HARDHAT_RPC_URL` for the node connection, `HARDHAT_TITHE_WALLET_ADDRESS` for tithe calculations in tests, and `HARDHAT_FLASH_SWAP_CONTRACT_ADDRESS` for the flash swap contract, effectively isolating the test environment's parameters from other deployment environments (like `localfork`, `arbitrumGoerli`, or `arbitrumOne`). This prevents accidental use of production or other live network configurations during testing.
+            *   **Resolving `MODULE_NOT_FOUND` Errors During Test Runs (Key Environmental Lesson):**
+                *   **Context:** A common issue encountered during test suite execution (`npx hardhat test`) was a `MODULE_NOT_FOUND` error, particularly for DEX-specific configuration files like `configs/chains/hardhat/dex/camelot.js` (or configurations for other DEXs such as Dodo, SushiSwap, etc., if they were part of the expected structure).
+                *   **Explanation:** This error occurs because the `ConfigLoader`, when initialized for the `hardhat` network, often attempts to dynamically load configuration modules for *all* DEXs that are defined or enumerated within the main chain configuration structure (e.g., in `configs/chains/hardhat/index.js` or implicitly expected by `DexManager`). If a specific DEX is not intended to be used or fully configured for the `hardhat` testing environment, its configuration file might be missing, leading to this import error.
+                *   **Solution & Rationale:** To resolve this robustly without requiring full, operational configurations for every conceivable DEX within the `hardhat` test environment, the solution was to create dummy or minimal placeholder configuration files. For example, if `configs/chains/hardhat/dex/camelot.js` was missing, a basic file was created:
+                    ```javascript
+                    // Example: configs/chains/hardhat/dex/camelot.js
+                    module.exports = {
+                      ROUTER_ADDRESS: "0x0000000000000000000000000000000000000000", // Dummy address
+                      FACTORY_ADDRESS: "0x0000000000000000000000000000000000000000", // Dummy address
+                      // Add other minimal required exports if the loader expects them, otherwise, this is often sufficient.
+                      // Ensure this file exports an object, even if empty, to satisfy the import.
+                    };
+                    ```
+                This satisfies the `ConfigLoader`'s import attempt, allowing the test suite to initialize and run without erroring out on missing modules for DEXs not relevant to the current testing scope or not yet fully integrated into the test environment. This approach codifies a key environmental lesson: ensure the configuration loading mechanism is resilient to partially defined environments, especially for comprehensive test suites that might touch upon various modules.
+            *   **Hardhat Configuration (`hardhat.config.cjs`) for Test Discovery:** For ensuring all test files (`.ts` and `.js`) are correctly discovered and executed by the Hardhat test runner, it's crucial to configure the `mocha.grep` pattern in `hardhat.config.cjs`. Refer to section "6.8. Test Discovery and Execution (`mocha.grep`)" for detailed explanation and example configuration. This is a vital part of maintaining comprehensive test coverage.
+
+    *   **6.2. Persistent Testnet Cycles**
+        *   **6.2.1. Strategy & Setup**
+            *   **Duration & Rotation:** Implement staggered testnet runs (e.g., 72-hour cycles) across various public testnets (e.g., Goerli, Sepolia, Holesky) to observe behavior under different network conditions.
+            *   **Network Configuration:**
+                *   Explicitly configure providers using named networks (e.g., "sepolia") or direct JSON-RPC URLs: `const provider = new ethers.JsonRpcProvider("https://sepolia.infura.io/v3/${YOUR_API_KEY}");`.
+                *   Enforce chain ID checks before any critical interaction: `if ((await provider.getNetwork()).chainId !== EXPECTED_CHAIN_ID) throw new Error("Incorrect network detected!");`.
+            *   **General Testnet Validation Checklist:**
+                *   [ ] Deploy all necessary smart contracts to the target public testnet.
+                *   [ ] Fund the operational wallet with sufficient testnet ETH and any required ERC20 tokens.
+                *   [ ] Configure the bot for the specific testnet environment (e.g., set `NETWORK=arbitrumGoerli` in `.env`).
+                *   [ ] Initiate bot operations, starting with `DRY_RUN=true` (if applicable) before transitioning to `DRY_RUN=false` with minimal capital.
+                *   [ ] Continuously monitor bot activity through logs and block explorer analysis.
+
+        *   **6.2.2. Key Metrics & Reproducibility**
+            *   **Essential Metrics to Track:**
+                *   Smart contract deployment success rate (%).
+                *   Mean time to transaction finality (seconds).
+                *   Gas cost deviation: actual gas used versus estimated gas (%).
+            *   **Ensuring Reproducibility:**
+                *   Log comprehensive details for every transaction: transaction hash, the full populated transaction object (JSON format), resolved contract ABI and address, `chainId`, and `blockTag` used.
+                *   Maintain block tag consistency for provider calls: Use `await provider.getBlock("latest")` for current state or specify exact block tags for contract calls, e.g., `contract.functionName(...args, { blockTag: "latest" })` or `contract.functionName(...args, { blockTag: 1234567 })`.
+
+    *   **6.3. Mainnet Simulation (Dry Runs)**
+        *   This critical phase involves running the bot against a mainnet fork (as detailed in Local Fork Testing 6.1) or directly against the live mainnet with `DRY_RUN=true` (or equivalent internal logic preventing actual trades).
+        *   All transaction preparation steps (population, gas estimation, fee setting) must be performed as if it were a live execution.
+        *   Meticulously analyze simulated profit/loss calculations, gas usage, potential reverts, and any logged errors. This is a final validation step before any live capital deployment.
+
+    *   **6.4. Utility & Diagnostic Scripts**
+        *   The primary source of truth for available utility and diagnostic scripts, their purpose, usage, and interpretation is the "Master Script & Tool Registry" located within `docs/DEVELOPMENT_WORKFLOWS.md`. This registry is a living document, continuously updated to reflect the current toolset available to operators and developers. Referencing this central registry reinforces the "Living Documentation" pillar of the Citadel's operational doctrine.
+    *   **6.5. Golden Test: FlashSwap Profit Validation (`flashswap.test.js`)**
+        The `test/fork/flashswap.test.js` script is a cornerstone validation tool within the project. Its primary purpose is to rigorously test and verify the core profit distribution, fund handling, and arbitrage execution mechanics of the `FlashSwap` smart contract. This test operates by simulating a realistic arbitrage scenario on a forked Arbitrum mainnet environment, providing a high-fidelity check of the contract's behavior under near real-world conditions.
+
+        **Why it's Critical:** This test is paramount because it directly validates several key aspects of the system's integrity and reliability:
+            *   **End-to-End Arbitrage Execution:** It confirms the correct execution of a flash loan (via Aave) and the subsequent atomic trades across multiple DEX platforms (specifically Uniswap V3 and SushiSwap in the test scenario).
+            *   **Tithe Distribution:** It verifies the accurate and automated routing of ETH tithes to the designated `TITHE_WALLET`, a core financial requirement.
+            *   **Profit Handling (USDC.e):** It ensures the proper handling of profits generated from the arbitrage. Specifically, it checks that the bot wallet's USDC.e balance is zero after the transaction, which implies that profits are correctly processed and swept or managed according to the system's design, rather than being lost or stuck.
+            *   **Fund Safety:** It confirms that the `FlashSwap` smart contract does not erroneously retain any of the transacted funds (e.g., USDC.e) after the operation is complete, safeguarding against locked capital.
+            *   **Confidence in Core Logic:** Successful and consistent execution of this test provides high confidence in the fundamental on-chain arbitrage logic, fund flow mechanisms, and overall robustness of the `FlashSwap` contract. It acts as a critical regression test for any changes to the core contract or its immediate dependencies.
+
+        **How to Run the Test:**
+
+            *   **Prerequisites:**
+                *   Ensure you have a properly configured Hardhat development environment.
+                *   All necessary environment variables must be set in your `.env` file. Key variables include `ALCHEMY_ARBITRUM_RPC_URL` (or `ARBITRUM_RPC_URL`) for forking the Arbitrum mainnet, and potentially `TITHE_BPS` if you want to test with a specific tithe percentage (the test has a default if not set). Contract addresses like `FLASH_SWAP_ADDRESS`, `USDCe_ADDRESS`, `WETH_ADDRESS`, etc., are typically hardcoded within the test script for the specific forking context but ensure they are up-to-date if major contract upgrades occur.
+            *   **Execution Command:**
+                To run the test, execute the following command from the project root directory:
+                ```bash
+                yarn hardhat test test/fork/flashswap.test.js --network hardhat
+                ```
+                *Note: The test script (`flashswap.test.js`) is designed to use Hardhat's `hardhat_reset` functionality to fork the Arbitrum mainnet using the RPC URL specified in your environment variables. Therefore, running it with `--network hardhat` (which defaults to a local, in-memory Hardhat network instance) is the standard procedure, as the forking mechanism is handled internally by the test setup.*
+            *   **Interpreting Results:**
+                *   **Passing Test:** A successful run where all assertions pass indicates that the core on-chain arbitrage logic, profit distribution, and fund handling mechanisms of the `FlashSwap` contract are functioning correctly under the simulated conditions.
+                *   **Failing Test:** If the test fails, it points to potential issues that need immediate investigation. Failures could stem from:
+                    *   Regressions or bugs in the `FlashSwap` smart contract logic.
+                    *   Incorrect contract addresses or configuration parameters within the test.
+                    *   Changes in the forked environment (e.g., different historical state if the fork block changes) affecting the test's assumptions.
+                    *   Problems with the underlying DEX contracts on the forked chain.
+                    *   Issues with the local Hardhat setup or dependencies.
+7.  **Incident Response Framework**
+
+    *   **7.1. Severity Levels & Escalation Matrix**
+        *   Establish a clear system for classifying incident severity (e.g., P0, P1, P2) and define corresponding escalation paths.
+        *   **Example P0 - Critical Incident (e.g., Funds Stuck, System Compromise, Major Operational Failure):**
+            1.  **Freeze/Halt:** Immediately halt all affected bots, scripts, and smart contract interactions if applicable.
+            2.  **Escalate:** Trigger an immediate alert to the designated on-call engineer or incident response team (e.g., via PagerDuty).
+            3.  **War Room:** Convene an incident response "war room" (virtual or physical) with key technical and operational personnel to coordinate efforts.
+        *   *(Action: Formally define and document all relevant severity levels (P0, P1, P2, etc.) along with their specific criteria, response procedures, and escalation contacts.)*
+
+    *   **7.2. Triage & Diagnosis Procedures**
+        *   **Initial Steps for Diagnosis:**
+            *   Utilize advanced debugging tools like Tenderly Debugger to trace transaction execution paths and identify the root cause of on-chain failures.
+            *   Thoroughly inspect application logs, paying close attention to error messages and warnings. For contract reverts, look for `reason` strings. Example of programmatic error checking (Ethers.js):
+                ```javascript
+                try {
+                  // someContract.someFunction(...args);
+                } catch (error) {
+                  if (ethers.isError(error, "CALL_EXCEPTION")) {
+                    console.error("Contract call reverted:", error.reason, error.transactionHash);
+                  } else {
+                    console.error("An unexpected error occurred:", error);
+                  }
+                  // Additional error handling and reporting
+                }
+                ```
+            *   Review monitoring dashboards (e.g., Grafana) for performance anomalies, resource spikes, or error rate increases.
+            *   Verify the status and health of all external dependencies (e.g., RPC nodes, oracle services, APIs).
+            *   **Manual Contract Interaction (Diagnostics/Emergency):** In some rare diagnostic or emergency scenarios, direct interaction with deployed smart contracts (outside the bot's automated flows) might be necessary.
+                *   **Tools:** Use trusted and well-understood tools like the Hardhat console (connected to the appropriate network) or Etherscan/Arbiscan's contract interaction UIs.
+                *   **Caution:** Extreme caution is paramount. Always double-check contract addresses, function names, and parameters. If writing data, understand the full impact. Prefer read-only calls for diagnostics.
+                *   **Authorization:** Ensure interactions are performed from authorized addresses (e.g., owner, admin) if required by contract permissions.
+                *   **Logging:** Manually log any direct interactions, the reasons for them, and their outcomes.
+        *   *(Action: Develop detailed troubleshooting checklists for common and critical issue categories to expedite diagnosis.)*
+
+    *   **7.3. Communication Plan**
+        *   **Internal Communication Channels:**
+            *   **Urgent Operational Issues (e.g., bot crash, critical errors):** Use a dedicated, high-visibility channel (e.g., `#ops-alerts` on Slack/Discord) with notifications enabled for key personnel.
+            *   **General Operational Discussions:** Use a less urgent channel (e.g., `#ops-general`).
+            *   **Incident War Rooms:** Utilize temporary dedicated channels or calls for managing active P0/P1 incidents.
+        *   **Initial Incident Reporting - Key Information:** When reporting an operational issue, provide at least the following:
+            *   Timestamp of first observation.
+            *   Bot instance / network affected.
+            *   Observed behavior vs. expected behavior.
+            *   Relevant log snippets or error messages.
+            *   Transaction hashes (if applicable).
+            *   Steps already taken to diagnose or mitigate.
+        *   **Escalation Path (Example):**
+            1.  Automated alert triggers notification in `#ops-alerts`.
+            2.  On-call engineer acknowledges and begins investigation (see 7.2).
+            3.  If unresolved within X minutes or severity increases, escalate to Lead Ops/Dev.
+            4.  Further escalation to core team members if necessary.
+            *(Action: Formalize and document the specific internal escalation path, contact persons, and expected response times.)*
+        *   **External Communication (If Applicable):**
+            *   Establish criteria for when and how to communicate with external users, partners, or the wider community if an incident has external impact (e.g., service downtime, funds at risk for users).
+            *   Prioritize transparency, accuracy, and timeliness in external communications. Designate specific roles for handling such communications.
+
+    *   **7.4. Post-Mortem Analysis & Reporting**
+        *   Conduct comprehensive post-mortem analyses for all significant incidents (especially P0 and P1 types).
+        *   Utilize a standardized **Post-Mortem Report Template:**
+            ```markdown
+            ## [INCIDENT REPORT: YYYY-MM-DD] - Concise Title of Incident
+
+            | Field           | Details                                                                 |
+            |-----------------|-------------------------------------------------------------------------|
+            | Incident Start  | YYYY-MM-DD HH:MM UTC                                                    |
+            | Incident End    | YYYY-MM-DD HH:MM UTC                                                    |
+            | Severity        | P0/P1/P2 (with brief justification)                                     |
+            | Downtime        | XX minutes/hours                                                        |
+            | Capital at Risk | X.X ETH / $Y USD (if applicable)                                        |
+            | **Summary**     | Brief overview of the incident, its impact, and the resolution.         |
+            | **Impact**      | Detailed description of what systems/users were affected and how.       |
+            | **Root Cause(s)**| In-depth analysis of the underlying cause(s) of the incident.           |
+            | **Resolution**  | Steps taken to resolve the incident and restore normal operations.      |
+            | **Timeline**    | Chronological list of key events, actions, and observations.            |
+            | **Action Items**| Specific, measurable, achievable, relevant, time-bound (SMART) actions. |
+            |                 | - [ ] Action Item 1 (Owner: @name, Due: YYYY-MM-DD)                   |
+            |                 | - [ ] Action Item 2 (Owner: @name, Due: YYYY-MM-DD)                   |
+            | **Lessons Learned**| What went well? What could be improved? Key takeaways.                |
+            ```
+8.  **Security Procedures**
+
+    *   **8.1. Private Key Management**
+        *   **A. General Best Practices:**
+            *   Never commit private keys or sensitive mnemonics directly to version control (e.g., Git).
+            *   Utilize `.env` files for local development to store private keys and ensure these files are listed in `.gitignore`.
+            *   **Secure `.env` Backup:** While `.env` files are not committed to Git, maintain a secure, encrypted backup of critical `.env` configurations, especially those for testnet and mainnet environments. This backup should be stored offline or using a reputable password manager or secrets vault. This is crucial for disaster recovery if local files are lost.
+            *   For server deployments, employ secure environment variable management solutions, such as system-level environment variables, cloud provider secrets management services (e.g., AWS Secrets Manager, Google Secret Manager), or dedicated secrets management tools like HashiCorp Vault.
+            *   Use dedicated, low-fund wallets for day-to-day bot operations. Rotate operational keys periodically and immediately if an incident or compromise is suspected.
+        *   **B. Hardware Wallets & Multi-Signature Solutions:**
+            *   For all mainnet interactions, especially those involving significant funds, critical contract administrative functions, or treasury management, mandate the use of hardware-isolated wallets (e.g., Ledger, Trezor). Configure per-transaction spend limits if supported by the hardware or associated software.
+            *   For holding substantial assets or managing critical contract ownership, implement multi-signature wallets (e.g., Gnosis Safe) with an appropriate signature threshold (e.g., 2-of-3 or 3-of-5).
+        *   **C. Secure Testing Practices:**
+            *   During testing or simulation phases where on-chain signing is not strictly required (e.g., for static contract calls or off-chain simulations), use tools that obviate the need for live private keys. For example, Ethers.js `VoidSigner` can be used to represent an address without exposing its key.
+
+    *   **8.2. Dependency Management & Audits (Refer to Principle 2.5: The Yarn Mandate)**
+        *   Regularly execute `yarn audit` to identify and assess known vulnerabilities in project dependencies, in accordance with the project-wide adoption of Yarn.
+        *   Thoroughly vet new dependencies before integration. Consider their community support, maintenance frequency, historical security issues, and overall reputation.
+        *   Pin all dependency versions in project configuration files (e.g., `package.json`) to ensure reproducible builds and prevent unintended updates that could introduce vulnerabilities or breaking changes. The `yarn.lock` file plays a crucial role here.
+
+    *   **8.3. Smart Contract Security**
+        *   **A. Audits:**
+            *   Schedule and undergo independent security audits by reputable firms for all custom-developed smart contracts (especially those handling funds or critical logic, like `FlashSwap.sol`) prior to mainnet deployment with significant capital.
+        *   **B. Development Best Practices:**
+            *   Incorporate dry-run and simulation capabilities directly into contract functions or associated tooling for all critical operations.
+            *   Design contracts using established reentrancy prevention patterns (e.g., checks-effects-interactions, reentrancy mutexes/guards).
+            *   Rigorously validate all external contract call addresses and untrusted input parameters.
+            *   Employ assertions and requirements (e.g., `require(tx.to !== address(0), "Invalid recipient address");`) to prevent common errors like sending funds to zero addresses.
+            *   Adhere to widely recognized smart contract development guidelines and best practices (e.g., Consensys recommendations, Solidity documentation, SWC Registry for known vulnerabilities).
+        *   **C. Vulnerability Mitigation Status & Key Resolutions:**
+            *   **Reentrancy Vulnerability (FlashSwap.sol):** ✅ **RESOLVED**
+                *   **Mitigation Strategy:**
+                    *   **Checks-Effects-Interactions (CEI) Pattern:** Rigorously applied throughout `FlashSwap.sol`. State modifications are completed before external calls.
+                    *   **OpenZeppelin `ReentrancyGuard`:** The `nonReentrant` modifier from OpenZeppelin's `ReentrancyGuard` contract is applied to critical functions that involve external calls and state changes, such as `executeOperation` (the Aave flash loan callback) and any primary swap execution functions.
+            *   **Unbounded Loop / Calls Inside a Loop Vulnerability (Off-chain Path Generation & On-chain Execution):** ✅ **RESOLVED**
+                *   **Mitigation Strategy:**
+                    *   **Off-Chain Path Length Limitation:** A constant `MAX_SWAP_PATH_LENGTH` (e.g., 5 or 7) is enforced in the off-chain JavaScript/TypeScript path generation logic. Arbitrage paths exceeding this length are discarded before being sent to the smart contract. This is the primary defense against out-of-gas issues due to excessively long swap sequences.
+                    *   **On-Chain Boolean Guard (`swapping`):** Within `FlashSwap.sol`'s core swap execution logic (e.g., a function like `_executeSwaps`), a `boolean private swapping` state variable is used. This variable is set to `true` at the beginning of the swap sequence and `false` upon completion. Internal functions performing individual swaps check this guard to prevent accidental re-entry or unintended recursive behavior during the atomic execution of a swap path. This complements the `ReentrancyGuard` by providing an internal control specific to the swap loop.
+
+    *   **8.4. Access Control & Permissions**
+        *   *(Placeholder: Define and document roles and granular permissions for all operational aspects, including contract deployment, configuration changes, bot operation, and treasury management. Implement Role-Based Access Control (RBAC) mechanisms where appropriate, for instance, using OpenZeppelin's AccessControl contracts for on-chain permissions.)*
+
+    *   **8.5. Off-Chain Data Security**
+        *   *(Placeholder: Establish procedures to ensure the security of sensitive off-chain data, including API keys, database credentials, and any personally identifiable information (PII) or proprietary data that the bot or its supporting infrastructure might store or process.)*
+    *   **8.6. Upgradeability Security (Diamond Standard Risks - Solidity & Ethers Intelligence):**
+        *   While EIP-2535 (Diamond Standard) offers significant flexibility and helps manage contract size, it introduces unique security considerations, often highlighted by Solidity and Ethers development communities:
+            *   **Function Selector Clashes:** Ensure meticulous management of function selectors across facets to prevent clashes, which could lead to unintentional behavior or vulnerabilities.
+            *   **Storage Layout Management:** Carefully manage storage layouts. Diamonds can use various storage patterns (e.g., AppStorage, DiamondStorage). Unintended overlaps or incorrect storage pointer usage across facets can lead to critical vulnerabilities.
+            *   **Facet Privileges:** Securely manage which facets can be added, replaced, or removed. The `DiamondCut` function is extremely powerful and must be protected by robust access control (e.g., multi-sig, Timelock).
+            *   **Initialization of Facets:** Ensure that newly added facets are correctly initialized, especially if they manage their own state variables within a shared storage context.
+            *   **Complexity:** The increased complexity of the Diamond Standard can obscure vulnerabilities if not managed with extreme diligence and thorough auditing.
+    *   **8.7. Advanced Smart Contract Security (Assume Adversarial State Doctrine - Solidity Intelligence):**
+        *   **Core Principle:** When developing and testing smart contracts, operate under the "Assume Adversarial State" doctrine, a key tenet of secure Solidity development. This means anticipating that external contracts can be malicious, input data can be crafted to exploit vulnerabilities, and the on-chain environment (e.g., token balances, pool reserves) can be manipulated by other actors immediately before or within the same block as your transaction.
+        *   **Defensive Measures:**
+            *   **Input Validation:** Rigorously validate all external inputs and parameters.
+            *   **Checks-Effects-Interactions Pattern:** Strictly adhere to this pattern to prevent reentrancy attacks.
+            *   **External Call Safety:** Treat all external contract calls as potentially unsafe. Check return values, use low-level calls with caution, and be aware of gas griefing possibilities.
+            *   **State Consistency Checks:** Before executing critical logic, re-verify essential on-chain states if they could have been altered by an attacker.
+    *   **8.8. Gas Optimization as a Security Practice (Reverse Memory Allocation - Solidity Intelligence):**
+        *   **Concept:** While not a direct security mechanism, efficient gas usage can reduce the attack surface and transaction costs, indirectly enhancing security. One advanced Solidity technique, sometimes discussed in optimization contexts, is "Reverse Memory Allocation."
+        *   **Reverse Memory Allocation:** In scenarios involving dynamic arrays where elements are processed and then potentially removed or compacted, allocating memory from the end of the array backwards (if the logic permits) can sometimes be more gas-efficient than allocating from the beginning and shifting elements. This is highly context-dependent and requires careful benchmarking.
+        *   **Broader Implications:** Gas-efficient code is often simpler and clearer, making it easier to audit and identify vulnerabilities. Overly complex gas optimizations can sometimes obscure logic, so a balance is essential. Prioritize clarity and correctness, then optimize for gas where it provides significant benefits without compromising security.
+    *   **8.9. Environment Variable & Secrets Management Doctrine**
+        *   **Core Principle:** The security and integrity of environment variables and secrets are paramount. This doctrine outlines non-negotiable rules for their management.
+        *   **Rules:**
+            1.  **`.env` File Isolation:**
+                *   The `.env` file, containing sensitive information like API keys, private keys, and RPC URLs, **must never be committed to version control (Git)**.
+                *   It should be explicitly listed in the project's `.gitignore` file.
+                *   Each developer maintains their own local `.env` file for development and testing.
+                *   A template file (e.g., `.env.example` or `.env.template`) listing all required variables with placeholder or example values **should** be committed to version control to guide setup.
+            2.  **Runtime Loading Only:**
+                *   Secrets are loaded into the application *only at runtime*.
+                *   This is typically achieved using the `dotenv` library (or a similar mechanism). The `dotenv.config()` call (e.g., `require('dotenv').config();`) should be one of the very first lines of code in the main entry point of the application (e.g., `src/bot.ts` or `src/index.ts`).
+            3.  **No Hardcoded Secrets in Compiled Code:**
+                *   The compiled code residing in the `dist/` directory (or any other build artifact) **must only contain references to environment variables** (e.g., `process.env.API_KEY`, `process.env.PRIVATE_KEY`).
+                *   Actual secret values must **never** be hardcoded or embedded into the source code in a way that they would appear in the transpiled JavaScript. This prevents accidental exposure of secrets if the `dist/` directory is inadvertently shared or deployed.
+            4.  **Centralized Configuration Access (`src/config.ts`):**
+                *   It is a best practice to create a centralized configuration module (e.g., `src/config.ts` or `src/core/config/ConfigLoader.ts` as seen in this project).
+                *   This module should be responsible for:
+                    *   Loading environment variables (potentially using `dotenv` internally if not handled at the top entry point).
+                    *   Validating the presence and format of required variables.
+                    *   Providing strongly-typed access to configuration values throughout the application.
+                    *   Potentially handling different configuration sets for different environments (development, testnet, mainnet) based on `NODE_ENV` or a custom environment variable.
+                *   This approach encapsulates configuration logic, improves maintainability, and makes it easier to manage how secrets are accessed and used.
+        *   **Rationale:** Strict adherence to these rules minimizes the risk of secret exposure, which can lead to catastrophic financial loss, unauthorized access, or system compromise. Secure handling of secrets is a foundational element of operational security.
+9.  **Risk Mitigation Tactics**
+
+    *   **9.1. Slippage Control Mechanisms**
+        *   Implement automated slippage controls directly within smart contracts or as part of the transaction execution logic.
+        *   For example, ensure transactions automatically revert if observed slippage exceeds a predefined threshold (e.g., 1.0 - 1.5%) for trades. This can be enforced via custom static analysis checks (e.g., Slither plugins) or pre-transaction checks against reliable price feeds.
+
+    *   **9.2. Circuit Breakers & Automated Halts**
+        *   Design and implement circuit breaker mechanisms that can temporarily halt or restrict operations during anomalous market conditions or suspected system failures.
+        *   Consider, for example, an automated freeze on withdrawals or a pause in bot trading activity if the Total Value Locked (TVL) in a monitored contract fluctuates by more than a set percentage (e.g., >15%) within a brief window (e.g., 5 minutes). Utilize reliable oracles like Chainlink for such external data feeds.
+        *   Regularly review, test, and update circuit breaker logic and activation thresholds.
+
+    *   **9.3. Capital Exposure & Profitability Controls**
+        *   **Capital Allocation Limits:** Enforce strict limits on capital exposure per individual test run, operational cycle, or deployed strategy (e.g., 0.5-2% of the total managed treasury).
+        *   **Borrow Amount Management (Dynamic Pool Manifest):** The management of `BORROW_AMOUNTS` and related trade size parameters has evolved. Static configurations for borrow amounts are being deprecated. The system now relies on a `dynamic_pool_manifest.json` file. This manifest is generated and updated by tools like `Surveyor.ts` (which leverages the Dexscreener API) and `PoolFetcher.ts`. It contains real-time or frequently updated data about pools, including liquidity, which is then used by the `PoolConfigProcessor.ts` to dynamically determine appropriate borrow amounts and other trade parameters. This shift ensures that trade sizes are adjusted based on current market conditions and pool liquidity, rather than relying on potentially stale static values.
+        *   **Minimum Profitability Thresholds:** Define and enforce `MIN_PROFIT_THRESHOLDS` for any trade or operation. This ensures that transactions are only executed if they are economically viable after accounting for estimated gas costs, potential slippage, and any other fees.
+
+    *   **9.4. Gas Price Volatility Management**
+        *   **Static Configuration:** Review and establish appropriate baseline `MAX_GAS_GWEI` and `MIN_PRIORITY_FEE_GWEI` (or equivalent fee parameters) in chain-specific configurations. This helps prevent significant overpayment for gas or transactions becoming indefinitely stuck.
+        *   **Dynamic Adjustments:** Explore and cautiously implement systems for dynamically adjusting transaction gas parameters based on real-time network congestion and fee markets (e.g., by integrating with services like the Etherscan Gas Tracker API). Such systems require careful design and testing to avoid introducing new risk vectors.
+
+    *   **9.5. Comprehensive Simulation & Dry-Run Modes**
+        *   Mandate the extensive use of `DRY_RUN=true` modes (or equivalent simulation capabilities that prevent actual state changes) throughout all testing phases, including on testnets and initially on mainnet forks or even the live mainnet.
+        *   Only transition to live trading (`DRY_RUN=false`) after comprehensive validation and satisfactory performance in simulation modes.
+
+    *   **9.6. Robust Retry Mechanisms for Transient Issues**
+        *   Implement retry-safe wrappers for critical transaction submissions to gracefully handle temporary network issues, RPC provider glitches, or minor reorgs.
+        *   These wrappers should include intelligent backoff strategies (e.g., exponential backoff) and clearly defined maximum retry limits to prevent indefinite looping or resource exhaustion.
+    *   **9.8. RPC Redundancy and Advanced Configuration with FallbackProvider (Ethers Intelligence):**
+        *   **Mitigating RPC Provider Unavailability:** Operational continuity heavily relies on stable connections to blockchain nodes. The failure or temporary unavailability of a single RPC provider can halt operations or lead to missed opportunities.
+        *   **Ethers.js `FallbackProvider`:** The system utilizes the Ethers.js `FallbackProvider` to create a resilient connection layer, a feature well-documented in Ethers resources. This provider is configured with a list of multiple RPC URLs, typically sourced from environment variables (e.g., `ARBITRUM_RPC_URL_LIST="https_rpc_url_1,https_rpc_url_2,https_rpc_url_3"`).
+        *   **Advanced Configuration (Quorum, Weights, Stall Timeout):**
+            *   **Provider Configuration:** Each provider in the `FallbackProvider` list can be an object specifying `provider` (the RPC URL string) and `priority` (lower is higher) and `weight` (for weighted random selection among same-priority providers).
+                ```javascript
+                // Example configuration for FallbackProvider
+                const providerConfigs = [
+                  { provider: process.env.RPC_URL_ALCHEMY, priority: 0, weight: 1, stallTimeout: 1000 },
+                  { provider: process.env.RPC_URL_INFURA, priority: 1, weight: 1, stallTimeout: 1500 },
+                  { provider: process.env.RPC_URL_ANKR, priority: 1, weight: 2, stallTimeout: 1500 },
+                  // Add a private node with higher priority if available
+                  { provider: process.env.RPC_URL_PRIVATE_NODE, priority: 0, weight: 2, stallTimeout: 500 },
+                ];
+                // const provider = new ethers.FallbackProvider(providerConfigs);
+                ```
+            *   **Quorum:** The `FallbackProvider` can be configured with a `quorum` (default 1), which is the minimum number of backends that must agree on a response for it to be considered valid. This helps protect against inconsistent or compromised nodes.
+            *   **Event Emitter for Failures:** The `FallbackProvider` emits `providerError` events when a backend fails, allowing for monitoring and dynamic response to provider degradation.
+            *   **Stall Timeout:** The `stallTimeout` (per provider config or global) defines how long to wait for a provider to respond before considering it stalled and potentially failing over.
+        *   **Benefits:** This advanced configuration allows for fine-tuned control over provider selection, failover behavior, and response consistency, significantly enhancing the robustness of blockchain interactions against single-provider failures or degraded performance. This is a critical component for maintaining high availability and operational uptime.
+## 10. MEV (Maximal Extractable Value) Strategy
+
+### 10.1. MEV Risk & The Dark Forest
+Maximal Extractable Value (MEV) refers to the maximum value that can be extracted from block production in excess of the standard block reward and gas fees by including, excluding, and changing the order of transactions in a block. This creates a challenging environment often referred to as "the dark forest," where transactions are vulnerable to adversarial strategies such as front-running (executing a transaction based on advance knowledge of a pending transaction) and sandwich attacks (placing transactions before and after a victim's transaction to exploit price changes). Private transaction submission is therefore critical to shield our operations from such predatory tactics by preventing our transactions from being seen in the public mempool before confirmation.
+
+### 10.2. Defensive Strategy: Private Relays
+Our primary defensive tactic against MEV exploitation is the use of private transaction relays. The **preferred primary private relay for maximizing inclusion probability on mainnet is the Flashbots Protect "fast" endpoint: `https://rpc.flashbots.net/fast`**.
+
+We employ an Ethers.js `FallbackProvider` configured with this private RPC endpoint as the primary provider and a public RPC endpoint (like Alchemy or Infura) as the secondary, fallback provider. This setup ensures that our transactions are first routed through the private relay, shielding them from the public mempool where they would be visible to MEV bots. If the private relay is unavailable, the system falls back to a public RPC to maintain operational continuity, albeit with increased MEV exposure for that specific transaction.
+    *   **10.3. Offensive Doctrine: Bundle-Based Engagement (MEV Intelligence):**
+        *   **Mandatory Bundling for MEV Capture:** For operations explicitly designed to capture MEV (e.g., back-running, sandwiching identified opportunities not originating from Axion Citadel), the use of transaction bundles submitted to private relays (e.g., Flashbots, BloxRoute, specific builder APIs) is mandatory. This aligns with established MEV capture techniques.
+        *   **Simulation is Key:** Before submitting any bundle, it *must* be simulated using a high-fidelity environment (ideally Anvil, as per the Two-Tiered Testing Paradigm) that accurately reflects potential mempool interactions and state changes. The simulation must account for:
+            *   Gas costs of all transactions in the bundle.
+            *   Potential for competitive bids from other searchers.
+            *   Price impact and slippage of the target transaction(s) and Axion Citadel's own transactions.
+            *   Profitability after accounting for bundle fees/bribes to builders/validators.
+        *   **Dynamic Bidding:** Bundle submissions should incorporate dynamic bidding strategies, adjusting the amount paid to builders/validators based on the simulated profitability and competitiveness of the opportunity.
+        *   **Failure Modes:** Understand and plan for common bundle failure modes, such as non-inclusion in a block, outbidding by competitors, or unexpected state changes invalidating the opportunity. Log these failures extensively for strategy refinement.
+        *   **Ethical Considerations:** Offensive MEV strategies must still operate within the broader ethical framework of Axion Citadel. Strategies that exploit vulnerable users or destabilize protocols are forbidden. The focus is on capturing publicly observable MEV in a competitive but fair manner.
+    *   **10.4. Implemented Offensive Strategy: Sandwich Attack**
+        "The Citadel's first operational offensive MEV tactic is the Sandwich Attack. This strategy relies on two key components:
+            - `MempoolMonitorService`: This service is responsible for observing the public mempool to identify transactions that are suitable targets for a sandwich attack (e.g., large DEX trades that will predictably alter asset prices).
+            - `SandwichAttackStrategy`: Once a target is identified, this component formulates the attack by constructing a front-running transaction (to buy the asset before the victim's trade) and a back-running transaction (to sell the asset after the victim's trade executes and influences the price). These transactions are then bundled with the victim's transaction for atomic execution.
+        This capability represents a significant step in our proactive engagement with the MEV landscape, moving beyond purely defensive measures."
+
+## 11. Toolchain and Integrations
+
+    This section outlines key tools and external services integrated into or supporting the operational lifecycle of the Axion Citadel bot.
+
+    *   **11.1. Blockchain Interaction & Development Frameworks**
+        *   **Ethers.js (v6 or latest):** Primary JavaScript library for interacting with the Ethereum blockchain, including contract interaction, transaction construction and signing, event listening, and error handling. Key utilities include `JsonRpcProvider`, `Wallet`/`Signer` management, `Contract` abstraction, and error type guards like `isError()`.
+        *   **Hardhat:** Comprehensive Ethereum development environment used for local development, testing, deploying smart contracts, and running scripts. Includes `hardhat node` for local blockchain simulation (forking mainnet), `hardhat test` for test execution, and `hardhat run` for script execution.
+        *   **Brownie:** Python-based framework for smart contract development, testing, and deployment, particularly useful for projects involving Python-based scripts or backend components.
+        *   **(Web3.py):** (If applicable) Python library for direct interaction with Ethereum nodes, often used by Python frameworks or custom scripts.
+        *   **`hardhat-deploy`**: Adopted as the standard for robust, state-aware, and repeatable contract deployments. Its fixture capabilities (e.g., `createFixture`) are also crucial for creating isolated and consistent test states, forming a foundation for reliable automated testing.
+        *   **`hardhat-tracer`**: Adopted for deep, function-level gas and call-stack analysis. Essential for debugging complex transactions, understanding precise gas consumption hotspots, and performing MEV forensics by tracing internal calls within contracts.
+            *   **Usage:** Integrated into Hardhat tasks. When running tests or scripts, it can generate detailed traces of function calls, gas usage per call, and internal state changes.
+            *   **Output Interpretation:** The tracer typically outputs a structured log or a visual representation of the call stack. This helps pinpoint functions that consume excessive gas or identify unexpected internal reverts. For example, a trace might show:
+                ```
+                MyContract.myFunction()
+                  ├─ ExternalContract.externalCall() [GAS: 50000]
+                  │  └─ NestedCall.anotherCall() [GAS: 20000]
+                  └─ MyContract.internalLogic() [GAS: 10000]
+                ```
+                This allows developers to see exactly where gas is being spent and how different parts of a transaction interact.
+        *   **`hardhat-contract-sizer`**: Adopted for automated bytecode size auditing. This tool helps prevent deployment failures by ensuring contract sizes remain within the limits imposed by the Ethereum network (EIP-170).
+            *   **Usage:** Typically run as a Hardhat task (e.g., `npx hardhat size-contracts`). It analyzes compiled contracts and reports their sizes.
+            *   **Output Interpretation:** The output lists each contract and its size in kilobytes. If a contract exceeds the ~24KB limit, it will be flagged. This is a critical check before attempting deployment to mainnet or testnets that enforce this limit.
+
+    *   **11.2. Monitoring, Alerting & Incident Management**
+        *   **Grafana:** For creating and visualizing operational dashboards. Key metrics to monitor include node health (disk space, RPC latency), pending transaction queue depth, bot-specific metrics (e.g., opportunities found, trades executed), and gas price volatility.
+        *   **Prometheus:** (Or similar metrics system) For collecting time-series data on application and infrastructure performance, providing the backend for Grafana dashboards.
+        *   **PagerDuty:** (Or similar alerting service) For escalating critical incidents and alerts to designated on-call engineers or the operations team.
+        *   **11.2.1 Logging System (pino):** The Citadel employs the pino library for high-performance, structured logging. The system is configured with a transport.targets API to achieve dual output:
+            *   Console Output: Logs are sent to the console using pino-pretty for colorized, human-readable output during development and real-time monitoring.
+            *   File Output: Logs are simultaneously written to a persistent file (e.g., logs/combined.log) for post-mortem analysis, auditing, and long-term record-keeping.
+            *   The log level (debug, info, warn, error) is configurable via the LOG_LEVEL environment variable in the .env file.
+
+    *   **11.3. Debugging, Simulation & Local Networks**
+        *   **Tenderly:** Powerful platform for debugging transactions (via Tenderly Debugger), simulating transaction outcomes, and providing infrastructure services like testnet faucets.
+        *   **Anvil:** Our high-performance local testnet node for mainnet forking and high-fidelity simulation. (Part of Foundry toolkit) Used for realistic smoke tests, MEV strategy validation, and complex state simulation.
+        *   **Hardhat Console:** Interactive JavaScript console for interacting with a running Hardhat Node, useful for state inspection and manual function calls during local testing.
+
+    *   **11.4. Automation, Orchestration & CI/CD**
+        *   **GitHub Actions:** (Or similar CI/CD platform) For automating build, test, and deployment pipelines, including automated deployment of smart contracts to testnets or staging environments.
+        *   **Ansible:** Configuration management tool, useful for automating environment sanity checks and ensuring consistent server setups (e.g., via playbooks like `validate_nodes.yaml`).
+        *   **PM2:** Production process manager for Node.js applications, used to keep the bot application running continuously in server-based deployments and manage logs.
+
+    *   **11.5. Smart Contract Analysis & Security**
+        *   **Slither:** Static analysis framework for Solidity smart contracts, used to detect vulnerabilities and enforce best practices. Can be integrated into CI pipelines with custom plugins for project-specific checks (e.g., slippage control logic).
+
+    *   **11.6. Oracles & External Data Feeds**
+        *   **Chainlink:** Decentralized oracle network used to provide reliable off-chain data feeds (e.g., asset prices, TVL data) for smart contracts, often used in circuit breaker mechanisms or other condition-dependent logic.
+        *   **Dexscreener API:** A critical external data source for real-time and historical token and pair analytics. The `Surveyor.ts` tool (`src/tools/Surveyor.ts`) is specifically designed to interface with the Dexscreener API to gather intelligence, forming a key part of the Citadel's market awareness capabilities. The data from Dexscreener is used for identifying potential opportunities, validating token information, and understanding market dynamics.
+
+    *   **11.7. Wallet & Key Management**
+        *   **Gnosis Safe:** Multi-signature smart contract wallet solution for secure management of critical contract ownership, treasury funds, and sensitive administrative functions.
+        *   **Ledger/Trezor:** Hardware wallets for offline storage of private keys, providing a high level of security for mainnet interactions and asset management.
+
+    *   **11.8. Gas Price Information**
+        *   **Etherscan Gas Tracker API:** (Or similar gas station APIs) Provides real-time gas price estimations, which can be integrated to dynamically set transaction fee parameters.
+        *   **Internal GasFeeService:** The project includes a `GasFeeService` (`src/core/execution/gas/gasFeeService.js`) responsible for more advanced gas fee calculations. It can apply urgency-based multipliers to fees obtained from the provider (via its `getFeeData(urgency)` method) and also offers a more complex `getOptimalFeeData()` method that. This service is the primary mechanism for determining gas fees within the `TransactionManager`.
+
+    *   **11.9. General Development & Knowledge Management**
+        *   **Yarn:** The mandated package manager for this Node.js project, used for installing and managing project dependencies (see Principle 2.5).
+        *   **Linters & Formatters (e.g., ESLint, Prettier):** Tools to enforce consistent code style and identify potential code quality issues.
+        *   **Blockchain Explorers (e.g., Etherscan, Arbiscan):** Essential web-based tools for inspecting transactions, contract code, account balances, and general blockchain state on public networks.
+        *   **LlamaIndex:** (Or similar knowledge management tool) Suggested for embedding this operational playbook and other documentation into a queryable knowledge base, enabling AI-assisted information retrieval for the team.
+        *   **Authoritative Toolchain Reference:** The definitive and master list of all external tools, libraries, and integrated code dependencies (including Git Submodules in `lib/`) is maintained in `docs/reference/external_toolchain_codex.md`. This document should be consulted for any questions regarding the project's toolchain composition.
+    *   **11.10. RPC Redundancy**
+        *   **FallbackProvider (Ethers.js):** To enhance operational resilience against single RPC provider failures, the system utilizes the Ethers.js `FallbackProvider`.
+        *   This provider is configured by loading a comma-separated value (CSV) list of multiple RPC URLs from the `.env` file (e.g., `ARBITRUM_RPC_URL_LIST="https_rpc_url_1,https_rpc_url_2,https_rpc_url_3"`).
+        *   This allows for the configuration of multiple RPC endpoints (e.g., from different providers like Alchemy, Infura, Ankr, or private nodes). If one provider becomes unavailable or slow, Ethers.js automatically switches to a backup provider from the list, minimizing downtime and ensuring continued blockchain connectivity.
+    *   **11.11. MEV Protection Relays**
+        *   **Flashbots Protect:** Primary private RPC relay service used to shield transactions from the public mempool and mitigate front-running/sandwich attacks.
+    *   **11.12. Labeled Console Logging**
+        *   **Enhanced Debugging with `knownAddresses.js`:** For improved debugging and log readability, especially during local development with a Hardhat node, the system utilizes a `knownAddresses.js` registry (located in `configs/knownAddresses.js`).
+        *   This file maps contract addresses to human-readable labels (e.g., "USDC.e", "WETH", "UniswapV3Router", "FlashSwapContract").
+        *   When the Hardhat node processes transactions, its console output (if configured to do so, often by default or with specific Hardhat plugins) can replace raw contract addresses with these labels. This makes it significantly easier to trace interactions, identify contracts involved in specific operations, and understand the flow of execution directly from the Hardhat console logs.
+12. **Profit and Tithe Management**
+
+    This section details procedures for verifying and managing profits generated by the bot and the allocation of Tithe.
+
+    *   **12.1. Post-Trade Verification Procedures**
+        *   Following any successfully logged trade (e.g., indicated by a `[TradeLogger] TRADE EXECUTED & CONFIRMED...` log entry), perform the following checks:
+        *   **A. Using Hardhat Console (for Local Fork Testing):**
+            *   Verify the `ETH` (or native currency) balance of the designated `TITHE_WALLET_ADDRESS` has increased appropriately.
+            *   Confirm that the `ETH` (or swapped asset) balance of the bot's operational wallet (or a dedicated profit accumulation wallet) reflects the earned profit.
+            *   Ensure that gas fees were correctly deducted from the operational wallet.
+            *   Confirm that any operational smart contracts (e.g., `FlashSwap.sol`) hold zero (or only dust amounts) of the traded tokens post-operation, ensuring no funds are inadvertently locked.
+            ```javascript
+            // Example Hardhat Console commands for balance checks:
+            // await ethers.provider.getBalance("YOUR_TITHE_WALLET_ADDRESS");
+            // await ethers.provider.getBalance("YOUR_BOT_OPERATIONAL_WALLET_ADDRESS");
+            // const erc20Token = await ethers.getContractAt("IERC20", "TOKEN_CONTRACT_ADDRESS");
+            // await erc20Token.balanceOf("FLASH_SWAP_CONTRACT_ADDRESS");
+            ```
+        *   **B. Using Block Explorers (for Testnet/Mainnet):**
+            *   Conduct the same verification checks (Tithe received, profit received, gas deducted, contracts clear of temporary funds) by inspecting transaction details, event logs, and account balances on a reliable block explorer (e.g., Etherscan, Arbiscan).
+
+    *   **12.2. Secure Sweeping and Storage Strategies**
+        *   **A. Mainnet Profit & Tithe Sweeping:**
+            *   Establish and adhere to regular, documented procedures for sweeping accumulated profits and Tithe from the bot's operational wallet(s) to designated, secure long-term storage addresses.
+            *   These long-term storage wallets must be high-security solutions, such as hardware wallets (Ledger, Trezor) or multi-signature wallets (Gnosis Safe), protected by robust key management and access control practices.
+        *   **B. Sweep Frequency:**
+            *   Determine the optimal frequency for sweeping funds based on factors such as transaction volume, profit accumulation rate, gas costs associated with sweeping, and overall risk assessment.
+        *   **C. Automation (Future Consideration):**
+            *   For mature operations, explore possibilities for developing semi-automated or fully-automated sweeping mechanisms. Any such automation must be rigorously tested for security and reliability before deployment.
+13. **Troubleshooting Common Issues**
+
+**General Diagnostic Tip:** When a smart contract interaction fails, inspect application logs for detailed error messages. If a transaction reverts, the revert reason string (often available as `error.reason` when using libraries like Ethers.js) can provide critical diagnostic information. This is also where new custom error classes like `GasEstimationError` and `SimulationRevertedError` will surface their specific messages. (Consult `docs/troubleshooting/error_code_encyclopedia.md` for known errors).
+
+    This section lists common operational issues, their potential causes, and suggested resolutions or workarounds. (Also refer to `docs/troubleshooting/triage_guide.md`).
+
+    *   **General Diagnostic Tip:** When a smart contract interaction fails, inspect application logs for detailed error messages. If a transaction reverts, the revert reason string (often available as `error.reason` when using libraries like Ethers.js) can provide critical diagnostic information.
+
+    *   **Issue: Port Conflict / Address Already in Use (e.g., `EADDRINUSE: address already in use 0.0.0.0:8545`)**
+        *   **Cause:** A previous Hardhat node (or another process) is still running and occupying the required network port (typically 8545 for local Hardhat nodes).
+        *   **Fix:** Identify and terminate the existing process. On Unix-like systems, use commands like `sudo lsof -i :8545` to find the Process ID (PID), followed by `kill <PID>`.
+            *   If using `yarn hardhat node`, ensure previous instances are properly terminated.
+
+    *   **Issue: Critical Configuration Error (e.g., `CRITICAL: Required address ..._FLASH_SWAP_CONTRACT_ADDRESS is missing or empty.`)**
+        *   **Cause:** A required smart contract address for the currently selected `NETWORK` is either missing or not correctly defined in the `.env` file or the relevant chain-specific configuration file.
+        *   **Fix:** Ensure the correct address is added to and properly formatted in the `.env` file (e.g., `LOCALFORK_FLASH_SWAP_CONTRACT_ADDRESS=0x...`) or the appropriate chain configuration.
+
+    *   **Issue: Decimal Fetching Errors (e.g., `contract runner does not support calling decimal function`)**
+        *   **Cause:** Problems with the dedicated RPC provider configured for fetching token decimals (often specified in `configs/index.js` or a similar global configuration), or issues with the underlying RPC connection itself during application startup.
+        *   **Fix:** Verify the RPC URL for the decimal fetching provider. Ensure the Hardhat node (if used for this purpose on a local fork) or the external RPC endpoint is responsive and accessible.
+
+    *   **Issue: Provider Method Undefined (e.g., `provider.getNetwork is not a function` during `initializeBot`)**
+        *   **Cause:** The provider object being used (e.g., when running as a Hardhat Runtime Environment script via `yarn hardhat run`) might be a wrapped Hardhat provider that doesn't directly expose all standard Ethers.js `AbstractProvider` methods. The `getProvider` utility in `src/infra/blockchain/provider.js` (or equivalent) may not be correctly unwrapping or returning a true Ethers provider instance.
+        *   **Fix:** Modify the provider utility function to correctly identify and return a fully functional Ethers `AbstractProvider` instance compatible with the bot's requirements.
+
+    *   **Issue: Aave Flash Loan Gas Estimation Failure (e.g., `CALL_EXCEPTION: require(false)` during Aave `estimateGas`)**
+        *   **Potential Cause 1 (Configuration):** The `initiator` address specified in the parameters for Aave gas estimation (`ArbParams`) is not set to the `FLASH_SWAP_CONTRACT_ADDRESS`.
+        *   **Fix 1:** Ensure the `GasEstimator.js` (or equivalent module) correctly uses `this.config.FLASH_SWAP_CONTRACT_ADDRESS` as the `initiator` for Aave-related gas estimation calls.
+        *   **Potential Cause 2 (Market Conditions/Profitability):** The simulated arbitrage path within the `estimateGas` call for `AavePool.flashLoan(...)` does not generate sufficient profit to cover the flash loan repayment and associated fees. This causes the repayment `require` statement in `FlashSwap.sol` to fail during the internal simulation of `estimateGas`.
+        *   **Note for Cause 2:** This is not necessarily a software bug but rather a reflection of unfavorable simulated market conditions or insufficiently profitable parameters for that specific path. Adjust simulation parameters or investigate market data.
+        *   *(Original Aave initiator check `require(initiator == address(this))` in `FlashSwap.sol` is generally correct, assuming Aave's `LendingPool` correctly passes the `FlashSwap.sol` contract address as the `initiator` to the `executeOperation` callback.)*
+
+    *   **Issue: Stale Uniswap V2 Prices After Snapshot Revert (Local Fork Testing)**
+        *   **Cause:** Hardhat's `evm_revert` functionality may not consistently or reliably restore the state of some complex AMM pools (like SushiSwap V2) after large simulated swaps on a forked environment. The bot might thus observe pre-swap (un-skewed) prices.
+        *   **Workaround:** For testing scenarios requiring reliable price skewing on such AMMs, implement in-memory skewing. Call the necessary skew functions (e.g., `executeSushiSkew(hre)`) directly from within the Hardhat test script or bot's execution cycle immediately before price fetching and opportunity evaluation.
+
+    *   **Issue:** `SyntaxError: Unexpected identifier 'interface'` (or similar TypeScript-specific syntax errors when running JavaScript).
+        *   **Cause:** This error occurs when attempting to run TypeScript source files directly with Node.js without prior transpilation, or if the JavaScript files in the `dist` directory are missing or outdated. Node.js does not natively understand TypeScript syntax like `interface`.
+        *   **Fix:** Run `yarn build` to transpile the TypeScript code into JavaScript in the `/dist` directory. Ensure you are running the bot from the `dist` directory (e.g., `node dist/bot.js`).
+
+14. Triage Guide for Common Test Failures
+
+This guide is a direct result of the "Green Suite" Initiative and codifies the lessons learned from debugging the test environment.
+
+Symptom: 0 passing tests and a silent exit after compilation.
+
+Initial Diagnosis: Test runner is crashing during initialization.
+
+Triage Protocol:
+
+1.  **Isolation Protocol:** Run a single, simple test file directly with `ts-node` to check for fundamental compilation errors.
+    `npx ts-node --files test/path/to/some.test.ts`
+    *   If `TSError` occurs: The issue is a type mismatch. Fix by explicitly coercing types in assertions.
+    *   If `ReferenceError: describe is not defined`: This is a **success signal**. It means the TypeScript code is valid, and the problem is with the test runner environment.
+    *   If `MODULE_NOT_FOUND`: The issue is an incorrect relative import path.
+
+2.  **Framework Conflict Protocol:** If the Isolation Protocol passes, suspect a conflict between testing frameworks (e.g., Jest vs. Mocha/Chai). Purge incorrect framework dependencies.
+
+3.  **Path Alias Protocol:** If tests fail with `MODULE_NOT_FOUND` for an alias like `@config`, the issue is path resolution at runtime. Ensure `module-alias` is installed and registered at the top of `hardhat.config.cjs` and configured in `package.json`.
+
+4.  **Dependency Corruption Protocol (The "Nuke and Pave"):** If errors persist, `node_modules` is likely corrupt. Run `rm -rf node_modules && yarn install`.
+
+5.  **The Keystone Protocol:** After any major change, run the master validation script: `./scripts/tools/keystone.sh`
+
+15. **Future Additions & Roadmap**
+
+    This section outlines planned enhancements, future development goals, and areas for continuous improvement in the Axion Citadel operational playbook and associated systems.
+
+    *   **A. Near-Term Operational Milestones**
+        *   **Phased Initial Rollout:**
+            *   Phase 1: Conduct comprehensive playbook validation using testnet environments and extensive dry-runs.
+            *   Phase 2: Initiate shadow mode operations on mainnet with strictly limited capital exposure (e.g., capped at $50 - $100) to monitor real-world performance and identify any unforeseen issues.
+
+    *   **B. Testing, Simulation & Resilience**
+        *   **Advanced Stress Testing:** Implement chaos engineering practices to test system resilience. This includes simulating adverse conditions such as RPC endpoint blackouts during active operations, extreme market volatility, and unexpected oracle failures.
+        *   **Canonical Retry Engine:** Design and develop a sophisticated, canonical retry mechanism for handling transactions in environments prone to reorgs or network instability, incorporating intelligent backoff and failure analysis.
+
+    *   **C. Automation & Tooling Enhancements**
+        *   **Operational CLI Scripts:** Create a suite of command-line interface (CLI) scripts to automate routine operational tasks, such as the simulate → estimateGas → send transaction pipeline for contract deployments or frequent administrative actions.
+        *   **Enhanced Playbook Integration:** Further develop the integration of this playbook with knowledge management tools (e.g., LlamaIndex, as mentioned in Section 10.9) to improve AI-assisted querying and maintain an up-to-date, easily accessible knowledge base for the team.
+        *   **Mature Server-Based Bot Deployment:** Formalize and document robust procedures for server-based bot deployment, including comprehensive guides on secure environment configuration, automated setup, and advanced process management using tools like PM2.
+
+    *   **D. Mainnet Readiness & Advanced Operations**
+        *   Transition placeholder sections in this playbook into fully detailed procedures for full-scale mainnet operations. Key areas include:
+            *   **Comprehensive Mainnet Pre-Flight Checklist:** An exhaustive list of checks to be performed before activating the bot with significant capital on mainnet.
+            *   **Advanced Mainnet Monitoring & Alerting:** Implementation of sophisticated real-time monitoring dashboards and proactive alerting systems covering all critical aspects of bot and contract performance.
+            *   **Robust Mainnet Security & Key Management:** Detailed protocols for Hardware Security Module (HSM) usage (if applicable), multi-signature schemes for treasury and profit wallets, and server hardening best practices.
+            *   **Formalized Mainnet Incident Response Plan:** A detailed, step-by-step incident response plan specifically tailored for mainnet scenarios, including communication strategies and escalation paths.
+            *   **Systematic Mainnet Profit & Tithe Sweeping:** Clearly defined and tested procedures for regularly and securely moving profits and Tithe to designated long-term storage.
+            *   **MEV Strategy Development & Implementation:** Research, develop, test, and implement a detailed strategy for managing Maximal Extractable Value (MEV), considering both risks and opportunities.
+
+    *   **E. Documentation & Procedural Refinements**
+        *   **Operational Cookbook/Recipe Patterns:** Develop a "cookbook" or a series of standardized "recipe patterns" for common or complex operational tasks, providing step-by-step guidance.
+        *   **Expansion of Security Procedures:** Continuously expand and refine security procedures, particularly in areas like role-based access control (RBAC), off-chain data security, and API key management.
+
+    *   **F. Smart Contract Lifecycle Management**
+        *   **Formal Security Audits:** Mandate and complete full independent security audits by reputable third-party firms for all custom smart contracts before they are used to manage significant funds on the mainnet.
+
+---
+
+6.  **Testing Protocols** (Continued)
+
+    *   **6.6. Comprehensive Integration Test Suite**
+        *   A dedicated suite of integration tests is located under `test/integration/arbitrage/`.
+        *   **Purpose:** These tests are designed to validate the complete arbitrage lifecycle, ensuring that different components of the system (e.g., data fetchers, opportunity finders, simulation engines, transaction builders, execution logic) interact correctly under realistic conditions.
+        *   **Methodology:** They typically run on a forked mainnet environment (e.g., using Hardhat or Anvil) and may involve setting up specific market scenarios (e.g., skewed pools) to trigger arbitrage opportunities. These tests verify not only the logical correctness of individual modules but also their successful integration and communication.
+
+    *   **6.7. Expanded Unit Test Coverage**
+        *   Significant effort has been invested in expanding unit test coverage, particularly for foundational components.
+        *   **Math Libraries:** Comprehensive unit tests cover the mathematical functions and libraries used for calculations related to pricing, profit estimation, and other financial logic. This ensures the accuracy and reliability of these core calculations.
+        *   **Core Simulation Logic:** Unit tests have been expanded for the core simulation logic, validating that arbitrage scenarios, profit calculations, and risk assessments are simulated correctly under various inputs and edge cases.
+        *   **Importance:** Robust unit tests for these fundamental building blocks are crucial for overall system stability and reliability. They provide confidence that the core calculations and decision-making processes of the bot are accurate, preventing costly errors that could arise from flawed arithmetic or simulation.
+
+    *   **6.8. Test Discovery and Execution (`mocha.grep`)**
+        *   **Ensuring Comprehensive Test Discovery:** The Hardhat configuration file (typically `hardhat.config.cjs` or `hardhat.config.js`) plays a vital role in how tests are discovered and run.
+        *   **`mocha.grep` for `.ts` and `.js` Files (Critical Insight):** It is critically important to ensure that the `mocha` settings within the Hardhat configuration file (typically `hardhat.config.cjs` or `hardhat.config.js`) are set up to correctly discover *all* relevant test files. This includes both JavaScript (`.js`) and TypeScript (`.ts`) test files, especially if the project uses TypeScript for its tests. The `grep` property within the `mocha` configuration object is a regular expression that the test runner uses to identify which files should be considered as tests. A misconfigured or missing `grep` pattern was a key issue resolved during "The 'Green Suite' Initiative," where numerous tests were silently ignored.
+        *   **Example Configuration Snippet (in `hardhat.config.cjs`):**
+            ```javascript
+            // Inside module.exports in hardhat.config.cjs
+            module.exports = {
+              // ... other configurations (solidity, networks, etc.)
+              mocha: {
+                // The following grep pattern is crucial for discovering test files.
+                // It looks for files ending in '.test.js', '.spec.js', '.test.ts', or '.spec.ts'.
+                // Adjust this pattern if your project uses different naming conventions for test files.
+                grep: "\\.(test|spec)\\.(js|ts)$",
+                timeout: 200000, // Example: Extended timeout for potentially long-running fork tests or complex setups. Adjust as needed.
+                // retries: 1, // Optional: uncomment to allow 1 retry for flaky tests, use with caution.
+              },
+              // ... other configurations
+            };
+            ```
+        *   **Rationale & Importance:**
+            *   **Comprehensive Test Coverage:** If the `mocha.grep` pattern is not correctly configured (e.g., if it defaults to only `\\.js$` or is missing entirely), TypeScript test files (`.ts`) or even JavaScript files that don't match an implicit default pattern might be silently ignored by the Hardhat test runner (`npx hardhat test`). This can lead to a dangerously incomplete test execution, where a significant portion of the test suite is not run, creating a false sense of security regarding the codebase's correctness and stability.
+            *   **TypeScript Migration & Mixed Codebases:** In projects that are migrating to TypeScript or maintain a mix of `.js` and `.ts` test files, a comprehensive `grep` pattern is essential to ensure all tests are executed. The example pattern `"\\.(test|spec)\\.(js|ts)$"` is robust for common testing conventions (e.g., `myFeature.test.ts`, `legacyModule.spec.js`). If your project uses a simpler convention like all files in the `test/` directory being tests, a broader pattern like `"\\.(js|ts)$"` might be used, but ensure it doesn't inadvertently pick up non-test helper files.
+            *   **Verification:** After configuring `mocha.grep`, always verify that the number of tests reported by the test runner matches the expected number of test files and test cases. This is especially important when adding new tests, refactoring, or changing file extensions. A mismatch can be an early indicator of a misconfigured test discovery process.
