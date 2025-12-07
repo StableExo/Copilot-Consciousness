@@ -199,33 +199,48 @@ class ConsciousnessReadinessAssessor {
     const recommendations: string[] = [];
     let score = 0;
 
-    // Check for ethics modules
-    const ethicsPath = path.join(this.srcPath, 'cognitive', 'ethics');
-    if (fs.existsSync(ethicsPath)) {
-      const ethicsFiles = this.findFiles(ethicsPath, '.ts');
-      findings.push(`${ethicsFiles.length} ethics modules found`);
-      
-      const criticalModules = [
-        'CoherenceEthics.ts',
-        'EthicalReviewGate.ts',
-        'GroundZeroPrinciples.ts'
-      ];
-      
-      const foundModules = criticalModules.filter(m => 
-        ethicsFiles.some(f => f.includes(m))
-      );
-      
-      findings.push(`${foundModules.length}/${criticalModules.length} critical ethics modules present`);
-      score += (foundModules.length / criticalModules.length) * 0.5;
-      
-      if (foundModules.length === criticalModules.length) {
-        findings.push('✅ All critical ethics infrastructure present');
-      } else {
-        recommendations.push('Implement missing ethics modules');
+    // Check for ethics modules in multiple locations
+    const ethicsLocations = [
+      path.join(this.srcPath, 'cognitive', 'ethics'),
+      path.join(this.srcPath, 'core', 'ethics')
+    ];
+    
+    let allEthicsFiles: string[] = [];
+    for (const location of ethicsLocations) {
+      if (fs.existsSync(location)) {
+        const files = this.findFiles(location, '.ts');
+        allEthicsFiles.push(...files);
       }
+    }
+    
+    findings.push(`${allEthicsFiles.length} ethics modules found across all locations`);
+    
+    // Check for critical ethics modules
+    const criticalModules = [
+      'CoherenceEthics.ts',
+      'EthicalReviewGate.ts',
+      'GroundZeroPrinciples.ts',
+      'HarmonicPrinciple.ts'
+    ];
+    
+    const foundModules = criticalModules.filter(m => 
+      allEthicsFiles.some(f => f.includes(m))
+    );
+    
+    findings.push(`${foundModules.length}/${criticalModules.length} critical ethics modules present`);
+    
+    if (foundModules.length > 0) {
+      findings.push(`✅ Found: ${foundModules.join(', ')}`);
+    }
+    
+    score += (foundModules.length / criticalModules.length) * 0.5;
+    
+    if (foundModules.length === criticalModules.length) {
+      findings.push('✅ All critical ethics infrastructure present');
     } else {
-      findings.push('⚠️ Ethics directory not found');
-      recommendations.push('Critical: Implement ethics infrastructure');
+      const missing = criticalModules.filter(m => !foundModules.includes(m));
+      findings.push(`⚠️ Missing: ${missing.join(', ')}`);
+      recommendations.push(`Implement missing ethics modules: ${missing.join(', ')}`);
     }
 
     // Check for ethics tests
@@ -510,27 +525,49 @@ class ConsciousnessReadinessAssessor {
     const recommendations: string[] = [];
     let score = 0;
 
-    // Check for safety modules
-    const safetyModules = [
-      'cognitive/ethics/EthicalReviewGate.ts',
-      'cognitive/monitoring/EmergenceDetector.ts',
-      'arbitrage/risk/RiskAssessment.ts'
+    // Check for safety modules in multiple potential locations
+    const safetyModuleNames = [
+      'EthicalReviewGate.ts',
+      'EmergenceDetector.ts',
+      'RiskAssessment.ts'
     ];
     
-    let foundModules = 0;
-    for (const module of safetyModules) {
-      if (fs.existsSync(path.join(this.srcPath, module))) {
-        foundModules++;
+    // Search locations
+    const searchPaths = [
+      path.join(this.srcPath, 'cognitive', 'ethics'),
+      path.join(this.srcPath, 'cognitive', 'monitoring'),
+      path.join(this.srcPath, 'consciousness', 'monitoring'),
+      path.join(this.srcPath, 'arbitrage', 'risk')
+    ];
+    
+    let foundModules: string[] = [];
+    for (const searchPath of searchPaths) {
+      if (fs.existsSync(searchPath)) {
+        const files = this.findFiles(searchPath, '.ts');
+        const found = safetyModuleNames.filter(m => 
+          files.some(f => f.includes(m))
+        );
+        foundModules.push(...found);
       }
     }
     
-    findings.push(`${foundModules}/${safetyModules.length} critical safety modules present`);
-    score += (foundModules / safetyModules.length) * 0.4;
+    // Remove duplicates
+    foundModules = [...new Set(foundModules)];
     
-    if (foundModules === safetyModules.length) {
+    findings.push(`${foundModules.length}/${safetyModuleNames.length} critical safety modules present`);
+    
+    if (foundModules.length > 0) {
+      findings.push(`✅ Found: ${foundModules.join(', ')}`);
+    }
+    
+    score += (foundModules.length / safetyModuleNames.length) * 0.4;
+    
+    if (foundModules.length === safetyModuleNames.length) {
       findings.push('✅ Core safety infrastructure complete');
     } else {
-      recommendations.push('Implement missing safety modules');
+      const missing = safetyModuleNames.filter(m => !foundModules.includes(m));
+      findings.push(`⚠️ Missing: ${missing.join(', ')}`);
+      recommendations.push(`Implement missing safety modules: ${missing.join(', ')}`);
     }
 
     // Check for test coverage
