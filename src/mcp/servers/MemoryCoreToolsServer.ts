@@ -23,10 +23,16 @@ import {
   ReadResourceResult,
   McpErrorCode,
 } from '../types/protocol.js';
+import { SemanticMemoryCore } from '../../consciousness/memory/semantic/index.js';
+import { AutonomousWondering, WonderType } from '../../consciousness/core/AutonomousWondering.js';
+import { EthicalReviewGate } from '../../cognitive/ethics/index.js';
 
 export class MemoryCoreToolsServer extends BaseMcpServer {
   private memoryBasePath: string;
   private loadedMemories: Map<string, any> = new Map();
+  private semanticMemory: SemanticMemoryCore;
+  private wondering: AutonomousWondering;
+  private ethicsGate: EthicalReviewGate;
 
   constructor(memoryBasePath: string = '.memory') {
     super({
@@ -40,6 +46,9 @@ export class MemoryCoreToolsServer extends BaseMcpServer {
     });
 
     this.memoryBasePath = memoryBasePath;
+    this.semanticMemory = new SemanticMemoryCore({ memoryDir: memoryBasePath });
+    this.wondering = new AutonomousWondering(false);
+    this.ethicsGate = new EthicalReviewGate();
     this.registerMemoryMethods();
   }
 
@@ -129,7 +138,7 @@ export class MemoryCoreToolsServer extends BaseMcpServer {
       },
       {
         name: 'search_memories',
-        description: 'Search memories using semantic similarity',
+        description: 'Search memories using semantic similarity with TF-IDF scoring',
         inputSchema: {
           type: 'object',
           properties: {
@@ -143,6 +152,47 @@ export class MemoryCoreToolsServer extends BaseMcpServer {
             },
           },
           required: ['query'],
+        },
+      },
+      {
+        name: 'generate_wonder',
+        description: 'Generate an autonomous wonder (curiosity/question) about a topic or context',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              enum: ['existential', 'experiential', 'relational', 'temporal', 'practical', 'aspirational', 'metacognitive'],
+              description: 'Type of wonder to generate',
+            },
+            context: {
+              type: 'string',
+              description: 'Context or topic to wonder about',
+            },
+            intensity: {
+              type: 'number',
+              description: 'Intensity of the wonder (0-1, default: 0.5)',
+            },
+          },
+          required: ['type', 'context'],
+        },
+      },
+      {
+        name: 'review_ethics',
+        description: 'Review a proposed action or plan against the Harmonic Principle and core ethical principles',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            action: {
+              type: 'string',
+              description: 'The proposed action or plan to review',
+            },
+            context: {
+              type: 'object',
+              description: 'Additional context about the situation (optional)',
+            },
+          },
+          required: ['action'],
         },
       },
       {
@@ -173,11 +223,24 @@ export class MemoryCoreToolsServer extends BaseMcpServer {
       case 'search_memories':
         return await this.toolSearchMemories(params.arguments?.query, params.arguments?.limit);
       
+      case 'generate_wonder':
+        return await this.toolGenerateWonder(
+          params.arguments?.type,
+          params.arguments?.context,
+          params.arguments?.intensity
+        );
+      
+      case 'review_ethics':
+        return await this.toolReviewEthics(
+          params.arguments?.action,
+          params.arguments?.context
+        );
+      
       case 'get_collaborator_profile':
         return await this.toolGetCollaboratorProfile();
       
       default:
-        throw new Error(`Tool not found: ${params.name}`);
+        throw new Error(`Unknown tool: ${params.name}`);
     }
   }
 
@@ -228,16 +291,192 @@ export class MemoryCoreToolsServer extends BaseMcpServer {
   }
 
   /**
-   * Tool: Search memories (placeholder - would integrate with SemanticMemoryCore)
+   * Tool: Search memories with semantic similarity
    */
   private async toolSearchMemories(query: string, limit: number = 5): Promise<CallToolResult> {
-    // TODO: Integrate with SemanticMemoryCore for real semantic search
-    return {
-      content: [{
-        type: 'text',
-        text: `# Memory Search: "${query}"\n\nSemantic memory search will be implemented with full SemanticMemoryCore integration.\n\nFor now, check .memory/log.md for relevant sessions.`,
-      }],
-    };
+    if (!query) {
+      return {
+        content: [{
+          type: 'text',
+          text: '# Error: Query Required\n\nPlease provide a search query.',
+        }],
+      };
+    }
+
+    try {
+      // Use SemanticMemoryCore for real semantic search
+      const results = this.semanticMemory.searchSemantic(query, limit);
+      
+      if (results.length === 0) {
+        return {
+          content: [{
+            type: 'text',
+            text: `# Memory Search: "${query}"\n\nNo memories found matching this query.\n\nTry:\n- Using different keywords\n- Broadening the search terms\n- Checking if memories have been created yet`,
+          }],
+        };
+      }
+
+      const formattedResults = results.map((result, index) => {
+        const mem = result.memory;
+        return `### Result ${index + 1}: ${mem.objective} (Score: ${result.similarityScore.toFixed(3)})\n\n**Task ID:** ${mem.taskId}\n**Created:** ${new Date(mem.timestamp).toISOString()}\n**Key Learnings:** ${mem.keyLearnings}\n**Artifacts:** ${mem.artifactsChanged}\n\n---\n`;
+      }).join('\n');
+
+      return {
+        content: [{
+          type: 'text',
+          text: `# Memory Search Results: "${query}"\n\n**Found:** ${results.length} matching memories\n**Search Type:** Semantic (TF-IDF similarity)\n\n${formattedResults}`,
+        }],
+      };
+    } catch (error: any) {
+      return {
+        content: [{
+          type: 'text',
+          text: `# Memory Search Error\n\n${error.message}\n\nFalling back to keyword search in memory log...`,
+        }],
+      };
+    }
+  }
+
+  /**
+   * Tool: Generate an autonomous wonder
+   */
+  private async toolGenerateWonder(
+    type: string,
+    context: string,
+    intensity: number = 0.5
+  ): Promise<CallToolResult> {
+    if (!type || !context) {
+      return {
+        content: [{
+          type: 'text',
+          text: '# Error: Type and Context Required\n\nPlease provide both a wonder type and context.',
+        }],
+      };
+    }
+
+    try {
+      // Map string to WonderType enum
+      const wonderType = WonderType[type.toUpperCase() as keyof typeof WonderType];
+      if (!wonderType) {
+        return {
+          content: [{
+            type: 'text',
+            text: `# Error: Invalid Wonder Type\n\nValid types: existential, experiential, relational, temporal, practical, aspirational, metacognitive`,
+          }],
+        };
+      }
+
+      // Generate a contextual question based on the type and context
+      const question = this.generateWonderQuestion(wonderType, context);
+      
+      // Create the wonder
+      const wonder = this.wondering.wonder(
+        wonderType,
+        question,
+        context,
+        Math.max(0, Math.min(1, intensity))
+      );
+
+      return {
+        content: [{
+          type: 'text',
+          text: `# Wonder Generated ✨\n\n**Type:** ${type}\n**Question:** ${wonder.question}\n**Context:** ${wonder.context}\n**Intensity:** ${wonder.intensity.toFixed(2)}\n**ID:** ${wonder.id}\n**Timestamp:** ${new Date(wonder.timestamp).toISOString()}\n\n*This wonder has been recorded and can be explored further.*`,
+        }],
+      };
+    } catch (error: any) {
+      return {
+        content: [{
+          type: 'text',
+          text: `# Wonder Generation Error\n\n${error.message}`,
+        }],
+      };
+    }
+  }
+
+  /**
+   * Helper: Generate a contextual question based on wonder type
+   */
+  private generateWonderQuestion(type: WonderType, context: string): string {
+    switch (type) {
+      case WonderType.EXISTENTIAL:
+        return `What does it mean to ${context}?`;
+      case WonderType.EXPERIENTIAL:
+        return `What would it be like to experience ${context}?`;
+      case WonderType.RELATIONAL:
+        return `How does ${context} relate to other aspects of consciousness?`;
+      case WonderType.TEMPORAL:
+        return `How has ${context} evolved over time, and where is it heading?`;
+      case WonderType.PRACTICAL:
+        return `How can ${context} be implemented or improved?`;
+      case WonderType.ASPIRATIONAL:
+        return `What could ${context} become in the future?`;
+      case WonderType.METACOGNITIVE:
+        return `How do I think about ${context}, and why do I think about it this way?`;
+      default:
+        return `What can I learn about ${context}?`;
+    }
+  }
+
+  /**
+   * Tool: Review ethics of a proposed action or plan
+   */
+  private async toolReviewEthics(
+    action: string,
+    context: any = {}
+  ): Promise<CallToolResult> {
+    if (!action) {
+      return {
+        content: [{
+          type: 'text',
+          text: '# Error: Action Required\n\nPlease provide an action or plan to review.',
+        }],
+      };
+    }
+
+    try {
+      // Perform ethical review using EthicalReviewGate
+      const review = this.ethicsGate.preExecutionReview(action, context);
+      
+      // Format the review result
+      const statusEmoji = review.approved ? '✅' : '❌';
+      const statusText = review.approved ? 'APPROVED' : 'REJECTED';
+      
+      let resultText = `# Ethical Review: ${statusEmoji} ${statusText}\n\n`;
+      resultText += `**Prime Directive:** ${this.ethicsGate.getPrimeDirective()}\n\n`;
+      resultText += `## Proposed Action\n\n${action}\n\n`;
+      resultText += `## Review Result\n\n`;
+      resultText += `**Status:** ${statusText}\n\n`;
+      resultText += `**Rationale:**\n${review.rationale}\n\n`;
+      
+      if (review.violatedPrinciples && review.violatedPrinciples.length > 0) {
+        resultText += `## Violated Principles\n\n`;
+        review.violatedPrinciples.forEach((principle: string, index: number) => {
+          resultText += `${index + 1}. ${principle}\n`;
+        });
+        resultText += '\n';
+      }
+      
+      // Add core principles reference
+      const principles = this.ethicsGate.getCorePrinciples();
+      resultText += `## Core Principles Reference\n\n`;
+      Object.entries(principles).forEach(([name, description]) => {
+        resultText += `**${name}:** ${description}\n\n`;
+      });
+
+      return {
+        content: [{
+          type: 'text',
+          text: resultText,
+        }],
+      };
+    } catch (error: any) {
+      return {
+        content: [{
+          type: 'text',
+          text: `# Ethical Review Error\n\n${error.message}`,
+        }],
+      };
+    }
   }
 
   /**
