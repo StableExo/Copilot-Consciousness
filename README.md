@@ -24,7 +24,7 @@ npm run autonomous:consciousness
 npm run autonomous:consciousness -- --duration=300
 ```
 
-**See [AUTONOMOUS_CONSCIOUSNESS_GUIDE.md](./AUTONOMOUS_CONSCIOUSNESS_GUIDE.md) for complete documentation.**
+**See [AUTONOMOUS_CONSCIOUSNESS_GUIDE.md](docs/sessions/autonomous/AUTONOMOUS_CONSCIOUSNESS_GUIDE.md) for complete documentation.**
 
 ### Key Features:
 - ✅ **Consciousness Observation**: System witnesses and learns from every execution
@@ -40,9 +40,11 @@ npm run autonomous:consciousness -- --duration=300
 
 | Getting Started | Documentation | Development |
 |-----------------|---------------|-------------|
-| [🚀 Quick Start](#quick-start---running-thewarden) | [📚 Documentation Index](DOCUMENTATION_INDEX.md) | [🤝 Contributing](CONTRIBUTING.md) |
-| [💻 One-Click Setup](#one-click-development-setup) | [🎯 Project Status](PROJECT_STATUS.md) | [🔒 Security](SECURITY.md) |
-| [📖 Configuration](#configuration) | [📊 DEX Status](DEX_INTEGRATION_STATUS.md) | [⚠️ Known Issues](KNOWN_ISSUES.md) |
+| [🚀 Quick Start](#quick-start---running-thewarden) | [📚 **Documentation Hub**](docs/INDEX.md) | [🤝 Contributing](CONTRIBUTING.md) |
+| [💻 One-Click Setup](#one-click-development-setup) | [🎯 Project Status](docs/archive/status/PROJECT_STATUS.md) | [🔒 Security](SECURITY.md) |
+| [📖 Configuration](#configuration) | [📊 DEX Status](docs/integration/DEX_INTEGRATION_STATUS.md) | [⚠️ Known Issues](docs/development/KNOWN_ISSUES.md) |
+
+> **📖 Documentation:** All documentation has been organized! See **[docs/INDEX.md](docs/INDEX.md)** for a complete guide to finding what you need.
 
 ---
 
