@@ -25,12 +25,14 @@ import {
 } from '../types/protocol.js';
 import { SemanticMemoryCore } from '../../consciousness/memory/semantic/index.js';
 import { AutonomousWondering, WonderType } from '../../consciousness/core/AutonomousWondering.js';
+import { EthicalReviewGate } from '../../cognitive/ethics/index.js';
 
 export class MemoryCoreToolsServer extends BaseMcpServer {
   private memoryBasePath: string;
   private loadedMemories: Map<string, any> = new Map();
   private semanticMemory: SemanticMemoryCore;
   private wondering: AutonomousWondering;
+  private ethicsGate: EthicalReviewGate;
 
   constructor(memoryBasePath: string = '.memory') {
     super({
@@ -46,6 +48,7 @@ export class MemoryCoreToolsServer extends BaseMcpServer {
     this.memoryBasePath = memoryBasePath;
     this.semanticMemory = new SemanticMemoryCore({ memoryDir: memoryBasePath });
     this.wondering = new AutonomousWondering(false);
+    this.ethicsGate = new EthicalReviewGate();
     this.registerMemoryMethods();
   }
 
@@ -175,6 +178,24 @@ export class MemoryCoreToolsServer extends BaseMcpServer {
         },
       },
       {
+        name: 'review_ethics',
+        description: 'Review a proposed action or plan against the Harmonic Principle and core ethical principles',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            action: {
+              type: 'string',
+              description: 'The proposed action or plan to review',
+            },
+            context: {
+              type: 'object',
+              description: 'Additional context about the situation (optional)',
+            },
+          },
+          required: ['action'],
+        },
+      },
+      {
         name: 'get_collaborator_profile',
         description: 'Get the collaborator profile to understand communication preferences and patterns',
         inputSchema: {
@@ -207,6 +228,12 @@ export class MemoryCoreToolsServer extends BaseMcpServer {
           params.arguments?.type,
           params.arguments?.context,
           params.arguments?.intensity
+        );
+      
+      case 'review_ethics':
+        return await this.toolReviewEthics(
+          params.arguments?.action,
+          params.arguments?.context
         );
       
       case 'get_collaborator_profile':
@@ -387,6 +414,68 @@ export class MemoryCoreToolsServer extends BaseMcpServer {
         return `How do I think about ${context}, and why do I think about it this way?`;
       default:
         return `What can I learn about ${context}?`;
+    }
+  }
+
+  /**
+   * Tool: Review ethics of a proposed action or plan
+   */
+  private async toolReviewEthics(
+    action: string,
+    context: any = {}
+  ): Promise<CallToolResult> {
+    if (!action) {
+      return {
+        content: [{
+          type: 'text',
+          text: '# Error: Action Required\n\nPlease provide an action or plan to review.',
+        }],
+      };
+    }
+
+    try {
+      // Perform ethical review using EthicalReviewGate
+      const review = this.ethicsGate.preExecutionReview(action, context);
+      
+      // Format the review result
+      const statusEmoji = review.approved ? '✅' : '❌';
+      const statusText = review.approved ? 'APPROVED' : 'REJECTED';
+      
+      let resultText = `# Ethical Review: ${statusEmoji} ${statusText}\n\n`;
+      resultText += `**Prime Directive:** ${this.ethicsGate.getPrimeDirective()}\n\n`;
+      resultText += `## Proposed Action\n\n${action}\n\n`;
+      resultText += `## Review Result\n\n`;
+      resultText += `**Status:** ${statusText}\n\n`;
+      resultText += `**Rationale:**\n${review.rationale}\n\n`;
+      
+      if (review.violatedPrinciples && review.violatedPrinciples.length > 0) {
+        resultText += `## Violated Principles\n\n`;
+        review.violatedPrinciples.forEach((principle: string, index: number) => {
+          resultText += `${index + 1}. ${principle}\n`;
+        });
+        resultText += '\n';
+      }
+      
+      // Add core principles reference
+      const principles = this.ethicsGate.getCorePrinciples();
+      resultText += `## Core Principles Reference\n\n`;
+      Object.entries(principles).forEach(([name, description]) => {
+        resultText += `**${name}:** ${description}\n\n`;
+      });
+
+      return {
+        content: [{
+          type: 'text',
+          text: resultText,
+        }],
+      };
+    } catch (error: any) {
+      return {
+        content: [{
+          type: 'text',
+          text: `# Ethical Review Error\n\n${error.message}`,
+        }],
+      };
     }
   }
 
