@@ -311,7 +311,7 @@ export class DexScreenerConsciousnessIntegration {
    * Query specific intelligence for a token
    */
   async queryToken(tokenAddress: string): Promise<{
-    pairs: ReturnType<DexScreenerClient['getPairsByTokens']>;
+    pairs: Awaited<ReturnType<DexScreenerClient['getPairsByTokens']>>;
     analysis: Awaited<ReturnType<DexScreenerClient['analyzePairSafety']>>[];
   }> {
     const pairs = await this.client.getPairsByTokens([tokenAddress]);
