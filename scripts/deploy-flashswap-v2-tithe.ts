@@ -13,13 +13,15 @@
  *   - WALLET_PRIVATE_KEY: Deployer wallet private key
  */
 
-import { ethers } from "hardhat";
+import hre from "hardhat";
 import * as dotenv from "dotenv";
 
 dotenv.config();
 
 async function main() {
     console.log("🚀 Deploying FlashSwapV2 v4.1 with The 70/30 Split...\n");
+
+    const ethers = (hre as any).ethers;
 
     // --- Configuration ---
     const UNISWAP_V3_ROUTER = "0x2626664c2603336E57B271c5C0b26F421741e481"; // Base mainnet
