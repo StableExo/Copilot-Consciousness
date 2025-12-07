@@ -51,7 +51,7 @@ export class DexScreenerClient {
     const url = `${this.baseUrl}${endpoint}`;
     const headers: Record<string, string> = {
       'Accept': 'application/json',
-      ...(options.headers as Record<string, string> || {}),
+      ...(options.headers as Record<string, string> ?? {}),
     };
 
     if (this.apiKey) {
