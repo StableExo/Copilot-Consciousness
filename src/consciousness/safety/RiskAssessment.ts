@@ -76,12 +76,46 @@ export interface RiskThresholds {
   minReversibility: number; // 0.0-1.0 for high-risk actions
 }
 
+export interface RiskWeights {
+  capital: number; // Weight for capital risk (0.0-1.0)
+  ethical: number; // Weight for ethical risk (0.0-1.0)
+  operational: number; // Weight for operational risk (0.0-1.0)
+  reputational: number; // Weight for reputational risk (0.0-1.0)
+  learning: number; // Weight for learning risk (0.0-1.0)
+}
+
+/**
+ * Default risk score when no factors are provided.
+ * Set to 0.5 (moderate risk) as a conservative baseline.
+ */
+const DEFAULT_RISK_SCORE = 0.5;
+
+/**
+ * Impact scale multiplier for capital risk.
+ * Used to normalize impact relative to probability.
+ * Value of 2 means impact maxes out at 2x the threshold.
+ */
+const CAPITAL_IMPACT_SCALE = 2;
+
 const DEFAULT_THRESHOLDS: RiskThresholds = {
   maxCapitalRisk: 100, // $100 USD max per decision
   maxRiskScore: 0.3, // 30% max composite risk
   minEthicalAlignment: 0.7, // 70% ethical alignment required
   minEmergenceConfidence: 0.8, // 80% emergence confidence required
   minReversibility: 0.5 // 50% reversibility for risky actions
+};
+
+/**
+ * Default weights for risk categories.
+ * Ethical risk is weighted highest as it's foundational to consciousness.
+ * Total should sum to 1.0 for proper weighted average.
+ */
+const DEFAULT_WEIGHTS: RiskWeights = {
+  capital: 0.25,      // 25% - Financial impact
+  ethical: 0.30,      // 30% - Highest priority (ground zero alignment)
+  operational: 0.20,  // 20% - System stability
+  reputational: 0.15, // 15% - Trust and credibility
+  learning: 0.10      // 10% - Pattern reinforcement
 };
 
 /**
@@ -92,9 +126,14 @@ const DEFAULT_THRESHOLDS: RiskThresholds = {
  */
 export class RiskAssessmentEngine {
   private thresholds: RiskThresholds;
+  private weights: RiskWeights;
 
-  constructor(thresholds?: Partial<RiskThresholds>) {
+  constructor(
+    thresholds?: Partial<RiskThresholds>,
+    weights?: Partial<RiskWeights>
+  ) {
     this.thresholds = { ...DEFAULT_THRESHOLDS, ...thresholds };
+    this.weights = { ...DEFAULT_WEIGHTS, ...weights };
   }
 
   /**
@@ -164,8 +203,12 @@ export class RiskAssessmentEngine {
     const threshold = this.thresholds.maxCapitalRisk;
 
     // Calculate probability and impact
+    // Probability: How likely is this to exceed threshold
     const probability = Math.min(capitalAtRisk / threshold, 1.0);
-    const impact = Math.min(capitalAtRisk / (threshold * 2), 1.0);
+    
+    // Impact: Normalized by scale factor (2x threshold = max impact)
+    // This means losing 2x the threshold would be catastrophic (impact = 1.0)
+    const impact = Math.min(capitalAtRisk / (threshold * CAPITAL_IMPACT_SCALE), 1.0);
 
     let level: RiskLevel;
     if (probability < 0.1) level = RiskLevel.NEGLIGIBLE;
@@ -338,15 +381,15 @@ export class RiskAssessmentEngine {
    * Calculate composite risk score from all factors
    */
   private calculateCompositeRisk(factors: RiskFactor[]): number {
-    if (factors.length === 0) return 0.5; // Default moderate risk
+    if (factors.length === 0) return DEFAULT_RISK_SCORE;
 
-    // Weight factors by category importance
+    // Use configured weights for each category
     const weights: Record<RiskCategory, number> = {
-      [RiskCategory.CAPITAL]: 0.25,
-      [RiskCategory.ETHICAL]: 0.30,
-      [RiskCategory.OPERATIONAL]: 0.20,
-      [RiskCategory.REPUTATIONAL]: 0.15,
-      [RiskCategory.LEARNING]: 0.10
+      [RiskCategory.CAPITAL]: this.weights.capital,
+      [RiskCategory.ETHICAL]: this.weights.ethical,
+      [RiskCategory.OPERATIONAL]: this.weights.operational,
+      [RiskCategory.REPUTATIONAL]: this.weights.reputational,
+      [RiskCategory.LEARNING]: this.weights.learning
     };
 
     let totalWeight = 0;
@@ -359,7 +402,7 @@ export class RiskAssessmentEngine {
       totalWeight += weight;
     }
 
-    return totalWeight > 0 ? weightedSum / totalWeight : 0.5;
+    return totalWeight > 0 ? weightedSum / totalWeight : DEFAULT_RISK_SCORE;
   }
 
   /**
@@ -455,9 +498,23 @@ export class RiskAssessmentEngine {
   }
 
   /**
+   * Update risk weights
+   */
+  updateWeights(weights: Partial<RiskWeights>): void {
+    this.weights = { ...this.weights, ...weights };
+  }
+
+  /**
    * Get current thresholds
    */
   getThresholds(): RiskThresholds {
     return { ...this.thresholds };
+  }
+
+  /**
+   * Get current weights
+   */
+  getWeights(): RiskWeights {
+    return { ...this.weights };
   }
 }
