@@ -181,7 +181,8 @@ export class GasNetworkClient {
 
   constructor(config: GasNetworkConfig) {
     this.apiKey = config.apiKey;
-    this.baseURL = config.baseURL || 'https://api.gas.network';
+    // Real Gas Network API is hosted by Blocknative
+    this.baseURL = config.baseURL || 'https://api.blocknative.com';
     this.timeout = config.timeout || 5000;
     this.retries = config.retries || 3;
     this.cacheTimeout = config.cacheTimeout || 10000; // 10 seconds default
@@ -191,7 +192,7 @@ export class GasNetworkClient {
       baseURL: this.baseURL,
       timeout: this.timeout,
       headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
+        'Authorization': this.apiKey, // Blocknative uses direct API key, not Bearer
         'Content-Type': 'application/json',
         'User-Agent': 'TheWarden/5.1.0',
       },
@@ -219,6 +220,7 @@ export class GasNetworkClient {
 
   /**
    * Get current gas price for a specific chain
+   * Uses real Blocknative/Gas Network API: GET /gasprices/blockprices?chainid={id}
    */
   async getGasPrice(chain: GasNetworkChain | number): Promise<GasNetworkPrice> {
     const chainId = typeof chain === 'number' ? chain : GasNetworkClient.CHAIN_IDS[chain];
@@ -235,25 +237,44 @@ export class GasNetworkClient {
     this.stats.totalRequests++;
 
     try {
-      const response = await this.client.get<GasNetworkAPIResponse>(`/v1/gas/${chainId}`);
+      // Real Gas Network API endpoint
+      const response = await this.client.get('/gasprices/blockprices', {
+        params: {
+          chainid: chainId,
+        },
+      });
 
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.error || 'Failed to fetch gas price');
+      if (!response.data || !response.data.blockPrices || !response.data.blockPrices[0]) {
+        throw new Error('Invalid response format from Gas Network API');
       }
 
-      const data = response.data.data;
+      // Parse Blocknative/Gas Network response format
+      const blockPrice = response.data.blockPrices[0];
+      const estimatedPrices = blockPrice.estimatedPrices || [];
+      
+      // Get the fast (99% confidence) price if available, else first estimate
+      const fastPrice = estimatedPrices.find((p: any) => p.confidence === 99) || estimatedPrices[0];
+      
+      if (!fastPrice) {
+        throw new Error('No gas price estimates in response');
+      }
+
+      // Convert from gwei to wei (Blocknative returns gwei)
+      const maxPriorityFeePerGas = BigInt(Math.floor(fastPrice.maxPriorityFeePerGas * 1e9));
+      const maxFeePerGas = BigInt(Math.floor(fastPrice.maxFeePerGas * 1e9));
+      const baseFeePerGas = BigInt(Math.floor((blockPrice.baseFeePerGas || 0) * 1e9));
+      
       const gasPrice: GasNetworkPrice = {
         chainId,
-        chainName: data.chainName,
-        baseFee: BigInt(data.baseFee),
-        priorityFee: BigInt(data.priorityFee),
-        maxFeePerGas: BigInt(data.maxFee),
-        gasPrice: BigInt(data.gasPrice),
-        blockNumber: data.blockNumber,
-        timestamp: data.timestamp,
-        confidence: data.confidence,
-        source: data.source as 'gasnet' | 'agent' | 'oracle',
-        signature: data.signature,
+        chainName: response.data.network || `Chain ${chainId}`,
+        baseFee: baseFeePerGas,
+        priorityFee: maxPriorityFeePerGas,
+        maxFeePerGas: maxFeePerGas,
+        gasPrice: maxFeePerGas, // Use maxFeePerGas as gasPrice
+        blockNumber: blockPrice.blockNumber || 0,
+        timestamp: Date.now(),
+        confidence: fastPrice.confidence / 100, // Convert 99 to 0.99
+        source: 'gasnet',
       };
 
       // Cache the result
@@ -268,24 +289,36 @@ export class GasNetworkClient {
       for (let i = 0; i < this.retries; i++) {
         await this.sleep(Math.pow(2, i) * 1000);
         try {
-          const response = await this.client.get<GasNetworkAPIResponse>(`/v1/gas/${chainId}`);
-          if (response.data.success && response.data.data) {
-            const data = response.data.data;
-            const gasPrice: GasNetworkPrice = {
-              chainId,
-              chainName: data.chainName,
-              baseFee: BigInt(data.baseFee),
-              priorityFee: BigInt(data.priorityFee),
-              maxFeePerGas: BigInt(data.maxFee),
-              gasPrice: BigInt(data.gasPrice),
-              blockNumber: data.blockNumber,
-              timestamp: data.timestamp,
-              confidence: data.confidence,
-              source: data.source as 'gasnet' | 'agent' | 'oracle',
-              signature: data.signature,
-            };
-            this.cache.set(cacheKey, { data: gasPrice, timestamp: Date.now() });
-            return gasPrice;
+          const response = await this.client.get('/gasprices/blockprices', {
+            params: { chainid: chainId },
+          });
+          
+          if (response.data?.blockPrices?.[0]) {
+            const blockPrice = response.data.blockPrices[0];
+            const estimatedPrices = blockPrice.estimatedPrices || [];
+            const fastPrice = estimatedPrices.find((p: any) => p.confidence === 99) || estimatedPrices[0];
+            
+            if (fastPrice) {
+              const maxPriorityFeePerGas = BigInt(Math.floor(fastPrice.maxPriorityFeePerGas * 1e9));
+              const maxFeePerGas = BigInt(Math.floor(fastPrice.maxFeePerGas * 1e9));
+              const baseFeePerGas = BigInt(Math.floor((blockPrice.baseFeePerGas || 0) * 1e9));
+              
+              const gasPrice: GasNetworkPrice = {
+                chainId,
+                chainName: response.data.network || `Chain ${chainId}`,
+                baseFee: baseFeePerGas,
+                priorityFee: maxPriorityFeePerGas,
+                maxFeePerGas: maxFeePerGas,
+                gasPrice: maxFeePerGas,
+                blockNumber: blockPrice.blockNumber || 0,
+                timestamp: Date.now(),
+                confidence: fastPrice.confidence / 100,
+                source: 'gasnet',
+              };
+              
+              this.cache.set(cacheKey, { data: gasPrice, timestamp: Date.now() });
+              return gasPrice;
+            }
           }
         } catch (_retryError) {
           if (i === this.retries - 1) throw error;
