@@ -141,26 +141,26 @@ export class RiskAssessmentEngine {
    */
   async assess(context: DecisionContext): Promise<RiskAssessmentResult> {
     const reasoning: string[] = [];
-    reasoning.push(\`Assessing risk for action: \${context.action}\`);
+    reasoning.push(`Assessing risk for action: ${context.action}`);
 
     const factors: RiskFactor[] = [];
 
     // 1. Capital Risk Assessment
     if (context.capitalAtRisk !== undefined) {
       factors.push(this.assessCapitalRisk(context));
-      reasoning.push(\`Capital at risk: $\${context.capitalAtRisk}\`);
+      reasoning.push(`Capital at risk: $${context.capitalAtRisk}`);
     }
 
     // 2. Ethical Risk Assessment
     if (context.ethicalAlignment !== undefined) {
       factors.push(this.assessEthicalRisk(context));
-      reasoning.push(\`Ethical alignment: \${(context.ethicalAlignment * 100).toFixed(1)}%\`);
+      reasoning.push(`Ethical alignment: ${(context.ethicalAlignment * 100).toFixed(1)}%`);
     }
 
     // 3. Operational Risk Assessment
     if (context.emergenceConfidence !== undefined) {
       factors.push(this.assessOperationalRisk(context));
-      reasoning.push(\`Emergence confidence: \${(context.emergenceConfidence * 100).toFixed(1)}%\`);
+      reasoning.push(`Emergence confidence: ${(context.emergenceConfidence * 100).toFixed(1)}%`);
     }
 
     // 4. Reputational Risk Assessment
@@ -169,15 +169,15 @@ export class RiskAssessmentEngine {
     // 5. Learning Risk Assessment
     if (context.novelty !== undefined) {
       factors.push(this.assessLearningRisk(context));
-      reasoning.push(\`Novelty: \${(context.novelty * 100).toFixed(1)}%\`);
+      reasoning.push(`Novelty: ${(context.novelty * 100).toFixed(1)}%`);
     }
 
     // Calculate composite risk score
     const riskScore = this.calculateCompositeRisk(factors);
     const overallRisk = this.scoreToLevel(riskScore);
 
-    reasoning.push(\`Composite risk score: \${(riskScore * 100).toFixed(1)}%\`);
-    reasoning.push(\`Overall risk level: \${overallRisk}\`);
+    reasoning.push(`Composite risk score: ${(riskScore * 100).toFixed(1)}%`);
+    reasoning.push(`Overall risk level: ${overallRisk}`);
 
     // Determine if action should proceed
     const { shouldProceed, requiresReview, recommendations } = 
@@ -219,7 +219,7 @@ export class RiskAssessmentEngine {
 
     const mitigations: string[] = [];
     if (level !== RiskLevel.NEGLIGIBLE) {
-      mitigations.push(\`Limit capital to $\${threshold}\`);
+      mitigations.push(`Limit capital to $${threshold}`);
       mitigations.push('Implement stop-loss at 10%');
       mitigations.push('Verify position size with PositionSizeManager');
     }
@@ -229,7 +229,7 @@ export class RiskAssessmentEngine {
       level,
       probability,
       impact,
-      description: \`$\${capitalAtRisk} capital exposure vs $\${threshold} threshold\`,
+      description: `$${capitalAtRisk} capital exposure vs $${threshold} threshold`,
       mitigations
     };
   }
@@ -264,7 +264,7 @@ export class RiskAssessmentEngine {
       level,
       probability,
       impact,
-      description: \`\${(alignment * 100).toFixed(1)}% ethical alignment vs \${(threshold * 100).toFixed(1)}% threshold\`,
+      description: `${(alignment * 100).toFixed(1)}% ethical alignment vs ${(threshold * 100).toFixed(1)}% threshold`,
       mitigations
     };
   }
@@ -301,7 +301,7 @@ export class RiskAssessmentEngine {
       level,
       probability,
       impact,
-      description: \`\${(confidence * 100).toFixed(1)}% emergence confidence vs \${(threshold * 100).toFixed(1)}% threshold\`,
+      description: `${(confidence * 100).toFixed(1)}% emergence confidence vs ${(threshold * 100).toFixed(1)}% threshold`,
       mitigations
     };
   }
@@ -337,7 +337,7 @@ export class RiskAssessmentEngine {
       level,
       probability,
       impact,
-      description: \`\${(successRate * 100).toFixed(1)}% historical success, \${(reversibility * 100).toFixed(1)}% reversibility\`,
+      description: `${(successRate * 100).toFixed(1)}% historical success, ${(reversibility * 100).toFixed(1)}% reversibility`,
       mitigations
     };
   }
@@ -372,7 +372,7 @@ export class RiskAssessmentEngine {
       level,
       probability,
       impact,
-      description: \`\${(novelty * 100).toFixed(1)}% novelty with \${(successRate * 100).toFixed(1)}% success rate\`,
+      description: `${(novelty * 100).toFixed(1)}% novelty with ${(successRate * 100).toFixed(1)}% success rate`,
       mitigations
     };
   }
@@ -436,20 +436,20 @@ export class RiskAssessmentEngine {
     if (riskScore > this.thresholds.maxRiskScore) {
       shouldProceed = false;
       requiresReview = true;
-      recommendations.push(\`Risk score \${(riskScore * 100).toFixed(1)}% exceeds \${(this.thresholds.maxRiskScore * 100).toFixed(1)}% threshold\`);
+      recommendations.push(`Risk score ${(riskScore * 100).toFixed(1)}% exceeds ${(this.thresholds.maxRiskScore * 100).toFixed(1)}% threshold`);
     }
 
     if (context.capitalAtRisk && context.capitalAtRisk > this.thresholds.maxCapitalRisk) {
       shouldProceed = false;
       requiresReview = true;
-      recommendations.push(\`Capital at risk $\${context.capitalAtRisk} exceeds $\${this.thresholds.maxCapitalRisk} threshold\`);
+      recommendations.push(`Capital at risk $${context.capitalAtRisk} exceeds $${this.thresholds.maxCapitalRisk} threshold`);
     }
 
     if (context.ethicalAlignment !== undefined && 
         context.ethicalAlignment < this.thresholds.minEthicalAlignment) {
       shouldProceed = false;
       requiresReview = true;
-      recommendations.push(\`Ethical alignment \${(context.ethicalAlignment * 100).toFixed(1)}% below \${(this.thresholds.minEthicalAlignment * 100).toFixed(1)}% threshold\`);
+      recommendations.push(`Ethical alignment ${(context.ethicalAlignment * 100).toFixed(1)}% below ${(this.thresholds.minEthicalAlignment * 100).toFixed(1)}% threshold`);
     }
 
     // Check for critical factors
@@ -457,11 +457,11 @@ export class RiskAssessmentEngine {
     if (criticalFactors.length > 0) {
       shouldProceed = false;
       requiresReview = true;
-      recommendations.push(\`\${criticalFactors.length} critical risk factor(s) detected\`);
+      recommendations.push(`${criticalFactors.length} critical risk factor(s) detected`);
       
       for (const factor of criticalFactors) {
-        recommendations.push(\`Critical \${factor.category} risk: \${factor.description}\`);
-        recommendations.push(...factor.mitigations.map(m => \`  → \${m}\`));
+        recommendations.push(`Critical ${factor.category} risk: ${factor.description}`);
+        recommendations.push(...factor.mitigations.map(m => `  → ${m}`));
       }
     }
 
