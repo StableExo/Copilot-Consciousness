@@ -59,6 +59,8 @@
     "verify-key": "node --import tsx scripts/verify-private-key.ts",
     "verify:aerodrome": "node --import tsx scripts/verify-aerodrome.ts",
     "compare-env": "node --import tsx scripts/compare-env-files.ts",
+    "evaluate-gas-network": "node --import tsx scripts/evaluate-gas-network.ts",
+    "evaluate:gas": "node --import tsx scripts/evaluate-gas-network.ts",
     "mainnet": "npm run validate-mainnet && npm run start",
     "check": "npm run lint && npm run format:check && npm run typecheck && npm run test",
     "check:all": "npm run lint:all && npm run format:check && npm run typecheck && npm run test:ci",
