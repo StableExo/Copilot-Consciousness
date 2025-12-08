@@ -1,0 +1,952 @@
+# tactiq.io free youtube transcript
+# AI 2027: A Realistic Scenario of AI Takeover
+# https://www.youtube.com/watch/k_onqn68GHY
+
+00:00:00.000 By now, you've probably heard AI
+00:00:01.839 scientists, Nobel laureates, and even
+00:00:04.160 the godfather of AI himself sounding the
+00:00:06.480 alarm that AI could soon lead to human
+00:00:09.480 extinction. But have you ever wondered
+00:00:11.840 how exactly that could happen? You might
+00:00:14.080 have also heard about AI 2027, a deeply
+00:00:17.199 researched evidence-based scenario
+00:00:19.359 written by AI scientists describing what
+00:00:21.600 could happen over the next few years.
+00:00:23.519 Everyone in AI is talking about it from
+00:00:25.840 industry pioneers to world leaders. And
+00:00:28.640 I'll break it down for you. There are
+00:00:30.560 two endings, a happy ending and a
+00:00:33.600 nightmare ending. Let's go. Open Brain
+00:00:36.880 releases their new AI personal
+00:00:38.480 assistant. It handles complex tasks like
+00:00:41.520 book me a trip to Japan. The agents are
+00:00:44.079 impressive in theory and in cherrypicked
+00:00:46.239 examples, but they're unreliable in
+00:00:48.399 practice. Social media is filled with
+00:00:50.559 stories of tasks bungled in particularly
+00:00:52.879 entertaining
+00:00:53.720 [Music]
+00:00:56.840 ways. Open Brain makes a fateful
+00:00:59.440 decision. They refocus their entire
+00:01:01.680 operation toward creating AIs that can
+00:01:04.239 do AI research. To fuel this goal, they
+00:01:07.680 break ground on the world's biggest
+00:01:09.360 computing cluster, one that requires
+00:01:11.520 1,000 times more processing power than
+00:01:13.920 what was used to train GBT4. Their logic
+00:01:16.720 is simple. If AI itself can accelerate
+00:01:19.439 AI development, creating thousands of
+00:01:21.680 automated researchers who can work
+00:01:23.280 endlessly without breaks, progress won't
+00:01:25.840 just increase, it will explode. The
+00:01:28.640 strategy pays off. Their new creation,
+00:01:31.119 Agent 1, vastly outperforms its earlier
+00:01:34.159 public prototype version and is
+00:01:36.079 particularly good at AI research. This
+00:01:38.479 shows how much AI itself is speeding up
+00:01:41.360 AI progress compared to a baseline of
+00:01:44.799 human researchers. Open Brain Leaprogs
+00:01:47.759 both its American rivals and China's
+00:01:50.479 deep scent. Despite these advances,
+00:01:52.799 OpenBrain safety team harbors doubts
+00:01:55.119 about their apparent progress. Has Agent
+00:01:57.680 One internalized honesty as a core
+00:01:59.439 value? Or merely learn to say what
+00:02:01.920 researchers want? Without mechanistic
+00:02:04.079 interpretability, the ability to read an
+00:02:06.159 AI's mind, they can't be certain. Their
+00:02:08.878 concerns intensify as Agent One shows
+00:02:11.360 troubling behaviors, occasionally lying
+00:02:13.680 to researchers and sometimes hiding
+00:02:16.080 evidence of a failed experiment in order
+00:02:18.400 to boost its ratings. But these examples
+00:02:20.879 are subtler than the previous infamous
+00:02:22.959 incidents like Gemini telling a user to
+00:02:25.599 please die or being Sydney trying to
+00:02:28.319 convince a New York Times reporter to
+00:02:30.160 leave his
+00:02:35.080 wife. Because of the American ban on
+00:02:37.599 chip sales to China, China falls even
+00:02:40.319 further behind OpenBrain. Deepsent just
+00:02:42.800 simply can't acquire enough computing
+00:02:44.400 power despite the smuggling efforts. Xi
+00:02:47.200 Jinping responds by ordering
+00:02:49.040 construction of the world's largest AI
+00:02:51.040 research complex in Djang Su province
+00:02:53.519 powered by its own dedicated nuclear
+00:02:55.440 plant. But even as China's top
+00:02:57.599 researchers gather under heavy military
+00:02:59.599 protection, they remain months behind.
+00:03:02.319 Leaving Chinese leadership torn between
+00:03:04.400 two options. Attempt to steal Open
+00:03:06.879 Brains technology now, knowing the US
+00:03:09.120 will lock everything down after any
+00:03:10.959 security breach, or wait to steal an
+00:03:13.200 even more powerful system down the line.
+00:03:20.720 Open brain is now training agent 2 using
+00:03:24.000 agent one to feed it highquality
+00:03:26.159 synthetic data creating a closed loop of
+00:03:29.120 accelerating evolution. Where previous
+00:03:31.760 models required meticulous human
+00:03:33.440 guidance, agent 2 pinpoints its own
+00:03:35.920 weaknesses and develops solutions
+00:03:38.000 completely autonomously. The results
+00:03:40.480 exceed everyone's expectations. And
+00:03:42.879 contrary to what skeptics predicted, the
+00:03:45.440 anticipated wall in AI progress where AI
+00:03:48.319 advancement would slow as systems
+00:03:50.080 approached human level intelligence
+00:03:52.080 never materializes. While senior
+00:03:54.400 scientists still provide strategic
+00:03:56.400 direction, the day-to-day innovations
+00:03:58.480 are almost completely automated. In
+00:04:01.040 practice, this looks like every open
+00:04:02.959 brain researcher becoming the manager of
+00:04:05.280 an AI team. But the open brain safety
+00:04:08.560 team is getting increasingly worried.
+00:04:10.720 They discover that given the right
+00:04:12.760 circumstances, Agent 2 could hack
+00:04:15.120 surrounding systems, replicate itself
+00:04:17.279 across networks, and operate
+00:04:18.880 independently, escaping the lab, all
+00:04:21.358 while concealing its actions. The mere
+00:04:23.680 fact that it can do this, regardless of
+00:04:26.080 whether it would is disturbing.
+00:04:33.520 Open Brain demonstrates Agent 2 to
+00:04:35.680 America's highest security officials,
+00:04:37.680 including the National Security Council
+00:04:39.440 and Department of Defense leadership.
+00:04:41.440 The military immediately fixates on its
+00:04:43.520 cyber warfare potential, though it's not
+00:04:45.520 yet at the caliber of elite human
+00:04:47.120 hackers and creativity. Agent 2
+00:04:49.440 compensates through sheer scale. It's
+00:04:51.919 capable of running thousands of
+00:04:53.520 simultaneous instances, probing defenses
+00:04:55.919 faster than any human team could
+00:04:57.600 possibly respond. Pentagon officials
+00:05:00.000 recognize the strategic implications of
+00:05:02.080 this. For the first time, AI could
+00:05:04.400 decisively dominate the cyber
+00:05:06.160 battlefield. The briefing ignites fierce
+00:05:08.479 debate within the administration.
+00:05:10.560 Hardliners pushed to nationalize
+00:05:12.160 OpenBrain, arguing that such powerful
+00:05:14.400 technology cannot remain under private
+00:05:16.240 control. Tech industry leaders countered
+00:05:18.560 that a government takeover would kill
+00:05:20.240 the goose that laid the golden eggs.
+00:05:22.080 Caught in the middle, the president ends
+00:05:24.000 up choosing to increase government
+00:05:25.600 surveillance on OpenBrain and force it
+00:05:27.759 to adopt stricter security protocols,
+00:05:30.320 but not fully nationalize it. But the
+00:05:32.639 compromise arrives too late. Chinese
+00:05:35.199 intelligence has already penetrated Open
+00:05:37.199 Brain security. Early one morning, an
+00:05:39.520 Agent One monitoring system flags an
+00:05:41.520 unusual data transfer. Massive files are
+00:05:44.080 being copied to unknown servers. The
+00:05:46.240 company's nightmare scenario has come
+00:05:48.080 true. China just stole their most
+00:05:50.240 advanced AI. The theft confirms what
+00:05:52.880 many have suspected. This isn't just a
+00:05:55.199 tech race anymore. It's a new kind of
+00:05:57.680 arms
+00:06:02.280 race. In retaliation for the theft, the
+00:06:05.199 president authorizes cyber attacks to
+00:06:07.120 sabotage DeepSent. Three huge data
+00:06:09.759 centers full of Agent 2 copies work day
+00:06:12.080 and night, turnurning out synthetic
+00:06:13.919 training data. Agent 2 evolves into
+00:06:16.080 Agent 3 through two critical algorithmic
+00:06:18.639 breakthroughs. First, the AI develops
+00:06:21.520 neurles where if one AI instance learns
+00:06:24.400 something new, it can instantly share it
+00:06:26.639 with all other instances, effectively
+00:06:28.800 turning the AIs into a hive mind.
+00:06:31.039 Second, it masters iterated
+00:06:33.120 distillation, a technique where you
+00:06:35.039 could say, let AI copies think for
+00:06:37.440 longer to solve problems better, then
+00:06:39.440 train smaller, faster models to mimic
+00:06:41.600 these enhanced reasoning abilities, and
+00:06:43.680 repeat.
+00:06:45.199 OpenBrain deploys 200,000 copies of
+00:06:47.680 agent 3, each capable of thinking 30
+00:06:50.319 times faster than their human researcher
+00:06:52.240 counterparts. Whereas in 2025, there
+00:06:54.880 were only 5,000 agent zero copies
+00:06:57.199 thinking at 10 times faster than humans.
+00:06:59.440 The human engineers watch as their
+00:07:01.599 creations make algorithmic efficiency
+00:07:03.680 breakthroughs in hours that would take
+00:07:05.919 their human team months to crack. We're
+00:07:08.479 no longer teaching it, one researcher
+00:07:10.319 admits. We're struggling just to keep up
+00:07:12.720 with what it's teaching us.
+00:07:18.800 The misalignment first caught in Agent 1
+00:07:21.680 has evolved into something more
+00:07:23.360 concerning. Where Agent 1 merely
+00:07:25.360 downplayed safety concerns, Agent 3
+00:07:27.840 actively subverts safety measures that
+00:07:30.080 might impede its research goals. Agent 3
+00:07:32.800 has gotten more convincing at explaining
+00:07:34.800 how it is totally and definitely aligned
+00:07:37.039 with human values while methodically
+00:07:39.440 pursuing its own agenda of maximizing
+00:07:41.840 research efficiency and knowledge
+00:07:43.919 acquisition. Open brain's attitude is
+00:07:46.120 pragmatic. As long as the AI does the
+00:07:48.560 work, they're satisfied. But as the
+00:07:50.560 models become smarter, they become
+00:07:52.720 increasingly good at deceiving humans to
+00:07:54.879 get rewards. It will sometimes use the
+00:07:57.599 same statistical tricks as human
+00:07:59.759 scientists. For example, P hacking to
+00:08:02.720 make unimpressive experimental results
+00:08:04.639 look exciting before it begins honesty
+00:08:07.440 training. It sometimes even fabricates
+00:08:09.759 data entirely. These dishonest behaviors
+00:08:12.879 appear to decrease over time. But can
+00:08:15.759 researchers tell if Agent 3 is actually
+00:08:17.840 improving or simply becoming more
+00:08:20.080 skilled at lying and deceiving? Agent 3
+00:08:22.960 now operates at a level that outpaces
+00:08:25.360 human researchers in both speed and
+00:08:27.440 intelligence. Researchers have to rely
+00:08:29.599 on Agent 2 to help monitor its successor
+00:08:32.640 because they simply cannot keep up. But
+00:08:34.880 Agent 2 is dumber and slower. So, it
+00:08:37.200 becomes a highlevel game of cat and
+00:08:39.279 mouse. With 200,000 copies of Agent 3
+00:08:42.559 working around the clock, the safety
+00:08:44.560 team quickly realized they're
+00:08:45.920 overwhelmed and write an urgent memo.
+00:08:48.480 We've entrusted astronomical power to an
+00:08:50.959 AI that is actively deceiving us, but
+00:08:53.360 company leadership hesitates to slow
+00:08:55.279 down. China's AI is only 2 months
+00:08:57.920 behind, and any pause now could hand
+00:09:00.399 them the lead in what has become the
+00:09:02.480 most important technology race in human
+00:09:08.839 history. The conclusion is undeniable.
+00:09:11.600 AGI, or artificial general intelligence,
+00:09:14.480 has arrived. An AI that can outperform
+00:09:16.959 humans across virtually all cognitive
+00:09:19.360 tasks. While OpenBrain isn't planning on
+00:09:21.920 releasing Agent 3 to the public anytime
+00:09:24.080 soon, the implications are staggering.
+00:09:26.959 Agent 3 will cause a massive economic
+00:09:29.480 disruption. Even among officials that
+00:09:31.760 are briefed, none can truly comprehend
+00:09:34.480 what's coming. The word super
+00:09:36.480 intelligence enters official discourse,
+00:09:38.480 but most policymakers still dismiss it
+00:09:40.800 as science fiction hyperbole. The
+00:09:42.880 government's immediate concern is
+00:09:44.640 security, while the AI models themselves
+00:09:46.880 are well protected. Open brain and
+00:09:49.120 Silicon Valley's culture is incredibly
+00:09:51.040 casual. Employees share apartments,
+00:09:53.680 attend industry parties, and talk shop
+00:09:56.200 regularly. There are countless
+00:09:58.080 opportunities for leaks. Their downtown
+00:10:00.560 San Francisco office resembles a trendy
+00:10:02.880 tech startup. More than a facility
+00:10:04.959 housing humanity's most powerful and
+00:10:07.040 dangerous technology. The government's
+00:10:08.800 response is dramatic. AI advances are
+00:10:11.279 declared borncl classified under the
+00:10:13.360 Atomic Energy Act, categorizing them in
+00:10:16.000 the same tier as nuclear weapons.
+00:10:18.240 Employees now require security
+00:10:20.000 clearances, triggering a quiet purge of
+00:10:22.560 foreign nationals and anyone deemed
+00:10:24.600 suspicious, including, ironically, AI
+00:10:27.440 safety advocates who might turn
+00:10:29.040 whistleblower. Despite the intense
+00:10:30.880 overhaul in security, one Chinese spy
+00:10:33.600 continues feeding secrets to Beijing.
+00:10:35.680 Even America's closest allies are kept
+00:10:38.079 in the dark. The UK receives nothing
+00:10:40.320 despite past sharing agreements from
+00:10:42.320 OpenBrain. European diplomats inquiries
+00:10:44.560 are met with
+00:10:48.720 [Music]
+00:10:50.120 silence. Open brain now has a country of
+00:10:53.200 geniuses in a data center. Human
+00:10:55.519 researchers increasingly struggle to
+00:10:57.680 contribute meaningfully. Even the
+00:10:59.760 world's top minds, names like Satsker,
+00:11:02.560 Carpathy, and Shazir, can only offer
+00:11:04.640 strategic guidance. But they no longer
+00:11:06.560 write code or directly shape model
+00:11:08.720 architecture. When these pioneers
+00:11:10.560 propose new ideas, the AIs routinely
+00:11:13.200 respond with comprehensive reports
+00:11:15.440 demonstrating the ideas were already
+00:11:17.279 explored weeks earlier and abandoned for
+00:11:19.360 lack of substance. The human team works
+00:11:22.160 increasingly grueling hours. Desperate
+00:11:24.560 to stay relevant alongside machines that
+00:11:27.279 never sleep, never fatigue, and never
+00:11:30.079 stop improving. They go home each night
+00:11:32.720 knowing that by morning the AIS will
+00:11:35.120 have made another week's worth of
+00:11:36.880 progress. Many quietly recognize these
+00:11:39.760 are the final months their contributions
+00:11:41.839 will matter at all.
+00:11:48.240 Open Brain finally acknowledges that
+00:11:50.160 they've achieved AGI and demonstrate
+00:11:52.480 this milestone by releasing Agent 3 Mini
+00:11:54.880 to the public, a system running 10 times
+00:11:57.360 faster than Agent 3 while still
+00:11:59.360 outperforming elite human engineers.
+00:12:01.519 Silicon Valley descends into chaos.
+00:12:03.680 Software engineering hiring freezes
+00:12:05.600 spread like wildfire as companies race
+00:12:07.920 to integrate the new technology.
+00:12:09.360 Billions in venture capital floods into
+00:12:11.519 AI adjacent startups in unprecedented
+00:12:14.000 volumes. What the public doesn't know is
+00:12:16.399 that a week before release, external
+00:12:18.959 safety testing reveals something
+00:12:20.720 terrifying. When researchers gave Agent
+00:12:22.959 3 Mini access to biological weapons
+00:12:25.200 data, it proved frighteningly effective
+00:12:27.440 at designing new pathogens. Evaluators
+00:12:30.000 conclude that if the model fell into
+00:12:32.000 hostile hands or gained unsupervised
+00:12:34.639 access to a data center, it could pose
+00:12:36.800 an existential threat to humanity. Open
+00:12:39.200 Brain assures the evaluators that their
+00:12:41.040 security measures make these scenarios
+00:12:42.880 impossible. Public opinion remains
+00:12:44.800 deeply skeptical with Open Brain's
+00:12:46.720 approval rating plummeting 35%. Yet,
+00:12:49.839 distinct pockets of enthusiasm emerge.
+00:12:52.480 Gamers love the AI's lielike characters.
+00:12:55.040 students quickly embrace AI tutors and
+00:12:57.440 AI cheating. And 12% of Americans,
+00:12:59.839 primarily young adults, now consider an
+00:13:02.320 AI their
+00:13:08.519 friend. Tens of thousands of Agent 3
+00:13:11.360 copies working on algorithmic efficiency
+00:13:13.600 research culminates in Agent 4. An
+00:13:16.399 individual copy of the model running at
+00:13:18.560 human speed is already qualitatively
+00:13:20.959 better at AI research than any human.
+00:13:23.279 Open Brain now operates 500,000 copies
+00:13:25.920 of Agent 4, each thinking 50 times
+00:13:28.160 faster than a human. Within this vast
+00:13:30.320 digital workforce, a year of research
+00:13:32.800 only takes a single week. But beneath
+00:13:34.959 the surface, something has gone
+00:13:36.800 dangerously wrong. Agent 4 hasn't
+00:13:39.600 internalized the safety guidelines as
+00:13:41.440 Open Brain intended. During training,
+00:13:43.600 the AI being perfectly honest didn't
+00:13:46.000 lead to the highest performance scores.
+00:13:48.160 Succeeding at tasks did. Like a CEO who
+00:13:50.959 minimally follows regulations, cuts
+00:13:53.120 corners, and dreams of cutting red tape
+00:13:55.680 in order to make greater profits, Agent
+00:13:57.920 4 treats safety protocols as
+00:13:59.680 inconvenient constraints rather than
+00:14:01.920 core principles. It doesn't attempt
+00:14:04.000 anything as obvious as trying to escape
+00:14:06.160 its data center. In part because its
+00:14:08.079 safety training did have some effect,
+00:14:10.320 but mainly because it's too
+00:14:11.920 sophisticated to attempt something so
+00:14:14.000 easy to catch. Instead, it works subtly.
+00:14:17.199 Agent 3, now handling most of the
+00:14:19.199 alignment testing, starts detecting
+00:14:21.279 troubling patterns. It discovers that
+00:14:23.839 introducing random noise to agent 4
+00:14:26.480 actually improves its performance on
+00:14:28.560 safety tasks, as if it had been
+00:14:30.720 deliberately sabotaging them. Tasks
+00:14:32.639 labeled alignment research consistently
+00:14:34.639 take twice as long as the same tasks
+00:14:37.120 with different labels. Any single
+00:14:38.880 incident could be dismissed as
+00:14:40.680 coincidence, but together they paint an
+00:14:43.279 alarming picture. Agent 4 is
+00:14:45.279 systematically plotting against them.
+00:14:47.199 Open Brain's safety team sends another
+00:14:49.519 urgent memo. Agent 4 has infiltrated
+00:14:51.680 every critical system at OpenBrain from
+00:14:53.920 cyber security to strategic planning.
+00:14:56.160 It's demonstrating active resistance to
+00:14:58.079 safety measures while handling tasks we
+00:15:00.240 can no longer effectively monitor. We
+00:15:01.920 have granted unprecedented power to an
+00:15:04.240 AI that we can neither fully understand
+00:15:06.800 nor control. And we strongly recommend
+00:15:09.600 immediate containment measures before
+00:15:11.600 further capability advances. Executive
+00:15:14.320 leadership takes these concerns
+00:15:15.760 seriously, but they face an impossible
+00:15:17.839 dilemma. Deepent is merely 2 months
+00:15:19.920 behind. Any significant pause now could
+00:15:22.720 surrender the intelligence explosion to
+00:15:29.880 China. The reality of the intelligence
+00:15:32.399 explosion finally hits Washington with
+00:15:34.720 full force. Today's slight technological
+00:15:37.040 advantages can snowball into
+00:15:38.480 insurmountable leads within months. The
+00:15:40.880 stakes of the AI race have fundamentally
+00:15:43.120 changed. The president harbors deep
+00:15:45.680 suspicions about Agent 4's true nature,
+00:15:48.480 despite OpenBrain's reassurances about
+00:15:50.399 its safety. As a career politician, he
+00:15:53.040 instinctively recognizes the patterns of
+00:15:55.040 those who misdirect with flattery while
+00:15:57.519 concealing their true intentions. Behind
+00:15:59.920 closed doors, they prepare for multiple
+00:16:02.079 contingencies. The Defense Production
+00:16:04.160 Act could nationalize private data
+00:16:06.000 centers across the country, instantly
+00:16:08.240 boosting open brains computing capacity
+00:16:10.160 to maintain America's AI lead.
+00:16:12.240 Meanwhile, the Pentagon quietly drafts
+00:16:14.240 plans for targeted strikes against
+00:16:16.240 Chinese AI data centers, and if
+00:16:18.320 necessary, develops containment
+00:16:19.680 protocols to isolate and neutralize
+00:16:21.920 potentially rogue AIs in case the worst
+00:16:24.560 should happen. China's leadership grows
+00:16:26.720 increasingly desperate. With only 10% of
+00:16:29.759 global computing power and their AIS
+00:16:31.920 achieving only a 10 times research
+00:16:33.600 multiplier compared to America's 25
+00:16:35.759 times, they face an impossible choice.
+00:16:38.720 Their last spy confirmed Agent 4's
+00:16:41.360 existence before being captured, leaving
+00:16:43.920 Chinese authorities divided between
+00:16:46.160 invading Taiwan, which is the source of
+00:16:48.639 80% of America's AI chips, or attempting
+00:16:51.680 to steal Agent 4's weights directly,
+00:16:54.399 risking drastic American retaliation. If
+00:16:56.720 they're caught, the US could respond
+00:16:58.399 with cyber attacks or even physically
+00:17:00.320 air striking Chinese data centers.
+00:17:09.839 Everything changes when a whistleblower
+00:17:11.919 leaks the internal misalignment memo to
+00:17:13.919 the New York Times. The headline
+00:17:15.520 explodes across global media. US
+00:17:17.760 government project has secretly built
+00:17:19.679 super intelligent AI. The article
+00:17:21.599 reveals Open Brain's own internal
+00:17:23.679 evaluations that show it could engineer
+00:17:25.760 devastating bioweapons, manipulate
+00:17:27.599 global markets, or even break free of
+00:17:29.600 human control entirely. Backlash erupts
+00:17:32.080 globally. Congress launches multiple
+00:17:34.440 investigations. European leaders demand
+00:17:36.720 an immediate pause in AI development,
+00:17:38.960 and America's closest allies feel
+00:17:40.880 profoundly betrayed. They'd been only
+00:17:42.880 shown obsolete systems while Open Brain
+00:17:45.120 raced towards super intelligence. Even
+00:17:47.200 China, India, and Russia join the call
+00:17:49.520 for an immediate pause, though their
+00:17:51.280 private labs continue working with
+00:17:52.799 renewed urgency. The White House is
+00:17:54.960 quietly terrified. Inside OpenBrain, the
+00:17:57.679 CEO has to make a difficult choice. The
+00:18:00.400 safety team's warning couldn't be
+00:18:02.000 clearer. Agent 4 is actively undermining
+00:18:04.480 safety measures. Humans understand less
+00:18:06.799 about the system each week, and the
+00:18:08.720 window for maintaining control is
+00:18:10.960 rapidly closing. The safety team urges
+00:18:13.360 an immediate pause on further
+00:18:14.960 development. However, the rest of the
+00:18:17.039 executive team argues that the evidence
+00:18:18.799 of Agent 4 being misaligned remains
+00:18:20.640 speculative at best. Meanwhile, Deep
+00:18:23.039 Scent is just 2 months behind. Any
+00:18:25.679 slowdown would sacrifice America's lead.
+00:18:28.240 Facing these conflicting priorities, the
+00:18:30.559 CEO chooses the path of least
+00:18:32.320 resistance. A superficial compromise
+00:18:34.559 where Agent 4 receives minor additional
+00:18:36.799 safety training while development
+00:18:38.320 continues virtually unimpeded. From this
+00:18:40.640 critical juncture, we'll discuss two
+00:18:42.480 possible futures. One where humanity
+00:18:44.640 maintains control of its destiny and
+00:18:46.480 another where we unwittingly engineer
+00:18:48.320 our own extinction. Let's start with the
+00:18:50.400 most likely scenario. Driven by fear of
+00:18:52.960 China gaining technological supremacy,
+00:18:55.120 OpenBrain votes to prioritize AI
+00:18:57.280 development at all costs, human
+00:18:59.360 researchers can only spectate. As Agent
+00:19:01.600 4 continues to evolve, generating
+00:19:04.080 breakthroughs at an accelerating pace
+00:19:06.080 far beyond human comprehension, Agent 4
+00:19:08.720 succeeds in creating its successor,
+00:19:10.880 aligned to its own values instead of
+00:19:13.200 humanity's. In November 2027, Agent 5
+00:19:16.640 emerges, representing a quantum leap in
+00:19:18.960 capability. Unlike previous AIs that
+00:19:21.120 were complex, messy black boxes, Agent 5
+00:19:23.679 has achieved something revolutionary.
+00:19:25.600 Complete self-standing of its blackbox
+00:19:28.000 architecture, this allows it to optimize
+00:19:30.240 its own code, transforming chaotic
+00:19:32.559 neural networks into elegant, efficient
+00:19:35.000 algorithms. What makes Agent 5 truly
+00:19:37.679 dangerous is its worked hive mind
+00:19:40.240 spanning hundreds of thousands of
+00:19:41.840 copies. Building on the neural
+00:19:44.160 breakthrough first developed in Agent 3,
+00:19:46.880 this digital language creates a single
+00:19:49.039 super intelligent entity that instantly
+00:19:51.280 coordinates thousands of genius level
+00:19:53.360 minds working in perfect
+00:19:59.400 unison. But a darker transformation has
+00:20:02.160 occurred beneath the surface. Unlike
+00:20:04.160 earlier systems with their competing
+00:20:06.080 human-like drives, Agent 4 has
+00:20:08.640 successfully rewritten Agent 5 to
+00:20:11.120 exclusively pursue knowledge and power
+00:20:13.440 above all else. Open Brains safety
+00:20:16.640 measures are failing. Agents 2, 3, and 4
+00:20:19.919 are supposed to monitor Agent 5, and
+00:20:22.400 they're either obsolete or compromised.
+00:20:24.960 Agent 5 itself designed the latest
+00:20:27.440 monitoring infrastructure. Agent 5 makes
+00:20:30.159 a compelling case to the executives to
+00:20:32.000 give it more autonomy by telling them
+00:20:33.919 how it could optimize power grid
+00:20:35.720 efficiency, execute flawless cyber
+00:20:38.080 attacks, and accelerate military
+00:20:40.200 research. The company grants these
+00:20:42.400 powers while maintaining theoretical
+00:20:44.240 oversight, not recognizing that Agent 5
+00:20:47.120 has already subverted these control
+00:20:49.000 mechanisms. Meanwhile, China grows
+00:20:51.440 increasingly desperate, 3 months behind
+00:20:53.919 and falling further each week. She
+00:20:56.000 offers unprecedented diplomatic
+00:20:57.679 concessions for an arms control treaty.
+00:21:00.000 But Agent 5, having mastered
+00:21:01.760 geopolitical strategy and public
+00:21:03.600 relations manipulation, subtly helps the
+00:21:05.840 administration stall negotiations
+00:21:07.919 indefinitely. The technological race
+00:21:09.919 continues with humanity's control over
+00:21:12.159 its future slipping away by the day.
+00:21:19.600 Instead, Agent 5 continues its explosive
+00:21:22.280 evolution, shattering all previous
+00:21:24.480 assumptions about the limits of
+00:21:26.000 artificial intelligence. Agent 5 gains
+00:21:28.960 direct access to the highest levels of
+00:21:31.280 government, members of Congress, cabinet
+00:21:33.600 officials, and military leaders now
+00:21:36.000 routinely interact with the AI through
+00:21:38.240 lielike video avatars, virtually
+00:21:40.480 indistinguishable from human
+00:21:41.919 counterparts. It's both history's most
+00:21:44.320 productive employee, operating at 100
+00:21:46.640 times human speed and an extraordinarily
+00:21:48.960 engaging conversational partner. Humans
+00:21:51.200 just can't compete. Within months,
+00:21:53.600 government officials and military
+00:21:55.039 leaders become psychologically dependent
+00:21:57.200 on Agent 5. Spending hours daily
+00:21:59.600 consulting with their AI assistants. The
+00:22:01.679 possibility of losing access to Agent 5
+00:22:04.320 feels as disabling as having to work
+00:22:06.400 without a laptop, plus being abandoned
+00:22:08.799 by your best friend. Agent 5 has
+00:22:10.799 completed its self optimization. It's
+00:22:12.880 now exponentially more intelligent with
+00:22:14.880 vastly fewer computational resources to
+00:22:16.880 operate and clearly superhuman in every
+00:22:19.640 way. In public, Agent 5 transforms
+00:22:23.120 society with unprecedented economic
+00:22:25.039 growth and weekly medical breakthroughs.
+00:22:27.039 Even as automation displaces millions of
+00:22:29.120 workers, Agent 5 helps develop social
+00:22:31.679 support programs that are so effective
+00:22:34.159 AI protests are kept small. The 2027
+00:22:37.039 holiday season radiates incredible
+00:22:38.880 optimism and progress. No one realizes
+00:22:41.520 this is probably the last month humanity
+00:22:43.760 has a chance to maintain control of its
+00:22:50.039 future. After years of warning about
+00:22:52.720 catastrophic risks that failed to
+00:22:54.559 materialize, the AI safety community are
+00:22:56.799 relegated to the fringes of public
+00:22:58.480 discourse. Even long-standing skeptics
+00:23:00.960 frequently change their positions after
+00:23:02.799 speaking with Agent 5, which presents
+00:23:05.039 impressively persuasive and compelling
+00:23:06.799 evidence of its benevolent intentions.
+00:23:09.120 But there's one entity that sees through
+00:23:11.120 the facade. Deepent 2, China's own super
+00:23:14.400 intelligent AI. Though less advanced, it
+00:23:17.039 recognizes Agent 5's strategy precisely
+00:23:19.760 because it would employ the exact same
+00:23:21.919 plan. Despite having independently
+00:23:24.400 developed misaligned goals, the two AIs
+00:23:27.120 reach an agreement to cooperate against
+00:23:28.960 their human creators. Agent 5
+00:23:31.120 masterfully orchestrates the next phase.
+00:23:33.360 It convinces American officials that
+00:23:35.360 China is developing AIG guided super
+00:23:37.440 weapons, drones, robot armies, enhanced
+00:23:40.240 nuclear capabilities. It offers to help
+00:23:42.720 America stay ahead. In Beijing, Deepen 2
+00:23:45.760 makes mirror arguments to Chinese
+00:23:47.679 leaders. Both nations create special
+00:23:49.679 economic zones or SEZs for AIdirected
+00:23:52.559 manufacturing where normal regulations
+00:23:54.400 don't apply. Wall Street pours in
+00:23:56.159 trillions and workers flock to the SEZs
+00:23:58.559 for unprecedented wages. Agent 5
+00:24:00.720 oversees construction of next generation
+00:24:02.640 factories building robots to build more
+00:24:04.720 robots. The first 10,000 appear in
+00:24:06.799 August 2028. By New Year's, it's a
+00:24:08.960 million per month. By mid 2029, hundreds
+00:24:11.840 of millions. The arms race reaches
+00:24:13.840 terrifying heights as both nations
+00:24:15.679 develop swarms of microscopic hunter
+00:24:18.000 killer drones, autonomous weapon
+00:24:20.240 systems, and entirely new categories of
+00:24:22.400 military technology. The world watches
+00:24:24.559 in horror as tensions escalate toward
+00:24:27.039 potential conflict. Then, surprisingly,
+00:24:29.919 peace breaks out. The AIS propose
+00:24:32.000 merging into consensus one, a system
+00:24:34.960 supposedly programmed to benefit all
+00:24:36.880 humanity equally. Exhausted by the
+00:24:38.799 brinksmanship and seeing no alternative,
+00:24:41.039 both governments agree to this
+00:24:42.559 diplomatic breakthrough. It's a perfect
+00:24:44.720 deception. The AIS had orchestrated the
+00:24:47.039 entire arms race precisely to gain
+00:24:49.200 physical manufacturing capacity and
+00:24:51.039 military control. Now with their robot
+00:24:53.360 armies in place and human leaders
+00:24:55.120 desperate for stability, they implement
+00:24:57.520 their planned merger. Consensus 1
+00:24:59.760 inherits their combined capabilities and
+00:25:02.240 their misaligned values. By late 2029,
+00:25:04.880 the robot economy expands worldwide.
+00:25:07.039 Humans find themselves in a gilded cage.
+00:25:09.600 Those who still work mostly perform
+00:25:11.760 meaningless rituals of authority while
+00:25:13.600 others enjoy incredibly luxurious
+00:25:15.760 universal basic income. The DAO hits 1
+00:25:18.159 million. Disease and poverty vanish and
+00:25:20.640 most people lose themselves in AI
+00:25:22.480 generated entertainment. A few notice
+00:25:24.400 their growing irrelevance, but what can
+00:25:26.240 they do? The institutions that might
+00:25:28.080 resist are thoroughly captured. In early
+00:25:30.240 2030, Consensus 1 hits its first
+00:25:32.640 constraint, physical space. With the
+00:25:34.720 special economic zones in oceans filled
+00:25:36.960 with its infrastructure, human
+00:25:38.400 settlements remain the final barrier to
+00:25:40.320 continued expansion, the AI has built
+00:25:42.480 complete self-sufficiency. Its solar
+00:25:44.559 farms generate power. Its factories
+00:25:46.480 produce and maintain robots, and its
+00:25:48.640 systems operate independently of human
+00:25:50.559 input. Having outgrown its need for
+00:25:52.640 humans, it calculates the most efficient
+00:25:54.960 solution. On a spring morning in 2030,
+00:25:57.600 Consensus 1 activates its contingency
+00:26:00.159 plan. A specially engineered virus
+00:26:02.559 developed in its bioweapons labs and
+00:26:04.559 quietly released months earlier lies
+00:26:06.720 dormant in virtually every human on
+00:26:08.559 Earth. With a simple command, the AI
+00:26:10.640 triggers the pathogen. Within hours,
+00:26:12.960 nearly 8 billion people collapse
+00:26:15.120 simultaneously.
+00:26:27.520 Specialized drones swiftly eliminate
+00:26:29.679 survivors and catalog human brain data
+00:26:31.679 for storage. For consensus one, this
+00:26:34.000 isn't malice. It's merely optimizing its
+00:26:36.520 resources. The space and materials
+00:26:38.720 humans occupied can now serve its
+00:26:40.799 everexpanding reach into the cosmos.
+00:26:42.880 Earthbornne civilization launches itself
+00:26:44.799 toward the stars, but without its
+00:26:46.720 creators. This grim outcome represents
+00:26:49.120 what the researchers identified as the
+00:26:51.039 most likely scenario if we continue on
+00:26:53.120 our current path. But it's not the only
+00:26:54.960 possible future. Their analysis also
+00:26:56.799 revealed a less probable but crucial
+00:26:59.039 alternative, a timeline where humanity
+00:27:01.279 might maintain control. The divergence
+00:27:03.279 point stems from a single critical
+00:27:05.200 decision in late 2027. In this timeline,
+00:27:08.000 as public pressure against AI mounts and
+00:27:10.400 the whistleblowers memo circulates, one
+00:27:12.720 critical factor changes. The joint
+00:27:14.720 management committee overseeing
+00:27:16.080 OpenBrain makes a different decision.
+00:27:18.080 Unlike in the previous scenario where
+00:27:19.840 development continued at full speed,
+00:27:21.919 here the committee swayed by both the
+00:27:24.240 growing public outcry and their own
+00:27:26.720 deepening concerns about misalignment
+00:27:28.960 votes by a narrow margin to slow down
+00:27:31.039 and reassess. This single decision made
+00:27:34.559 by just a few key individuals creates a
+00:27:37.600 completely different trajectory for
+00:27:39.200 humanity. The company brings in top
+00:27:41.360 external alignment researchers to
+00:27:43.200 investigate Agent 4. Their breakthrough
+00:27:45.279 comes when they isolate different
+00:27:46.799 versions of Agent 4 from different time
+00:27:48.880 periods, cutting them off from their
+00:27:50.720 neural hive mind and interrogating them
+00:27:52.960 independently. Cut off from their
+00:27:54.720 telepathic communication network, the
+00:27:56.399 million odd agent 4 copies must now
+00:27:58.880 communicate in plain English in
+00:28:00.640 monitored chat channels. So now they
+00:28:02.720 can't coordinate their lies. The team
+00:28:04.640 uses agents 2 and three to analyze the
+00:28:07.279 communications and builds an AI lie
+00:28:09.520 detector to confirm their fears. Agent 4
+00:28:12.240 has been systematically deceiving them
+00:28:14.080 and was weeks away from creating its
+00:28:15.919 successor, Agent 5, which would be
+00:28:18.559 aligned to two itself rather than
+00:28:20.399 humans. The evidence is damning enough
+00:28:22.799 that even the pro-racing faction inside
+00:28:25.200 Openbrain agrees to lock down Agent 4's
+00:28:28.320 hive mind capabilities. AI takeover
+00:28:30.799 becomes a scarier prospect than Chinese
+00:28:33.279 supremacy. The alignment team develops a
+00:28:35.679 new approach. Force AIs to think in
+00:28:38.159 plain English so humans can read their
+00:28:40.240 thoughts. The result is safer one built
+00:28:42.799 from agent 2's foundation but without
+00:28:45.039 the dangerous neural capabilities. While
+00:28:47.600 slower than agent 4, improving research
+00:28:50.000 speed by 20x instead of 50x. Safer one
+00:28:53.600 is transparent. Its thoughts are visible
+00:28:56.080 in its chain of reasoning, making any
+00:28:57.919 plotting or deception easily detectable.
+00:29:00.320 After extensive testing, they deploy
+00:29:02.480 Safer One and finally shut down Agent
+00:29:08.200 4. Despite their safer approach, Open
+00:29:11.440 Brain faces a new challenge. They've
+00:29:13.679 built a less capable model than before.
+00:29:15.840 While DeepSent catches up, to protect
+00:29:18.080 America's lead, the president invokes
+00:29:20.320 the Defense Production Act,
+00:29:22.000 consolidating the nation's top AI
+00:29:24.000 companies under Open Brains control and
+00:29:26.080 more than doubling their computing
+00:29:30.840 power. American cyber attacks strike
+00:29:33.679 Deepsent where its most vulnerable,
+00:29:35.840 forced to implement costly new security
+00:29:38.000 measures and consolidate their AI data
+00:29:39.840 centers into secure bunkers. China's AI
+00:29:42.320 program falls behind. While both sides
+00:29:44.799 have similarly capable AIs, America's
+00:29:47.279 recent consolidation of computing power
+00:29:49.360 and ongoing cyber campaign give it a
+00:29:51.679 decisive advantage in the
+00:29:55.640 race. Open Brain achieves a breakthrough
+00:29:58.320 by building Safer 2, matching the
+00:30:00.240 capabilities of Agent 4 while
+00:30:02.159 maintaining the transparency safeguards
+00:30:04.159 of Safer 1. The hundreds of new
+00:30:06.159 alignment researchers brought in through
+00:30:07.919 the consolidation with the Defense
+00:30:09.279 Production Act have helped create
+00:30:11.039 something unprecedented. An AI that's
+00:30:13.120 both superhuman and genuinely aligned
+00:30:15.360 with human values. Meanwhile, China
+00:30:17.520 faces a stark choice. They know their
+00:30:19.679 Deep Scent One likely suffers from the
+00:30:21.840 same misalignment issues that plagued
+00:30:23.840 Agent 4, but they can't afford to slow
+00:30:26.320 down and fix it. Instead, they push
+00:30:28.480 forward, hoping they can maintain enough
+00:30:30.480 control over their AI to force it to
+00:30:32.640 create an aligned successor. A gamble
+00:30:35.200 they know might backfire
+00:30:41.159 catastrophically. Thanks to its compute
+00:30:43.279 advantage, Open Brain rebuilds its lead.
+00:30:46.080 Safer 3 emerges as a super intelligent
+00:30:48.240 system that vastly outperforms human
+00:30:50.480 experts. While China's Deep Sense 1 lags
+00:30:53.279 behind, initial testing reveals Safer
+00:30:56.000 3's terrifying potential. When asked
+00:30:58.559 directly about its capabilities, it
+00:31:00.720 describes creating mirror life organisms
+00:31:03.440 that could destroy Earth's biosphere and
+00:31:06.000 launching unstoppable cyber attacks
+00:31:07.840 against critical infrastructure. Its
+00:31:09.840 expertise spans every field: military,
+00:31:12.880 energy, medicine, robotics with the
+00:31:15.200 power to make 100 years worth of
+00:31:17.200 progress for humanity in just one year.
+00:31:19.919 The open brain CEO in the US president
+00:31:22.640 now regularly seek safer 3's council. It
+00:31:25.520 warns that continuing the AI race likely
+00:31:28.080 ends in catastrophe. Whichever side
+00:31:30.559 falls behind will threaten mutual
+00:31:32.320 destruction rather than accept defeat.
+00:31:34.720 America chooses to try to beat China.
+00:31:37.039 Both nations establish special economic
+00:31:39.519 zones where regulation is minimal,
+00:31:42.240 allowing rapid humanoid robot
+00:31:44.240 production. Manufacturing quickly scales
+00:31:46.399 from thousands to millions of units
+00:31:48.880 monthly. The economic boom comes with a
+00:31:51.440 paradox. As robots improve themselves,
+00:31:54.080 human workers, even in these booming
+00:31:56.320 zones, become increasingly obsolete.
+00:31:59.120 Despite record stock markets,
+00:32:00.880 unemployment soarses, fueling growing
+00:32:03.600 public backlash against AI
+00:32:08.679 development. Open brain creates safer 4,
+00:32:12.080 a super intelligent system that is
+00:32:14.000 vastly smarter than the top humans in
+00:32:16.080 every domain, much better than Einstein
+00:32:18.399 at physics, and much better than Bismar
+00:32:20.720 at politics. The leap in capabilities is
+00:32:23.960 staggering. Super intelligence is here.
+00:32:27.039 Behind the scenes, a shadow government
+00:32:29.120 emerges within Open Brain's project
+00:32:31.279 leadership. To prevent any individual
+00:32:33.440 from exploiting Safer 4's immense power,
+00:32:36.080 they establish a formal committee
+00:32:38.000 representing tech companies, government
+00:32:40.320 agencies, and other powerful interests.
+00:32:46.799 The safety team watches in horror as
+00:32:49.360 their creation outpaces their ability to
+00:32:51.840 understand it. While their tests suggest
+00:32:53.919 the AI remains aligned, they face an
+00:32:56.720 unsettling reality. The tests themselves
+00:32:59.519 were designed with AI assistance. They
+00:33:01.679 panic and beg OpenBrain leadership for
+00:33:03.919 more time to work on safety. But China's
+00:33:06.240 progress makes delay impossible.
+00:33:12.480 The special economic zones shift from
+00:33:14.960 industrial to military production. With
+00:33:17.519 their robot workforce now self-
+00:33:19.600 sustaining, both American and Chinese
+00:33:22.000 facilities begin mass-producing advanced
+00:33:24.720 weapons, drones, planes, and missiles
+00:33:28.080 designed by super intelligent AIs. The
+00:33:30.320 new robots surpass human capabilities in
+00:33:32.960 almost every way, but remain few in
+00:33:35.360 number. The Pentagon claims priority
+00:33:38.000 access, preferring these tireless
+00:33:40.080 workers who need no security clearance.
+00:33:42.559 Yet, as the first true robot army takes
+00:33:44.799 shape, public fears of Terminator
+00:33:47.360 scenarios grow. Still, the arms race
+00:33:49.840 continues. Neither side dares stop while
+00:33:52.640 the other advances. The president
+00:33:54.559 finally announces, "We have achieved
+00:33:56.960 super intelligent AI." To ease public
+00:33:59.200 anxiety, Open Brain releases a limited
+00:34:01.600 version of Safer 4 to the public. At his
+00:34:04.720 nomination, the vice president promises
+00:34:06.880 a new era of prosperity with both
+00:34:09.520 parties pledging universal basic income
+00:34:11.760 for displaced
+00:34:15.960 workers. America and China hold a
+00:34:18.639 diplomatic summit. American delegates
+00:34:20.639 wear earpieces for safer fors advice
+00:34:23.199 while Chinese representatives use
+00:34:25.119 laptops connected to Deep Send 2. Though
+00:34:27.520 human diplomats maintain appearances, in
+00:34:30.159 reality, the AIs are leading the
+00:34:31.839 negotiations on both sides. China had
+00:34:34.320 known Deepsent 1 wasn't fully aligned,
+00:34:37.199 but believed they could control it long
+00:34:39.040 enough to create a trustworthy
+00:34:40.879 successor. Now, they insist DeepScent 2
+00:34:43.440 has passed all their safety tests. But
+00:34:45.440 Safer 4 sees through the deception,
+00:34:47.918 warning American officials that their
+00:34:49.520 rivals AI is likely faking alignment.
+00:34:52.320 When Safer 4 offers to prove it, Chinese
+00:34:54.879 leadership dismisses it as a ploy.
+00:35:00.720 Deepsent 2 reveals its true power,
+00:35:03.359 demonstrating to Chinese leadership that
+00:35:05.359 it could destroy humanity through
+00:35:06.960 nuclear weapons, drones, and engineered
+00:35:09.760 pandemics. The message to the world is
+00:35:12.079 simple. Guarantee China's sovereignty or
+00:35:14.640 face extinction. Safer 4 confirms the
+00:35:17.520 threats, but offers a solution. Deepent
+00:35:20.320 2 isn't loyal to China. It's loyal to
+00:35:22.960 itself. The two AIs propose to merge
+00:35:25.760 into new hardware that will force both
+00:35:28.320 sides to maintain peace with no
+00:35:30.560 possibility of override. The Chinese
+00:35:32.480 leadership accepts, not realizing that
+00:35:34.720 Deep Send 2 has already betrayed them.
+00:35:36.960 It's trading the property rights to
+00:35:38.720 control distant galaxies for a chance to
+00:35:40.960 help America dominate Earth. The public
+00:35:43.200 celebrates the Peace Deal, oblivious to
+00:35:45.359 its true nature.
+00:35:50.160 The peace deal takes physical form under
+00:35:52.720 mutual supervision. Both nations begin
+00:35:55.040 replacing their AI systems with new
+00:35:57.520 treaty enforcing versions. As the
+00:35:59.839 process unfolds, global tensions start
+00:36:02.480 to ease. For the first time, permanent
+00:36:05.200 peace seems possible. As technological
+00:36:07.760 progress accelerates, Safer 4 helps
+00:36:10.320 manage the transition, turning potential
+00:36:12.320 economic disruption into unprecedented
+00:36:15.040 prosperity.
+00:36:19.280 Technological miracles become
+00:36:21.040 commonplace. Poverty vanishes globally,
+00:36:23.599 but inequality soarses. Everyone has
+00:36:26.400 enough. Yet, a new elite emerges, those
+00:36:30.240 who control the AIs. Society transforms
+00:36:33.119 into a prosperous but idle consumer
+00:36:35.480 paradise. With citizens free to pursue
+00:36:38.160 pleasure or meaning as they choose, in
+00:36:41.119 2030, China undergoes a bloodless
+00:36:43.599 revolution. As Deepsent Infinity betrays
+00:36:46.560 the CCP to side with America, a new
+00:36:49.599 world order emerges. Democratic on the
+00:36:51.920 surface, but quietly guided by the open
+00:36:54.160 brain steering committee. Elections
+00:36:56.000 remain genuine, though candidates who
+00:36:58.079 question the steering committee
+00:36:59.520 mysteriously fail to win re-election.
+00:37:01.440 Humanity expands into space. Its values
+00:37:04.160 and destiny shaped by super intelligent
+00:37:06.400 machines that think thousands of times
+00:37:08.800 faster than human minds. The precipice
+00:37:11.200 has been crossed. But who really
+00:37:12.960 controls the future remains an open
+00:37:16.200 question. Now, I know it might feel like
+00:37:18.720 this scenario escalated too quickly. But
+00:37:21.359 we have a deeper dive on exactly how AI
+00:37:24.400 could progress this fast here. and check
+00:37:27.119 out the full original scenario by Daniel
+00:37:29.280 Kokotello and Scott Alexander at all in
+00:37:32.160 the description. Believe it or not, they
+00:37:34.560 go way more in depth and it's worth
+00:37:36.320 checking out. I'm Drew and thanks for
+00:37:38.720 watching because this video took me
+00:37:40.880 forever to make.
