@@ -537,7 +537,10 @@ class ConsciousnessReadinessAssessor {
       path.join(this.srcPath, 'cognitive', 'ethics'),
       path.join(this.srcPath, 'cognitive', 'monitoring'),
       path.join(this.srcPath, 'consciousness', 'monitoring'),
-      path.join(this.srcPath, 'arbitrage', 'risk')
+      path.join(this.srcPath, 'consciousness', 'coordination'),
+      path.join(this.srcPath, 'consciousness', 'safety'),
+      path.join(this.srcPath, 'arbitrage', 'risk'),
+      path.join(this.srcPath, 'safety')
     ];
     
     let foundModules: string[] = [];
