@@ -49,6 +49,10 @@ export class CoinMarketCapClient {
     if (!config.apiKey) {
       throw new Error('CoinMarketCap API key is required');
     }
+    
+    if (typeof config.apiKey !== 'string') {
+      throw new Error('CoinMarketCap API key must be a string');
+    }
 
     this.config = {
       apiKey: config.apiKey,
