@@ -135,12 +135,36 @@ nvm alias default 22.12.0
 
 ### Option 2: Add to Shell Profile
 
+⚠️ **CRITICAL: Use `>>` (double arrow) to APPEND, not `>` (single arrow) which OVERWRITES!**
+
 Add these lines to `~/.bashrc` or `~/.zshrc` (depending on your shell):
 
 ```bash
+# ⚠️ Use >> (append) - adds to end of file
+# ❌ DO NOT use > (overwrite) - replaces entire file!
+
 # Add to ~/.bashrc or ~/.zshrc
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Load nvm
+echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc
+echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+**What if I accidentally used `>` instead of `>>`?**
+
+Your `.bashrc` was overwritten. Restore it:
+```bash
+# Restore default .bashrc
+cp /etc/skel/.bashrc ~/.bashrc
+
+# Now add NVM correctly with >>
+echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc
+echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.bashrc
+source ~/.bashrc
+
+# Reinstall Node
+nvm install 22.12.0
+nvm alias default 22.12.0
+```
 
 # Optional: Auto-use .nvmrc when entering directories
 autoload -U add-zsh-hook
@@ -213,6 +237,41 @@ node --version  # Verify it shows v22.12.0
 
 # Now try npm install again
 npm install
+```
+
+### Problem: `Version 'X.X.X' does not exist` when running `nvm alias default`
+
+**Solution**: Node version not installed yet
+```bash
+# Install the version first
+source ~/.nvm/nvm.sh
+nvm install 22.12.0
+
+# Then set as default
+nvm alias default 22.12.0
+
+# Verify
+nvm list
+```
+
+### Problem: `.bashrc` file was accidentally overwritten (used `>` instead of `>>`)
+
+**Solution**: Restore .bashrc and reinstall Node
+```bash
+# 1. Restore default .bashrc
+cp /etc/skel/.bashrc ~/.bashrc
+
+# 2. Add NVM correctly with >> (append, not overwrite)
+echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc
+echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.bashrc
+source ~/.bashrc
+
+# 3. Install Node again
+nvm install 22.12.0
+nvm alias default 22.12.0
+
+# 4. Verify
+node --version  # Should show v22.12.0
 ```
 
 ### Problem: Build has errors
@@ -339,9 +398,29 @@ npm run build
 
 **To make permanent** (add to shell profile):
 ```bash
+# ⚠️ IMPORTANT: Use >> (double arrow) to APPEND, not > (single arrow) which OVERWRITES!
 echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc
 echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.bashrc
 source ~/.bashrc
+```
+
+**Common Mistake to Avoid**:
+- ✅ Use `>>` (append) - adds to end of file
+- ❌ Use `>` (overwrite) - replaces entire file!
+
+**If you accidentally used `>` and overwrote `.bashrc`**:
+```bash
+# Restore default .bashrc first
+cp /etc/skel/.bashrc ~/.bashrc
+
+# Then add NVM with >> (append)
+echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc
+echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.bashrc
+source ~/.bashrc
+
+# Reinstall Node
+nvm install 22.12.0
+nvm alias default 22.12.0
 ```
 
 ---
