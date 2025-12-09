@@ -8,6 +8,10 @@
  */
 
 import { BinanceConnector } from './BinanceConnector.js';
+import { CoinbaseConnector } from './CoinbaseConnector.js';
+import { OKXConnector } from './OKXConnector.js';
+import { BybitConnector } from './BybitConnector.js';
+import { KrakenConnector } from './KrakenConnector.js';
 import {
   CEXExchange,
   CEXMonitorConfig,
@@ -86,24 +90,36 @@ export class CEXLiquidityMonitor {
           break;
 
         case CEXExchange.COINBASE:
-          // TODO: Implement CoinbaseConnector
-          console.warn('[CEXLiquidityMonitor] Coinbase connector not yet implemented');
-          return;
+          connector = new CoinbaseConnector(config, {
+            onOrderBook: this.handleOrderBook.bind(this),
+            onTicker: this.handleTicker.bind(this),
+            onError: this.config.onError,
+          });
+          break;
 
         case CEXExchange.OKX:
-          // TODO: Implement OKXConnector
-          console.warn('[CEXLiquidityMonitor] OKX connector not yet implemented');
-          return;
+          connector = new OKXConnector(config, {
+            onOrderBook: this.handleOrderBook.bind(this),
+            onTicker: this.handleTicker.bind(this),
+            onError: this.config.onError,
+          });
+          break;
 
         case CEXExchange.BYBIT:
-          // TODO: Implement BybitConnector
-          console.warn('[CEXLiquidityMonitor] Bybit connector not yet implemented');
-          return;
+          connector = new BybitConnector(config, {
+            onOrderBook: this.handleOrderBook.bind(this),
+            onTicker: this.handleTicker.bind(this),
+            onError: this.config.onError,
+          });
+          break;
 
         case CEXExchange.KRAKEN:
-          // TODO: Implement KrakenConnector
-          console.warn('[CEXLiquidityMonitor] Kraken connector not yet implemented');
-          return;
+          connector = new KrakenConnector(config, {
+            onOrderBook: this.handleOrderBook.bind(this),
+            onTicker: this.handleTicker.bind(this),
+            onError: this.config.onError,
+          });
+          break;
 
         default:
           throw new Error(`Unsupported exchange: ${config.exchange}`);

@@ -6,4 +6,8 @@
 
 export * from './types.js';
 export { BinanceConnector } from './BinanceConnector.js';
+export { CoinbaseConnector } from './CoinbaseConnector.js';
+export { OKXConnector } from './OKXConnector.js';
+export { BybitConnector } from './BybitConnector.js';
+export { KrakenConnector } from './KrakenConnector.js';
 export { CEXLiquidityMonitor } from './CEXLiquidityMonitor.js';
