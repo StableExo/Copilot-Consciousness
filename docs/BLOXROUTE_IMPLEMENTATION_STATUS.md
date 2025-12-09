@@ -1,8 +1,23 @@
 # bloXroute Integration - Implementation Status
 
 **Date**: 2025-12-09  
-**Status**: Phase 1 Complete - Basic Integration Ready  
-**Next**: Configuration & Testing
+**Status**: Phase 2 Complete - Mempool Streaming Ready (Free Tier Compatible)  
+**Current Tier**: Free (Introductory) - $0/month  
+**Next**: OpportunityDetector Integration (after blockchain deployment)
+
+---
+
+## 💡 Free Tier Notice
+
+**All implemented code works on bloXroute's free (Introductory) tier!**
+
+- ✅ No cost to start testing
+- ✅ Sign up at https://portal.bloxroute.com/
+- ✅ Full functionality with rate limits
+- ⚠️ Limited to 1 network and basic transaction volume
+- 📚 See `docs/BLOXROUTE_FREE_TIER_GUIDE.md` for details
+
+**Upgrade Path**: When TheWarden is deployed on blockchain and generating revenue, upgrade to Professional tier ($300/month) for production-scale operations.
 
 ---
 
@@ -43,22 +58,75 @@
    - Error handling
    - Connection state management
 
+### Phase 2: Mempool Stream Manager (✅ Complete)
+
+1. **BloXrouteMempoolStream.ts** - Real-time mempool streaming manager
+   - WebSocket connection lifecycle management
+   - Stream subscription handling (newTxs, pendingTxs, onBlock)
+   - Transaction filtering and parsing
+   - DEX swap detection (Uniswap V2/V3, SushiSwap, Curve)
+   - Large transfer detection (>1 ETH threshold)
+   - Batch processing support (configurable batch size and timeout)
+   - Performance metrics tracking (TPS, processing time, uptime)
+   - Multi-chain support (6 chains)
+   - Error handling with callbacks
+   - Graceful shutdown with pending transaction processing
+
+2. **DEX Protocol Configuration** - Built-in support for major DEXes
+   - Uniswap V2: Router address + 4 method IDs
+   - Uniswap V3: 2 router addresses + 4 method IDs
+   - SushiSwap: Router address + 2 method IDs
+   - Curve: Pool addresses + 2 method IDs
+   - Extensible for custom protocols
+
+3. **Transaction Filters** - Flexible filtering options
+   - Value range filters (min/max)
+   - Gas price filters
+   - Target address filters (DEX routers, pools)
+   - Method ID filters (swap functions)
+   - Protocol filters (pre-configured DEX protocols)
+   - Custom bloXroute filter expressions
+
+4. **Configuration** - Extended environment variables
+   ```bash
+   BLOXROUTE_ENABLE_MEMPOOL_STREAM=false
+   BLOXROUTE_STREAM_TYPE=pendingTxs
+   BLOXROUTE_STREAM_BATCH_SIZE=1
+   BLOXROUTE_STREAM_BATCH_TIMEOUT=100
+   BLOXROUTE_VERBOSE=false
+   ```
+
+5. **Tests** - Comprehensive unit tests (34 tests, 100% passing)
+   - Constructor and configuration
+   - Stream lifecycle (start/stop)
+   - Metrics tracking (uptime, TPS, processing time)
+   - DEX protocol configuration (4 protocols)
+   - Transaction filters (6 filter types)
+   - Stream configuration (6 networks, 4 regions, 3 stream types)
+   - Multi-chain support
+   - Error handling
+   - Batch processing
+
+6. **Integration Examples** - Ready-to-use code examples
+   - DEX swap monitoring for arbitrage
+   - Large transfer monitoring (whale detection)
+   - Custom filter expressions
+   - Batch processing optimization
+   - Performance metrics tracking
+
 ---
 
 ## 📋 Setup Instructions
 
-### Step 1: Get bloXroute API Key
+### Step 1: Get bloXroute API Key (FREE)
 
 1. Sign up at https://portal.bloxroute.com/
-2. Choose a tier:
-   - **Professional**: $300/month (1,500 tx/day, recommended for testnet)
-   - **Enterprise**: $1,250/month (7,500 tx/day, production scale)
-   - **Enterprise-Elite**: $5,000/month (5 networks, 25k tx/day)
-
-3. Get your credentials:
-   - API Key
-   - Account ID
-   - Auth Header (base64 encoded credentials)
+2. Choose **Introductory (Free) tier** - $0/month
+   - No credit card required
+   - Basic transaction limits (sufficient for testing)
+   - Single network support
+   - Full API access
+3. Get your API key from dashboard
 
 ### Step 2: Configure Environment
 
@@ -117,7 +185,46 @@ console.log('Result:', result);
 client.disconnect();
 ```
 
-### Step 4: Use via PrivateRPCManager
+### Step 4: Use Mempool Streaming (Phase 2)
+
+Monitor real-time mempool transactions for arbitrage opportunities:
+
+```typescript
+import { BloXrouteMempoolStream, DEX_PROTOCOLS } from './src/execution/relays/BloXrouteMempoolStream';
+import { BloXrouteNetwork, StreamType } from './src/execution/relays/BloXrouteClient';
+
+const stream = new BloXrouteMempoolStream({
+  apiKey: process.env.BLOXROUTE_API_KEY!,
+  network: BloXrouteNetwork.ETHEREUM,
+  streamType: StreamType.PENDING_TXS,
+  
+  // Filter for DEX swaps
+  filters: {
+    protocols: [DEX_PROTOCOLS.UNISWAP_V3],
+    minValue: BigInt('100000000000000000'), // Min 0.1 ETH
+  },
+  
+  // Callback for DEX swaps
+  onDexSwap: async (tx) => {
+    console.log('DEX swap detected:', tx.tx_hash);
+    // Check for arbitrage opportunity
+    await detectArbitrageOpportunity(tx);
+  },
+});
+
+// Start streaming
+await stream.start();
+
+// Get performance metrics
+const metrics = stream.getMetrics();
+console.log('Transactions/sec:', metrics.transactionsPerSecond);
+console.log('DEX swaps detected:', metrics.dexSwaps);
+
+// Stop when done
+await stream.stop();
+```
+
+### Step 5: Use via PrivateRPCManager
 
 The integration works automatically through PrivateRPCManager:
 
@@ -166,7 +273,54 @@ if (result.success) {
 }
 ```
 
-### Example 2: Mempool Streaming
+### Example 2: Mempool Streaming with BloXrouteMempoolStream
+
+```typescript
+import { BloXrouteMempoolStream, DEX_PROTOCOLS } from './src/execution/relays/BloXrouteMempoolStream';
+import { BloXrouteNetwork, StreamType } from './src/execution/relays/BloXrouteClient';
+
+const stream = new BloXrouteMempoolStream({
+  apiKey: process.env.BLOXROUTE_API_KEY!,
+  network: BloXrouteNetwork.ETHEREUM,
+  streamType: StreamType.PENDING_TXS,
+  
+  // Filter for DEX swaps on Uniswap V3
+  filters: {
+    protocols: [DEX_PROTOCOLS.UNISWAP_V3],
+    minValue: BigInt('100000000000000000'), // >= 0.1 ETH
+  },
+  
+  // Callback for each DEX swap
+  onDexSwap: async (tx) => {
+    console.log('DEX swap detected:', tx.tx_hash);
+    console.log('Method:', tx.method_id);
+    console.log('Value:', tx.value);
+    
+    // Analyze for arbitrage opportunity
+    await analyzeTransaction(tx);
+  },
+  
+  // Error handler
+  onError: (error) => {
+    console.error('Stream error:', error.message);
+  },
+});
+
+// Start streaming
+await stream.start();
+
+// Monitor performance
+setInterval(() => {
+  const metrics = stream.getMetrics();
+  console.log(`TPS: ${metrics.transactionsPerSecond.toFixed(2)}`);
+  console.log(`DEX swaps: ${metrics.dexSwaps}`);
+}, 10000);
+
+// Stop when done
+// await stream.stop();
+```
+
+### Example 2a: Low-Level Mempool Streaming (BloXrouteClient)
 
 ```typescript
 // Subscribe to pending transactions
