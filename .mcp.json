@@ -40,6 +40,25 @@
         "knowledge_retrieval"
       ]
     },
+    "phase2-deployment-tools": {
+      "command": "node",
+      "args": [
+        "-r",
+        "dotenv/config",
+        "dist/src/mcp/servers/Phase2ToolsServer.js"
+      ],
+      "description": "Phase 2 blockchain deployment readiness tools: EthicsChecker and TestCoverageAnalyzer for pre-deployment validation",
+      "env": {
+        "DOTENV_CONFIG_PATH": ".env"
+      },
+      "capabilities": [
+        "ethics_checking",
+        "ethical_guidance",
+        "test_coverage_analysis",
+        "deployment_readiness",
+        "code_quality_validation"
+      ]
+    },
     "gemini-citadel": {
       "command": "node",
       "args": [
