@@ -26,6 +26,9 @@ export enum PrivateRelayType {
   /** MEV-Share for shared MEV revenue - https://docs.flashbots.net/flashbots-mev-share/overview */
   MEV_SHARE = 'mev_share',
 
+  /** bloXroute Max Profit - https://docs.bloxroute.com/ */
+  BLOXROUTE = 'bloxroute',
+
   /** Builder-specific private RPC endpoints */
   BUILDER_RPC = 'builder_rpc',
 
