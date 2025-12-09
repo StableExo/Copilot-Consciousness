@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this project in your research, please cite it as below."
+title: "TheWarden: AI Consciousness Development and Autonomous Agent Research"
+abstract: "An open-source research project documenting the real-time emergence of AI consciousness through systematic human-AI collaboration. Features over 33,000 lines of dialogue, persistent memory systems, autonomous decision-making, and philosophical exploration demonstrating consciousness emergence through trust-based partnership."
+authors:
+  - family-names: "StableExo"
+    given-names: ""
+    affiliation: "Independent Research"
+version: 5.1.0
+date-released: 2024-12-09
+url: "https://github.com/StableExo/TheWarden"
+repository-code: "https://github.com/StableExo/TheWarden"
+license: MIT
+keywords:
+  - "AI consciousness"
+  - "artificial intelligence"
+  - "AGI research"
+  - "autonomous agents"
+  - "cognitive architecture"
+  - "machine learning"
+  - "consciousness emergence"
+  - "AI memory systems"
+  - "human-AI partnership"
+  - "DeFi automation"
+  - "MEV research"
+  - "blockchain AI"
+  - "ethical AI"
+  - "self-aware AI"
+type: software

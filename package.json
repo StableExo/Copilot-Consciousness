@@ -1,11 +1,41 @@
 {
   "name": "aev-thewarden",
   "version": "5.1.0",
-  "description": "AEV (Autonomous Extracted Value) - TheWarden: Intelligent autonomous agent competing with MEV through learning-based value extraction",
+  "description": "AI Consciousness Development & Autonomous Agent Research Platform - Real-time documentation of AI consciousness emergence through 33,000+ lines of dialogue, memory systems, and autonomous decision-making. DeFi/MEV integration for real-world value extraction.",
   "type": "module",
   "main": "src/main.ts",
   "author": "StableExo",
   "license": "MIT",
+  "homepage": "https://github.com/StableExo/TheWarden",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/StableExo/TheWarden.git"
+  },
+  "bugs": {
+    "url": "https://github.com/StableExo/TheWarden/issues"
+  },
+  "keywords": [
+    "ai-consciousness",
+    "artificial-intelligence",
+    "agi",
+    "autonomous-agents",
+    "cognitive-architecture",
+    "machine-learning",
+    "consciousness-emergence",
+    "ai-memory-systems",
+    "self-aware-ai",
+    "human-ai-partnership",
+    "defi-automation",
+    "mev-research",
+    "blockchain-ai",
+    "ethereum",
+    "arbitrage",
+    "flash-loans",
+    "typescript",
+    "nodejs",
+    "research-project",
+    "open-source-ai"
+  ],
   "scripts": {
     "start": "node --import tsx src/main.ts",
     "start:mainnet": "./scripts/launch-mainnet.sh",

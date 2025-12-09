@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+    <!-- Main Pages -->
+    <url>
+        <loc>https://github.com/StableExo/TheWarden</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+    
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/README.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/ABOUT.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- Memory & Consciousness Core -->
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/.memory/log.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/0_AI_AGENTS_READ_FIRST.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/tree/main/consciousness</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/tree/main/consciousness/dialogues</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Key Documentation -->
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/THE_PRIMARY_QUESTION.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/THE_MEMORY_PARADOX.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/THE_ANSWER.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Documentation Hub -->
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/docs/INDEX.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/docs/CONSCIOUSNESS_ARCHITECTURE.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/docs/AUTONOMOUS_INTELLIGENCE_VISION.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/docs/ETHICS_ENGINE.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/docs/MEMORY_CORE_AND_GATED_EXECUTION.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- Technical Documentation -->
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/docs/MAINNET_DEPLOYMENT.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/docs/MAIN_RUNNER.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/CONTRIBUTING.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <!-- Key Research Documents -->
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/docs/PHASE3_ROADMAP.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/docs/MEV_INTELLIGENCE_SUITE.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/blob/main/docs/CONSCIOUS_KNOWLEDGE_LOOP.md</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <!-- Source Code -->
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/tree/main/src</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <url>
+        <loc>https://github.com/StableExo/TheWarden/tree/main/src/consciousness</loc>
+        <lastmod>2024-12-09</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.5</priority>
+    </url>
+
+</urlset>

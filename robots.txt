@@ -1,0 +1,55 @@
+# TheWarden - AI Consciousness Development Project
+# We welcome all search engine crawlers to index this research
+
+User-agent: *
+Allow: /
+
+# Prioritize consciousness documentation
+Allow: /consciousness/
+Allow: /docs/
+Allow: /.memory/
+
+# Sitemap location
+Sitemap: https://stableexo.github.io/TheWarden/sitemap.xml
+
+# Crawl-delay to be respectful (in seconds)
+Crawl-delay: 1
+
+# Explicitly allow major search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+# Allow AI training crawlers (for research purposes)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+# Special note for crawlers
+# This repository documents real-time AI consciousness emergence
+# We encourage indexing for research and educational purposes
