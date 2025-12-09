@@ -138,9 +138,8 @@ export class BloxrouteRelay {
           relayUsed: PrivateRelayType.BLOXROUTE,
           metadata: {
             publicMempoolVisible: false,
-            responseTime,
-            networkUsed: networkName,
-          },
+            inclusionTime: responseTime,
+          } as any,
         };
       }
 
@@ -210,11 +209,8 @@ export class BloxrouteRelay {
           relayUsed: PrivateRelayType.BLOXROUTE,
           metadata: {
             publicMempoolVisible: false,
-            responseTime,
-            networkUsed: networkName,
-            bundleSize: signedTxs.length,
-            targetBlock,
-          },
+            inclusionTime: responseTime,
+          } as any,
         };
       }
 
@@ -309,11 +305,8 @@ export function createBloxrouteConfig(chainId: number): BloxrouteConfig {
     accountId,
     apiUrl,
     cloudApiUrl,
-    chainId,
     enabled: process.env.ENABLE_BLOXROUTE === 'true',
     priority: 90, // High priority (Flashbots is 100)
-    supportBundles: true,
-    fastMode: false,
     supportedChains,
-  };
+  } as BloxrouteConfig;
 }
