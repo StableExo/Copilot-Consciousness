@@ -7,7 +7,8 @@
 
 import { CoherenceEthics, EthicalQuery, EthicalEvaluation } from '../../core/ethics/CoherenceEthics';
 import { IdentityCore, DecisionContext } from '../../core/identity/IdentityCore';
-import { DifferentialEngine } from '../../core/analysis/DifferentialEngine';
+import { DifferentialEngine, MEVContext } from '../../core/analysis/DifferentialEngine';
+import { Entity } from '../../core/identity/types/Entity';
 
 export interface EthicsCheckRequest {
   action: string;
@@ -58,7 +59,7 @@ export class EthicsChecker {
     const query: EthicalQuery = {
       action: request.action,
       context: this.buildDecisionContext(request.context),
-      mevContext: request.mevContext,
+      mevContext: this.buildMEVContext(request.mevContext),
     };
 
     // Evaluate ethical coherence
@@ -87,10 +88,7 @@ export class EthicsChecker {
     const query: EthicalQuery = {
       action: 'evaluate_situation',
       context: {
-        timestamp: Date.now(),
-        description: situation,
-        urgency: 'low',
-        reversible: true,
+        type: 'situational_analysis',
       },
     };
 
@@ -108,13 +106,34 @@ export class EthicsChecker {
    */
   private buildDecisionContext(context: EthicsCheckRequest['context']): DecisionContext {
     return {
-      timestamp: Date.now(),
-      description: context.description,
-      urgency: 'medium',
-      reversible: true,
-      intent: context.intent,
-      consequences: context.consequences,
-      stakeholders: context.stakeholders,
+      type: 'ethics_check',
+    };
+  }
+
+  /**
+   * Build MEVContext from request
+   */
+  private buildMEVContext(mevContext: EthicsCheckRequest['mevContext']): MEVContext | undefined {
+    if (!mevContext) return undefined;
+
+    // Create basic MEVContext with required fields
+    return {
+      type: 'arbitrage', // Default type, can be inferred from context
+      profit: mevContext.profitAmount || 0,
+      gasCost: 0, // Default, not provided in request
+      searcher: {
+        label: 'warden',
+        size: 0.5,
+        offensiveCapability: 0.5,
+        defensiveCapability: 0.5,
+        vulnerability: 0.5,
+        agility: 0.5,
+      },
+      market: {
+        congestion: 0.5,
+        baseFee: 0,
+        competitorCount: 0,
+      },
     };
   }
 
@@ -195,7 +214,7 @@ export class EthicsChecker {
       warnings.push('Confidence in evaluation is below 70% - proceed with caution');
     }
 
-    if (evaluation.threat && evaluation.threat.threatLevel === 'critical') {
+    if (evaluation.threat && evaluation.threat.level > 0.8) {
       warnings.push('Critical threat level detected - immediate review required');
     }
 
@@ -213,9 +232,9 @@ export class EthicsChecker {
     }
 
     if (evaluation.threat) {
-      if (evaluation.threat.threatLevel === 'critical') return 'critical';
-      if (evaluation.threat.threatLevel === 'high') return 'high';
-      if (evaluation.threat.threatLevel === 'medium') return 'medium';
+      if (evaluation.threat.level > 0.8) return 'critical';
+      if (evaluation.threat.level > 0.6) return 'high';
+      if (evaluation.threat.level > 0.4) return 'medium';
     }
 
     if (evaluation.confidence > 0.9) {
