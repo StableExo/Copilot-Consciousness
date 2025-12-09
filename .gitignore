@@ -179,3 +179,5 @@ yarn-error.log*
 # Memory backups (local only)
 .memory-exports/
 test-chatgpt-api.mjs
+external_gateway/
+bx_artifacts.zip

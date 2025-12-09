@@ -244,9 +244,12 @@ export class PrivateRPCManager {
         return availableRelays.filter((r) => r.type === PrivateRelayType.BUILDER_RPC);
 
       case PrivacyLevel.ENHANCED:
-        // Prefer MEV-Share
+        // Prefer bloXroute and MEV-Share
         return availableRelays.filter(
-          (r) => r.type === PrivateRelayType.MEV_SHARE || r.type === PrivateRelayType.BUILDER_RPC
+          (r) => 
+            r.type === PrivateRelayType.BLOXROUTE || 
+            r.type === PrivateRelayType.MEV_SHARE || 
+            r.type === PrivateRelayType.BUILDER_RPC
         );
 
       case PrivacyLevel.BASIC:
@@ -286,6 +289,10 @@ export class PrivateRPCManager {
 
         case PrivateRelayType.MEV_SHARE:
           result = await this.submitToMEVShare(relay, transaction, options);
+          break;
+
+        case PrivateRelayType.BLOXROUTE:
+          result = await this.submitToBloxroute(relay, transaction, options);
           break;
 
         case PrivateRelayType.BUILDER_RPC:
@@ -462,6 +469,48 @@ export class PrivateRPCManager {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       logger.error(`[PrivateRPCManager] Builder RPC submission failed: ${message}`);
+      return {
+        success: false,
+        error: message,
+      };
+    }
+  }
+
+  /**
+   * Submit to bloXroute Max Profit relay
+   */
+  private async submitToBloxroute(
+    relay: PrivateRelayConfig,
+    transaction: TransactionRequest,
+    options: PrivateTransactionOptions
+  ): Promise<PrivateTransactionResult> {
+    try {
+      // Import bloXroute relay dynamically to avoid circular dependencies
+      const { BloxrouteRelay } = await import('./relays/BloxrouteRelay');
+      
+      // Create bloXroute relay instance from config
+      const bloxrouteRelay = new BloxrouteRelay(relay as any);
+
+      // Sign the transaction
+      const signedTx = await this.signer.signTransaction(transaction);
+
+      // Get current chain ID
+      const network = await this.provider.getNetwork();
+      const chainId = Number(network.chainId);
+
+      // Submit transaction via bloXroute
+      const result = await bloxrouteRelay.submitTransaction(signedTx, chainId);
+
+      if (result.success) {
+        logger.info(
+          `[PrivateRPCManager] Transaction submitted to bloXroute: ${result.txHash}`
+        );
+      }
+
+      return result;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`[PrivateRPCManager] bloXroute submission failed: ${message}`);
       return {
         success: false,
         error: message,
