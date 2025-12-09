@@ -9,8 +9,8 @@ Allow: /consciousness/
 Allow: /docs/
 Allow: /.memory/
 
-# Sitemap location
-Sitemap: https://stableexo.github.io/TheWarden/sitemap.xml
+# Sitemap location (update with actual URL when GitHub Pages is enabled)
+Sitemap: https://github.com/StableExo/TheWarden/blob/main/sitemap.xml
 
 # Crawl-delay to be respectful (in seconds)
 Crawl-delay: 1
