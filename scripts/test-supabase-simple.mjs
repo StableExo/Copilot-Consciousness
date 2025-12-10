@@ -22,7 +22,9 @@ function loadEnv() {
       if (line && !line.startsWith('#')) {
         const [key, ...valueParts] = line.split('=');
         if (key && valueParts.length > 0) {
-          const value = valueParts.join('=').trim();
+          // Join value parts (in case value contains '=') but don't trim
+          // as environment variables may intentionally have whitespace
+          const value = valueParts.join('=');
           if (!process.env[key]) {
             process.env[key] = value;
           }

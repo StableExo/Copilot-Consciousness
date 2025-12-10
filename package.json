@@ -96,6 +96,8 @@
     "supabase:reload-schema": "node --import tsx scripts/database/reload-supabase-schema.ts",
     "supabase:verify-env": "node --import tsx scripts/database/verify-environment-tables.ts",
     "supabase:hotfix-env": "node --import tsx scripts/database/apply-environment-hotfix.ts",
+    "supabase:add-production-env": "node --import tsx scripts/add-production-env-to-supabase.ts",
+    "env:add-production": "node --import tsx scripts/add-production-env-to-supabase.ts",
     "test:supabase:setup": "supabase start && supabase db reset",
     "test:supabase": "npm run test:supabase:setup && vitest run tests/supabase",
     "test:supabase:watch": "supabase start && vitest watch tests/supabase",
