@@ -125,7 +125,26 @@ async function main() {
     
     if (insertError) {
       console.error('   ❌ Cannot write to environment_configs:', insertError.message);
-      console.error('   ⚠️  Check your RLS policies or use SUPABASE_SERVICE_KEY');
+      
+      // Check if this is a schema cache issue
+      if (insertError.message.includes('schema cache') || insertError.message.includes('column')) {
+        console.error('\n   🔍 SCHEMA CACHE ISSUE DETECTED!');
+        console.error('   ━'.repeat(50));
+        console.error('   This happens when PostgREST\'s schema cache is stale.');
+        console.error('   The columns exist in the database but the API doesn\'t know about them yet.\n');
+        console.error('   📋 FIX OPTIONS:\n');
+        console.error('   Option 1 - Apply hotfix (recommended):');
+        console.error('      node --import tsx scripts/database/apply-environment-hotfix.ts\n');
+        console.error('   Option 2 - Reload schema cache:');
+        console.error('      node --import tsx scripts/database/reload-supabase-schema.ts\n');
+        console.error('   Option 3 - Wait 30-60 seconds:');
+        console.error('      PostgREST automatically reloads schema periodically\n');
+        console.error('   Option 4 - Use SERVICE_KEY:');
+        console.error('      Set SUPABASE_SERVICE_KEY environment variable\n');
+        console.error('   ━'.repeat(50));
+      } else {
+        console.error('   ⚠️  Check your RLS policies or use SUPABASE_SERVICE_KEY');
+      }
     } else {
       console.log('   ✅ Write permissions OK');
       
@@ -173,7 +192,16 @@ async function main() {
     }
     
     console.log('\n' + '━'.repeat(60));
-    console.log('✅ All verification checks passed!');
+    
+    // Determine if all critical checks passed
+    const criticalChecksPassed = !configsError && !secretsError && !insertError;
+    
+    if (criticalChecksPassed) {
+      console.log('✅ All verification checks passed!');
+    } else {
+      console.log('⚠️  Verification completed with warnings');
+      console.log('   Some checks failed - see details above');
+    }
     console.log('\n📝 Next steps:');
     console.log('   1. Use SupabaseEnvStorage service to store your environment');
     console.log('   2. Import existing .env variables: storage.importFromEnv()');
