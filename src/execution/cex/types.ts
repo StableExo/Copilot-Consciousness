@@ -87,23 +87,26 @@ export interface LiquiditySnapshot {
  * CEX-DEX arbitrage opportunity
  */
 export interface CEXDEXArbitrage {
-  id: string; // Unique opportunity ID
-  token: string; // Token symbol (e.g., "ETH", "WBTC")
+  symbol: string; // Trading pair (e.g., "BTC/USDT")
   cexExchange: CEXExchange;
-  cexPrice: string; // CEX price
   dexName: string; // DEX name (e.g., "Uniswap V3")
-  dexPrice: string; // DEX price
-  direction: 'buy_cex_sell_dex' | 'buy_dex_sell_cex';
-  priceDiff: string; // Absolute price difference
+  dexPool: string; // DEX pool address
+  direction: 'BUY_DEX_SELL_CEX' | 'BUY_CEX_SELL_DEX';
+  cexPrice: number; // CEX price
+  dexPrice: number; // DEX price
   priceDiffPercent: number; // Price difference percentage
-  estimatedProfit: string; // Estimated profit in USD
-  estimatedGasCost: string; // Estimated gas cost
-  netProfit: string; // Net profit after fees and gas
-  cexFee: string; // CEX trading fee
-  dexFee: string; // DEX swap fee
-  confidence: number; // Confidence score (0-1)
+  tradeSize: number; // Trade size in USD
+  grossProfit: number; // Gross profit before fees
+  fees: {
+    cexTradingFee: number;
+    dexSwapFee: number;
+    gasCost: number;
+    slippage: number;
+    total: number;
+  };
+  netProfit: number; // Net profit after all fees
+  netProfitPercent: number; // Net profit as percentage
   timestamp: number;
-  expiry?: number; // Opportunity expiry timestamp
 }
 
 /**
