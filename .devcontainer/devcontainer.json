@@ -34,38 +34,68 @@
   
   "postStartCommand": "source scripts/setup-node.sh && echo '📦 Node.js ready: '$(node --version)",
   
-  "forwardPorts": [3000, 3001, 5432, 6379, 8080, 8500],
+  "forwardPorts": [3000, 3001, 3010, 5432, 5672, 6379, 8080, 8500, 9090, 15672],
   
   "portsAttributes": {
     "3000": {
       "label": "Dashboard",
       "protocol": "https",
-      "onAutoForward": "notify"
+      "onAutoForward": "notify",
+      "visibility": "private"
     },
     "3001": {
       "label": "Red Team Dashboard",
       "protocol": "https",
-      "onAutoForward": "notify"
+      "onAutoForward": "notify",
+      "visibility": "private"
+    },
+    "3010": {
+      "label": "Grafana",
+      "protocol": "https",
+      "onAutoForward": "notify",
+      "visibility": "private"
     },
     "5432": {
       "label": "PostgreSQL/TimescaleDB",
       "protocol": "http",
-      "onAutoForward": "silent"
+      "onAutoForward": "silent",
+      "visibility": "private"
+    },
+    "5672": {
+      "label": "RabbitMQ",
+      "protocol": "http",
+      "onAutoForward": "silent",
+      "visibility": "private"
     },
     "6379": {
       "label": "Redis",
       "protocol": "http",
-      "onAutoForward": "silent"
+      "onAutoForward": "silent",
+      "visibility": "private"
     },
     "8080": {
       "label": "Health Check",
       "protocol": "https",
-      "onAutoForward": "ignore"
+      "onAutoForward": "ignore",
+      "visibility": "private"
     },
     "8500": {
       "label": "Consul UI",
       "protocol": "https",
-      "onAutoForward": "ignore"
+      "onAutoForward": "notify",
+      "visibility": "private"
+    },
+    "9090": {
+      "label": "Prometheus UI",
+      "protocol": "https",
+      "onAutoForward": "notify",
+      "visibility": "private"
+    },
+    "15672": {
+      "label": "RabbitMQ Management UI",
+      "protocol": "https",
+      "onAutoForward": "notify",
+      "visibility": "private"
     }
   },
   
