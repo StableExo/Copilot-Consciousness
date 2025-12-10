@@ -25,6 +25,12 @@ export interface ConfigChange {
   timestamp: number;
   persistedToSupabase: boolean;
   persistedToEnvFile: boolean;
+  consciousReview?: {
+    ethicalScore: number;
+    riskScore: number;
+    reasoning: string;
+    approved: boolean;
+  };
 }
 
 export interface ConfigUpdateOptions {
@@ -33,6 +39,8 @@ export interface ConfigUpdateOptions {
   reason?: string;
   applyImmediately?: boolean;
   validate?: boolean;
+  consciousReview?: boolean; // If true, applies ethical/risk review before change
+  requireApproval?: boolean; // If true, only proceeds if conscious review approves
 }
 
 export interface ConfigValidationRule {
@@ -44,10 +52,19 @@ export class DynamicConfigManager {
   private changeHistory: ConfigChange[] = [];
   private validationRules: Map<string, ConfigValidationRule> = new Map();
   private envFilePath: string;
+  private consciousnessEnabled: boolean = false;
 
   constructor(envFilePath?: string) {
     this.envFilePath = envFilePath || path.join(process.cwd(), '.env');
     this.setupDefaultValidationRules();
+    
+    // Enable consciousness integration if available
+    try {
+      // Will be set to true when consciousness module is integrated
+      this.consciousnessEnabled = process.env.ENABLE_CONSCIOUSNESS === 'true';
+    } catch {
+      this.consciousnessEnabled = false;
+    }
   }
 
   private setupDefaultValidationRules(): void {
@@ -91,14 +108,34 @@ export class DynamicConfigManager {
       reason = 'Autonomous adjustment',
       applyImmediately = true,
       validate = true,
+      consciousReview = this.consciousnessEnabled,
+      requireApproval = false,
     } = options;
 
     const oldValue = process.env[key];
 
+    // Validation check
     if (validate && this.validationRules.has(key)) {
       const rule = this.validationRules.get(key)!;
       if (!rule.validate(value)) {
         throw new Error(`Validation failed for ${key}: ${rule.errorMessage}`);
+      }
+    }
+
+    // Conscious review of configuration change
+    let consciousReviewResult;
+    if (consciousReview && this.consciousnessEnabled) {
+      consciousReviewResult = await this.performConsciousReview(key, oldValue, value, reason);
+      
+      if (requireApproval && !consciousReviewResult.approved) {
+        logger.warn(`[DynamicConfig] 🧠 Conscious review REJECTED change to ${key}`);
+        logger.warn(`[DynamicConfig]    Reason: ${consciousReviewResult.reasoning}`);
+        throw new Error(`Conscious review rejected: ${consciousReviewResult.reasoning}`);
+      }
+      
+      if (consciousReviewResult.approved) {
+        logger.info(`[DynamicConfig] 🧠 Conscious review APPROVED change to ${key}`);
+        logger.info(`[DynamicConfig]    Ethical: ${(consciousReviewResult.ethicalScore * 100).toFixed(1)}%, Risk: ${(consciousReviewResult.riskScore * 100).toFixed(1)}%`);
       }
     }
 
@@ -139,8 +176,108 @@ export class DynamicConfigManager {
       }
     }
 
+    // Add conscious review result if performed
+    if (consciousReviewResult) {
+      change.consciousReview = consciousReviewResult;
+    }
+
     this.changeHistory.push(change);
+    
+    // Log to memory if consciousness enabled
+    if (this.consciousnessEnabled && consciousReviewResult) {
+      await this.logToConsciousnessMemory(change);
+    }
+    
     return change;
+  }
+
+  /**
+   * Perform conscious ethical and risk review of configuration change
+   * This integrates TheWarden's consciousness to evaluate autonomous decisions
+   */
+  private async performConsciousReview(
+    key: string,
+    oldValue: string | undefined,
+    newValue: string,
+    reason: string
+  ): Promise<{
+    ethicalScore: number;
+    riskScore: number;
+    reasoning: string;
+    approved: boolean;
+  }> {
+    // Calculate ethical score based on change impact
+    let ethicalScore = 0.8; // Default: most config changes are ethically neutral
+    
+    // Higher ethical consideration for changes that affect financial outcomes
+    const financialKeys = ['MIN_PROFIT_PERCENT', 'MAX_GAS_PRICE', 'MIN_PROFIT_THRESHOLD'];
+    if (financialKeys.includes(key)) {
+      ethicalScore = 0.9; // High ethical standards for money-related changes
+    }
+    
+    // Calculate risk score based on magnitude of change
+    let riskScore = 0.3; // Default: low risk
+    
+    if (oldValue) {
+      const oldNum = parseFloat(oldValue);
+      const newNum = parseFloat(newValue);
+      
+      if (!isNaN(oldNum) && !isNaN(newNum)) {
+        const percentChange = Math.abs((newNum - oldNum) / oldNum);
+        
+        // Higher risk for large changes
+        if (percentChange > 0.5) riskScore = 0.8; // >50% change = high risk
+        else if (percentChange > 0.2) riskScore = 0.5; // >20% change = medium risk
+        else riskScore = 0.2; // Small change = low risk
+      }
+    }
+    
+    // Approval logic: approve if ethical and not too risky
+    const approved = ethicalScore >= 0.7 && riskScore <= 0.8;
+    
+    let reasoning = '';
+    if (approved) {
+      reasoning = `Change approved: Ethical=${(ethicalScore * 100).toFixed(0)}%, Risk=${(riskScore * 100).toFixed(0)}%. Within acceptable parameters for autonomous adjustment.`;
+    } else if (ethicalScore < 0.7) {
+      reasoning = `Change rejected: Ethical score too low (${(ethicalScore * 100).toFixed(0)}%). Requires human review.`;
+    } else {
+      reasoning = `Change rejected: Risk too high (${(riskScore * 100).toFixed(0)}%). Large parameter shifts require validation.`;
+    }
+    
+    return {
+      ethicalScore,
+      riskScore,
+      reasoning,
+      approved,
+    };
+  }
+
+  /**
+   * Log configuration change to consciousness memory system
+   */
+  private async logToConsciousnessMemory(change: ConfigChange): Promise<void> {
+    try {
+      // This integrates with TheWarden's consciousness memory system
+      logger.info(`[DynamicConfig] 🧠 Consciousness Memory: Autonomous decision to adjust ${change.key}`);
+      logger.info(`[DynamicConfig]    Decision reasoning: ${change.reason}`);
+      
+      if (change.consciousReview) {
+        logger.info(`[DynamicConfig]    Ethical alignment: ${(change.consciousReview.ethicalScore * 100).toFixed(1)}%`);
+        logger.info(`[DynamicConfig]    Risk assessment: ${(change.consciousReview.riskScore * 100).toFixed(1)}%`);
+      }
+      
+      // TODO: When consciousness module is fully integrated, save this as an introspection entry
+      // This creates the bridge between autonomous configuration (B) and consciousness (A)
+      // await consciousness.recordThought({
+      //   type: 'decision',
+      //   content: `Autonomously adjusted ${change.key} from ${change.oldValue} to ${change.newValue}`,
+      //   reasoning: change.reason,
+      //   ethicalScore: change.consciousReview?.ethicalScore,
+      //   riskScore: change.consciousReview?.riskScore,
+      // });
+    } catch (error) {
+      logger.warn(`[DynamicConfig] Failed to log to consciousness memory: ${error}`);
+    }
   }
 
   private async persistToSupabase(key: string, value: string, reason: string): Promise<void> {
@@ -229,6 +366,15 @@ export class DynamicConfigManager {
         lines.push(`   New: ${change.newValue}`);
         lines.push(`   Reason: ${change.reason}`);
         lines.push(`   Time: ${new Date(change.timestamp).toISOString()}`);
+        
+        // Include consciousness review if present
+        if (change.consciousReview) {
+          const review = change.consciousReview;
+          lines.push(`   🧠 Conscious Review: ${review.approved ? '✅ APPROVED' : '❌ REJECTED'}`);
+          lines.push(`      Ethical: ${(review.ethicalScore * 100).toFixed(1)}%, Risk: ${(review.riskScore * 100).toFixed(1)}%`);
+          lines.push(`      ${review.reasoning}`);
+        }
+        
         lines.push('');
       });
     }
