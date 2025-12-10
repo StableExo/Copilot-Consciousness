@@ -121,6 +121,69 @@ export class ServiceRegistry {
         fallbackRange: { start: 9090, end: 9100 },
         required: false,
       },
+      // HTTP Server (Nginx/Load Balancer)
+      {
+        name: 'http',
+        port: parseInt(process.env.HTTP_PORT || '80', 10),
+        fallbackRange: { start: 8080, end: 8090 },
+        required: false,
+      },
+      // HTTPS Server (Nginx/Load Balancer)
+      {
+        name: 'https',
+        port: parseInt(process.env.HTTPS_PORT || '443', 10),
+        fallbackRange: { start: 8443, end: 8453 },
+        required: false,
+      },
+      // Grafana Dashboard
+      {
+        name: 'grafana',
+        port: parseInt(process.env.GRAFANA_PORT || '3010', 10),
+        fallbackRange: { start: 3010, end: 3020 },
+        required: false,
+      },
+      // RabbitMQ Message Queue
+      {
+        name: 'rabbitmq',
+        port: parseInt(process.env.RABBITMQ_PORT || '5672', 10),
+        fallbackRange: { start: 5672, end: 5680 },
+        required: false,
+      },
+      // RabbitMQ Management UI
+      {
+        name: 'rabbitmq-mgmt',
+        port: parseInt(process.env.RABBITMQ_MGMT_PORT || '15672', 10),
+        fallbackRange: { start: 15672, end: 15680 },
+        required: false,
+      },
+      // Redis Cache
+      {
+        name: 'redis',
+        port: parseInt(process.env.REDIS_PORT || '6379', 10),
+        fallbackRange: { start: 6379, end: 6390 },
+        required: false,
+      },
+      // PostgreSQL/TimescaleDB
+      {
+        name: 'postgres',
+        port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
+        fallbackRange: { start: 5432, end: 5440 },
+        required: false,
+      },
+      // Consul Service Discovery
+      {
+        name: 'consul',
+        port: parseInt(process.env.CONSUL_PORT || '8500', 10),
+        fallbackRange: { start: 8500, end: 8510 },
+        required: false,
+      },
+      // Jaeger Tracing UI
+      {
+        name: 'jaeger',
+        port: parseInt(process.env.JAEGER_UI_PORT || '16686', 10),
+        fallbackRange: { start: 16686, end: 16696 },
+        required: false,
+      },
     ];
 
     for (const service of services) {
