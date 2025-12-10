@@ -23,6 +23,8 @@ import 'dotenv/config';
 
 import { loadEnvFromSupabase } from './utils/supabaseEnvLoader';
 import { logger } from './utils/logger';
+import { AutonomousReadinessChecker } from './infrastructure/readiness/AutonomousReadinessChecker';
+import { MemoryAdapter } from './memory/MemoryAdapter';
 
 /**
  * Bootstrap TheWarden with Supabase environment loading
@@ -79,7 +81,46 @@ async function bootstrap() {
       logger.info('═══════════════════════════════════════════════════════════');
     }
 
-    // Step 2: Import and start TheWarden main application
+    // Step 2: Check readiness for autonomous operation
+    logger.info('');
+    logger.info('Checking readiness for autonomous operation...');
+    
+    const readinessChecker = new AutonomousReadinessChecker({
+      requiredEnvVars: [
+        'CHAIN_ID',
+        'WALLET_PRIVATE_KEY',
+      ],
+      checkSupabase: true,
+      checkNetwork: true,
+      checkMemory: true,
+      networkTimeout: 10000,
+    });
+
+    // Initialize memory adapter for memory checks
+    const memoryAdapter = new MemoryAdapter();
+    readinessChecker.setMemoryAdapter(memoryAdapter);
+
+    // Perform readiness check with retries
+    const readinessResult = await readinessChecker.waitForReady(3, 2000);
+
+    if (!readinessResult.ready) {
+      logger.error('');
+      logger.error('═══════════════════════════════════════════════════════════');
+      logger.error('❌ BOOTSTRAP FAILED: System not ready for autonomous operation');
+      logger.error('═══════════════════════════════════════════════════════════');
+      logger.error('');
+      logger.error(AutonomousReadinessChecker.formatReport(readinessResult));
+      logger.error('');
+      logger.error('Please fix the issues above before starting TheWarden');
+      logger.error('═══════════════════════════════════════════════════════════');
+      process.exit(1);
+    }
+
+    logger.info('');
+    logger.info('✅ Readiness check passed - system ready for autonomous operation!');
+    logger.info('');
+
+    // Step 3: Import and start TheWarden main application
     logger.info('Starting TheWarden main application...');
     const { main } = await import('./main');
     await main();
