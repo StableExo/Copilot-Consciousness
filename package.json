@@ -25,6 +25,7 @@
     "preload:pools": "node --import tsx scripts/preload-pools.ts",
     "preload:pools:force": "node --import tsx scripts/preload-pools.ts --force",
     "status": "./scripts/status.sh",
+    "check:ports": "node --import tsx scripts/check-ports.ts",
     "dev": "node --import tsx src/main.ts",
     "dev:watch": "node --import tsx --watch src/main.ts",
     "dev:kill": "kill $(lsof -t -i:3000)",
