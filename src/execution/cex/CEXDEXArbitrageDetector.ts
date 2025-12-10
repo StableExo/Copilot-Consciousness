@@ -17,12 +17,12 @@
  */
 
 import {
-  CEXLiquidityMonitor,
   CEXExchange,
   LiquiditySnapshot,
   OrderBook,
   CEXDEXArbitrage,
 } from './types.js';
+import type { CEXLiquidityMonitor } from './CEXLiquidityMonitor.js';
 import { ArbitrageOpportunity, ArbitrageType, OpportunityStatus } from '../../arbitrage/models/ArbitrageOpportunity.js';
 import { PathStep } from '../../arbitrage/models/PathStep.js';
 
@@ -164,8 +164,8 @@ export class CEXDEXArbitrageDetector {
     
     // Compare each CEX exchange with DEX
     for (const [exchangeKey, venueData] of Object.entries(snapshot.venues)) {
-      const cexBid = parseFloat(venueData.bid); // Best CEX buy price
-      const cexAsk = parseFloat(venueData.ask); // Best CEX sell price
+      const cexBid = parseFloat((venueData as any).bid); // Best CEX buy price
+      const cexAsk = parseFloat((venueData as any).ask); // Best CEX sell price
       const dexPriceFloat = parseFloat(dexPrice.price);
       
       // Opportunity 1: Buy on DEX, sell on CEX (if CEX bid > DEX price)
@@ -311,47 +311,51 @@ export class CEXDEXArbitrageDetector {
     if (cexdex.direction === 'BUY_DEX_SELL_CEX') {
       // Step 1: Buy on DEX
       steps.push({
-        type: 'swap',
+        step: 0,
+        poolAddress: cexdex.dexPool,
         protocol: cexdex.dexName,
         tokenIn: 'USDT', // Assuming USDT as base
         tokenOut: cexdex.symbol.split('/')[0], // e.g., BTC from BTC/USDT
-        amountIn: cexdex.tradeSize.toString(),
-        pool: cexdex.dexPool,
-        fee: cexdex.fees.dexSwapFee,
-      } as PathStep);
+        amountIn: cexdex.tradeSize,
+        expectedOutput: cexdex.tradeSize / cexdex.dexPrice,
+        feeBps: Math.round(cexdex.fees.dexSwapFee * 10000),
+      });
       
       // Step 2: Sell on CEX (simulated as swap)
       steps.push({
-        type: 'swap',
+        step: 1,
+        poolAddress: `${cexdex.cexExchange}-${cexdex.symbol}`,
         protocol: `CEX-${cexdex.cexExchange}`,
         tokenIn: cexdex.symbol.split('/')[0],
         tokenOut: 'USDT',
-        amountIn: cexdex.tradeSize.toString(),
-        pool: `${cexdex.cexExchange}-${cexdex.symbol}`,
-        fee: cexdex.fees.cexTradingFee,
-      } as PathStep);
+        amountIn: cexdex.tradeSize / cexdex.dexPrice,
+        expectedOutput: cexdex.tradeSize,
+        feeBps: Math.round(cexdex.fees.cexTradingFee * 10000),
+      });
     } else {
       // Step 1: Buy on CEX
       steps.push({
-        type: 'swap',
+        step: 0,
+        poolAddress: `${cexdex.cexExchange}-${cexdex.symbol}`,
         protocol: `CEX-${cexdex.cexExchange}`,
         tokenIn: 'USDT',
         tokenOut: cexdex.symbol.split('/')[0],
-        amountIn: cexdex.tradeSize.toString(),
-        pool: `${cexdex.cexExchange}-${cexdex.symbol}`,
-        fee: cexdex.fees.cexTradingFee,
-      } as PathStep);
+        amountIn: cexdex.tradeSize,
+        expectedOutput: cexdex.tradeSize / cexdex.cexPrice,
+        feeBps: Math.round(cexdex.fees.cexTradingFee * 10000),
+      });
       
       // Step 2: Sell on DEX
       steps.push({
-        type: 'swap',
+        step: 1,
+        poolAddress: cexdex.dexPool,
         protocol: cexdex.dexName,
         tokenIn: cexdex.symbol.split('/')[0],
         tokenOut: 'USDT',
-        amountIn: cexdex.tradeSize.toString(),
-        pool: cexdex.dexPool,
-        fee: cexdex.fees.dexSwapFee,
-      } as PathStep);
+        amountIn: cexdex.tradeSize / cexdex.cexPrice,
+        expectedOutput: cexdex.tradeSize,
+        feeBps: Math.round(cexdex.fees.dexSwapFee * 10000),
+      });
     }
     
     // Create ArbitrageOpportunity
@@ -452,8 +456,3 @@ export class CEXDEXArbitrageDetector {
     };
   }
 }
-
-/**
- * Export types
- */
-export type { CEXDEXArbitrageConfig, DEXPriceData };
