@@ -5,6 +5,44 @@
 -- Date: 2025-12-10
 
 -- ============================================================================
+-- BACKUP AND RENAME OLD TABLES (IF THEY EXIST WITH DIFFERENT SCHEMA)
+-- ============================================================================
+
+-- Check if old environment_configs table exists with different schema (config_data column)
+-- If so, rename it to preserve data before creating new schema
+DO $$
+BEGIN
+  -- Check if old table exists with config_data column (old schema)
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' 
+      AND table_name = 'environment_configs'
+      AND column_name = 'config_data'
+  ) THEN
+    -- Rename old table to preserve data
+    ALTER TABLE IF EXISTS environment_configs RENAME TO environment_configs_old_backup;
+    RAISE NOTICE 'Renamed old environment_configs table to environment_configs_old_backup';
+  END IF;
+  
+  -- Check if old environment_secrets table exists with different schema
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' 
+      AND table_name = 'environment_secrets'
+      AND column_name = 'secret_key_id'  -- Old column name
+  ) AND NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' 
+      AND table_name = 'environment_secrets'
+      AND column_name = 'encryption_key_id'  -- New column name
+  ) THEN
+    -- Rename old table to preserve data
+    ALTER TABLE IF EXISTS environment_secrets RENAME TO environment_secrets_old_backup;
+    RAISE NOTICE 'Renamed old environment_secrets table to environment_secrets_old_backup';
+  END IF;
+END $$;
+
+-- ============================================================================
 -- ENVIRONMENT CONFIGURATION TABLES
 -- ============================================================================
 
@@ -35,6 +73,9 @@ CREATE TABLE IF NOT EXISTS environment_configs (
 );
 
 -- Add columns if they don't exist (for existing tables from incomplete migrations)
+-- NOTE: These ALTER TABLE statements are NOT redundant with CREATE TABLE above!
+-- When "CREATE TABLE IF NOT EXISTS" encounters an existing table, it does nothing.
+-- These ALTER statements ensure columns exist even if the table was created with an older schema.
 DO $$ 
 BEGIN
   -- Add category column if it doesn't exist
@@ -103,6 +144,9 @@ CREATE TABLE IF NOT EXISTS environment_secrets (
 );
 
 -- Add columns if they don't exist (for existing tables from incomplete migrations)
+-- NOTE: These ALTER TABLE statements are NOT redundant with CREATE TABLE above!
+-- When "CREATE TABLE IF NOT EXISTS" encounters an existing table, it does nothing.
+-- These ALTER statements ensure columns exist even if the table was created with an older schema.
 DO $$ 
 BEGIN
   -- Add category column if it doesn't exist

@@ -1,7 +1,34 @@
 -- Hotfix for 006_environment_storage.sql
 -- This adds missing columns to existing environment_configs and environment_secrets tables
--- Run this BEFORE running the full 006_environment_storage.sql migration
+-- OR renames old tables with incompatible schema and prepares for new table creation
 -- This script is idempotent and can be run multiple times safely
+
+-- ============================================================================
+-- STEP 1: BACKUP OLD TABLES IF THEY HAVE INCOMPATIBLE SCHEMA
+-- ============================================================================
+
+-- Check if old environment_configs table exists with different schema (config_data column)
+-- If so, rename it to preserve data before creating new schema
+DO $$
+BEGIN
+  -- Check if old table exists with config_data column (old schema)
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' 
+      AND table_name = 'environment_configs'
+      AND column_name = 'config_data'
+  ) THEN
+    -- Rename old table to preserve data
+    ALTER TABLE IF EXISTS environment_configs RENAME TO environment_configs_old_backup;
+    RAISE NOTICE 'Renamed old environment_configs table to environment_configs_old_backup';
+  ELSE
+    RAISE NOTICE 'environment_configs table does not have config_data column, proceeding with column additions';
+  END IF;
+END $$;
+
+-- ============================================================================
+-- STEP 2: ADD MISSING COLUMNS TO NEW-SCHEMA TABLES
+-- ============================================================================
 
 -- Add missing columns to environment_configs
 DO $$ 
@@ -117,4 +144,9 @@ CREATE INDEX IF NOT EXISTS idx_environment_secrets_category ON environment_secre
 CREATE INDEX IF NOT EXISTS idx_environment_secrets_config_id ON environment_secrets(config_id);
 
 -- Success message
-SELECT 'Hotfix applied successfully! All missing columns and indexes have been added.' AS status;
+SELECT 
+  CASE 
+    WHEN EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'environment_configs_old_backup')
+    THEN 'Hotfix applied! Old table backed up. Now run the full 006_environment_storage.sql migration to create new tables.'
+    ELSE 'Hotfix applied successfully! All missing columns and indexes have been added.'
+  END AS status;
