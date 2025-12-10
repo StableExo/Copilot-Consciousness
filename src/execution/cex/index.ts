@@ -11,3 +11,5 @@ export { OKXConnector } from './OKXConnector.js';
 export { BybitConnector } from './BybitConnector.js';
 export { KrakenConnector } from './KrakenConnector.js';
 export { CEXLiquidityMonitor } from './CEXLiquidityMonitor.js';
+export { CEXDEXArbitrageDetector } from './CEXDEXArbitrageDetector.js';
+export type { CEXDEXArbitrageConfig, DEXPriceData } from './CEXDEXArbitrageDetector.js';
