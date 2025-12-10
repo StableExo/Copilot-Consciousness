@@ -34,6 +34,42 @@ CREATE TABLE IF NOT EXISTS environment_configs (
   updated_by TEXT
 );
 
+-- Add columns if they don't exist (for existing tables from incomplete migrations)
+DO $$ 
+BEGIN
+  -- Add category column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_configs' AND column_name = 'category'
+  ) THEN
+    ALTER TABLE environment_configs ADD COLUMN category TEXT;
+  END IF;
+  
+  -- Add is_required column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_configs' AND column_name = 'is_required'
+  ) THEN
+    ALTER TABLE environment_configs ADD COLUMN is_required BOOLEAN DEFAULT false;
+  END IF;
+  
+  -- Add value_type column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_configs' AND column_name = 'value_type'
+  ) THEN
+    ALTER TABLE environment_configs ADD COLUMN value_type TEXT DEFAULT 'string';
+  END IF;
+  
+  -- Add validation_regex column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_configs' AND column_name = 'validation_regex'
+  ) THEN
+    ALTER TABLE environment_configs ADD COLUMN validation_regex TEXT;
+  END IF;
+END $$;
+
 -- 2. environment_secrets: Store encrypted sensitive configuration
 CREATE TABLE IF NOT EXISTS environment_secrets (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -65,6 +101,50 @@ CREATE TABLE IF NOT EXISTS environment_secrets (
   updated_by TEXT,
   access_count INTEGER DEFAULT 0
 );
+
+-- Add columns if they don't exist (for existing tables from incomplete migrations)
+DO $$ 
+BEGIN
+  -- Add category column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_secrets' AND column_name = 'category'
+  ) THEN
+    ALTER TABLE environment_secrets ADD COLUMN category TEXT;
+  END IF;
+  
+  -- Add encryption_key_id column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_secrets' AND column_name = 'encryption_key_id'
+  ) THEN
+    ALTER TABLE environment_secrets ADD COLUMN encryption_key_id TEXT;
+  END IF;
+  
+  -- Add allowed_services column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_secrets' AND column_name = 'allowed_services'
+  ) THEN
+    ALTER TABLE environment_secrets ADD COLUMN allowed_services TEXT[] DEFAULT '{}';
+  END IF;
+  
+  -- Add last_accessed_at column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_secrets' AND column_name = 'last_accessed_at'
+  ) THEN
+    ALTER TABLE environment_secrets ADD COLUMN last_accessed_at TIMESTAMPTZ;
+  END IF;
+  
+  -- Add access_count column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_secrets' AND column_name = 'access_count'
+  ) THEN
+    ALTER TABLE environment_secrets ADD COLUMN access_count INTEGER DEFAULT 0;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- INDEXES
