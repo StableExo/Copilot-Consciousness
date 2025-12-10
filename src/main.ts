@@ -658,12 +658,12 @@ class TheWarden extends EventEmitter {
               minNetProfitUsd: profitableInfraConfig.cex.minNetProfitUsd,
             },
             {
-              onOpportunityFound: (opportunity) => {
+              onOpportunityFound: (opportunity: any) => {
                 logger.info(`💰 CEX-DEX Arbitrage Opportunity Found!`);
                 logger.info(`  Symbol: ${opportunity.symbol}`);
                 logger.info(`  Direction: ${opportunity.direction}`);
-                logger.info(`  Net Profit: $${opportunity.netProfit.toFixed(2)}`);
-                logger.info(`  Spread: ${opportunity.spreadPercent.toFixed(3)}%`);
+                logger.info(`  Net Profit: $${opportunity.netProfit?.toFixed(2) || '0.00'}`);
+                logger.info(`  Spread: ${opportunity.priceDiffPercent?.toFixed(3) || '0.000'}%`);
                 // TODO: Forward to execution pipeline
               },
             }
@@ -704,39 +704,35 @@ class TheWarden extends EventEmitter {
         try {
           // Dynamic import to avoid circular dependencies
           const { BloXrouteMempoolStream } = await import('./execution/relays/BloXrouteMempoolStream.js');
-          const { BloXrouteClient } = await import('./execution/relays/BloXrouteClient.js');
 
           if (!profitableInfraConfig.bloxroute.apiKey && !profitableInfraConfig.bloxroute.authHeader) {
             logger.warn('  ⚠️  No bloXroute API key configured - using free tier limitations');
           }
 
-          // Create bloXroute client
-          const bloxrouteClient = new BloXrouteClient({
-            authHeader: profitableInfraConfig.bloxroute.authHeader,
-            chains: profitableInfraConfig.bloxroute.chains,
-            region: profitableInfraConfig.bloxroute.region,
-          });
-
-          // Create mempool stream
-          this.bloxrouteStream = new BloXrouteMempoolStream(bloxrouteClient, {
-            streamType: profitableInfraConfig.bloxroute.streamType,
+          // Create mempool stream (internally creates BloXrouteClient)
+          this.bloxrouteStream = new BloXrouteMempoolStream({
+            apiKey: profitableInfraConfig.bloxroute.apiKey || '', // Empty string for free tier
+            network: profitableInfraConfig.bloxroute.chains[0] as any, // Use first chain
+            region: profitableInfraConfig.bloxroute.region as any,
+            streamType: profitableInfraConfig.bloxroute.streamType as any,
             batchSize: profitableInfraConfig.bloxroute.batchSize,
             batchTimeout: profitableInfraConfig.bloxroute.batchTimeout,
-            onTransaction: (tx) => {
+            verbose: profitableInfraConfig.bloxroute.verbose,
+            onTransaction: (tx: any) => {
               if (profitableInfraConfig.bloxroute.verbose) {
                 logger.debug(`bloXroute tx: ${tx.hash}`);
               }
             },
-            onDexSwap: (tx) => {
-              logger.info(`⚡ DEX Swap detected: ${tx.hash} (${tx.methodId})`);
+            onDexSwap: (tx: any) => {
+              logger.info(`⚡ DEX Swap detected: ${tx.hash} (${tx.methodId || 'unknown'})`);
               // TODO: Forward to opportunity detector
             },
-            onLargeTransfer: (tx, value) => {
+            onLargeTransfer: (tx: any, value: any) => {
               const ethValue = Number(value) / 1e18;
               logger.info(`🐋 Large transfer: ${ethValue.toFixed(2)} ETH (${tx.hash})`);
               // TODO: Track whale movements
             },
-            onError: (error) => {
+            onError: (error: any) => {
               logger.error(`bloXroute stream error: ${error.message}`);
             },
           });
