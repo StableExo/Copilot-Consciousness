@@ -141,6 +141,65 @@ Summary: 6/6 tables exist
 
 ## Troubleshooting
 
+### Error: Network connectivity (ENETUNREACH, ECONNREFUSED, ETIMEDOUT)
+
+**Symptom:**
+```
+❌ Migration failed: Error: connect ENETUNREACH 2600:1f18:2e13:9d1c:753b:122e:7343:dd4e:5432
+    at internalConnect (node:net:1104:16)
+```
+
+**Cause:**
+- IPv6 connectivity issues in your environment
+- Firewall blocking direct database connections
+- Network routing problems (common in GitHub Codespaces, restricted networks)
+
+**Solution:**
+✅ **Use the manual migration approach** - This is actually more reliable!
+
+1. **Run the migration helper script:**
+   ```bash
+   node --import tsx scripts/database/apply-migrations-via-api.ts
+   ```
+   This will display all migration SQL content in the terminal.
+
+2. **Open Supabase SQL Editor:**
+   - Go to: https://supabase.com/dashboard/project/ydvevgqxcfizualicbom/sql/new
+   - Or: Dashboard → SQL Editor → New Query
+
+3. **Copy and paste each migration:**
+   - Copy the SQL content from the terminal output
+   - Paste into the SQL Editor
+   - Click "Run" 
+   - Repeat for each migration file (001, 002, 003, 004, 005, 006, etc.)
+
+4. **Verify the migrations were applied:**
+   ```bash
+   node --import tsx scripts/database/test-supabase-connection.ts
+   ```
+
+**Why this happens:**
+- Supabase databases support both IPv4 and IPv6
+- Some environments (GitHub Codespaces, VPNs, corporate networks) have IPv6 routing issues
+- The direct TCP connection to port 5432 may fail even though HTTPS connections work fine
+- The manual approach uses the Supabase web dashboard, which always works
+
+**Alternative: Set DATABASE_URL with pooler**
+If you want to retry the automated approach, you can try using the transaction pooler:
+```bash
+# In your .env file, add:
+DATABASE_URL=postgresql://postgres.ydvevgqxcfizualicbom:[YOUR-DB-PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/postgres
+
+# Get your database password from:
+# Supabase Dashboard → Settings → Database → Connection string
+```
+
+**💡 Recommendation:** The manual SQL Editor approach is actually preferred because:
+- More reliable (no network issues)
+- Better visibility into what's being executed
+- Easier to review changes before applying
+- Can be done from anywhere with web access
+
 ### Error: "policy already exists" (ERROR: 42710)
 
 **Symptom:**
