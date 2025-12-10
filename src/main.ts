@@ -2420,7 +2420,7 @@ async function main() {
 }
 
 // Export for testing and module usage
-export { TheWarden, EnhancedTheWarden, WardenBootstrap, WardenConfig, loadConfig };
+export { TheWarden, EnhancedTheWarden, WardenBootstrap, WardenConfig, loadConfig, main };
 
 // Run if executed directly
 // Uses process.argv detection that works in both ESM and when tested with Jest

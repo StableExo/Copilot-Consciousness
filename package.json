@@ -100,6 +100,8 @@
     "supabase:hotfix-env": "node --import tsx scripts/database/apply-environment-hotfix.ts",
     "supabase:add-production-env": "node --import tsx scripts/add-production-env-to-supabase.ts",
     "env:add-production": "node --import tsx scripts/add-production-env-to-supabase.ts",
+    "env:show": "node --import tsx scripts/show-env-from-supabase.ts",
+    "env:show:secrets": "node --import tsx scripts/show-env-from-supabase.ts --secrets",
     "test:supabase:setup": "supabase start && supabase db reset",
     "test:supabase": "npm run test:supabase:setup && vitest run tests/supabase",
     "test:supabase:watch": "supabase start && vitest watch tests/supabase",
