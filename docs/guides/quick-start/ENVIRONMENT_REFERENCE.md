@@ -128,6 +128,8 @@
 
 ### PostgreSQL / TimescaleDB
 
+**Note:** Port 5432 is the standard PostgreSQL port used for direct TCP connections. This port must be accessible for database tools (psql, pgAdmin) and direct connections. HTTPS-based APIs (like Supabase) work without requiring direct port access.
+
 | Variable | Purpose | Example | Required |
 |----------|---------|---------|----------|
 | `TIMESCALEDB_HOST` | Database host | `localhost` | For distributed mode |
@@ -136,6 +138,7 @@
 | `TIMESCALEDB_USER` | DB username | `arbitrage` | For distributed mode |
 | `TIMESCALEDB_PASSWORD` | DB password | Strong password | For distributed mode |
 | `POSTGRES_HOST` | PostgreSQL host | `localhost` | Alternative |
+| `POSTGRES_PORT` | PostgreSQL port | `5432` | Alternative |
 | `POSTGRES_USER` | PostgreSQL user | `arbitrage` | Alternative |
 | `POSTGRES_PASSWORD` | PostgreSQL password | Strong password | Alternative |
 | `POSTGRES_DB` | Database name | `arbitrage` | Alternative |

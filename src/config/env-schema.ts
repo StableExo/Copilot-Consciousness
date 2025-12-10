@@ -140,6 +140,7 @@ export const DatabaseConfigSchema = z.object({
   TIMESCALEDB_USER: z.string().optional(),
   TIMESCALEDB_PASSWORD: z.string().optional(),
   POSTGRES_HOST: z.string().optional(),
+  POSTGRES_PORT: numericString({ min: 1, max: 65535 }).optional(),
   POSTGRES_USER: z.string().optional(),
   POSTGRES_PASSWORD: z.string().optional(),
   POSTGRES_DB: z.string().optional(),
