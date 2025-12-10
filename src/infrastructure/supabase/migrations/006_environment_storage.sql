@@ -5,6 +5,44 @@
 -- Date: 2025-12-10
 
 -- ============================================================================
+-- BACKUP AND RENAME OLD TABLES (IF THEY EXIST WITH DIFFERENT SCHEMA)
+-- ============================================================================
+
+-- Check if old environment_configs table exists with different schema (config_data column)
+-- If so, rename it to preserve data before creating new schema
+DO $$
+BEGIN
+  -- Check if old table exists with config_data column (old schema)
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' 
+      AND table_name = 'environment_configs'
+      AND column_name = 'config_data'
+  ) THEN
+    -- Rename old table to preserve data
+    ALTER TABLE IF EXISTS environment_configs RENAME TO environment_configs_old_backup;
+    RAISE NOTICE 'Renamed old environment_configs table to environment_configs_old_backup';
+  END IF;
+  
+  -- Check if old environment_secrets table exists with different schema
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' 
+      AND table_name = 'environment_secrets'
+      AND column_name = 'secret_key_id'  -- Old column name
+  ) AND NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' 
+      AND table_name = 'environment_secrets'
+      AND column_name = 'encryption_key_id'  -- New column name
+  ) THEN
+    -- Rename old table to preserve data
+    ALTER TABLE IF EXISTS environment_secrets RENAME TO environment_secrets_old_backup;
+    RAISE NOTICE 'Renamed old environment_secrets table to environment_secrets_old_backup';
+  END IF;
+END $$;
+
+-- ============================================================================
 -- ENVIRONMENT CONFIGURATION TABLES
 -- ============================================================================
 
@@ -33,6 +71,42 @@ CREATE TABLE IF NOT EXISTS environment_configs (
   created_by TEXT,
   updated_by TEXT
 );
+
+-- Add missing columns to environment_configs (handles tables from incomplete migrations)
+DO $$ 
+BEGIN
+  -- Add category column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_configs' AND column_name = 'category'
+  ) THEN
+    ALTER TABLE environment_configs ADD COLUMN category TEXT;
+  END IF;
+  
+  -- Add is_required column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_configs' AND column_name = 'is_required'
+  ) THEN
+    ALTER TABLE environment_configs ADD COLUMN is_required BOOLEAN DEFAULT false;
+  END IF;
+  
+  -- Add value_type column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_configs' AND column_name = 'value_type'
+  ) THEN
+    ALTER TABLE environment_configs ADD COLUMN value_type TEXT DEFAULT 'string';
+  END IF;
+  
+  -- Add validation_regex column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_configs' AND column_name = 'validation_regex'
+  ) THEN
+    ALTER TABLE environment_configs ADD COLUMN validation_regex TEXT;
+  END IF;
+END $$;
 
 -- 2. environment_secrets: Store encrypted sensitive configuration
 CREATE TABLE IF NOT EXISTS environment_secrets (
@@ -65,6 +139,50 @@ CREATE TABLE IF NOT EXISTS environment_secrets (
   updated_by TEXT,
   access_count INTEGER DEFAULT 0
 );
+
+-- Add missing columns to environment_secrets (handles tables from incomplete migrations)
+DO $$ 
+BEGIN
+  -- Add category column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_secrets' AND column_name = 'category'
+  ) THEN
+    ALTER TABLE environment_secrets ADD COLUMN category TEXT;
+  END IF;
+  
+  -- Add encryption_key_id column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_secrets' AND column_name = 'encryption_key_id'
+  ) THEN
+    ALTER TABLE environment_secrets ADD COLUMN encryption_key_id TEXT;
+  END IF;
+  
+  -- Add allowed_services column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_secrets' AND column_name = 'allowed_services'
+  ) THEN
+    ALTER TABLE environment_secrets ADD COLUMN allowed_services TEXT[] DEFAULT '{}';
+  END IF;
+  
+  -- Add last_accessed_at column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_secrets' AND column_name = 'last_accessed_at'
+  ) THEN
+    ALTER TABLE environment_secrets ADD COLUMN last_accessed_at TIMESTAMPTZ;
+  END IF;
+  
+  -- Add access_count column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'environment_secrets' AND column_name = 'access_count'
+  ) THEN
+    ALTER TABLE environment_secrets ADD COLUMN access_count INTEGER DEFAULT 0;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- INDEXES
