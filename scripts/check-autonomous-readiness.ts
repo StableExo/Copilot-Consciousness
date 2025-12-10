@@ -11,7 +11,7 @@
  */
 
 import 'dotenv/config';
-import { AutonomousReadinessChecker } from '../src/infrastructure/readiness';
+import { AutonomousReadinessChecker } from '../src/infrastructure/readiness/AutonomousReadinessChecker';
 import { MemoryAdapter } from '../src/memory/MemoryAdapter';
 
 const args = process.argv.slice(2);

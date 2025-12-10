@@ -23,7 +23,7 @@ import 'dotenv/config';
 
 import { loadEnvFromSupabase } from './utils/supabaseEnvLoader';
 import { logger } from './utils/logger';
-import { AutonomousReadinessChecker } from './infrastructure/readiness';
+import { AutonomousReadinessChecker } from './infrastructure/readiness/AutonomousReadinessChecker';
 import { MemoryAdapter } from './memory/MemoryAdapter';
 
 /**
