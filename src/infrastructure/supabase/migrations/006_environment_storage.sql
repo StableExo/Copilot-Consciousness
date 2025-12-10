@@ -72,10 +72,7 @@ CREATE TABLE IF NOT EXISTS environment_configs (
   updated_by TEXT
 );
 
--- Add columns if they don't exist (for existing tables from incomplete migrations)
--- NOTE: These ALTER TABLE statements are NOT redundant with CREATE TABLE above!
--- When "CREATE TABLE IF NOT EXISTS" encounters an existing table, it does nothing.
--- These ALTER statements ensure columns exist even if the table was created with an older schema.
+-- Add missing columns to environment_configs (handles tables from incomplete migrations)
 DO $$ 
 BEGIN
   -- Add category column if it doesn't exist
@@ -143,10 +140,7 @@ CREATE TABLE IF NOT EXISTS environment_secrets (
   access_count INTEGER DEFAULT 0
 );
 
--- Add columns if they don't exist (for existing tables from incomplete migrations)
--- NOTE: These ALTER TABLE statements are NOT redundant with CREATE TABLE above!
--- When "CREATE TABLE IF NOT EXISTS" encounters an existing table, it does nothing.
--- These ALTER statements ensure columns exist even if the table was created with an older schema.
+-- Add missing columns to environment_secrets (handles tables from incomplete migrations)
 DO $$ 
 BEGIN
   -- Add category column if it doesn't exist
