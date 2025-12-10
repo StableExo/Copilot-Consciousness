@@ -5,3 +5,9 @@ export {
   type ConfigUpdateOptions,
   type ConfigValidationRule,
 } from './DynamicConfigManager';
+
+export {
+  ConfigMemoryBridge,
+  getConfigMemoryBridge,
+  type ConfigDecisionMemory,
+} from './ConfigMemoryBridge';

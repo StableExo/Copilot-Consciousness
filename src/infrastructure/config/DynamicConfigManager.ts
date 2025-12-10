@@ -14,6 +14,7 @@
 
 import { logger } from '../../utils/logger';
 import { shouldUseSupabase, getSupabaseClient } from '../supabase/client';
+import { getConfigMemoryBridge } from './ConfigMemoryBridge';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -53,6 +54,8 @@ export class DynamicConfigManager {
   private validationRules: Map<string, ConfigValidationRule> = new Map();
   private envFilePath: string;
   private consciousnessEnabled: boolean = false;
+  private memoryBridge = getConfigMemoryBridge();
+  private memoryInitialized: boolean = false;
 
   constructor(envFilePath?: string) {
     this.envFilePath = envFilePath || path.join(process.cwd(), '.env');
@@ -64,6 +67,19 @@ export class DynamicConfigManager {
       this.consciousnessEnabled = process.env.ENABLE_CONSCIOUSNESS === 'true';
     } catch {
       this.consciousnessEnabled = false;
+    }
+
+    // Initialize memory bridge asynchronously
+    this.initializeMemory();
+  }
+
+  private async initializeMemory(): Promise<void> {
+    try {
+      await this.memoryBridge.initialize();
+      this.memoryInitialized = true;
+      logger.info('[DynamicConfig] Memory bridge initialized - learning from past decisions enabled');
+    } catch (error) {
+      logger.warn(`[DynamicConfig] Memory initialization failed: ${error}`);
     }
   }
 
@@ -183,9 +199,14 @@ export class DynamicConfigManager {
 
     this.changeHistory.push(change);
     
-    // Log to memory if consciousness enabled
+    // Log to consciousness memory if enabled
     if (this.consciousnessEnabled && consciousReviewResult) {
       await this.logToConsciousnessMemory(change);
+    }
+
+    // Record to memory bridge for learning
+    if (this.memoryInitialized && consciousReviewResult) {
+      await this.memoryBridge.recordDecision(change);
     }
     
     return change;
@@ -348,6 +369,57 @@ export class DynamicConfigManager {
     return limit ? history.slice(0, limit) : history;
   }
 
+  /**
+   * Record the outcome of a configuration change
+   * This enables learning from past decisions
+   */
+  async recordOutcome(
+    key: string,
+    timestamp: number,
+    outcome: {
+      successful: boolean;
+      impactDescription: string;
+      metricsAfter?: Record<string, number>;
+    }
+  ): Promise<void> {
+    if (this.memoryInitialized) {
+      await this.memoryBridge.recordOutcome(key, timestamp, outcome);
+      logger.info(`[DynamicConfig] 📊 Outcome recorded for ${key}: ${outcome.successful ? 'Success' : 'Failed'}`);
+    }
+  }
+
+  /**
+   * Get learning insights for a configuration key
+   */
+  async getLearningInsights(key: string): Promise<{
+    averageEthicalScore: number;
+    averageRiskScore: number;
+    successRate: number;
+    totalDecisions: number;
+    recommendation: string;
+  }> {
+    if (this.memoryInitialized) {
+      return await this.memoryBridge.learnFromPast(key);
+    }
+    return {
+      averageEthicalScore: 0,
+      averageRiskScore: 0,
+      successRate: 0,
+      totalDecisions: 0,
+      recommendation: 'Memory system not initialized',
+    };
+  }
+
+  /**
+   * Generate memory insights report
+   */
+  async generateMemoryReport(): Promise<string> {
+    if (this.memoryInitialized) {
+      return await this.memoryBridge.generateInsightsReport();
+    }
+    return 'Memory system not initialized. No learning data available.';
+  }
+
   async generateReport(): Promise<string> {
     const lines: string[] = [];
     lines.push('═══════════════════════════════════════════════════════════');
@@ -401,6 +473,21 @@ export class DynamicConfigManager {
     if (!currentConfigValue) {
       logger.warn(`[DynamicConfig] Config key ${configKey} not set`);
       return null;
+    }
+
+    // Learn from past decisions
+    if (this.memoryInitialized) {
+      const insights = await this.memoryBridge.learnFromPast(configKey);
+      if (insights.totalDecisions > 0) {
+        logger.info(`[DynamicConfig] 🧠 Learning from ${insights.totalDecisions} past decisions for ${configKey}`);
+        logger.info(`[DynamicConfig]    Success Rate: ${(insights.successRate * 100).toFixed(1)}%`);
+        logger.info(`[DynamicConfig]    ${insights.recommendation}`);
+        
+        // If success rate is very low, be more conservative
+        if (insights.successRate > 0 && insights.successRate < 0.3) {
+          logger.warn(`[DynamicConfig]    Low historical success rate - adjusting more conservatively`);
+        }
+      }
     }
 
     let newValue: string | null = null;
