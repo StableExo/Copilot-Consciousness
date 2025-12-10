@@ -163,23 +163,51 @@ async function startServer() {
 
 The following services are registered by default:
 
-| Service | Default Port | Fallback Range | Required |
-|---------|-------------|----------------|----------|
-| api-server | 3000 | 3000-3010 | ✅ Yes |
-| dashboard | 3000 | 3000-3010 | No |
-| collaboration | 3001 | 3001-3020 | No |
-| mcp-memory | 3002 | 3002-3010 | No |
-| mcp-ethics | 3003 | 3003-3010 | No |
-| mcp-consciousness | 3004 | 3004-3010 | No |
-| websocket | 3005 | 3005-3015 | No |
-| health-check | 3100 | 3100-3110 | No |
-| metrics | 9090 | 9090-9100 | No |
+### Application Services
+
+| Service | Default Port | Fallback Range | Required | Protocol |
+|---------|-------------|----------------|----------|----------|
+| api-server | 3000 | 3000-3010 | ✅ Yes | HTTP |
+| dashboard | 3000 | 3000-3010 | No | HTTP |
+| collaboration | 3001 | 3001-3020 | No | HTTP |
+| mcp-memory | 3002 | 3002-3010 | No | HTTP |
+| mcp-ethics | 3003 | 3003-3010 | No | HTTP |
+| mcp-consciousness | 3004 | 3004-3010 | No | HTTP |
+| websocket | 3005 | 3005-3015 | No | WebSocket |
+| health-check | 3100 | 3100-3110 | No | HTTP |
+
+### Web Services (HTTP/HTTPS)
+
+| Service | Default Port | Fallback Range | Required | Protocol |
+|---------|-------------|----------------|----------|----------|
+| http | 80 | 8080-8090 | No | HTTP |
+| https | 443 | 8443-8453 | No | HTTPS/TLS |
+
+> **Note**: The port checker works for ALL TCP-based protocols including HTTP, HTTPS, WebSocket, etc. 
+> The protocol type is just for documentation - the underlying mechanism checks TCP port availability.
+
+### Infrastructure Services
+
+| Service | Default Port | Fallback Range | Required | Protocol |
+|---------|-------------|----------------|----------|----------|
+| grafana | 3010 | 3010-3020 | No | HTTP |
+| rabbitmq | 5672 | 5672-5680 | No | AMQP |
+| rabbitmq-mgmt | 15672 | 15672-15680 | No | HTTP |
+| redis | 6379 | 6379-6390 | No | Redis |
+| postgres | 5432 | 5432-5440 | No | PostgreSQL |
+| consul | 8500 | 8500-8510 | No | HTTP |
+| jaeger | 16686 | 16686-16696 | No | HTTP |
+| metrics | 9090 | 9090-9100 | No | HTTP |
 
 ## Configuration
 
 Ports can be configured via environment variables:
 
 ```bash
+# ═══════════════════════════════════════════════════════════════
+# APPLICATION SERVICES
+# ═══════════════════════════════════════════════════════════════
+
 # Main API Server
 PORT=3000
 
@@ -200,7 +228,40 @@ WEBSOCKET_PORT=3005
 # Health Check
 HEALTH_CHECK_PORT=3100
 
-# Metrics/Prometheus
+# ═══════════════════════════════════════════════════════════════
+# WEB SERVICES (HTTP/HTTPS)
+# ═══════════════════════════════════════════════════════════════
+
+# HTTP Port (Standard: 80, Alternative: 8080+)
+HTTP_PORT=80
+
+# HTTPS Port (Standard: 443, Alternative: 8443+)
+HTTPS_PORT=443
+
+# ═══════════════════════════════════════════════════════════════
+# INFRASTRUCTURE SERVICES
+# ═══════════════════════════════════════════════════════════════
+
+# Grafana Monitoring
+GRAFANA_PORT=3010
+
+# RabbitMQ Message Queue
+RABBITMQ_PORT=5672
+RABBITMQ_MGMT_PORT=15672
+
+# Redis Cache
+REDIS_PORT=6379
+
+# PostgreSQL Database
+POSTGRES_PORT=5432
+
+# Consul Service Discovery
+CONSUL_PORT=8500
+
+# Jaeger Tracing UI
+JAEGER_UI_PORT=16686
+
+# Prometheus Metrics
 METRICS_PORT=9090
 ```
 
@@ -420,6 +481,230 @@ netstat -ano | findstr LISTENING  # Windows
 - **System Ports**: Require elevated privileges (avoid if possible)
 - **Port Scanning**: May trigger security monitoring on some networks
 - **Sensitive Services**: Be careful exposing internal services
+
+## Frequently Asked Questions (FAQ)
+
+### Q: Does the port checker check HTTP and HTTPS ports?
+
+**A: Yes!** The port checker checks **all TCP ports**, including HTTP (port 80), HTTPS (port 443), and any other TCP-based protocol.
+
+**How it works:**
+- The port checker uses Node.js `net.createServer()` to attempt binding to a port
+- This checks TCP port availability at the transport layer
+- HTTP, HTTPS, WebSocket, and other application protocols all run on TCP
+- If port 80 (HTTP) or 443 (HTTPS) is in use, the checker will detect it
+
+**Example:**
+```bash
+# Check if HTTP port is available
+npm run check:ports -- --port 80
+
+# Check if HTTPS port is available
+npm run check:ports -- --port 443
+
+# Check all registered services (including http and https)
+npm run check:ports
+```
+
+**Protocol Independence:**
+The port checker doesn't care what protocol uses the port. It simply checks if the TCP port is available for binding. Whether it's HTTP, HTTPS, FTP, SSH, or any other TCP-based service - the checker works the same way.
+
+### Q: I see "api-server" and "dashboard" both using port 3000. How is that possible?
+
+**A: They can't both use the same port simultaneously.** Here's what's happening:
+
+1. **Default Configuration**: Both services have port 3000 as their *default* in the config
+2. **Actual Usage**: Only ONE service can bind to port 3000 at a time
+3. **Automatic Resolution**: When `--auto-resolve` is used, one service gets port 3000, the other gets an alternative (like 3002)
+
+**Recommendation:** Configure services to use different default ports in `.env`:
+```bash
+PORT=3000              # API Server
+DASHBOARD_PORT=3001    # Dashboard (different port)
+```
+
+### Q: Why doesn't the port checker show ports like 5672 (RabbitMQ) or 6379 (Redis)?
+
+**A: These infrastructure services were added in the latest update!**
+
+Previously, the port checker only monitored application-specific ports (3000-9090). Now it includes:
+
+**Newly Added Infrastructure Ports:**
+- HTTP (80) & HTTPS (443) ← Web servers/load balancers
+- Grafana (3010) ← Monitoring dashboard
+- RabbitMQ (5672, 15672) ← Message queue
+- Redis (6379) ← Cache
+- PostgreSQL (5432) ← Database  
+- Consul (8500) ← Service discovery
+- Jaeger (16686) ← Distributed tracing
+
+**Total Services Monitored: 18** (up from 9)
+
+To see all registered services:
+```bash
+npm run check:ports -- --list
+```
+
+### Q: How do I check ports for Docker containers?
+
+**A: Docker containers use port mapping.** Example from `docker-compose.yml`:
+
+```yaml
+nginx:
+  ports:
+    - "80:80"      # Host port 80 maps to container port 80
+    - "443:443"    # Host port 443 maps to container port 443
+```
+
+**To check Docker-mapped ports:**
+```bash
+# Check if host port 80 is available (before starting container)
+npm run check:ports -- --port 80
+
+# Check if host port 443 is available
+npm run check:ports -- --port 443
+
+# Check all infrastructure ports before docker-compose up
+npm run check:ports
+```
+
+**If a container is already running:**
+```bash
+# See which process (Docker) is using the port
+npm run check:ports -- --port 80
+
+# Output: Port 80 is IN USE
+#         Process: docker-proxy (PID: 12345)
+```
+
+### Q: What's the difference between checking port 80 vs 8080?
+
+**A:**
+
+**Port 80 (HTTP)**:
+- Standard HTTP port
+- Requires root/admin privileges to bind
+- Used by web servers (nginx, apache, etc.)
+- Browsers connect to `http://example.com` on port 80 by default
+
+**Port 8080 (Alternative HTTP)**:
+- Common alternative for HTTP
+- Does NOT require elevated privileges
+- Used for development, proxies, alternate services
+- Browsers must specify: `http://example.com:8080`
+
+**When to use each:**
+- **Production**: Port 80 (with proper permissions or reverse proxy)
+- **Development**: Port 8080 or higher (no sudo required)
+- **Multiple services**: Use 8080, 8081, 8082, etc.
+
+**Port Checker handles both:**
+```bash
+npm run check:ports -- --port 80    # Checks standard HTTP
+npm run check:ports -- --port 8080  # Checks alternative HTTP
+```
+
+### Q: Can I check UDP ports?
+
+**A: No, currently only TCP ports are supported.**
+
+The port checker uses `net.createServer()` which only works with TCP. UDP requires different checking methods.
+
+**TCP Services (Supported):**
+- HTTP, HTTPS, WebSocket, FTP, SSH, SMTP, PostgreSQL, Redis, RabbitMQ, etc.
+
+**UDP Services (Not Supported):**
+- DNS queries, SNMP, DHCP, VoIP (some), gaming protocols (some)
+
+**For UDP port checking**, use system tools:
+```bash
+# Linux/macOS
+ss -ulnp | grep <port>
+netstat -ulnp | grep <port>
+
+# Windows
+netstat -ano -p UDP | findstr <port>
+```
+
+### Q: The script shows "Port 3000 is AVAILABLE" but my service won't start. Why?
+
+**Possible causes:**
+
+1. **Timing Issue**: Port was available during check but got taken before service started
+   - Solution: Use `--auto-resolve` to reserve ports atomically
+   
+2. **Firewall Blocking**: Port check works but firewall blocks actual binding
+   - Solution: Check firewall rules with `ufw status` (Linux) or Windows Firewall
+   
+3. **Permission Issue**: Port <1024 requires root/admin
+   - Solution: Use `sudo` or choose port ≥1024
+   
+4. **Wrong Interface**: Service binds to specific IP, checker tests all interfaces
+   - Solution: Check if service binds to `0.0.0.0` (all) vs `127.0.0.1` (localhost)
+
+5. **SELinux/AppArmor**: Security policy blocks port binding
+   - Solution: Check SELinux with `sestatus` or AppArmor logs
+
+### Q: How often should I run port checks?
+
+**Recommendations:**
+
+**During Development:**
+```bash
+# Before starting services
+npm run check:ports
+npm start
+```
+
+**In CI/CD Pipeline:**
+```bash
+# Before integration tests
+npm run check:ports
+npm run test:integration
+```
+
+**Production Deployment:**
+```bash
+# Before service restart
+npm run check:ports -- --auto-resolve
+systemctl restart thewarden
+```
+
+**Continuous Monitoring:**
+```typescript
+// In application code
+const checker = new AutonomousPortChecker();
+checker.startHealthCheck(300 00); // Check every 5 minutes
+```
+
+### Q: Can I add custom ports to the checker?
+
+**A: Yes!** Register custom services:
+
+```typescript
+import { ServiceRegistry } from './src/infrastructure/network';
+
+const registry = ServiceRegistry.getInstance();
+
+// Add custom service
+registry.registerService({
+  name: 'my-custom-service',
+  port: 4000,
+  fallbackRange: { start: 4000, end: 4010 },
+  required: false,
+});
+
+// Now it appears in all checks
+const report = await registry.generateStatusReport();
+```
+
+Or via environment variable:
+```bash
+# .env
+MY_CUSTOM_PORT=4000
+```
+
+Then update `ServiceRegistry.ts` to read it.
 
 ## Future Enhancements
 
