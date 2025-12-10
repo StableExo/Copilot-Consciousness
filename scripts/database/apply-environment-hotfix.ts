@@ -31,6 +31,9 @@ import fs from 'fs/promises';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 
+// PostgreSQL error codes
+const POSTGRES_UNDEFINED_TABLE = '42P01';
+
 async function main() {
   console.log('🔧 Applying Environment Storage Hotfix...\n');
   console.log('━'.repeat(60));
@@ -67,7 +70,7 @@ async function main() {
       .select('*')
       .limit(0);
     
-    if (configError && configError.code === '42P01') {
+    if (configError && configError.code === POSTGRES_UNDEFINED_TABLE) {
       console.error('   ❌ Table environment_configs does not exist!');
       console.error('   💡 Run the main migration first:');
       console.error('      node --import tsx scripts/database/apply-supabase-migrations.ts');

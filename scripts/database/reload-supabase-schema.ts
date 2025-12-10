@@ -26,6 +26,9 @@ dotenv.config();
 
 import { createClient } from '@supabase/supabase-js';
 
+// Time constants
+const SCHEMA_RELOAD_WAIT_MS = 2000; // Wait time for PostgREST to process schema update
+
 async function main() {
   console.log('🔄 Reloading Supabase Schema Cache...\n');
   console.log('━'.repeat(60));
@@ -103,7 +106,7 @@ async function main() {
     
     // Method 3: Wait a moment for PostgREST to process
     console.log('\n3️⃣  Waiting for PostgREST to process schema update...');
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, SCHEMA_RELOAD_WAIT_MS));
     console.log('   ✅ Wait complete');
     
     // Verify schema is reloaded

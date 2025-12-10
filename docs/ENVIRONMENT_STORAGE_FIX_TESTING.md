@@ -49,7 +49,7 @@ npm run | grep supabase
 
 ```bash
 # With SERVICE_KEY (recommended)
-export SUPABASE_URL=https://ydvevgqxcfizualicbom.supabase.co
+export SUPABASE_URL=https://your-project.supabase.co
 export SUPABASE_SERVICE_KEY=<your_service_key>
 npm run supabase:verify-env
 
