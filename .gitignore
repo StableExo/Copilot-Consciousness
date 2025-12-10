@@ -181,3 +181,10 @@ yarn-error.log*
 test-chatgpt-api.mjs
 external_gateway/
 bx_artifacts.zip
+
+# Archives
+/archive/
+
+# Temporary analysis files
+*.tmp
+/tmp/
