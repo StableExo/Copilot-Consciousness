@@ -309,13 +309,10 @@ export class BloXrouteMempoolStream {
       this.isActive = true;
       this.startTime = Date.now();
       
-      logger.info('bloXroute mempool stream started', {
-        network: this.config.network,
-        streamType: this.config.streamType,
-        subscriptionId: this.subscriptionId,
-      });
+      logger.info(`bloXroute mempool stream started - network: ${this.config.network}, streamType: ${this.config.streamType}, subscriptionId: ${this.subscriptionId}`);
     } catch (error) {
-      logger.error('Failed to start mempool stream', { error });
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      logger.error(`Failed to start mempool stream: ${errorMsg}`);
       this.handleError(error as Error);
       throw error;
     }
@@ -350,11 +347,11 @@ export class BloXrouteMempoolStream {
       
       this.isActive = false;
       
-      logger.info('bloXroute mempool stream stopped', {
-        metrics: this.getMetrics(),
-      });
+      const metrics = this.getMetrics();
+      logger.info(`bloXroute mempool stream stopped - transactions: ${metrics.totalTransactions}, avgProcessingTime: ${metrics.avgProcessingTime}ms`);
     } catch (error) {
-      logger.error('Error stopping mempool stream', { error });
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      logger.error(`Error stopping mempool stream: ${errorMsg}`);
       this.handleError(error as Error);
     }
   }
@@ -478,7 +475,8 @@ export class BloXrouteMempoolStream {
         this.processingTimes.reduce((a, b) => a + b, 0) / this.processingTimes.length;
       
     } catch (error) {
-      logger.error('Error handling transaction', { tx_hash: tx.tx_hash, error });
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      logger.error(`Error handling transaction ${tx.tx_hash}: ${errorMsg}`);
       this.handleError(error as Error);
     }
   }

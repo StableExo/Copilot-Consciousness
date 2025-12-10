@@ -28,7 +28,7 @@ import {
  * Main CEX liquidity monitoring coordinator
  */
 export class CEXLiquidityMonitor {
-  private config: Required<CEXMonitorConfig>;
+  private config: CEXMonitorConfig & { updateInterval: number; minSpreadBps: number };
   private connectors: Map<CEXExchange, any> = new Map();
   private orderBooks: Map<string, Map<CEXExchange, OrderBook>> = new Map(); // symbol -> exchange -> orderBook
   private tickers: Map<string, Map<CEXExchange, PriceTicker>> = new Map(); // symbol -> exchange -> ticker
