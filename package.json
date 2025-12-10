@@ -8,7 +8,9 @@
   "license": "MIT",
   "scripts": {
     "start": "node --import tsx src/main.ts",
+    "start:supabase": "node --import tsx src/bootstrap-supabase.ts",
     "start:mainnet": "./scripts/launch-mainnet.sh",
+    "start:mainnet:supabase": "node --import tsx src/bootstrap-supabase.ts",
     "start:autonomous": "./TheWarden",
     "start:monitor": "./TheWarden --monitor",
     "monitor": "./TheWarden --monitor",
