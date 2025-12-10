@@ -34,7 +34,7 @@
   
   "postStartCommand": "source scripts/setup-node.sh && echo '📦 Node.js ready: '$(node --version)",
   
-  "forwardPorts": [3000, 3001, 5432, 6379, 8080, 8500],
+  "forwardPorts": [3000, 3001, 3010, 5432, 5672, 6379, 8080, 8500, 9090, 15672],
   
   "portsAttributes": {
     "3000": {
@@ -47,8 +47,18 @@
       "protocol": "https",
       "onAutoForward": "notify"
     },
+    "3010": {
+      "label": "Grafana",
+      "protocol": "https",
+      "onAutoForward": "notify"
+    },
     "5432": {
       "label": "PostgreSQL/TimescaleDB",
+      "protocol": "http",
+      "onAutoForward": "silent"
+    },
+    "5672": {
+      "label": "RabbitMQ",
       "protocol": "http",
       "onAutoForward": "silent"
     },
@@ -65,7 +75,17 @@
     "8500": {
       "label": "Consul UI",
       "protocol": "https",
-      "onAutoForward": "ignore"
+      "onAutoForward": "notify"
+    },
+    "9090": {
+      "label": "Prometheus UI",
+      "protocol": "https",
+      "onAutoForward": "notify"
+    },
+    "15672": {
+      "label": "RabbitMQ Management UI",
+      "protocol": "https",
+      "onAutoForward": "notify"
     }
   },
   
