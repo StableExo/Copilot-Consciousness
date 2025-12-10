@@ -100,6 +100,18 @@ import { WardenBootstrap } from './core/bootstrap';
 // Long-running process manager
 import { LongRunningManager } from './monitoring/LongRunningManager';
 
+// Profitable Infrastructure (CEX-DEX Arbitrage + bloXroute)
+import {
+  loadProfitableInfrastructureConfig,
+  validateProfitableInfrastructureConfig,
+  getExpectedMonthlyRevenue,
+  getInfrastructureCosts,
+} from './config/profitable-infrastructure.config';
+// Lazy imports to avoid circular dependencies - loaded dynamically when needed
+// import { CEXLiquidityMonitor } from './execution/cex/CEXLiquidityMonitor';
+// import { CEXDEXArbitrageDetector } from './execution/cex/CEXDEXArbitrageDetector';
+// import { BloXrouteMempoolStream } from './execution/relays/BloXrouteMempoolStream';
+
 // Flag to use new initializer pattern (can be toggled via env var)
 const USE_NEW_INITIALIZER = process.env.USE_NEW_INITIALIZER === 'true';
 
@@ -317,6 +329,11 @@ class TheWarden extends EventEmitter {
 
   // Phase 3 components
   private phase3Components?: Phase3Components;
+
+  // Profitable Infrastructure components (CEX-DEX + bloXroute)
+  private cexMonitor?: any; // CEXLiquidityMonitor - imported dynamically to avoid circular deps
+  private cexDexDetector?: any; // CEXDEXArbitrageDetector
+  private bloxrouteStream?: any; // BloXrouteMempoolStream
 
   // Long-running process manager
   private longRunningManager?: LongRunningManager;
@@ -580,6 +597,166 @@ class TheWarden extends EventEmitter {
       logger.info('═══════════════════════════════════════════════════════════');
       logger.info('✓ Phase 3 initialization complete');
       logger.info('═══════════════════════════════════════════════════════════');
+
+      // Initialize Profitable Infrastructure (CEX-DEX + bloXroute)
+      logger.info('═══════════════════════════════════════════════════════════');
+      logger.info('💰 INITIALIZING PROFITABLE INFRASTRUCTURE 💰');
+      logger.info('═══════════════════════════════════════════════════════════');
+
+      const profitableInfraConfig = loadProfitableInfrastructureConfig();
+      const infraValidation = validateProfitableInfrastructureConfig(profitableInfraConfig);
+
+      if (!infraValidation.valid) {
+        logger.error('Profitable infrastructure configuration errors:');
+        infraValidation.errors.forEach((err) => logger.error(`  ❌ ${err}`));
+        throw new Error('Invalid profitable infrastructure configuration');
+      }
+
+      if (infraValidation.warnings.length > 0) {
+        logger.warn('Profitable infrastructure configuration warnings:');
+        infraValidation.warnings.forEach((warn) => logger.warn(`  ⚠️  ${warn}`));
+      }
+
+      // Display revenue projections
+      const revenue = getExpectedMonthlyRevenue(profitableInfraConfig);
+      const costs = getInfrastructureCosts(profitableInfraConfig);
+
+      logger.info('💰 Revenue Projections:');
+      logger.info(`  CEX-DEX Arbitrage: $${revenue.cexMin.toLocaleString()} - $${revenue.cexMax.toLocaleString()}/month`);
+      logger.info(`  bloXroute Advantage: $${revenue.bloxrouteMin.toLocaleString()} - $${revenue.bloxrouteMax.toLocaleString()}/month`);
+      logger.info(`  Total Potential: $${revenue.totalMin.toLocaleString()} - $${revenue.totalMax.toLocaleString()}/month`);
+      logger.info('');
+      logger.info('💸 Infrastructure Costs:');
+      logger.info(`  CEX Monitoring: $${costs.cex.toLocaleString()}/month (FREE - WebSocket APIs)`);
+      logger.info(`  bloXroute: $${costs.bloxroute.toLocaleString()}/month (FREE tier for now)`);
+      logger.info(`  Total Cost: $${costs.total.toLocaleString()}/month`);
+      logger.info(`  Net Revenue: $${(revenue.totalMin - costs.total).toLocaleString()} - $${(revenue.totalMax - costs.total).toLocaleString()}/month`);
+      logger.info('  ROI: ∞ (zero cost infrastructure!) 🚀');
+
+      // Initialize CEX-DEX Arbitrage if enabled
+      if (profitableInfraConfig.cex.enabled) {
+        logger.info('');
+        logger.info('📊 Initializing CEX-DEX Arbitrage...');
+
+        try {
+          // Dynamic import to avoid circular dependencies
+          const { CEXLiquidityMonitor } = await import('./execution/cex/CEXLiquidityMonitor.js');
+          const { CEXDEXArbitrageDetector } = await import('./execution/cex/CEXDEXArbitrageDetector.js');
+
+          // Create CEX monitor
+          this.cexMonitor = new CEXLiquidityMonitor({
+            exchanges: profitableInfraConfig.cex.exchanges,
+            updateInterval: profitableInfraConfig.cex.updateInterval,
+            minSpreadBps: profitableInfraConfig.cex.minSpreadBps,
+          });
+
+          // Create CEX-DEX detector
+          this.cexDexDetector = new CEXDEXArbitrageDetector(
+            {
+              minPriceDiffPercent: profitableInfraConfig.cex.minPriceDiffPercent,
+              maxTradeSizeUsd: profitableInfraConfig.cex.maxTradeSizeUsd,
+              minNetProfitUsd: profitableInfraConfig.cex.minNetProfitUsd,
+            },
+            {
+              onOpportunityFound: (opportunity: any) => {
+                logger.info(`💰 CEX-DEX Arbitrage Opportunity Found!`);
+                logger.info(`  Symbol: ${opportunity.symbol}`);
+                logger.info(`  Direction: ${opportunity.direction}`);
+                logger.info(`  Net Profit: $${opportunity.netProfit?.toFixed(2) || '0.00'}`);
+                logger.info(`  Spread: ${opportunity.priceDiffPercent?.toFixed(3) || '0.000'}%`);
+                // TODO: Forward to execution pipeline
+              },
+            }
+          );
+
+          // Wire detector to monitor
+          this.cexDexDetector.setCEXMonitor(this.cexMonitor);
+
+          // Wire to integrated orchestrator if available
+          if (this.integratedOrchestrator) {
+            this.integratedOrchestrator.enableCEXDEXArbitrage(
+              this.cexMonitor,
+              this.cexDexDetector
+            );
+            logger.info('  ✓ CEX-DEX wired to IntegratedArbitrageOrchestrator');
+          }
+
+          // Start CEX monitoring
+          await this.cexMonitor.start();
+
+          logger.info(`  ✓ CEX Monitoring active: ${profitableInfraConfig.cex.exchanges.length} exchanges`);
+          profitableInfraConfig.cex.exchanges.forEach((ex) => {
+            logger.info(`    - ${ex.exchange.toUpperCase()}: ${ex.symbols.join(', ')}`);
+          });
+        } catch (error) {
+          logger.error(`Failed to initialize CEX-DEX arbitrage: ${error}`);
+          logger.warn('Continuing without CEX-DEX arbitrage...');
+        }
+      } else {
+        logger.info('📊 CEX-DEX Arbitrage: Disabled');
+      }
+
+      // Initialize bloXroute if enabled
+      if (profitableInfraConfig.bloxroute.enabled && profitableInfraConfig.bloxroute.enableMempoolStream) {
+        logger.info('');
+        logger.info('⚡ Initializing bloXroute Mempool Streaming...');
+
+        try {
+          // Dynamic import to avoid circular dependencies
+          const { BloXrouteMempoolStream } = await import('./execution/relays/BloXrouteMempoolStream.js');
+
+          if (!profitableInfraConfig.bloxroute.apiKey && !profitableInfraConfig.bloxroute.authHeader) {
+            logger.warn('  ⚠️  No bloXroute API key configured - using free tier limitations');
+          }
+
+          // Create mempool stream (internally creates BloXrouteClient)
+          this.bloxrouteStream = new BloXrouteMempoolStream({
+            apiKey: profitableInfraConfig.bloxroute.apiKey || '', // Empty string for free tier
+            network: profitableInfraConfig.bloxroute.chains[0] as any, // Use first chain
+            region: profitableInfraConfig.bloxroute.region as any,
+            streamType: profitableInfraConfig.bloxroute.streamType as any,
+            batchSize: profitableInfraConfig.bloxroute.batchSize,
+            batchTimeout: profitableInfraConfig.bloxroute.batchTimeout,
+            verbose: profitableInfraConfig.bloxroute.verbose,
+            onTransaction: (tx: any) => {
+              if (profitableInfraConfig.bloxroute.verbose) {
+                logger.debug(`bloXroute tx: ${tx.hash}`);
+              }
+            },
+            onDexSwap: (tx: any) => {
+              logger.info(`⚡ DEX Swap detected: ${tx.hash} (${tx.methodId || 'unknown'})`);
+              // TODO: Forward to opportunity detector
+            },
+            onLargeTransfer: (tx: any, value: any) => {
+              const ethValue = Number(value) / 1e18;
+              logger.info(`🐋 Large transfer: ${ethValue.toFixed(2)} ETH (${tx.hash})`);
+              // TODO: Track whale movements
+            },
+            onError: (error: any) => {
+              logger.error(`bloXroute stream error: ${error.message}`);
+            },
+          });
+
+          // Start mempool streaming
+          await this.bloxrouteStream.start();
+
+          logger.info(`  ✓ bloXroute streaming active: ${profitableInfraConfig.bloxroute.streamType}`);
+          logger.info(`    Chains: ${profitableInfraConfig.bloxroute.chains.join(', ')}`);
+          logger.info(`    Region: ${profitableInfraConfig.bloxroute.region}`);
+          logger.info(`    DEX swap detection: ${profitableInfraConfig.bloxroute.enableDexSwapDetection ? 'ON' : 'OFF'}`);
+          logger.info(`    Large transfer detection: ${profitableInfraConfig.bloxroute.enableLargeTransferDetection ? 'ON' : 'OFF'}`);
+        } catch (error) {
+          logger.error(`Failed to initialize bloXroute: ${error}`);
+          logger.warn('Continuing without bloXroute mempool streaming...');
+        }
+      } else {
+        logger.info('⚡ bloXroute Mempool Streaming: Disabled');
+      }
+
+      logger.info('═══════════════════════════════════════════════════════════');
+      logger.info('✓ Profitable Infrastructure initialization complete');
+      logger.info('═══════════════════════════════════════════════════════════');
+
 
       // Set up event listeners
       this.setupEventListeners();
@@ -1502,6 +1679,25 @@ class TheWarden extends EventEmitter {
     if (this.phase3Components) {
       logger.info('[Phase3] Shutting down Phase 3 components...');
       await shutdownPhase3Components(this.phase3Components);
+    }
+
+    // Profitable Infrastructure: Shutdown components
+    logger.info('[ProfitableInfra] Shutting down CEX-DEX and bloXroute...');
+    if (this.cexMonitor) {
+      try {
+        this.cexMonitor.stop();
+        logger.info('  ✓ CEX monitoring stopped');
+      } catch (error) {
+        logger.error(`Failed to stop CEX monitor: ${error}`);
+      }
+    }
+    if (this.bloxrouteStream) {
+      try {
+        await this.bloxrouteStream.stop();
+        logger.info('  ✓ bloXroute streaming stopped');
+      } catch (error) {
+        logger.error(`Failed to stop bloXroute stream: ${error}`);
+      }
     }
 
     // Stop long-running manager and persist final stats
