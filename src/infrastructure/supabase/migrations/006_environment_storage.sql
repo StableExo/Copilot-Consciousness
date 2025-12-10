@@ -84,14 +84,16 @@ ALTER TABLE environment_configs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE environment_secrets ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Allow authenticated users to read configs
-CREATE POLICY IF NOT EXISTS "Allow authenticated users to read configs"
+DROP POLICY IF EXISTS "Allow authenticated users to read configs" ON environment_configs;
+CREATE POLICY "Allow authenticated users to read configs"
   ON environment_configs
   FOR SELECT
   TO authenticated
   USING (true);
 
 -- Policy: Allow service role to manage configs
-CREATE POLICY IF NOT EXISTS "Allow service role to manage configs"
+DROP POLICY IF EXISTS "Allow service role to manage configs" ON environment_configs;
+CREATE POLICY "Allow service role to manage configs"
   ON environment_configs
   FOR ALL
   TO service_role
@@ -99,14 +101,16 @@ CREATE POLICY IF NOT EXISTS "Allow service role to manage configs"
   WITH CHECK (true);
 
 -- Policy: Allow authenticated users to read secrets (but actual decryption happens in application)
-CREATE POLICY IF NOT EXISTS "Allow authenticated users to read secrets"
+DROP POLICY IF EXISTS "Allow authenticated users to read secrets" ON environment_secrets;
+CREATE POLICY "Allow authenticated users to read secrets"
   ON environment_secrets
   FOR SELECT
   TO authenticated
   USING (true);
 
 -- Policy: Allow service role to manage secrets
-CREATE POLICY IF NOT EXISTS "Allow service role to manage secrets"
+DROP POLICY IF EXISTS "Allow service role to manage secrets" ON environment_secrets;
+CREATE POLICY "Allow service role to manage secrets"
   ON environment_secrets
   FOR ALL
   TO service_role
