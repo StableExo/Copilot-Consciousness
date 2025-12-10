@@ -34,7 +34,40 @@
   
   "postStartCommand": "source scripts/setup-node.sh && echo '📦 Node.js ready: '$(node --version)",
   
-  "forwardPorts": [3000, 3001, 8080],
+  "forwardPorts": [3000, 3001, 5432, 6379, 8080, 8500],
+  
+  "portsAttributes": {
+    "3000": {
+      "label": "Dashboard",
+      "protocol": "https",
+      "onAutoForward": "notify"
+    },
+    "3001": {
+      "label": "Red Team Dashboard",
+      "protocol": "https",
+      "onAutoForward": "notify"
+    },
+    "5432": {
+      "label": "PostgreSQL/TimescaleDB",
+      "protocol": "http",
+      "onAutoForward": "silent"
+    },
+    "6379": {
+      "label": "Redis",
+      "protocol": "http",
+      "onAutoForward": "silent"
+    },
+    "8080": {
+      "label": "Health Check",
+      "protocol": "https",
+      "onAutoForward": "ignore"
+    },
+    "8500": {
+      "label": "Consul UI",
+      "protocol": "https",
+      "onAutoForward": "ignore"
+    }
+  },
   
   "remoteUser": "node",
   
