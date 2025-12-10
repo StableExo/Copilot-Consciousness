@@ -259,7 +259,7 @@ export class BloXrouteClient {
         this.stats.errors++;
         this.stats.lastError = error.message;
         this.stats.lastErrorTime = Date.now();
-        logger.error('[BloXrouteClient] WebSocket error:', error);
+        logger.error(`[BloXrouteClient] WebSocket error: ${error.message}`);
         reject(error);
       });
 
@@ -292,7 +292,8 @@ export class BloXrouteClient {
           try {
             callback(txData);
           } catch (error) {
-            logger.error(`[BloXrouteClient] Error in subscription ${subscriptionId}:`, error);
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            logger.error(`[BloXrouteClient] Error in subscription ${subscriptionId}: ${errorMsg}`);
           }
         }
       }
@@ -311,7 +312,8 @@ export class BloXrouteClient {
         this.stats.lastErrorTime = Date.now();
       }
     } catch (error) {
-      logger.error('[BloXrouteClient] Failed to parse message:', error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      logger.error(`[BloXrouteClient] Failed to parse message: ${errorMsg}`);
       this.stats.errors++;
     }
   }
@@ -344,7 +346,8 @@ export class BloXrouteClient {
         // Resubscribe to all streams
         await this.resubscribe();
       } catch (error) {
-        logger.error('[BloXrouteClient] Reconnection failed:', error);
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        logger.error(`[BloXrouteClient] Reconnection failed: ${errorMsg}`);
       }
     }, delay);
   }
@@ -439,7 +442,8 @@ export class BloXrouteClient {
       };
     } catch (error) {
       this.stats.txFailed++;
-      logger.error('[BloXrouteClient] Exception sending transaction:', error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      logger.error(`[BloXrouteClient] Exception sending transaction: ${errorMsg}`);
       return {
         tx_hash: '',
         success: false,

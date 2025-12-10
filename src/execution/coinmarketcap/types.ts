@@ -273,6 +273,7 @@ export interface CEXExchangeListParams {
   sort_dir?: 'asc' | 'desc';
   market_type?: 'all' | 'fees' | 'no_fees';
   aux?: string;
+  [key: string]: unknown;
 }
 
 export interface CEXMarketPairsParams {
@@ -284,6 +285,7 @@ export interface CEXMarketPairsParams {
   fee_type?: string;
   convert?: string;
   aux?: string;
+  [key: string]: unknown;
 }
 
 export interface CEXQuotesParams {
@@ -291,6 +293,7 @@ export interface CEXQuotesParams {
   slug?: string[];
   convert?: string;
   aux?: string;
+  [key: string]: unknown;
 }
 
 export interface DEXListingsParams {
@@ -300,12 +303,14 @@ export interface DEXListingsParams {
   sort_dir?: 'asc' | 'desc';
   network_id?: number;
   aux?: string;
+  [key: string]: unknown;
 }
 
 export interface DEXPairsLatestParams {
   pairs?: string[]; // Format: "dex-slug:base-quote" e.g. "uniswap-v3:eth-usdt"
   convert?: string;
   aux?: string;
+  [key: string]: unknown;
 }
 
 export interface DEXPairsOHLCVParams {
@@ -315,6 +320,7 @@ export interface DEXPairsOHLCVParams {
   interval?: '1m' | '5m' | '15m' | '30m' | '1h' | '4h' | '1d' | '7d' | '1M';
   count?: number;
   convert?: string;
+  [key: string]: unknown;
 }
 
 export interface DEXTradesParams {
@@ -323,6 +329,7 @@ export interface DEXTradesParams {
   limit?: number;
   sort?: 'timestamp' | 'price' | 'volume';
   sort_dir?: 'asc' | 'desc';
+  [key: string]: unknown;
 }
 
 // ============================================================================
