@@ -8,44 +8,53 @@ import { SupabaseEnvStorage } from '../../../src/services/SupabaseEnvStorage';
 // Mock Supabase client
 vi.mock('@supabase/supabase-js', () => ({
   createClient: vi.fn(() => ({
-    from: vi.fn((table: string) => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn(() => ({
-            data: null,
+    from: vi.fn((table: string) => {
+      const mockData = {
+        data: [],
+        error: null,
+      };
+      
+      const mockSingle = {
+        data: null,
+        error: null,
+      };
+      
+      const chainableQuery = {
+        eq: vi.fn(() => chainableQuery),
+        order: vi.fn(() => mockData),
+        single: vi.fn(() => mockSingle),
+        data: [],
+        error: null,
+      };
+      
+      return {
+        select: vi.fn(() => chainableQuery),
+        upsert: vi.fn(() => ({
+          select: vi.fn(() => ({
+            single: vi.fn(() => ({
+              data: {
+                id: '123',
+                config_name: 'TEST_CONFIG',
+                config_value: 'test_value',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              },
+              error: null,
+            })),
+          })),
+        })),
+        delete: vi.fn(() => ({
+          eq: vi.fn(() => ({
             error: null,
           })),
         })),
-        order: vi.fn(() => ({
-          data: [],
-          error: null,
-        })),
-      })),
-      upsert: vi.fn(() => ({
-        select: vi.fn(() => ({
-          single: vi.fn(() => ({
-            data: {
-              id: '123',
-              config_name: 'TEST_CONFIG',
-              config_value: 'test_value',
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            },
+        update: vi.fn(() => ({
+          eq: vi.fn(() => ({
             error: null,
           })),
         })),
-      })),
-      delete: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          error: null,
-        })),
-      })),
-      update: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          error: null,
-        })),
-      })),
-    })),
+      };
+    }),
   })),
 }));
 

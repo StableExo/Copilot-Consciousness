@@ -19,8 +19,7 @@
   },
   "include": [
     "src/**/*",
-    "consciousness/**/*",
-    "scripts/**/*.ts"
+    "consciousness/**/*"
   ],
   "exclude": [
     "node_modules",
@@ -28,13 +27,6 @@
     "**/*.test.ts",
     "**/*.spec.ts",
     "**/__tests__/**",
-    "scripts/session-introspection-snapshot.ts",
-    "scripts/autonomous-wondering-experiment.ts",
-    "scripts/analyze-lbc-*.ts",
-    "scripts/collect-github-puzzle-data.ts",
-    "scripts/bitcoin_path_analyzer.ts",
-    "scripts/bitcoin_transaction_analyzer.ts",
-    "scripts/fetch-blockchain-data.ts",
-    "scripts/mempool_monitor.ts"
+    "scripts/**/*"
   ]
 }
