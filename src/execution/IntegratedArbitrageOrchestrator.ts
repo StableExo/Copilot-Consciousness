@@ -41,6 +41,11 @@ import {
 // ExecutionEventType reserved for event emission features
 import type { ExecutionEventType as _ExecutionEventType } from '../types/ExecutionTypes';
 
+// CEX-DEX Arbitrage Integration
+import { CEXLiquidityMonitor } from './cex/CEXLiquidityMonitor.js';
+import { CEXDEXArbitrageDetector } from './cex/CEXDEXArbitrageDetector.js';
+import type { DEXPriceData } from './cex/CEXDEXArbitrageDetector.js';
+
 /**
  * Integrated Arbitrage Orchestrator - Master Control System
  */
@@ -59,6 +64,10 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
   private nonceManager?: NonceManager;
   private gasOracle: GasPriceOracle;
   private gasEstimator: AdvancedGasEstimator;
+
+  // CEX-DEX Arbitrage components (optional)
+  private cexMonitor?: CEXLiquidityMonitor;
+  private cexDexDetector?: CEXDEXArbitrageDetector;
 
   // Configuration
   private config: OrchestratorConfig;
@@ -80,6 +89,10 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
     failedExecutions: 0,
     totalProfit: BigInt(0),
     totalGasCost: BigInt(0),
+    // CEX-DEX specific stats
+    cexDexOpportunities: 0,
+    cexDexAccepted: 0,
+    cexDexRejected: 0,
   };
 
   constructor(
@@ -312,6 +325,109 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
   }
 
   /**
+   * Enable CEX-DEX arbitrage detection
+   * @param cexMonitor - CEX liquidity monitor instance
+   * @param cexDexDetector - CEX-DEX arbitrage detector instance
+   */
+  enableCEXDEXArbitrage(
+    cexMonitor: CEXLiquidityMonitor,
+    cexDexDetector: CEXDEXArbitrageDetector
+  ): void {
+    this.cexMonitor = cexMonitor;
+    this.cexDexDetector = cexDexDetector;
+
+    // Wire up the detector to receive opportunities
+    this.cexDexDetector.setCEXMonitor(this.cexMonitor);
+
+    // Register health monitoring for CEX components
+    if (this.cexMonitor) {
+      this.healthMonitor.registerComponent({
+        name: 'CEXLiquidityMonitor',
+        checkHealth: async () => {
+          try {
+            return this.cexMonitor!.isRunning() ? HealthStatus.HEALTHY : HealthStatus.UNHEALTHY;
+          } catch (error) {
+            return HealthStatus.CRITICAL;
+          }
+        },
+        getMetrics: async () => {
+          const stats = this.cexMonitor!.getStats();
+          return {
+            connectors: stats.length,
+            activeSymbols: stats.reduce((sum, s) => sum + s.subscribedSymbols.length, 0),
+          };
+        },
+      });
+    }
+
+    logger.info('[IntegratedOrchestrator] CEX-DEX arbitrage enabled');
+  }
+
+  /**
+   * Update DEX price for CEX-DEX arbitrage detection
+   * @param priceData - DEX price data
+   */
+  updateDEXPrice(priceData: DEXPriceData): void {
+    if (!this.cexDexDetector) {
+      return;
+    }
+    this.cexDexDetector.updateDEXPrice(priceData);
+  }
+
+  /**
+   * Update multiple DEX prices for CEX-DEX arbitrage detection
+   * @param priceDataList - Array of DEX price data
+   */
+  updateDEXPrices(priceDataList: DEXPriceData[]): void {
+    if (!this.cexDexDetector) {
+      return;
+    }
+    this.cexDexDetector.updateDEXPrices(priceDataList);
+  }
+
+  /**
+   * Manually trigger CEX-DEX opportunity detection for a symbol
+   * @param symbol - Trading symbol (e.g., 'BTC/USDT')
+   */
+  detectCEXDEXOpportunities(symbol: string): void {
+    if (!this.cexDexDetector) {
+      logger.warn('[IntegratedOrchestrator] CEX-DEX detector not initialized');
+      return;
+    }
+
+    const opportunities = this.cexDexDetector.detectOpportunities(symbol);
+    logger.debug(`[IntegratedOrchestrator] Found ${opportunities.length} CEX-DEX opportunities for ${symbol}`);
+    
+    this.stats.cexDexOpportunities += opportunities.length;
+  }
+
+  /**
+   * Start CEX monitoring (if enabled)
+   */
+  private async startCEXMonitoring(): Promise<void> {
+    if (!this.cexMonitor) {
+      return;
+    }
+
+    logger.info('[IntegratedOrchestrator] Starting CEX monitoring');
+    await this.cexMonitor.start();
+    logger.info('[IntegratedOrchestrator] CEX monitoring started');
+  }
+
+  /**
+   * Stop CEX monitoring (if enabled)
+   */
+  private stopCEXMonitoring(): void {
+    if (!this.cexMonitor) {
+      return;
+    }
+
+    logger.info('[IntegratedOrchestrator] Stopping CEX monitoring');
+    this.cexMonitor.stop();
+    logger.info('[IntegratedOrchestrator] CEX monitoring stopped');
+  }
+
+  /**
    * Start the integrated orchestrator
    */
   async start(signer: any): Promise<void> {
@@ -328,6 +444,9 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
     // Start health monitoring
     this.healthMonitor.start();
 
+    // Start CEX monitoring if enabled
+    await this.startCEXMonitoring();
+
     this.isRunning = true;
 
     this.emit('started');
@@ -343,6 +462,9 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
     }
 
     logger.info('[IntegratedOrchestrator] Stopping integrated arbitrage execution engine');
+
+    // Stop CEX monitoring if enabled
+    this.stopCEXMonitoring();
 
     // Stop health monitoring
     this.healthMonitor.stop();
@@ -815,7 +937,7 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
    * Get statistics
    */
   getStats() {
-    return {
+    const stats: any = {
       ...this.stats,
       activeExecutions: this.activeExecutions.size,
       baseOrchestratorStats: this.baseOrchestrator.getStats(),
@@ -823,6 +945,17 @@ export class IntegratedArbitrageOrchestrator extends EventEmitter {
       recoveryStats: this.errorRecovery.getStats(),
       health: this.healthMonitor.getHealthStatus(),
     };
+
+    // Add CEX-DEX stats if enabled
+    if (this.cexMonitor && this.cexDexDetector) {
+      stats.cexDexEnabled = true;
+      stats.cexMonitorStats = this.cexMonitor.getStats();
+      stats.cexDexDetectorStats = this.cexDexDetector.getStats();
+    } else {
+      stats.cexDexEnabled = false;
+    }
+
+    return stats;
   }
 
   /**
