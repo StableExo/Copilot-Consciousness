@@ -19,10 +19,15 @@ async function main() {
   const migrationsDir = path.join(process.cwd(), 'src/infrastructure/supabase/migrations');
   const files = (await fs.readdir(migrationsDir)).filter(f => f.endsWith('.sql')).sort();
   
-  console.log('\n🎯 To apply these migrations to your Supabase database:\n');
-  console.log('1. Go to: https://supabase.com/dashboard/project/ydvevgqxcfizualicbom/sql/new');
-  console.log('2. Copy and paste each migration SQL below');
-  console.log('3. Click "Run" to execute\n');
+  // Get project ID from environment or use the one from the problem statement
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const projectId = supabaseUrl?.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1] || 'ydvevgqxcfizualicbom';
+  
+  console.log(`\n🎯 To apply these ${files.length} migrations to your Supabase database:\n`);
+  console.log(`1. Go to: https://supabase.com/dashboard/project/${projectId}/sql/new`);
+  console.log('2. Copy and paste each migration SQL below (in order)');
+  console.log('3. Click "Run" to execute each one');
+  console.log('4. Migrations are idempotent - safe to run multiple times\n');
   console.log('═'.repeat(60));
   
   for (const file of files) {
