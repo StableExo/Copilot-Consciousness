@@ -27,6 +27,25 @@ interface EnvironmentConfig {
   created_by: string;
 }
 
+/**
+ * Production Environment Configuration
+ * 
+ * ⚠️  SECURITY NOTE:
+ * This configuration object contains production secrets and should be treated carefully.
+ * The values here are loaded from the provided production environment and stored in
+ * Supabase's environment_configs table for centralized configuration management.
+ * 
+ * The stored data in Supabase should be protected with:
+ * - Row Level Security (RLS) policies
+ * - Encrypted database storage
+ * - Service role key access only (not exposed to clients)
+ * - Proper backup encryption
+ * 
+ * In production deployments, consider using:
+ * - Supabase Vault for secret storage
+ * - Environment-based secret injection
+ * - Key rotation policies
+ */
 const productionConfig: Record<string, any> = {
   // Core Runtime
   NODE_ENV: 'production',
