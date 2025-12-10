@@ -184,6 +184,14 @@ Summary: 6/6 tables exist
 - The direct TCP connection to port 5432 may fail even though HTTPS connections work fine
 - The manual approach uses the Supabase web dashboard, which always works
 
+**Note on Port Configuration:**
+- PostgreSQL uses port 5432 by default for direct connections
+- The `.env.example` file now includes `POSTGRES_PORT=5432` configuration option (newly added)
+- `TIMESCALEDB_PORT=5432` was already available as a commented option
+- For docker-compose deployments, port 5432 is automatically exposed
+- For cloud/remote connections, ensure your firewall/security groups allow port 5432
+- HTTPS-based Supabase APIs work without requiring direct port 5432 access (recommended)
+
 **Alternative: Set DATABASE_URL with pooler**
 If you want to retry the automated approach, you can try using the transaction pooler:
 ```bash
