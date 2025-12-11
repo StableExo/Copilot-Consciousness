@@ -64,7 +64,20 @@ const TRANSFORMATIONS: Transformation[] = [
       });
       return words.join(' ');
     },
-    parameterRange: [75, 85, 0.01] // Based on TRAIN_MNEMONIC analysis
+    parameterRange: [79.5, 81.5, 0.001] // Fine-grained search around 80.18
+  },
+  {
+    name: 'Log2MultiplyRounded',
+    generate: (numbers, multiplier) => {
+      const wordlist = bip39.wordlists.english;
+      const words = numbers.map(num => {
+        const log2Val = Math.log2(num);
+        const index = Math.round(log2Val * multiplier) % wordlist.length; // Using round instead of floor
+        return wordlist[index];
+      });
+      return words.join(' ');
+    },
+    parameterRange: [79.5, 81.5, 0.001]
   },
   {
     name: 'Division',
@@ -76,7 +89,7 @@ const TRANSFORMATIONS: Transformation[] = [
       });
       return words.join(' ');
     },
-    parameterRange: [4000, 5000, 1]
+    parameterRange: [4500, 4600, 0.1] // Finer search
   },
   {
     name: 'XOR',
@@ -88,7 +101,7 @@ const TRANSFORMATIONS: Transformation[] = [
       });
       return words.join(' ');
     },
-    parameterRange: [8000000, 9000000, 1000]
+    parameterRange: [8380000, 8400000, 100] // Focused search
   }
 ];
 
