@@ -237,7 +237,7 @@ export {
 };
 
 // Run if executed directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   solvePuzzle()
     .then(solution => {
       if (solution) {
