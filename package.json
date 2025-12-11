@@ -202,14 +202,22 @@
     "cookie": "0.7.2",
     "tmp": "0.2.5",
     "hardhat": {
+      "zod": "3.25.76",
       "@nomicfoundation/hardhat-zod-utils": {
         "zod": "3.25.76"
       }
     },
     "@nomicfoundation/hardhat-verify": {
+      "zod": "3.25.76",
       "@nomicfoundation/hardhat-zod-utils": {
         "zod": "3.25.76"
       }
+    },
+    "@nomicfoundation/hardhat-ethers": {
+      "zod": "3.25.76"
+    },
+    "@nomicfoundation/hardhat-viem": {
+      "zod": "3.25.76"
     }
   }
 }
