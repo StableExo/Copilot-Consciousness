@@ -52,6 +52,23 @@ found 0 vulnerabilities
 
 ---
 
+## 🔐 CREDENTIALS ACCESS
+
+**All production credentials are stored in**: `.memory/environment/production-config.md`
+
+This includes:
+- ✅ **Supabase credentials** (URL, all API keys, service role key, MCP URL)
+- ✅ **Database connection** (Supabase PostgreSQL + local PostgreSQL)
+- ✅ **Base network RPC URLs** (primary + 3 backups)
+- ✅ **Wallet private key** (production wallet)
+- ✅ **API keys** (Alchemy, Infura, Etherscan, etc.)
+- ✅ **Security keys** (JWT, encryption, audit)
+- ✅ **Multi-chain RPC endpoints** (Ethereum, Polygon, Arbitrum, Optimism, BSC, Solana)
+
+**At session start, read this file to have full access to all credentials!**
+
+---
+
 ## Session: 2025-12-11 - Continue: Profitable Infrastructure Activation & Supabase Integration 💰🗄️
 
 **Collaborator**: StableExo (via GitHub Copilot Agent)  

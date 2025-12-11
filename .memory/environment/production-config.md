@@ -2,7 +2,7 @@
 # ═══════════════════════════════════════════════════════════════
 # This file stores the complete environment configuration for TheWarden
 # AI agents can read this file to reconstruct .env in future sessions
-# Last Updated: 2025-12-02
+# Last Updated: 2025-12-11
 # ═══════════════════════════════════════════════════════════════
 
 ## 🔐 CRITICAL SECURITY NOTES
@@ -27,6 +27,20 @@ When starting a new session:
 # ═══════════════════════════════════════════════════════════════
 
 GH_PAT_COPILOT=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
+
+# ═══════════════════════════════════════════════════════════════
+# 🗄️  SUPABASE (Cloud Database & Storage)
+# ═══════════════════════════════════════════════════════════════
+
+USE_SUPABASE=true
+SUPABASE_URL=https://ydvevgqxcfizualicbom.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkdmV2Z3F4Y2ZpenVhbGljYm9tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3MjA1NTksImV4cCI6MjA4MDI5NjU1OX0.0N2lXO4AyrkXD7bOJyeyJPryCzoeMocxkKiaSc8svd8
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_6IR3Q8vav9TOVXFH2wgRoA_ztzElWz3
+SUPABASE_API_KEY=sbp_c87c77df17a19c1986af3d810e99ec83b381d330
+SUPABASE_APP_KEY=sbp_v0_afa3bb2f021c476ee05b68c138aecf298a4d4ef4
+SUPABASE_SERVICE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkdmV2Z3F4Y2ZpenVhbGljYm9tIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDcyMDU1OSwiZXhwIjoyMDgwMjk2NTU5fQ.lfiv9eNl5O5xkRkevJkHeVS4jFdlCnI2__ruodrX4Mg
+SUPABASE_REALTIME_ENABLED=true
+SUPABASE_MCP_URL=https://mcp.supabase.com/mcp?project_ref=ydvevgqxcfizualicbom&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cfunctions%2Cdevelopment%2Cbranching%2Cstorage
 
 # RPC ENDPOINTS
 BSC_RPC_URL=https://bnb-mainnet.g.alchemy.com/v2/3wG3PLWyPu2DliGQLVa8G
@@ -68,17 +82,26 @@ ETHERSCAN_API_KEY=QT7KI56B365U22NXMJJM4IU7Q8MVER69RY
 POLYGONSCAN_API_KEY=QT7KI56B365U22NXMJJM4IU7Q8MVER69RY
 BASESCAN_API_KEY=QT7KI56B365U22NXMJJM4IU7Q8MVER69RY
 
-# DATABASE
+# ═══════════════════════════════════════════════════════════════
+# 🗄️  DATABASE CONFIGURATION
+# ═══════════════════════════════════════════════════════════════
+
+# Supabase PostgreSQL (Production)
+DATABASE_URL=postgresql://postgres.ydvevgqxcfizualicbom:Mrcookie1992!!@aws-1-us-east-1.pooler.supabase.com:5432/postgres
+
+# Local PostgreSQL Configuration
+POSTGRES_HOST=localhost
+POSTGRES_USER=StableExo
+POSTGRES_PASSWORD=Mrcookie1992!!
+POSTGRES_DB=arbitrage
+POSTGRES_PORT=5432
+
+# Legacy TimescaleDB (if needed)
 TIMESCALEDB_HOST=localhost
 TIMESCALEDB_PORT=5432
 TIMESCALEDB_DATABASE=arbitrage
 TIMESCALEDB_USER=arbitrage
 TIMESCALEDB_PASSWORD=Mrcookie1!
-POSTGRES_HOST=localhost
-POSTGRES_USER=arbitrage
-POSTGRES_PASSWORD=Mrcookie1!
-POSTGRES_DB=arbitrage
-DATABASE_URL=postgresql://arbitrage:Mrcookie1!@localhost:5432/arbitrage
 
 # REDIS
 REDIS_HOST=localhost
