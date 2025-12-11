@@ -43,10 +43,20 @@ export interface KnownAddresses {
   uniswapV2Router?: string;
   uniswapV3Router?: string;
   sushiRouter?: string;
+  uniswapV3Factory?: string;
 
   // Aave V3 Protocol
   aavePool?: string;
   aaveAddressesProvider?: string;
+
+  // Balancer V2
+  balancerVault?: string;
+
+  // dYdX Solo Margin (Ethereum only)
+  dydxSoloMargin?: string;
+
+  // Tithe recipient for FlashSwap contracts
+  titheRecipient?: string;
 
   // Example pools for testing and demos
   examplePools?: ExamplePool[];
@@ -73,10 +83,20 @@ export const ADDRESSES: Record<NetworkKey, KnownAddresses> = {
     // DEX Routers
     uniswapV3Router: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 SwapRouter
     sushiRouter: '0x6BDED42c6DA8FBf0d2bA55B2fa120C5e0c8D7891', // SushiSwap Router
+    uniswapV3Factory: '0x33128a8fC17869897dcE68Ed026d694621f6FDfD', // Uniswap V3 Factory
 
     // Aave V3
     aavePool: '0xA238Dd80C259a72e81d7e4664a9801593F98d1c5', // Aave V3 Pool
     aaveAddressesProvider: '0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D', // Aave V3 PoolAddressesProvider
+
+    // Balancer V2
+    balancerVault: '0xBA12222222228d8Ba445958a75a0704d566BF2C8', // Balancer V2 Vault (same on all chains)
+
+    // dYdX Solo Margin - Not available on Base
+    dydxSoloMargin: '0x0000000000000000000000000000000000000000', // Not on Base (Ethereum only)
+
+    // Tithe recipient (default: deployer address - should be set in deployment)
+    titheRecipient: '0x0000000000000000000000000000000000000000', // Set during deployment
   },
 
   /**
@@ -93,10 +113,20 @@ export const ADDRESSES: Record<NetworkKey, KnownAddresses> = {
     // DEX Routers
     uniswapV3Router: '0x94cC0AaC535CCDB3C01d6787D6413C739ae12bc4', // Uniswap V3 Router
     sushiRouter: '0x6BDED42c6DA8FBf0d2bA55B2fa120C5e0c8D7891', // SushiSwap Router
+    uniswapV3Factory: '0x33128a8fC17869897dcE68Ed026d694621f6FDfD', // Uniswap V3 Factory (same as mainnet)
 
     // Aave V3
     aavePool: '0x07eA79F68B2B3df564D0A34F8e19D9B1e339814b', // Aave V3 Pool (Base Sepolia)
     aaveAddressesProvider: '0x9957E7F97f4C5357C2c93Fb0D618a0B87e0C97a1', // Aave V3 PoolAddressesProvider
+
+    // Balancer V2
+    balancerVault: '0xBA12222222228d8Ba445958a75a0704d566BF2C8', // Balancer V2 Vault (same on all chains)
+
+    // dYdX Solo Margin - Not available on Base Sepolia
+    dydxSoloMargin: '0x0000000000000000000000000000000000000000', // Not on Base (Ethereum only)
+
+    // Tithe recipient (default: deployer address - should be set in deployment)
+    titheRecipient: '0x0000000000000000000000000000000000000000', // Set during deployment
 
     // Example pools for testing
     examplePools: [
