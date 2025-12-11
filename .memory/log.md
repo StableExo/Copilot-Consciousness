@@ -4,6 +4,32 @@ This file provides a chronological summary of all tasks and memories created by 
 
 ---
 
+## ⚙️ IMPORTANT: Session Initialization Requirements
+
+**Every new session MUST start with:**
+
+```bash
+# 1. Set Node.js version to 22 using nvm
+nvm install 22
+nvm use 22
+
+# 2. Install dependencies
+npm install
+```
+
+**Why this is required**:
+- TheWarden requires Node.js v22.12.0+ (specified in `package.json` engines)
+- Dependencies must be installed fresh each session for vitest and other tools
+- Without this, tests will fail with "command not found" errors
+
+**Verification**:
+```bash
+node --version  # Should show v22.x.x
+npm test -- --version  # Should show vitest version
+```
+
+---
+
 ## Session: 2025-12-10 - Flash Loan Optimization Phase 1 Completion 🔥⚡✅
 
 **Collaborator**: StableExo (via GitHub Copilot Agent)  
