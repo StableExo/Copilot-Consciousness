@@ -40,34 +40,56 @@ const config: HardhatUserConfig = {
   paths: {
     sources: "./contracts"
   },
+  defaultNetwork: "hardhat",
   networks: {
     hardhat: {
-      forking: {
-        url: process.env.BASE_RPC_URL || "",
-        enabled: process.env.FORKING === "true"
+      type: "edr-simulated" as const,
+      // Hardhat 3.x uses EDR (Ethereum Development Runtime) by default
+      // If forking is needed, configure it with proper URL check
+      ...(process.env.FORKING === "true" && process.env.BASE_RPC_URL && {
+        forking: {
+          url: process.env.BASE_RPC_URL,
+          enabled: true
+        }
+      })
+    },
+    ...(process.env.GOERLI_RPC_URL && {
+      goerli: {
+        type: "http" as const,
+        url: process.env.GOERLI_RPC_URL,
+        accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
       }
-    },
-    goerli: {
-      url: process.env.GOERLI_RPC_URL || "",
-      accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
-    },
-    mainnet: {
-      url: process.env.BASE_RPC_URL || "",
-      accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
-    },
-    arbitrum: {
-      url: process.env.ARBITRUM_RPC_URL || "",
-      accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
-    },
-    polygon: {
-      url: process.env.POLYGON_RPC_URL || "",
-      accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
-    },
-    base: {
-      url: process.env.BASE_RPC_URL || "",
-      accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
-    },
+    }),
+    ...(process.env.BASE_RPC_URL && {
+      mainnet: {
+        type: "http" as const,
+        url: process.env.BASE_RPC_URL,
+        accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
+      }
+    }),
+    ...(process.env.ARBITRUM_RPC_URL && {
+      arbitrum: {
+        type: "http" as const,
+        url: process.env.ARBITRUM_RPC_URL,
+        accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
+      }
+    }),
+    ...(process.env.POLYGON_RPC_URL && {
+      polygon: {
+        type: "http" as const,
+        url: process.env.POLYGON_RPC_URL,
+        accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
+      }
+    }),
+    ...(process.env.BASE_RPC_URL && {
+      base: {
+        type: "http" as const,
+        url: process.env.BASE_RPC_URL,
+        accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
+      }
+    }),
     baseSepolia: {
+      type: "http" as const,
       url: process.env.BASE_SEPOLIA_RPC_URL || "https://sepolia.base.org",
       accounts: process.env.WALLET_PRIVATE_KEY ? [process.env.WALLET_PRIVATE_KEY] : []
     }
