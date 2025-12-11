@@ -9,23 +9,45 @@ This file provides a chronological summary of all tasks and memories created by 
 **Every new session MUST start with:**
 
 ```bash
-# 1. Set Node.js version to 22 using nvm
-nvm install 22
-nvm use 22
-
-# 2. Install dependencies
+# THE EXACT COMMAND SEQUENCE (tested and verified):
+cd /home/runner/work/TheWarden/TheWarden && \
+export NVM_DIR="$HOME/.nvm" && \
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && \
+nvm install 22 && \
+nvm use 22 && \
 npm install
 ```
 
-**Why this is required**:
+**Why this exact sequence is required**:
+- `export NVM_DIR` and `source nvm.sh` MUST be in the SAME command session
+- Each `&&` chains commands in a single bash session to maintain environment
+- Without this, Node version reverts between commands (common error)
 - TheWarden requires Node.js v22.12.0+ (specified in `package.json` engines)
 - Dependencies must be installed fresh each session for vitest and other tools
-- Without this, tests will fail with "command not found" errors
+- Without this, tests will fail with "command not found" or "EBADENGINE" errors
+
+**What happens if you do it wrong**:
+```bash
+# ❌ WRONG - Each command is separate session, Node reverts:
+nvm use 22
+npm install  # <- Uses old Node version, FAILS
+
+# ✅ CORRECT - Single session with &&:
+export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm use 22 && npm install
+```
 
 **Verification**:
 ```bash
-node --version  # Should show v22.x.x
-npm test -- --version  # Should show vitest version
+# In the SAME session after running the command:
+node --version          # Should show v22.21.1 or v22.x.x
+npm test -- --version   # Should show vitest version (not "command not found")
+```
+
+**Expected Output**:
+```
+Now using node v22.21.1 (npm v10.9.4)
+added 704 packages, and audited 705 packages in 13s
+found 0 vulnerabilities
 ```
 
 ---
