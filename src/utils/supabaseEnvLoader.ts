@@ -157,13 +157,17 @@ export async function loadEnvFromSupabase(
                 }
               }
             } catch (error) {
-              result.errors.push(`Failed to decrypt secret ${key}: ${error}`);
-              logger.error(`Failed to decrypt secret ${key}:`, error);
+              const errorMsg = error instanceof Error ? error.message : String(error);
+              result.errors.push(`Failed to decrypt secret ${key}: ${errorMsg}`);
+              const errMsg = error instanceof Error ? error.message : String(error);
+              logger.error(`Failed to decrypt secret ${key}: ${errMsg}`);
             }
           }
         } catch (error) {
-          result.errors.push(`Failed to load secrets: ${error}`);
-          logger.error('Failed to load secrets:', error);
+          const errorMsg = error instanceof Error ? error.message : String(error);
+          result.errors.push(`Failed to load secrets: ${errorMsg}`);
+          const errMsg = error instanceof Error ? error.message : String(error);
+          logger.error(`Failed to load secrets: ${errMsg}`);
         }
       }
     }
@@ -195,8 +199,10 @@ export async function loadEnvFromSupabase(
     return result;
 
   } catch (error) {
-    result.errors.push(`Unexpected error: ${error}`);
-    logger.error('Failed to load environment from Supabase:', error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    result.errors.push(`Unexpected error: ${errorMsg}`);
+    const errMsg = error instanceof Error ? error.message : String(error);
+    logger.error(`Failed to load environment from Supabase: ${errMsg}`);
     return result;
   }
 }
@@ -229,7 +235,8 @@ export async function loadEnvVar(
       return await storage.getConfig(key);
     }
   } catch (error) {
-    logger.error(`Failed to load ${key} from Supabase:`, error);
+    const errMsg = error instanceof Error ? error.message : String(error);
+    logger.error(`Failed to load ${key} from Supabase: ${errMsg}`);
     return null;
   }
 }
@@ -264,15 +271,22 @@ export async function saveEnvVar(
         logger.error(`Cannot save secret ${key}: no encryption key`);
         return false;
       }
-      await storage.setSecret(key, value, effectiveEncryptionKey, { category, description });
+      await storage.setSecret(key, value, effectiveEncryptionKey, { 
+        category: category as any,
+        description 
+      });
     } else {
-      await storage.setConfig(key, value, { category, description });
+      await storage.setConfig(key, value, { 
+        category: category as any,
+        description 
+      });
     }
 
     logger.info(`Saved ${isSecret ? 'secret' : 'config'} ${key} to Supabase`);
     return true;
   } catch (error) {
-    logger.error(`Failed to save ${key} to Supabase:`, error);
+    const errMsg = error instanceof Error ? error.message : String(error);
+    logger.error(`Failed to save ${key} to Supabase: ${errMsg}`);
     return false;
   }
 }

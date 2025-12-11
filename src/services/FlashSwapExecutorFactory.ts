@@ -166,11 +166,10 @@ export class FlashSwapExecutorFactory {
           provider: this.config.provider,
           signer: this.config.signer,
         });
-        logger.info('[FlashSwapFactory] V2 Executor initialized', {
-          address: this.config.flashSwapV2Address,
-        });
+        logger.info(`[FlashSwapFactory] V2 Executor initialized: ${this.config.flashSwapV2Address}`);
       } catch (error) {
-        logger.error('[FlashSwapFactory] Failed to initialize V2 Executor', { error });
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        logger.error(`[FlashSwapFactory] Failed to initialize V2 Executor: ${errorMsg}`);
       }
     }
     
@@ -185,13 +184,10 @@ export class FlashSwapExecutorFactory {
           gasBuffer: this.config.gasBuffer,
           defaultSlippage: this.config.defaultSlippage,
         });
-        logger.info('[FlashSwapFactory] V3 Executor initialized', {
-          address: this.config.flashSwapV3Address,
-          rolloutPercent: this.config.v3RolloutPercent,
-          strategy: this.config.v3SourceStrategy,
-        });
+        logger.info(`[FlashSwapFactory] V3 Executor initialized: ${this.config.flashSwapV3Address} (rollout: ${this.config.v3RolloutPercent}%, strategy: ${this.config.v3SourceStrategy})`);
       } catch (error) {
-        logger.error('[FlashSwapFactory] Failed to initialize V3 Executor', { error });
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        logger.error(`[FlashSwapFactory] Failed to initialize V3 Executor: ${errorMsg}`);
       }
     }
   }
@@ -221,10 +217,7 @@ export class FlashSwapExecutorFactory {
     const useV3 = roll < rolloutPercent;
     
     if (useV3) {
-      logger.debug('[FlashSwapFactory] Selected V3 for this opportunity', {
-        roll: roll.toFixed(2),
-        threshold: rolloutPercent,
-      });
+      logger.debug(`[FlashSwapFactory] Selected V3 for this opportunity (roll: ${roll.toFixed(2)}, threshold: ${rolloutPercent})`);
     }
     
     return useV3;
@@ -259,8 +252,8 @@ export class FlashSwapExecutorFactory {
     const version = executor.getVersion();
     
     logger.info(`[FlashSwapFactory] Executing with ${version}`, {
-      opportunityId: opportunity.id,
-      expectedProfit: opportunity.profitAmount,
+      opportunityId: (opportunity as any).id || 'unknown',
+      expectedProfit: (opportunity as any).profitAmount || 'unknown',
     });
     
     try {
@@ -268,18 +261,22 @@ export class FlashSwapExecutorFactory {
         version === 'V3' ? opportunity : this.convertToV2Params(opportunity)
       );
       
-      logger.info(`[FlashSwapFactory] ${version} execution completed`, {
-        success: result.success,
-        txHash: result.txHash,
-        profit: result.profit,
-      });
+      logger.info(`[FlashSwapFactory] ${version} execution completed`, 
+        JSON.stringify({
+          success: result.success,
+          txHash: result.txHash,
+          profit: result.profit,
+        })
+      );
       
       return result;
     } catch (error) {
-      logger.error(`[FlashSwapFactory] ${version} execution failed`, {
-        error,
-        opportunityId: opportunity.id,
-      });
+      logger.error(`[FlashSwapFactory] ${version} execution failed`, 
+        JSON.stringify({
+          error,
+          opportunityId: (opportunity as any).id || 'unknown',
+        })
+      );
       
       // If V3 failed and V2 is available, try V2 as fallback
       if (version === 'V3' && this.v2Executor) {
@@ -289,7 +286,7 @@ export class FlashSwapExecutorFactory {
           const v2Executor = new V2ExecutorWrapper(this.v2Executor);
           return await v2Executor.execute(this.convertToV2Params(opportunity));
         } catch (v2Error) {
-          logger.error('[FlashSwapFactory] V2 fallback also failed', { v2Error });
+          logger.error('[FlashSwapFactory] V2 fallback also failed', JSON.stringify({ v2Error }));
           throw v2Error;
         }
       }
@@ -302,8 +299,12 @@ export class FlashSwapExecutorFactory {
    * Convert ArbitrageOpportunity to V2 params format
    */
   private convertToV2Params(opportunity: ArbitrageOpportunity): FlashLoanArbitrageParams {
+    // Type guard for extended opportunity interface
+    const extOpp = opportunity as any;
+    
     // Convert opportunity path to V2 swap steps
-    const swapPath: V2SwapStep[] = opportunity.path.swaps.map((swap) => ({
+    const swaps = extOpp.path?.swaps || [];
+    const swapPath: V2SwapStep[] = swaps.map((swap: any) => ({
       pool: swap.pool,
       tokenIn: swap.tokenIn,
       tokenOut: swap.tokenOut,
@@ -313,10 +314,10 @@ export class FlashSwapExecutorFactory {
     }));
     
     return {
-      borrowToken: opportunity.input.token,
-      borrowAmount: opportunity.input.amount,
+      borrowToken: extOpp.input?.token || extOpp.tokenA?.address,
+      borrowAmount: extOpp.input?.amount || '0',
       swapPath,
-      expectedProfit: opportunity.profitAmount,
+      expectedProfit: extOpp.profitAmount || '0',
     };
   }
   
