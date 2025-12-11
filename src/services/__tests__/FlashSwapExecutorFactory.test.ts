@@ -19,37 +19,51 @@ vi.mock('../../utils/logger', () => ({
   },
 }));
 
+// Mock ethers.Contract to avoid instantiation errors
+vi.mock('ethers', async () => {
+  const actual = await vi.importActual('ethers');
+  return {
+    ...actual,
+    Contract: vi.fn().mockImplementation(() => ({})),
+  };
+});
+
+// Create mock instances that will be returned by constructors
+const mockV2Executor = {
+  executeFlashLoan: vi.fn().mockResolvedValue({
+    success: true,
+    txHash: '0xv2tx',
+    profit: '1000000000000000000',
+    gasUsed: 250000n,
+  }),
+};
+
+const mockV3Executor = {
+  constructSwapPath: vi.fn().mockReturnValue([{
+    dexType: 0,
+    pool: '0xPool',
+    tokenIn: '0xTokenIn',
+    tokenOut: '0xTokenOut',
+    fee: 3000,
+    extraData: '0x',
+  }]),
+  executeArbitrage: vi.fn().mockResolvedValue({
+    success: true,
+    txHash: '0xv3tx',
+    netProfit: 1100000000000000000n,
+    gasUsed: 220000n,
+    source: 0, // Balancer
+  }),
+};
+
 // Mock FlashLoanExecutor
 vi.mock('../FlashLoanExecutor', () => ({
-  FlashLoanExecutor: vi.fn().mockImplementation(() => ({
-    executeFlashLoan: vi.fn().mockResolvedValue({
-      success: true,
-      txHash: '0xv2tx',
-      profit: '1000000000000000000',
-      gasUsed: 250000n,
-    }),
-  })),
+  FlashLoanExecutor: vi.fn().mockImplementation(() => mockV2Executor),
 }));
 
 // Mock FlashSwapV3Executor
 vi.mock('../../execution/FlashSwapV3Executor', () => ({
-  FlashSwapV3Executor: vi.fn().mockImplementation(() => ({
-    constructSwapPath: vi.fn().mockReturnValue([{
-      dexType: 0,
-      pool: '0xPool',
-      tokenIn: '0xTokenIn',
-      tokenOut: '0xTokenOut',
-      fee: 3000,
-      extraData: '0x',
-    }]),
-    executeArbitrage: vi.fn().mockResolvedValue({
-      success: true,
-      txHash: '0xv3tx',
-      netProfit: 1100000000000000000n,
-      gasUsed: 220000n,
-      source: 0, // Balancer
-    }),
-  })),
+  FlashSwapV3Executor: vi.fn().mockImplementation(() => mockV3Executor),
   FlashLoanSource: {
     BALANCER: 0,
     DYDX: 1,
@@ -96,6 +110,10 @@ describe('FlashSwapExecutorFactory', () => {
   
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset mock function call histories
+    mockV2Executor.executeFlashLoan.mockClear();
+    mockV3Executor.constructSwapPath.mockClear();
+    mockV3Executor.executeArbitrage.mockClear();
   });
   
   describe('Configuration', () => {
