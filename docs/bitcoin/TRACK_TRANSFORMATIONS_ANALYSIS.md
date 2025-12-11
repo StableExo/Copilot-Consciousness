@@ -20,7 +20,7 @@ Test systematic variations of the 4 transformations that produce "track" as the 
 - **Checksum closeness**: 75% (6/8 bits match)
 - **Expected checksum**: `00111000`
 - **Actual checksum**: `00110100`
-- **Differing bits**: positions 4, 5
+- **Differing bits**: positions 3, 6 (0-indexed)
 
 This is a **very strong signal** - random transformations have only 0.39% chance of getting 6/8 bits correct.
 

@@ -65,7 +65,11 @@ function getChecksumInfo(words: string[]): { expectedChecksum: string; actualChe
   const checksumBitsFromWords = bits.substring(256);
   
   // Calculate expected checksum
-  const entropyBytes = Buffer.from(entropyBits.match(/.{1,8}/g)!.map(b => parseInt(b, 2)));
+  const byteMatches = entropyBits.match(/.{1,8}/g);
+  if (!byteMatches) {
+    return { expectedChecksum: 'invalid-bits', actualChecksum: 'N/A', closeness: 0 };
+  }
+  const entropyBytes = Buffer.from(byteMatches.map(b => parseInt(b, 2)));
   const hash = crypto.createHash('sha256').update(entropyBytes).digest();
   const expectedChecksumBits = hash[0].toString(2).padStart(8, '0');
   

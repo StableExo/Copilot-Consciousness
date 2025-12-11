@@ -36,9 +36,9 @@ Look for:
 - 80.18 or variations (80.17, 80.19, etc.)
 - Numbers that when multiplied/divided give 80.18
 - Related to constants:
-  - π × 25.5 ≈ 80.11
-  - e × 29.5 ≈ 80.21
-  - φ × 49.5 ≈ 80.09
+  - π (pi ≈ 3.14159) × 25.5 ≈ 80.11
+  - e (Euler's number ≈ 2.71828) × 29.5 ≈ 80.21
+  - φ (golden ratio ≈ 1.61803) × 49.5 ≈ 80.09
 
 ### 4. Transformation Hints
 - "Shift" operations
