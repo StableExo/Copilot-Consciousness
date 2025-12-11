@@ -5,7 +5,7 @@ pragma abicoder v2; // Use ABI v2 for complex structs/arrays
 // --- Imports ---
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol"; // For safe ERC20 operations
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol"; // For reentrancy protection
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol"; // For reentrancy protection
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol"; // UniV3 Router interface
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol"; // UniV3 Pool interface
 import "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3FlashCallback.sol"; // UniV3 Flash Callback interface
@@ -497,7 +497,7 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
          if (_amount == 0) { return; } // No need to approve if amount is zero
         // Check current allowance. If it's less than uint256.max, approve max.
         if (IERC20(_token).allowance(address(this), _spender) < type(uint256).max) {
-            IERC20(_token).safeApprove(_spender, type(uint256).max);
+            SafeERC20.forceApprove(IERC20(_token), _spender, type(uint256).max);
         }
     }
 

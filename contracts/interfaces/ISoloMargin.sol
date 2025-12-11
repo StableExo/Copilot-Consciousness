@@ -107,7 +107,7 @@ interface ICallee {
      */
     function callFunction(
         address sender,
-        Account memory accountInfo,
+        ISoloMargin.Account memory accountInfo,
         bytes memory data
     ) external;
 }
