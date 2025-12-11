@@ -154,7 +154,7 @@
     "uuid": "13.0.0",
     "viem": "2.40.3",
     "ws": "8.18.0",
-    "zod": "4.1.13"
+    "zod": "3.25.76"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.3",
