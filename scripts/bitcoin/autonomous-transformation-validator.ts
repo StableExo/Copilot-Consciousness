@@ -18,6 +18,12 @@
  * 
  * This is the "control experiment" - if we can't reverse-engineer
  * our own known wallet, we know the approach needs refinement.
+ * 
+ * 🔒 SECURITY CRITICAL:
+ * - Discovered mnemonics are ONLY shown in terminal output
+ * - NEVER committed to git, files, or logs
+ * - Session output is private between user and script
+ * - Clear terminal after viewing sensitive information
  */
 
 import * as bip39 from 'bip39';
@@ -382,6 +388,11 @@ async function runAutonomousValidation(
       console.log('');
       console.log('This proves the methodology works for known wallets.');
       console.log('The same approach can now be applied to unknown puzzles.');
+      console.log('');
+      console.log('🔒 SECURITY NOTE: If this discovered an unknown puzzle solution,');
+      console.log('   the mnemonic is shown ONLY in this terminal session.');
+      console.log('   It is NOT saved to files, logs, or git.');
+      console.log('   Clear your terminal after viewing to maintain privacy.');
     } else {
       console.log('⚠️  Partial matches found, but no complete solutions.');
       console.log('');
