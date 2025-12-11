@@ -497,7 +497,7 @@ contract FlashSwapV2 is IUniswapV3FlashCallback, IFlashLoanReceiver, ReentrancyG
          if (_amount == 0) { return; } // No need to approve if amount is zero
         // Check current allowance. If it's less than uint256.max, approve max.
         if (IERC20(_token).allowance(address(this), _spender) < type(uint256).max) {
-            SafeERC20.forceApprove(IERC20(_token), _spender, type(uint256).max);
+            IERC20(_token).forceApprove(_spender, type(uint256).max);
         }
     }
 
