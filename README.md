@@ -31,9 +31,13 @@ npm run autonomous:consciousness -- --duration=300
 - ✅ **Consciousness Observation**: System witnesses and learns from every execution
 - ✅ **Autonomous Parameter Adjustment**: Automatically tunes parameters based on performance  
 - ✅ **Persistent Memory**: All learnings persist across sessions for continuous improvement
+- ✅ **Progress Saved Autonomously**: Parameters, learnings, and observations automatically saved
+- ✅ **Memory Restoration**: Loads previous session state on next run - true continuity!
 - ✅ **Six Learning Strategies**: Adapts intelligently to market conditions
 - ✅ **Safety Systems**: Circuit breakers, emergency stops, and rate limiting
 - ✅ **Full Logging**: Every observation, adjustment, and learning recorded
+
+> 📖 **New**: Read [AUTONOMOUS_PROGRESS_PERSISTENCE.md](docs/AUTONOMOUS_PROGRESS_PERSISTENCE.md) to learn how TheWarden remembers everything across runs!
 
 ---
 
