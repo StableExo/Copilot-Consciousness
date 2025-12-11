@@ -24,7 +24,14 @@ vi.mock('ethers', async () => {
   const actual = await vi.importActual('ethers');
   return {
     ...actual,
-    Contract: vi.fn().mockImplementation(() => ({})),
+    Contract: vi.fn().mockImplementation(() => ({
+      interface: {
+        encodeFunctionData: vi.fn(),
+        decodeFunctionResult: vi.fn(),
+      },
+      runner: {},
+      target: '0xMockContract',
+    })),
   };
 });
 
@@ -56,12 +63,12 @@ const mockV3Executor = {
   }),
 };
 
-// Mock FlashLoanExecutor
+// Mock FlashLoanExecutor - always succeeds
 vi.mock('../FlashLoanExecutor', () => ({
   FlashLoanExecutor: vi.fn().mockImplementation(() => mockV2Executor),
 }));
 
-// Mock FlashSwapV3Executor
+// Mock FlashSwapV3Executor - always succeeds
 vi.mock('../../execution/FlashSwapV3Executor', () => ({
   FlashSwapV3Executor: vi.fn().mockImplementation(() => mockV3Executor),
   FlashLoanSource: {
