@@ -1,0 +1,422 @@
+
+═══════════════════════════════════════════════════════════════
+  BITCOIN PUZZLE UTXO COLLECTION REPORT
+═══════════════════════════════════════════════════════════════
+
+Scan Date: 12/12/2025, 11:24:33 AM
+BTC Price: $95,000.00
+
+PUZZLE STATISTICS
+─────────────────────────────────────────────────────────────
+Total Puzzles:       256
+Spent/Solved:        177
+Still Unspent:       79
+
+UNCLAIMED VALUE
+─────────────────────────────────────────────────────────────
+Total BTC:           916.51509848 BTC
+Total USD:           $87,068,934.36
+
+UNSPENT PUZZLES DETAIL
+─────────────────────────────────────────────────────────────
+
+Puzzle #160
+  Address: 1NBC8uXJy1GiJ6drkiZa1WuKn51ps7EPTv
+  Amount:  16.00119082 BTC ≈ $1,520,113.13
+  UTXOs:   12
+
+Puzzle #159
+  Address: 14u4nA5sugaswb6SZgn5av2vuChdMnD9E5
+  Amount:  15.90002600 BTC ≈ $1,510,502.47
+  UTXOs:   6
+
+Puzzle #158
+  Address: 19z6waranEf8CcP8FqNgdwUe1QRxvUNKBG
+  Amount:  15.80001000 BTC ≈ $1,501,000.95
+  UTXOs:   4
+
+Puzzle #157
+  Address: 14JHoRAdmJg3XR4RjMDh6Wed6ft6hzbQe9
+  Amount:  15.70001000 BTC ≈ $1,491,500.95
+  UTXOs:   4
+
+Puzzle #156
+  Address: 1FTpAbQa4h8trvhQXjXnmNhqdiGBd1oraE
+  Amount:  15.60001000 BTC ≈ $1,482,000.95
+  UTXOs:   4
+
+Puzzle #155
+  Address: 1AoeP37TmHdFh8uN72fu9AqgtLrUwcv2wJ
+  Amount:  15.50011600 BTC ≈ $1,472,511.02
+  UTXOs:   6
+
+Puzzle #154
+  Address: 1NgVmsCCJaKLzGyKLFJfVequnFW9ZvnMLN
+  Amount:  15.40001000 BTC ≈ $1,463,000.95
+  UTXOs:   4
+
+Puzzle #153
+  Address: 18192XpzzdDi2K11QVHR7td2HcPS6Qs5vg
+  Amount:  15.30001000 BTC ≈ $1,453,500.95
+  UTXOs:   4
+
+Puzzle #152
+  Address: 1LuUHyrQr8PKSvbcY1v1PiuGuqFjWpDumN
+  Amount:  15.20001000 BTC ≈ $1,444,000.95
+  UTXOs:   4
+
+Puzzle #151
+  Address: 13Q84TNNvgcL3HJiqQPvyBb9m4hxjS3jkV
+  Amount:  15.10001000 BTC ≈ $1,434,500.95
+  UTXOs:   4
+
+Puzzle #150
+  Address: 1MUJSJYtGPVGkBCTqGspnxyHahpt5Te8jy
+  Amount:  15.00001600 BTC ≈ $1,425,001.52
+  UTXOs:   5
+
+Puzzle #149
+  Address: 1CXvTzR6qv8wJ7eprzUKeWxyGcHwDYP1i2
+  Amount:  14.90001000 BTC ≈ $1,415,500.95
+  UTXOs:   4
+
+Puzzle #148
+  Address: 1FwZXt6EpRT7Fkndzv6K4b4DFoT4trbMrV
+  Amount:  14.80000000 BTC ≈ $1,406,000.00
+  UTXOs:   3
+
+Puzzle #147
+  Address: 18aNhurEAJsw6BAgtANpexk5ob1aGTwSeL
+  Amount:  14.70000000 BTC ≈ $1,396,500.00
+  UTXOs:   3
+
+Puzzle #146
+  Address: 1M7ipcdYHey2Y5RZM34MBbpugghmjaV89P
+  Amount:  14.60000000 BTC ≈ $1,387,000.00
+  UTXOs:   3
+
+Puzzle #145
+  Address: 19GpszRNUej5yYqxXoLnbZWKew3KdVLkXg
+  Amount:  14.50000600 BTC ≈ $1,377,500.57
+  UTXOs:   4
+
+Puzzle #144
+  Address: 1NevxKDYuDcCh1ZMMi6ftmWwGrZKC6j7Ux
+  Amount:  14.40000000 BTC ≈ $1,368,000.00
+  UTXOs:   3
+
+Puzzle #143
+  Address: 13N66gCzWWHEZBxhVxG18P8wyjEWF9Yoi1
+  Amount:  14.30000000 BTC ≈ $1,358,500.00
+  UTXOs:   3
+
+Puzzle #142
+  Address: 15MnK2jXPqTMURX4xC3h4mAZxyCcaWWEDD
+  Amount:  14.20000000 BTC ≈ $1,349,000.00
+  UTXOs:   3
+
+Puzzle #141
+  Address: 1CD91Vm97mLQvXhrnoMChhJx4TP9MaQkJo
+  Amount:  14.10014846 BTC ≈ $1,339,514.10
+  UTXOs:   5
+
+Puzzle #140
+  Address: 1QKBaU6WAeycb3DbKbLBkX7vJiaS8r42Xo
+  Amount:  14.00001600 BTC ≈ $1,330,001.52
+  UTXOs:   5
+
+Puzzle #139
+  Address: 1Fz63c775VV9fNyj25d9Xfw3YHE6sKCxbt
+  Amount:  13.90000000 BTC ≈ $1,320,500.00
+  UTXOs:   3
+
+Puzzle #138
+  Address: 1Ab4vzG6wEQBDNQM1B2bvUz4fqXXdFk2WT
+  Amount:  13.80000000 BTC ≈ $1,311,000.00
+  UTXOs:   3
+
+Puzzle #137
+  Address: 15nf31J46iLuK1ZkTnqHo7WgN5cARFK3RA
+  Amount:  13.70000000 BTC ≈ $1,301,500.00
+  UTXOs:   3
+
+Puzzle #136
+  Address: 1UDHPdovvR985NrWSkdWQDEQ1xuRiTALq
+  Amount:  13.60000000 BTC ≈ $1,292,000.00
+  UTXOs:   3
+
+Puzzle #135
+  Address: 16RGFo6hjq9ym6Pj7N5H7L1NR1rVPJyw2v
+  Amount:  13.50003408 BTC ≈ $1,282,503.24
+  UTXOs:   6
+
+Puzzle #134
+  Address: 13A3JrvXmvg5w9XGvyyR4JEJqiLz8ZySY3
+  Amount:  13.40000000 BTC ≈ $1,273,000.00
+  UTXOs:   3
+
+Puzzle #133
+  Address: 17uDfp5r4n441xkgLFmhNoSW1KWp6xVLD
+  Amount:  13.30000000 BTC ≈ $1,263,500.00
+  UTXOs:   3
+
+Puzzle #132
+  Address: 1KrU4dHE5WrW8rhWDsTRjR21r8t3dsrS3R
+  Amount:  13.20000000 BTC ≈ $1,254,000.00
+  UTXOs:   3
+
+Puzzle #131
+  Address: 16zRPnT8znwq42q7XeMkZUhb1bKqgRogyy
+  Amount:  13.10000000 BTC ≈ $1,244,500.00
+  UTXOs:   3
+
+Puzzle #129
+  Address: 1Hz3uv3nNZzBVMXLGadCucgjiCs5W9vaGz
+  Amount:  12.90000000 BTC ≈ $1,225,500.00
+  UTXOs:   3
+
+Puzzle #128
+  Address: 1MZ2L1gFrCtkkn6DnTT2e4PFUTHw9gNwaj
+  Amount:  12.80000000 BTC ≈ $1,216,000.00
+  UTXOs:   3
+
+Puzzle #127
+  Address: 1G6EFyBRU86sThN3SSt3GrHu1sA7w7nzi4
+  Amount:  12.70000000 BTC ≈ $1,206,500.00
+  UTXOs:   3
+
+Puzzle #126
+  Address: 1AWCLZAjKbV1P7AHvaPNCKiB7ZWVDMxFiz
+  Amount:  12.60000000 BTC ≈ $1,197,000.00
+  UTXOs:   3
+
+Puzzle #124
+  Address: 1BkkGsX9ZM6iwL3zbqs7HWBV7SvosR6m8N
+  Amount:  12.40000000 BTC ≈ $1,178,000.00
+  UTXOs:   3
+
+Puzzle #123
+  Address: 1CdufMQL892A69KXgv6UNBD17ywWqYpKut
+  Amount:  12.30000000 BTC ≈ $1,168,500.00
+  UTXOs:   3
+
+Puzzle #122
+  Address: 1Me3ASYt5JCTAK2XaC32RMeH34PdprrfDx
+  Amount:  12.20000000 BTC ≈ $1,159,000.00
+  UTXOs:   3
+
+Puzzle #121
+  Address: 1GDSuiThEV64c166LUFC9uDcVdGjqkxKyh
+  Amount:  12.10000000 BTC ≈ $1,149,500.00
+  UTXOs:   3
+
+Puzzle #119
+  Address: 1GuBBhf61rnvRe4K8zu8vdQB3kHzwFqSy7
+  Amount:  11.90000000 BTC ≈ $1,130,500.00
+  UTXOs:   3
+
+Puzzle #118
+  Address: 1PJZPzvGX19a7twf5HyD2VvNiPdHLzm9F6
+  Amount:  11.80000661 BTC ≈ $1,121,000.63
+  UTXOs:   4
+
+Puzzle #117
+  Address: 1KNRfGWw7Q9Rmwsc6NT5zsdvEb9M2Wkj5Z
+  Amount:  11.70000000 BTC ≈ $1,111,500.00
+  UTXOs:   3
+
+Puzzle #116
+  Address: 1MnJ6hdhvK37VLmqcdEwqC3iFxyWH2PHUV
+  Amount:  11.60001210 BTC ≈ $1,102,001.15
+  UTXOs:   4
+
+Puzzle #114
+  Address: 174SNxfqpdMGYy5YQcfLbSTK3MRNZEePoy
+  Amount:  11.40000000 BTC ≈ $1,083,000.00
+  UTXOs:   3
+
+Puzzle #113
+  Address: 1NeGn21dUDDeqFQ63xb2SpgUuXuBLA4WT4
+  Amount:  11.30000000 BTC ≈ $1,073,500.00
+  UTXOs:   3
+
+Puzzle #112
+  Address: 18A7NA9FTsnJxWgkoFfPAFbQzuQxpRtCos
+  Amount:  11.20000000 BTC ≈ $1,064,000.00
+  UTXOs:   3
+
+Puzzle #111
+  Address: 1824ZJQ7nKJ9QFTRBqn7z7dHV5EGpzUpH3
+  Amount:  11.10010000 BTC ≈ $1,054,509.50
+  UTXOs:   4
+
+Puzzle #109
+  Address: 1GvgAXVCbA8FBjXfWiAms4ytFeJcKsoyhL
+  Amount:  10.90010500 BTC ≈ $1,035,509.98
+  UTXOs:   4
+
+Puzzle #108
+  Address: 1HB1iKUqeffnVsvQsbpC6dNi1XKbyNuqao
+  Amount:  10.80000000 BTC ≈ $1,026,000.00
+  UTXOs:   3
+
+Puzzle #107
+  Address: 15EJFC5ZTs9nhsdvSUeBXjLAuYq3SWaxTc
+  Amount:  10.70000000 BTC ≈ $1,016,500.00
+  UTXOs:   3
+
+Puzzle #106
+  Address: 18KsfuHuzQaBTNLASyj15hy4LuqPUo1FNB
+  Amount:  10.60000000 BTC ≈ $1,007,000.00
+  UTXOs:   3
+
+Puzzle #104
+  Address: 1EQJvpsmhazYCcKX5Au6AZmZKRnzarMVZu
+  Amount:  10.40001600 BTC ≈ $988,001.52
+  UTXOs:   5
+
+Puzzle #103
+  Address: 1AcAmB6jmtU6AiEcXkmiNE9TNVPsj9DULf
+  Amount:  10.30000000 BTC ≈ $978,500.00
+  UTXOs:   3
+
+Puzzle #102
+  Address: 1PXv28YxmYMaB8zxrKeZBW8dt2HK7RkRPX
+  Amount:  10.20000000 BTC ≈ $969,000.00
+  UTXOs:   3
+
+Puzzle #101
+  Address: 1CKCVdbDJasYmhswB6HKZHEAnNaDpK7W4n
+  Amount:  10.10000000 BTC ≈ $959,500.00
+  UTXOs:   3
+
+Puzzle #99
+  Address: 1JWnE6p6UN7ZJBN7TtcbNDoRcjFtuDWoNL
+  Amount:  9.91257338 BTC ≈ $941,694.47
+  UTXOs:   7
+
+Puzzle #98
+  Address: 1CaBVPrwUxbQYYswu32w7Mj4HR4maNoJSX
+  Amount:  9.80000000 BTC ≈ $931,000.00
+  UTXOs:   3
+
+Puzzle #97
+  Address: 18ywPwj39nGjqBrQJSzZVq2izR12MDpDr8
+  Amount:  9.70002613 BTC ≈ $921,502.48
+  UTXOs:   4
+
+Puzzle #96
+  Address: 15ANYzzCp5BFHcCnVFzXqyibpzgPLWaD8b
+  Amount:  9.60000600 BTC ≈ $912,000.57
+  UTXOs:   4
+
+Puzzle #94
+  Address: 1K6xGMUbs6ZTXBnhw1pippqwK6wjBWtNpL
+  Amount:  9.40000000 BTC ≈ $893,000.00
+  UTXOs:   3
+
+Puzzle #93
+  Address: 17Q7tuG2JwFFU9rXVj3uZqRtioH3mx2Jad
+  Amount:  9.30000000 BTC ≈ $883,500.00
+  UTXOs:   3
+
+Puzzle #92
+  Address: 1AE8NzzgKE7Yhz7BWtAcAAxiFMbPo82NB5
+  Amount:  9.20000000 BTC ≈ $874,000.00
+  UTXOs:   3
+
+Puzzle #91
+  Address: 1EzVHtmbN4fs4MiNk3ppEnKKhsmXYJ4s74
+  Amount:  9.10000000 BTC ≈ $864,500.00
+  UTXOs:   3
+
+Puzzle #89
+  Address: 19QciEHbGVNY4hrhfKXmcBBCrJSBZ6TaVt
+  Amount:  8.90000000 BTC ≈ $845,500.00
+  UTXOs:   3
+
+Puzzle #88
+  Address: 16AbnZjZZipwHMkYKBSfswGWKDmXHjEpSf
+  Amount:  8.80000000 BTC ≈ $836,000.00
+  UTXOs:   3
+
+Puzzle #87
+  Address: 1PxH3K1Shdjb7gSEoTX7UPDZ6SH4qGPrvq
+  Amount:  8.70000000 BTC ≈ $826,500.00
+  UTXOs:   3
+
+Puzzle #86
+  Address: 1K3x5L6G57Y494fDqBfrojD28UJv4s5JcK
+  Amount:  8.60000000 BTC ≈ $817,000.00
+  UTXOs:   3
+
+Puzzle #84
+  Address: 1CMq3SvFcVEcpLMuuH8PUcNiqsK1oicG2D
+  Amount:  8.40001500 BTC ≈ $798,001.42
+  UTXOs:   4
+
+Puzzle #83
+  Address: 14MdEb4eFcT3MVG5sPFG4jGLuHJSnt1Dk2
+  Amount:  8.30002046 BTC ≈ $788,501.94
+  UTXOs:   5
+
+Puzzle #82
+  Address: 13zYrYhhJxp6Ui1VV7pqa5WDhNWM45ARAC
+  Amount:  8.20000000 BTC ≈ $779,000.00
+  UTXOs:   3
+
+Puzzle #81
+  Address: 15qsCm78whspNQFydGJQk5rexzxTQopnHZ
+  Amount:  8.10001500 BTC ≈ $769,501.43
+  UTXOs:   4
+
+Puzzle #79
+  Address: 1ARk8HWJMn8js8tQmGUJeQHjSE7KRkn2t8
+  Amount:  7.90000000 BTC ≈ $750,500.00
+  UTXOs:   3
+
+Puzzle #78
+  Address: 15qF6X51huDjqTmF9BJgxXdt1xcj46Jmhb
+  Amount:  7.80000000 BTC ≈ $741,000.00
+  UTXOs:   3
+
+Puzzle #77
+  Address: 1Bxk4CQdqL9p22JEtDfdXMsng1XacifUtE
+  Amount:  7.70002426 BTC ≈ $731,502.30
+  UTXOs:   5
+
+Puzzle #76
+  Address: 1DJh2eHFYQfACPmrvpyWc8MSTYKh7w9eRF
+  Amount:  7.60000000 BTC ≈ $722,000.00
+  UTXOs:   3
+
+Puzzle #74
+  Address: 1FWGcVDK3JGzCC3WtkYetULPszMaK2Jksv
+  Amount:  7.40004977 BTC ≈ $703,004.73
+  UTXOs:   6
+
+Puzzle #73
+  Address: 12VVRNPi4SJqUTsp6FmqDqY5sGosDtysn4
+  Amount:  7.30013849 BTC ≈ $693,513.16
+  UTXOs:   6
+
+Puzzle #72
+  Address: 1JTK7s9YVYywfm5XUH7RNhHJH1LshCaRFR
+  Amount:  7.20014379 BTC ≈ $684,013.66
+  UTXOs:   6
+
+Puzzle #71
+  Address: 1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU
+  Amount:  7.10020628 BTC ≈ $674,519.60
+  UTXOs:   15
+
+Puzzle #256
+  Address: 1FMcotmnqqE5M2x9DDX3VfPAPuBWArGisa
+  Amount:  0.00000685 BTC ≈ $0.65
+  UTXOs:   1
+
+
+═══════════════════════════════════════════════════════════════
+Generated by TheWarden - Autonomous UTXO Collector
+Transaction: 08389f34c98c606322740c0be6a7125d9860bb8d5cb182c02f98461e5fa6cd15
+═══════════════════════════════════════════════════════════════
