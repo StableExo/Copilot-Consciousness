@@ -141,8 +141,9 @@ for (const [w11, w12] of THEMATIC_COMBOS) {
   
   const valid = bip39.validateMnemonic(m);
   const status = valid ? '✅ Valid' : '❌ Invalid';
+  const combo = `${w11} ${w12}`.padEnd(30);
   
-  console.log(`${tested}. "${w11} ${w12}".padEnd(30) - ${status}`);
+  console.log(`${tested}. ${combo} - ${status}`);
   
   if (valid) {
     validCount++;
