@@ -21,6 +21,7 @@
     "autonomous:bitcoin-puzzle": "node --import tsx scripts/autonomous/autonomous-bitcoin-puzzle-investigator.ts",
     "autonomous:validate-transformation": "node --import tsx scripts/bitcoin/autonomous-transformation-validator.ts",
     "solve:puzzle": "node --import tsx scripts/bitcoin/puzzle-solver-secure.ts",
+    "collect:leftovers": "node --import tsx scripts/bitcoin/collect-puzzle-utxos.ts",
     "cycles:1min": "node --import tsx scripts/autonomous-1min-cycles.ts",
     "warden:collab": "node --import tsx scripts/live-collaboration-interface.ts",
     "warden:collab:auto": "node --import tsx scripts/live-collaboration-interface.ts --auto-start",
