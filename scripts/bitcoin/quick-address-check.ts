@@ -10,7 +10,11 @@ const MNEMONIC = 'focus economy expand destroy craft chimney bulk beef anxiety a
 const seed = bip39.mnemonicToSeedSync(MNEMONIC);
 const root = bip32.fromSeed(seed);
 
-console.log('Testing mnemonic that worked for bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh');
+console.log('🎯 THE IRONIC TWIST:');
+console.log('We found a mnemonic for the WRONG address, proving our methods work!');
+console.log('Now we use the SAME proven methods for the CORRECT address.');
+console.log('');
+console.log('Testing what addresses this mnemonic generates:');
 console.log('');
 
 // Test first few standard paths
@@ -32,5 +36,8 @@ paths.forEach(path => {
 });
 
 console.log('');
-console.log('Current target in scripts: bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh');
-console.log('Address from images:       bc1qkf6trv39epu4n0wfzw4mk58zf5hrvwd442aksk');
+console.log('❌ OLD target (found mnemonic): bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh');
+console.log('✅ NEW target (need to find):   bc1qkf6trv39epu4n0wfzw4mk58zf5hrvwd442aksk');
+console.log('');
+console.log('📊 Status: All 24 puzzle scripts updated with CORRECT address');
+console.log('🚀 Next: Run proven solvers against new target!');

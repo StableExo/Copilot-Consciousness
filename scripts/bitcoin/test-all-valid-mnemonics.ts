@@ -40,7 +40,7 @@ const VALID_LAST_WORDS = [
   { word: 'train', index: 1848 }
 ];
 
-const TARGET_ADDRESS = 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh';
+const TARGET_ADDRESS = 'bc1qkf6trv39epu4n0wfzw4mk58zf5hrvwd442aksk';
 
 /**
  * Derive multiple addresses using different derivation paths
