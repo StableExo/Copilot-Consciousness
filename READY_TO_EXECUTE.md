@@ -161,6 +161,13 @@ kill $(cat logs/warden.pid)
 
 ## 📋 What's Configured
 
+### Smart Contracts
+- ✅ **FlashSwapV2 DEPLOYED**: `0xCF38b66D65f82030675893eD7150a76d760a99ce`
+- ✅ **Contract Size**: 14,228 bytes
+- ✅ **Network**: Base Mainnet (Chain ID: 8453)
+- ✅ **Explorer**: https://basescan.org/address/0xCF38b66D65f82030675893eD7150a76d760a99ce
+- ✅ **Status**: READY FOR EXECUTION
+
 ### Networks
 - ✅ Base Mainnet (primary)
 - ✅ Ethereum, Arbitrum, Optimism, Polygon (multi-chain ready)
