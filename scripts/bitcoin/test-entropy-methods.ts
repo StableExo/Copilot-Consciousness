@@ -24,7 +24,7 @@ const PUZZLE_NUMBERS = [
   2097152, 4194304, 8388608
 ];
 
-const TARGET_ADDRESS = 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh';
+const TARGET_ADDRESS = 'bc1qkf6trv39epu4n0wfzw4mk58zf5hrvwd442aksk';
 
 console.log('🔍 Generating Proper BIP39 from Entropy');
 console.log('='.repeat(70));

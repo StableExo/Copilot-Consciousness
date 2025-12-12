@@ -18,7 +18,7 @@ const PUZZLE_NUMBERS = [
   2097152, 4194304, 8388608
 ];
 
-const TARGET_ADDRESS = 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh';
+const TARGET_ADDRESS = 'bc1qkf6trv39epu4n0wfzw4mk58zf5hrvwd442aksk';
 const LAST_WORD = 'track';
 const TRACK_INDEX = 1844; // Index of "track" in BIP39 wordlist
 const LAST_NUMBER = 8388608; // 2^23

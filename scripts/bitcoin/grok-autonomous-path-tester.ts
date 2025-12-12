@@ -20,7 +20,7 @@ const bip32 = BIP32Factory(ecc);
 // ============================================================================
 
 const MNEMONIC = "focus economy expand destroy craft chimney bulk beef anxiety abandon goddess hotel joke liquid middle north park price refuse salmon silent sponsor symbol train";
-const TARGET_ADDRESS = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
+const TARGET_ADDRESS = "bc1qkf6trv39epu4n0wfzw4mk58zf5hrvwd442aksk";
 
 // ============================================================================
 // GROK'S HINT-BASED PATH TEMPLATES

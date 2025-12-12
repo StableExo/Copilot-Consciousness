@@ -9,9 +9,10 @@
 ## 🎬 Video Information
 
 **Source**: https://www.threads.com/@hunghuatang/post/DNwj6PxxHcd  
-**Contains**: YouTube video link with puzzle hints  
+**YouTube URL**: https://www.youtube.com/watch?v=G1m7goLCJDY  
 **Key timestamp**: 1:23 ("Shift by pi digits" hint)  
-**Magic constant**: 130 (for 2×2 sums)
+**Magic constant**: 130 (for 2×2 sums)  
+**FALSE START**: "It does not work if you have these numbers in this order 8,1,3,6,10"
 
 ---
 
@@ -215,10 +216,12 @@ If first formula doesn't work:
 ## ✅ Success Criteria
 
 Formula is correct when:
-- [x] Last word is "track"
-- [x] BIP39 checksum is valid
-- [x] Derived address matches: bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh
-- [x] Can claim 0.08252025 BTC reward (~$5,500)
+- [ ] BIP39 checksum is valid
+- [ ] Derived address has exactly 0.08252025 BTC balance
+- [ ] Can claim reward (~$9,312)
+
+**NOTE**: The target address must be DERIVED from the puzzle hints, not pre-known!
+Check each generated address on blockchain for the exact balance of 0.08252025 BTC.
 
 ---
 
@@ -237,10 +240,17 @@ Formula is correct when:
 
 ## 🎁 Reward Details
 
-**Address**: bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh  
-**Amount**: 0.08252025 BTC  
-**Value**: ~$5,500 (at current prices)  
-**Status**: Unclaimed (260+ comments, no successful claims reported)
+**Address**: MUST BE DERIVED (not publicly posted)  
+**Amount**: Exactly 0.08252025 BTC  
+**Value**: ~$9,312 (at current prices)  
+**Status**: Unclaimed (puzzle requires deriving correct address from hints)
+
+**Critical Discovery**: The address is NOT given. The puzzle requires:
+1. Deriving correct mnemonic from hints
+2. Deriving correct path from hints  
+3. Generating address
+4. Checking if it has 0.08252025 BTC
+5. If yes → puzzle solved!
 
 ---
 

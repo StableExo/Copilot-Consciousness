@@ -5,7 +5,7 @@
  * Since we know the address is Bech32 (bc1q...), we can focus exclusively on BIP84 paths.
  * This dramatically speeds up exploration by skipping BIP44 and BIP49.
  * 
- * Target: bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh (Bech32 P2WPKH)
+ * Target: bc1qkf6trv39epu4n0wfzw4mk58zf5hrvwd442aksk (Bech32 P2WPKH)
  * Mnemonic: focus economy expand destroy craft chimney bulk beef anxiety abandon goddess hotel 
  *           joke liquid middle north park price refuse salmon silent sponsor symbol train
  * 
@@ -29,7 +29,7 @@ import { join } from 'path';
 const bip32 = BIP32Factory(ecc);
 
 const MNEMONIC = 'focus economy expand destroy craft chimney bulk beef anxiety abandon goddess hotel joke liquid middle north park price refuse salmon silent sponsor symbol train';
-const TARGET_ADDRESS = 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh';
+const TARGET_ADDRESS = 'bc1qkf6trv39epu4n0wfzw4mk58zf5hrvwd442aksk';
 
 console.log('═'.repeat(80));
 console.log('  🎯 FOCUSED BIP84 PATH FINDER (Bech32 Native SegWit)');

@@ -25,7 +25,7 @@ const PUZZLE_NUMBERS = [
   2097152, 4194304, 8388608
 ];
 
-const TARGET_ADDRESS = 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh';
+const TARGET_ADDRESS = 'bc1qkf6trv39epu4n0wfzw4mk58zf5hrvwd442aksk';
 const LAST_WORD_HINT = 'track';
 
 /**
@@ -326,7 +326,7 @@ async function main() {
   console.log('🎯 Bitcoin Puzzle Fine-Tune Solver');
   console.log('===================================\n');
   console.log('Focus: Log2*Multiply transformation (75% checksum match)');
-  console.log('Target: bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh\n');
+  console.log('Target: bc1qkf6trv39epu4n0wfzw4mk58zf5hrvwd442aksk\n');
   
   // Step 1: Fine-tune multiplier
   const finetuneResult = await fineTuneMultiplier();

@@ -5,7 +5,7 @@
  * Autonomously explores ALL possible BIP39 derivation paths to find the correct
  * pathway that generates the target Bitcoin address from the known mnemonic.
  * 
- * Target: bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh
+ * Target: bc1qkf6trv39epu4n0wfzw4mk58zf5hrvwd442aksk
  * Mnemonic: focus economy expand destroy craft chimney bulk beef anxiety abandon goddess hotel 
  *           joke liquid middle north park price refuse salmon silent sponsor symbol train
  * 
@@ -33,7 +33,7 @@ const bip32 = BIP32Factory(ecc);
 
 // Known data from the BIP39 converter
 const MNEMONIC = 'focus economy expand destroy craft chimney bulk beef anxiety abandon goddess hotel joke liquid middle north park price refuse salmon silent sponsor symbol train';
-const TARGET_ADDRESS = 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh';
+const TARGET_ADDRESS = 'bc1qkf6trv39epu4n0wfzw4mk58zf5hrvwd442aksk';
 const ENTROPY = '5a28c5409e1320500780a00a000190b7178504a314b2a0554ed1df3c87a4f71f';
 
 interface PathExploration {
