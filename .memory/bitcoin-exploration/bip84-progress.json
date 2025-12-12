@@ -1,8 +1,8 @@
 {
-  "totalTested": 40000,
+  "totalTested": 170000,
   "lastPassphraseIndex": 0,
-  "lastAccountIndex": 1,
-  "lastChange": 1,
-  "lastIndex": 9999,
-  "timestamp": 1765505518545
+  "lastAccountIndex": 8,
+  "lastChange": 0,
+  "lastIndex": 9998,
+  "timestamp": 1765505654032
 }
