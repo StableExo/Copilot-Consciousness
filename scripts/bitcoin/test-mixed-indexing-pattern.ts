@@ -13,6 +13,7 @@ import * as bip39 from 'bip39';
 import { BIP32Factory } from 'bip32';
 import * as ecc from 'tiny-secp256k1';
 import * as bitcoin from 'bitcoinjs-lib';
+import { createHash } from 'crypto';
 
 const bip32 = BIP32Factory(ecc);
 
@@ -100,8 +101,7 @@ function calculateValidChecksum(words23: string[]): string[] {
     }
     
     // Calculate checksum
-    const crypto = require('crypto');
-    const hash = crypto.createHash('sha256').update(entropyBytes).digest();
+    const hash = createHash('sha256').update(entropyBytes).digest();
     const checksum = hash[0].toString(2).padStart(8, '0');
     
     // Combine entropy3bit + checksum = 11-bit word index
@@ -174,7 +174,7 @@ console.log('='.repeat(60) + '\n');
 const mixedWords = generateMixedIndexingMnemonic();
 
 // Add "track" as 24th word
-const mixedWith Track = [...mixedWords, 'track'];
+const mixedWithTrack = [...mixedWords, 'track'];
 testMnemonic(mixedWithTrack, 'Mixed Indexing + "track"');
 
 // Calculate valid 24th words
