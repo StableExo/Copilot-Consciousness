@@ -1,0 +1,105 @@
+{
+  "monitoringCompleted": "2025-12-12T11:57:17.693Z",
+  "totalSnapshots": 12,
+  "monitoringDuration": "6 minutes",
+  "firstSnapshot": {
+    "timestamp": "2025-12-12T11:51:17.046Z",
+    "runtime": "08:32",
+    "cpuUsage": "99.8%",
+    "memUsage": "8.9%",
+    "status": "RUNNING"
+  },
+  "lastSnapshot": {
+    "timestamp": "2025-12-12T11:56:47.662Z",
+    "runtime": "14:03",
+    "cpuUsage": "101%",
+    "memUsage": "13.3%",
+    "status": "RUNNING"
+  },
+  "snapshots": [
+    {
+      "timestamp": "2025-12-12T11:51:17.046Z",
+      "runtime": "08:32",
+      "cpuUsage": "99.8%",
+      "memUsage": "8.9%",
+      "status": "RUNNING"
+    },
+    {
+      "timestamp": "2025-12-12T11:51:47.075Z",
+      "runtime": "09:02",
+      "cpuUsage": "100%",
+      "memUsage": "9.5%",
+      "status": "RUNNING"
+    },
+    {
+      "timestamp": "2025-12-12T11:52:17.134Z",
+      "runtime": "09:32",
+      "cpuUsage": "100%",
+      "memUsage": "9.7%",
+      "status": "RUNNING"
+    },
+    {
+      "timestamp": "2025-12-12T11:52:47.197Z",
+      "runtime": "10:02",
+      "cpuUsage": "100%",
+      "memUsage": "10.4%",
+      "status": "RUNNING"
+    },
+    {
+      "timestamp": "2025-12-12T11:53:17.254Z",
+      "runtime": "10:32",
+      "cpuUsage": "100%",
+      "memUsage": "10.5%",
+      "status": "RUNNING"
+    },
+    {
+      "timestamp": "2025-12-12T11:53:47.312Z",
+      "runtime": "11:02",
+      "cpuUsage": "100%",
+      "memUsage": "11.2%",
+      "status": "RUNNING"
+    },
+    {
+      "timestamp": "2025-12-12T11:54:17.369Z",
+      "runtime": "11:32",
+      "cpuUsage": "100%",
+      "memUsage": "11.3%",
+      "status": "RUNNING"
+    },
+    {
+      "timestamp": "2025-12-12T11:54:47.427Z",
+      "runtime": "12:02",
+      "cpuUsage": "100%",
+      "memUsage": "11.9%",
+      "status": "RUNNING"
+    },
+    {
+      "timestamp": "2025-12-12T11:55:17.484Z",
+      "runtime": "12:32",
+      "cpuUsage": "101%",
+      "memUsage": "12.2%",
+      "status": "RUNNING"
+    },
+    {
+      "timestamp": "2025-12-12T11:55:47.548Z",
+      "runtime": "13:02",
+      "cpuUsage": "101%",
+      "memUsage": "12.6%",
+      "status": "RUNNING"
+    },
+    {
+      "timestamp": "2025-12-12T11:56:17.605Z",
+      "runtime": "13:32",
+      "cpuUsage": "101%",
+      "memUsage": "13.2%",
+      "status": "RUNNING"
+    },
+    {
+      "timestamp": "2025-12-12T11:56:47.662Z",
+      "runtime": "14:03",
+      "cpuUsage": "101%",
+      "memUsage": "13.3%",
+      "status": "RUNNING"
+    }
+  ]
+}
