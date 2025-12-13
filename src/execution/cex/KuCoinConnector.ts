@@ -9,6 +9,7 @@
 
 import WebSocket from 'ws';
 import https from 'https';
+import type { IncomingMessage } from 'http';
 import {
   CEXExchange,
   CEXConnectionConfig,
@@ -128,10 +129,10 @@ export class KuCoinConnector {
         },
       };
 
-      const req = https.request(options, (res: any) => {
+      const req = https.request(options, (res: IncomingMessage) => {
         let data = '';
 
-        res.on('data', (chunk: any) => {
+        res.on('data', (chunk: Buffer) => {
           data += chunk;
         });
 
@@ -157,7 +158,7 @@ export class KuCoinConnector {
         });
       });
 
-      req.on('error', (error: any) => {
+      req.on('error', (error: Error) => {
         reject(error);
       });
 

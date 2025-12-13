@@ -19,6 +19,7 @@ import {
   TickerCallback,
   ErrorCallback,
 } from './types.js';
+import { COMMON_QUOTE_CURRENCIES, formatToStandardSymbol } from './symbolUtils.js';
 
 interface BitfinexSubscribeMessage {
   event: 'subscribe';
@@ -348,24 +349,8 @@ export class BitfinexConnector {
     // Remove 't' prefix
     const cleaned = bfxSymbol.replace(/^t/, '');
     
-    // Common currency pairs
-    if (cleaned.endsWith('USD')) {
-      return cleaned.replace(/USD$/, '/USD');
-    }
-    if (cleaned.endsWith('USDT')) {
-      return cleaned.replace(/USDT$/, '/USDT');
-    }
-    if (cleaned.endsWith('USDC')) {
-      return cleaned.replace(/USDC$/, '/USDC');
-    }
-    
-    // Fallback: assume last 3-4 chars are quote currency
-    const match = cleaned.match(/^(.+?)(USD|USDT|USDC|EUR|GBP|JPY|BTC|ETH)$/);
-    if (match) {
-      return `${match[1]}/${match[2]}`;
-    }
-    
-    return cleaned;
+    // Use shared utility for parsing
+    return formatToStandardSymbol(cleaned);
   }
 
   /**

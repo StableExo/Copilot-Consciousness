@@ -134,12 +134,14 @@ export class GateConnector {
             };
             this.ws?.send(JSON.stringify(tickerMsg));
 
-            // Subscribe to order book (20 depth)
+            // Subscribe to order book with configurable depth and frequency
+            const depth = this.config.orderBookDepth?.toString() || '20';
+            const frequency = this.config.updateFrequency || '1000ms';
             const bookMsg: GateSubscribeMessage = {
               time: Math.floor(Date.now() / 1000),
               channel: 'spot.order_book',
               event: 'subscribe',
-              payload: [gateSymbol, '20', '1000ms'],
+              payload: [gateSymbol, depth, frequency],
             };
             this.ws?.send(JSON.stringify(bookMsg));
           });

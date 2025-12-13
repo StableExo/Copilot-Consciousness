@@ -19,6 +19,7 @@ import {
   TickerCallback,
   ErrorCallback,
 } from './types.js';
+import { formatToStandardSymbol } from './symbolUtils.js';
 
 interface MEXCSubscribeMessage {
   method: 'SUBSCRIPTION';
@@ -285,18 +286,8 @@ export class MEXCConnector {
    * BTCUSDT -> BTC/USDT
    */
   private formatSymbol(mexcSymbol: string): string {
-    // Common quote currencies
-    const quoteCurrencies = ['USDT', 'USDC', 'USD', 'BTC', 'ETH', 'BNB'];
-    
-    for (const quote of quoteCurrencies) {
-      if (mexcSymbol.endsWith(quote)) {
-        const base = mexcSymbol.slice(0, -quote.length);
-        return `${base}/${quote}`;
-      }
-    }
-    
-    // Default fallback
-    return mexcSymbol;
+    // Use shared utility for parsing
+    return formatToStandardSymbol(mexcSymbol);
   }
 
   /**
