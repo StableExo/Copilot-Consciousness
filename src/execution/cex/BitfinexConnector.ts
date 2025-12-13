@@ -416,7 +416,10 @@ export class BitfinexConnector {
 
     if (this.ws) {
       this.ws.removeAllListeners();
-      this.ws.close();
+      // Only close if the connection is open or connecting
+      if (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING) {
+        this.ws.close();
+      }
       this.ws = null;
     }
 
