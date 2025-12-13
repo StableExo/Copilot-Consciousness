@@ -15,6 +15,7 @@ import { NegotiatedBlock } from '../negotiator/types';
  */
 export enum BuilderName {
   TITAN = 'titan',
+  BUILDERNET = 'buildernet',
   FLASHBOTS = 'flashbots',
   BLOXROUTE = 'bloxroute',
   BEAVER = 'beaver',

@@ -37,6 +37,29 @@ export const TITAN_BUILDER: BuilderEndpoint = {
 };
 
 /**
+ * BuilderNet endpoint configuration
+ */
+export const BUILDERNET_BUILDER: BuilderEndpoint = {
+  name: BuilderName.BUILDERNET,
+  displayName: 'BuilderNet',
+  relayUrl: 'https://relay.buildernet.org',
+  fallbackUrls: [
+    'https://api.buildernet.org',
+  ],
+  marketShare: 0.25, // ~25% average market share (rank #2-3)
+  capabilities: [
+    BuilderCapability.STANDARD_BUNDLES,
+    BuilderCapability.BUNDLE_SIMULATION,
+  ],
+  isActive: true,
+  priority: 85,
+  metadata: {
+    description: 'Intelligence-focused MEV builder with advanced analytics',
+    features: ['MEV intelligence layer', 'Builder analytics', 'Optimization algorithms'],
+  },
+};
+
+/**
  * Flashbots Builder endpoint configuration
  */
 export const FLASHBOTS_BUILDER: BuilderEndpoint = {
@@ -46,7 +69,7 @@ export const FLASHBOTS_BUILDER: BuilderEndpoint = {
   fallbackUrls: [
     'https://relay-sepolia.flashbots.net', // Testnet
   ],
-  marketShare: 0.25, // ~25% average market share
+  marketShare: 0.20, // ~20% average market share
   capabilities: [
     BuilderCapability.STANDARD_BUNDLES,
     BuilderCapability.MEV_SHARE,
@@ -54,7 +77,7 @@ export const FLASHBOTS_BUILDER: BuilderEndpoint = {
     BuilderCapability.BUNDLE_CANCELLATION,
   ],
   isActive: true,
-  priority: 90,
+  priority: 80,
   metadata: {
     description: 'Original MEV-Boost builder by Flashbots',
     features: ['MEV-Share', 'Bundle simulation', 'Established reputation'],
@@ -127,6 +150,7 @@ export const RSYNC_BUILDER: BuilderEndpoint = {
  */
 export const ALL_BUILDERS: BuilderEndpoint[] = [
   TITAN_BUILDER,
+  BUILDERNET_BUILDER,
   FLASHBOTS_BUILDER,
   BLOXROUTE_BUILDER,
   BEAVER_BUILDER,
@@ -134,12 +158,12 @@ export const ALL_BUILDERS: BuilderEndpoint[] = [
 ];
 
 /**
- * Top 3 builders by market share (cover ~85% of blocks)
+ * Top 3 builders by market share (cover ~90% of blocks)
  */
 export const TOP_3_BUILDERS: BuilderEndpoint[] = [
-  TITAN_BUILDER,
-  FLASHBOTS_BUILDER,
-  BLOXROUTE_BUILDER,
+  TITAN_BUILDER,      // 45% (rank #1)
+  BUILDERNET_BUILDER, // 25% (rank #2)
+  FLASHBOTS_BUILDER,  // 20% (rank #3)
 ];
 
 /**

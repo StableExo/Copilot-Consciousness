@@ -6,10 +6,10 @@
  * 
  * Strategy:
  * - Submit to Titan (40-50% market share)
+ * - Submit to BuilderNet (20-30% market share)
  * - Submit to Flashbots (20-30% market share)
- * - Submit to bloXroute (10-15% market share)
  * - Track performance and optimize over time
- * - Combined inclusion probability: ~65-70%
+ * - Combined inclusion probability: ~75-80%
  */
 
 import { logger } from '../../utils/logger';
@@ -28,6 +28,7 @@ import {
 } from './types';
 import { BuilderRegistry, TOP_3_BUILDERS } from './BuilderRegistry';
 import { TitanBuilderClient } from './TitanBuilderClient';
+import { BuilderNetClient } from './BuilderNetClient';
 
 /**
  * Default multi-builder configuration
@@ -333,11 +334,17 @@ export class MultiBuilderManager {
    * Initialize builder clients
    */
   private initializeClients(): void {
-    // For now, only initialize Titan client
-    // Flashbots and bloXroute clients can be added later
+    // Initialize Titan client
     this.clients.set(BuilderName.TITAN, new TitanBuilderClient({
       enableLogging: true,
     }));
+
+    // Initialize BuilderNet client
+    this.clients.set(BuilderName.BUILDERNET, new BuilderNetClient({
+      enableLogging: true,
+    }));
+
+    // TODO: Add Flashbots and bloXroute clients when ready
 
     logger.info(`[MultiBuilderManager] Initialized ${this.clients.size} builder clients`);
   }

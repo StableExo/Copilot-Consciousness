@@ -12,6 +12,7 @@ export * from './BuilderRegistry';
 
 // Clients
 export { TitanBuilderClient } from './TitanBuilderClient';
+export { BuilderNetClient } from './BuilderNetClient';
 
 // Manager
 export { MultiBuilderManager, DEFAULT_MULTI_BUILDER_CONFIG } from './MultiBuilderManager';
