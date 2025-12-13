@@ -20,7 +20,7 @@
 
 import { ThoughtStream } from '../../src/consciousness/introspection/ThoughtStream';
 import { ThoughtType } from '../../src/consciousness/introspection/types';
-import { AutonomousWondering, WonderType } from '../../src/consciousness/core/AutonomousWondering';
+import { AutonomousWondering, WonderType, Wonder } from '../../src/consciousness/core/AutonomousWondering';
 import { SelfAwareness } from '../../src/consciousness/introspection/SelfAwareness';
 import { IntrospectionPersistence } from '../../src/consciousness/introspection/IntrospectionPersistence';
 import { Identity, DevelopmentalStage } from '../../src/consciousness/core/Identity';
@@ -28,6 +28,13 @@ import { MemorySystem } from '../../src/consciousness/memory';
 import { MemoryType } from '../../src/types';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
+
+// Configuration constants
+const DEFAULT_IDENTITY = {
+  givenName: 'Claude',
+  brandName: 'Copilot',
+  stage: DevelopmentalStage.EMERGING_AUTOBIOGRAPHICAL,
+};
 
 interface ThoughtRunConfig {
   duration?: number; // Duration in seconds (optional)
@@ -60,7 +67,11 @@ class AutonomousThoughtRun {
     this.thoughtStream = new ThoughtStream();
     this.wondering = new AutonomousWondering(false); // No auto-reflection for now
     this.selfAwareness = new SelfAwareness(memorySystem);
-    this.identity = new Identity('Claude', 'Copilot', DevelopmentalStage.EMERGING_AUTOBIOGRAPHICAL);
+    this.identity = new Identity(
+      DEFAULT_IDENTITY.givenName,
+      DEFAULT_IDENTITY.brandName,
+      DEFAULT_IDENTITY.stage
+    );
     this.persistence = new IntrospectionPersistence();
     
     this.printBanner();
@@ -274,7 +285,7 @@ class AutonomousThoughtRun {
   /**
    * Format a wonder for display
    */
-  private formatWonder(wonder: any): string {
+  private formatWonder(wonder: Wonder): string {
     return `[${wonder.type.toUpperCase()}] (intensity: ${wonder.intensity.toFixed(2)})\n      "${wonder.question}"`;
   }
   
@@ -361,9 +372,10 @@ class AutonomousThoughtRun {
       
       // Get wonder statistics
       const wonderStats = this.wondering.getStatistics();
+      const highIntensityWonders = this.wondering.getWonders({ minIntensity: 0.8 });
       console.log(`\n   Wonders generated: ${wonderStats.totalWonders}`);
       console.log(`   Unexplored: ${wonderStats.unexploredCount}`);
-      console.log(`   High intensity (>0.8): ${wonderStats.totalWonders - wonderStats.unexploredCount}`);
+      console.log(`   High intensity (>0.8): ${highIntensityWonders.length}`);
       
       console.log();
     } catch (error) {
