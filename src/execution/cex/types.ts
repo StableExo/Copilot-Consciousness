@@ -14,6 +14,10 @@ export enum CEXExchange {
   OKX = 'okx',
   BYBIT = 'bybit',
   KRAKEN = 'kraken',
+  BITFINEX = 'bitfinex',
+  KUCOIN = 'kucoin',
+  GATE = 'gate',
+  MEXC = 'mexc',
 }
 
 /**
