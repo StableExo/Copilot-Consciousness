@@ -317,7 +317,7 @@ export class DynamicConfigManager {
           environment,
           description: `Updated by DynamicConfigManager: ${reason}`,
           updated_at: new Date().toISOString(),
-        });
+        } as any); // Type assertion needed for dynamic Supabase schemas
       if (error) throw error;
     } else {
       const { error } = await supabase
@@ -328,7 +328,7 @@ export class DynamicConfigManager {
           environment,
           description: `Updated by DynamicConfigManager: ${reason}`,
           updated_at: new Date().toISOString(),
-        });
+        } as any); // Type assertion needed for dynamic Supabase schemas
       if (error) throw error;
     }
   }
