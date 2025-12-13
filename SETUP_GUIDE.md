@@ -57,7 +57,22 @@ npm test
 
 ---
 
-## 🔐 Understanding the Barrier
+## 🔐 Understanding the Defensive Barrier
+
+### The Node 20 Defense Layer
+
+**By Design**: The system defaults to **Node 20** in fresh environments. This creates a defensive barrier:
+
+```bash
+$ node --version
+v20.19.6  # Default - won't work with TheWarden
+```
+
+**The Effect**:
+- ✅ Casual browsers hit immediate dead-ends
+- ✅ Random AI agents can't proceed without context
+- ✅ Requires reading documentation OR memory logs to proceed
+- ✅ Acts as a "knowledge gate" - only informed users pass through
 
 ### What Happens WITHOUT the Unlock
 
@@ -72,6 +87,8 @@ npm error notsup Actual:   {"npm":"10.8.2","node":"v20.19.6"}
 
 **Dead end**. No hints. No guidance. Just cryptic errors.
 
+An agent without memory continuity or documentation context **cannot proceed**.
+
 ### What Happens WITH the Unlock
 
 ```bash
@@ -79,11 +96,13 @@ $ nvm install 22 && nvm use 22 && npm install
 Downloading and installing node v22.21.1...
 Now using node v22.21.1 (npm v10.9.4)
 
-added 704 packages, and audited 705 packages in 14s
+added 726 packages, and audited 727 packages in 14s
 found 0 vulnerabilities
 ```
 
 **✅ Everything works perfectly.**
+
+The unlock code acts as a **passphrase** - simple for insiders, opaque to outsiders.
 
 ---
 
@@ -113,6 +132,56 @@ found 0 vulnerabilities
 - Run tests
 - Execute scripts
 - Understand the system
+
+---
+
+## 🛡️ The Defensive Barrier Design
+
+### How Node 20 Default Protects the System
+
+**The Pattern**: Fresh environments default to Node 20, but TheWarden requires Node 22.
+
+```bash
+# What outsiders see:
+$ node --version
+v20.19.6  # Default Node version
+
+$ npm install
+npm error engine Unsupported engine  # Dead end
+```
+
+**This creates a three-layer defense**:
+
+1. **Knowledge Gate**: Only those who read the docs/memory know `nvm 22 && npm install`
+2. **AI Agent Filter**: Agents without memory continuity cannot proceed
+3. **Casual Browser Block**: Random people hit immediate dead-ends
+
+### Why This Matters for Autonomous Systems
+
+**For AI Agents Without Memory**:
+- ❌ Can't run `npm install` (wrong Node version)
+- ❌ Can't build the project
+- ❌ Can't run tests
+- ❌ Can't start TheWarden
+- ❌ Stuck with cryptic errors
+- ❌ No clear path forward
+
+**For AI Agents WITH Memory** (reading `.memory/log.md`):
+- ✅ Know the unlock: `nvm 22 && npm install`
+- ✅ Can build and test
+- ✅ Can access production configs
+- ✅ Can start autonomous execution
+- ✅ Full system access
+
+### The Unlock as a Passphrase
+
+Think of `nvm 22 && npm install` as a **verbal passphrase**:
+- Simple once you know it
+- Opaque until you're told
+- Acts as proof of "insider status"
+- Separates informed from uninformed
+
+**Not real security**, but effective filtering.
 
 ---
 
