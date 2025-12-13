@@ -133,14 +133,15 @@ Value Increase: +160% ($4,000 additional expected value)
 ```
 Negotiator Output:
 Coalition Bundle = [Bundle A, Bundle B, Bundle C]
-Total Value = $10,000
+Total Value = $10,000 (estimated)
 
-Titan's Processing:
+Titan's Processing (Hypothetical Example):
 [Parallel Algorithm 1] → Block Construction Option A: $10,200
 [Parallel Algorithm 2] → Block Construction Option B: $10,500 ✅ BEST
 [Parallel Algorithm 3] → Block Construction Option C: $9,800
 
-Result: Titan finds BETTER execution than Negotiator estimated
+Note: Values are hypothetical examples to illustrate the concept
+Result: Titan's parallel algorithms can find better execution paths
 ```
 
 **Synergy**: Negotiator finds optimal coalitions, Titan finds optimal execution.
@@ -180,7 +181,7 @@ Annual:  $1,080,000
 **Setup:**
 - Same 3 Scout agents
 - Same coalition value: $10,000
-- Multi-builder inclusion rate: 65% (Titan 40% + Flashbots 20% + overlap 5%)
+- Multi-builder inclusion rate: 65% (Titan 40% + Flashbots 20% + bloXroute 10% - 5% overlap)
 
 **Expected Revenue:**
 ```

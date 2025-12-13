@@ -322,11 +322,12 @@ Banana Gun Users → [Private Bundles] → Titan Builder (Exclusive) → Higher 
 ```typescript
 // Pseudo-code for multi-builder submission
 async function submitBundleMultiBuilder(bundle: Bundle) {
+  // Note: Percentages represent builder market share, not API success rate
   const results = await Promise.allSettled([
-    titanBuilder.submitBundle(bundle),   // 40-50% chance
-    flashbotsBuilder.submitBundle(bundle), // 20-30% chance
-    bloXrouteBuilder.submitBundle(bundle), // 15-25% chance
-    beaverbuildBuilder.submitBundle(bundle) // 5-10% chance
+    titanBuilder.submitBundle(bundle),   // 40-50% market share
+    flashbotsBuilder.submitBundle(bundle), // 20-30% market share
+    bloXrouteBuilder.submitBundle(bundle), // 15-25% market share
+    beaverbuildBuilder.submitBundle(bundle) // 5-10% market share
   ]);
   
   // Track which builder included the bundle
