@@ -95,6 +95,18 @@ export interface FlashSwapV3Config {
 }
 
 /**
+ * Internal config with all required fields resolved
+ */
+interface ResolvedFlashSwapV3Config {
+  contractAddress: string;
+  provider: Provider;
+  signer?: Signer;
+  gasBuffer: number;
+  defaultSlippage: number;
+  chainId: number;
+}
+
+/**
  * Execution result
  */
 export interface ExecutionResult {
@@ -148,11 +160,13 @@ export const FLASH_LOAN_FEES: Record<FlashLoanSource, number> = {
  */
 export class FlashSwapV3Executor {
   private contract: Contract;
-  private config: Required<FlashSwapV3Config>;
+  private config: ResolvedFlashSwapV3Config;
 
   constructor(config: FlashSwapV3Config) {
     this.config = {
-      ...config,
+      contractAddress: config.contractAddress,
+      provider: config.provider,
+      signer: config.signer,
       gasBuffer: config.gasBuffer ?? 1.2,
       defaultSlippage: config.defaultSlippage ?? 0.01,
       chainId: config.chainId ?? 8453, // Default to Base
@@ -200,7 +214,7 @@ export class FlashSwapV3Executor {
         estimatedCost,
       };
     } catch (error) {
-      logger.error('Failed to select optimal source', { error, borrowToken, borrowAmount });
+      logger.error(`Failed to select optimal source for token ${borrowToken}, amount ${borrowAmount}: ${error instanceof Error ? error.message : String(error)}`);
       throw error;
     }
   }
@@ -212,7 +226,7 @@ export class FlashSwapV3Executor {
     try {
       return await this.contract.isBalancerSupported(token, amount);
     } catch (error) {
-      logger.error('Failed to check Balancer support', { error, token, amount });
+      logger.error(`Failed to check Balancer support for token ${token}, amount ${amount}: ${error instanceof Error ? error.message : String(error)}`);
       return false;
     }
   }
@@ -224,7 +238,7 @@ export class FlashSwapV3Executor {
     try {
       return await this.contract.isDydxSupported(token, amount);
     } catch (error) {
-      logger.error('Failed to check dYdX support', { error, token, amount });
+      logger.error(`Failed to check dYdX support for token ${token}, amount ${amount}: ${error instanceof Error ? error.message : String(error)}`);
       return false;
     }
   }
@@ -251,13 +265,13 @@ export class FlashSwapV3Executor {
 
       // Calculate minOut with slippage
       const slippage = this.config.defaultSlippage;
-      const minOut = (BigInt(swap.minAmountOut) * BigInt(Math.floor((1 - slippage) * 10000))) / 10000n;
+      const minOut = (BigInt(Math.floor(swap.expectedOutput)) * BigInt(Math.floor((1 - slippage) * 10000))) / 10000n;
 
       steps.push({
         pool: swap.poolAddress,
         tokenIn: swap.tokenIn,
         tokenOut: swap.tokenOut,
-        fee: swap.fee || 3000, // Default 0.3%
+        fee: swap.feeBps || 3000, // Default 0.3%
         minOut,
         dexType,
       });
@@ -265,8 +279,8 @@ export class FlashSwapV3Executor {
 
     return {
       steps,
-      borrowAmount: BigInt(opportunity.input.amount),
-      minFinalAmount: BigInt(opportunity.expectedProfit),
+      borrowAmount: BigInt(Math.floor(opportunity.inputAmount)),
+      minFinalAmount: BigInt(Math.floor(opportunity.grossProfit)),
     };
   }
 
@@ -284,14 +298,7 @@ export class FlashSwapV3Executor {
       // Select optimal source
       const selection = await this.selectOptimalSource(borrowToken, borrowAmount);
       
-      logger.info('Executing arbitrage with FlashSwapV3', {
-        borrowToken,
-        borrowAmount: formatUnits(borrowAmount, 6),
-        source: FlashLoanSource[selection.source],
-        fee: `${selection.fee} bps`,
-        estimatedFeeCost: formatUnits(selection.estimatedCost, 6),
-        steps: path.steps.length,
-      });
+      logger.info(`Executing arbitrage with FlashSwapV3: token=${borrowToken}, amount=${formatUnits(borrowAmount, 6)}, source=${FlashLoanSource[selection.source]}, fee=${selection.fee} bps, estimatedFeeCost=${formatUnits(selection.estimatedCost, 6)}, steps=${path.steps.length}`);
 
       // Estimate gas
       const estimatedGas = await this.contract.executeArbitrage.estimateGas(
@@ -310,10 +317,7 @@ export class FlashSwapV3Executor {
         { gasLimit }
       );
 
-      logger.info('Transaction submitted', {
-        txHash: tx.hash,
-        gasLimit: gasLimit.toString(),
-      });
+      logger.info(`Transaction submitted: txHash=${tx.hash}, gasLimit=${gasLimit.toString()}`);
 
       // Wait for confirmation
       const receipt = await tx.wait();
@@ -339,7 +343,7 @@ export class FlashSwapV3Executor {
 
       const gasUsed = receipt.gasUsed;
       const gasPrice = receipt.gasPrice || 0n;
-      const totalGasCost = gasUsed * gasPrice;
+      const totalGasCost = BigInt(gasUsed) * BigInt(gasPrice);
 
       const result: ExecutionResult = {
         success: true,
@@ -359,25 +363,11 @@ export class FlashSwapV3Executor {
 
       const executionTime = Date.now() - startTime;
 
-      logger.info('Arbitrage executed successfully', {
-        txHash: tx.hash,
-        source: FlashLoanSource[selection.source],
-        borrowAmount: formatUnits(borrowAmount, 6),
-        feePaid: formatUnits(result.feePaid, 6),
-        grossProfit: formatUnits(result.grossProfit, 6),
-        netProfit: formatUnits(result.netProfit, 6),
-        gasUsed: gasUsed.toString(),
-        gasCost: formatUnits(totalGasCost, 18),
-        executionTime: `${executionTime}ms`,
-      });
+      logger.info(`Arbitrage executed successfully: txHash=${tx.hash}, source=${FlashLoanSource[selection.source]}, borrowAmount=${formatUnits(borrowAmount, 6)}, feePaid=${formatUnits(result.feePaid, 6)}, grossProfit=${formatUnits(result.grossProfit, 6)}, netProfit=${formatUnits(result.netProfit, 6)}, gasUsed=${gasUsed.toString()}, gasCost=${formatUnits(totalGasCost, 18)}, executionTime=${executionTime}ms`);
 
       return result;
     } catch (error: any) {
-      logger.error('Failed to execute arbitrage', {
-        error: error.message,
-        borrowToken,
-        borrowAmount: formatUnits(borrowAmount, 6),
-      });
+      logger.error(`Failed to execute arbitrage: ${error.message}, borrowToken=${borrowToken}, borrowAmount=${formatUnits(borrowAmount, 6)}`);
 
       return {
         success: false,
@@ -401,8 +391,9 @@ export class FlashSwapV3Executor {
     estimatedGasCost: bigint;
     netProfit: bigint;
   }> {
-    const borrowAmount = BigInt(opportunity.input.amount);
-    const borrowToken = opportunity.input.token;
+    // Get borrow parameters from opportunity
+    const borrowAmount = BigInt(Math.floor(opportunity.flashLoanAmount || opportunity.inputAmount));
+    const borrowToken = opportunity.flashLoanToken || opportunity.tokenAddresses[0];
 
     // Select source
     const selection = await this.selectOptimalSource(borrowToken, borrowAmount);
@@ -422,7 +413,7 @@ export class FlashSwapV3Executor {
     const estimatedGasCost = estimatedGas * gasPrice;
 
     // Calculate profit
-    const grossProfit = BigInt(opportunity.expectedProfit);
+    const grossProfit = BigInt(Math.floor(opportunity.grossProfit));
     const netProfit = grossProfit - flashLoanFee - estimatedGasCost;
 
     return {
@@ -441,10 +432,10 @@ export class FlashSwapV3Executor {
     try {
       const tx = await this.contract.emergencyWithdraw(token, amount);
       await tx.wait();
-      logger.info('Emergency withdrawal successful', { token, amount: amount.toString(), txHash: tx.hash });
+      logger.info(`Emergency withdrawal successful: token=${token}, amount=${amount.toString()}, txHash=${tx.hash}`);
       return tx.hash;
     } catch (error) {
-      logger.error('Emergency withdrawal failed', { error, token, amount: amount.toString() });
+      logger.error(`Emergency withdrawal failed for token ${token}, amount=${amount.toString()}: ${error instanceof Error ? error.message : String(error)}`);
       throw error;
     }
   }

@@ -129,7 +129,7 @@ async function bootstrap() {
     logger.error('═══════════════════════════════════════════════════════════');
     logger.error('❌ BOOTSTRAP FATAL ERROR');
     logger.error('═══════════════════════════════════════════════════════════');
-    logger.error(error);
+    logger.error(error instanceof Error ? error.message : String(error));
     process.exit(1);
   }
 }

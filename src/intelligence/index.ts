@@ -30,11 +30,11 @@ export * from './flashbots';
 // Re-export from AI module (Phase 3: Neural networks, RL agents, strategy evolution)
 export * from '../ai';
 
-// Re-export from AGI module (Memory core, neural bridge protocol)
-export * from '../agi';
+// Re-export from AGI module with namespace to avoid conflicts
+export * as AGI from '../agi';
 
 // Re-export from ML module (Data collection, feature extraction, pattern detection)
 export * from '../ml';
 
-// Re-export from Learning module (Knowledge loop, adaptive strategies)
-export * from '../learning';
+// Re-export from Learning module with namespace to avoid conflicts
+export * as Learning from '../learning';

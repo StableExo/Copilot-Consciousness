@@ -21,7 +21,7 @@
 
 import { Provider, Signer, parseUnits } from 'ethers';
 import { logger } from '../utils/logger';
-import { ArbitrageOpportunity } from '../types/definitions';
+import { ArbitrageOpportunity } from '../arbitrage/models/ArbitrageOpportunity';
 import { FlashSwapV3Executor, FlashLoanSource, DexType, SwapStep as V3SwapStep } from '../execution/FlashSwapV3Executor';
 import { FlashLoanExecutor, SwapStep as V2SwapStep, FlashLoanArbitrageParams } from './FlashLoanExecutor';
 
@@ -80,7 +80,7 @@ class V2ExecutorWrapper implements IFlashSwapExecutor {
   constructor(private executor: FlashLoanExecutor) {}
   
   async execute(params: FlashLoanArbitrageParams): Promise<UnifiedExecutionResult> {
-    const result = await this.executor.executeFlashLoan(params);
+    const result = await this.executor.execute(params);
     return {
       ...result,
       version: 'V2',
@@ -103,10 +103,14 @@ class V3ExecutorWrapper implements IFlashSwapExecutor {
     // Convert opportunity to V3 swap path
     const path = this.executor.constructSwapPath(opportunity);
     
+    // Get the first token in the path as the borrow token
+    const borrowToken = opportunity.flashLoanToken || opportunity.tokenAddresses[0];
+    const borrowAmount = BigInt(Math.floor(opportunity.flashLoanAmount || opportunity.inputAmount));
+    
     // Execute with automatic source selection
     const result = await this.executor.executeArbitrage(
-      opportunity.input.token,
-      BigInt(opportunity.input.amount),
+      borrowToken,
+      borrowAmount,
       path
     );
     
@@ -251,10 +255,7 @@ export class FlashSwapExecutorFactory {
     const executor = this.createExecutor(opportunity);
     const version = executor.getVersion();
     
-    logger.info(`[FlashSwapFactory] Executing with ${version}`, {
-      opportunityId: (opportunity as any).id || 'unknown',
-      expectedProfit: (opportunity as any).profitAmount || 'unknown',
-    });
+    logger.info(`[FlashSwapFactory] Executing with ${version}: opportunityId=${opportunity.opportunityId}, expectedProfit=${opportunity.grossProfit}`);
     
     try {
       const result = await executor.execute(
