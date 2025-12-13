@@ -49,9 +49,8 @@ describe('PriceOracleValidator', () => {
 
       const result = validator.validatePriceUpdate(update);
       expect(result.valid).toBe(false);
-      expect(result.errors).toContain(
-        expect.stringContaining('outside allowed range')
-      );
+      expect(result.errors.length).toBeGreaterThan(0);
+      expect(result.errors.some(e => e.includes('outside allowed range'))).toBe(true);
       expect(result.metadata.withinBounds).toBe(false);
     });
 
@@ -65,9 +64,8 @@ describe('PriceOracleValidator', () => {
 
       const result = validator.validatePriceUpdate(update);
       expect(result.valid).toBe(false);
-      expect(result.errors).toContain(
-        expect.stringContaining('outside allowed range')
-      );
+      expect(result.errors.length).toBeGreaterThan(0);
+      expect(result.errors.some(e => e.includes('outside allowed range'))).toBe(true);
       expect(result.metadata.withinBounds).toBe(false);
     });
   });
@@ -132,9 +130,8 @@ describe('PriceOracleValidator', () => {
 
       const result = validator.validatePriceUpdate(update);
       expect(result.valid).toBe(false);
-      expect(result.errors).toContain(
-        expect.stringContaining('Rate of change')
-      );
+      expect(result.errors.length).toBeGreaterThan(0);
+      expect(result.errors.some(e => e.includes('Rate of change'))).toBe(true);
       expect(result.metadata.rateChangeValid).toBe(false);
     });
 
@@ -202,9 +199,8 @@ describe('PriceOracleValidator', () => {
       const result = validator.executePendingUpdate(testSymbol);
       
       expect(result.success).toBe(false);
-      expect(result.errors).toContain(
-        expect.stringContaining('Timelock active')
-      );
+      expect(result.errors.length).toBeGreaterThan(0);
+      expect(result.errors.some(e => e.includes('Timelock active'))).toBe(true);
     });
 
     it('should allow execution after timelock expires', () => {
@@ -266,9 +262,8 @@ describe('PriceOracleValidator', () => {
       
       expect(result.valid).toBe(false);
       expect(validator.isCircuitBreakerActive()).toBe(true);
-      expect(result.errors).toContain(
-        expect.stringContaining('Circuit breaker auto-triggered')
-      );
+      expect(result.errors.length).toBeGreaterThan(0);
+      expect(result.errors.some(e => e.includes('Circuit breaker auto-triggered'))).toBe(true);
     });
 
     it('should block all updates when circuit breaker is active', () => {
@@ -286,9 +281,8 @@ describe('PriceOracleValidator', () => {
       const result = validator.validatePriceUpdate(update);
       
       expect(result.valid).toBe(false);
-      expect(result.errors).toContain(
-        expect.stringContaining('Circuit breaker is active')
-      );
+      expect(result.errors.length).toBeGreaterThan(0);
+      expect(result.errors.some(e => e.includes('Circuit breaker is active'))).toBe(true);
       expect(result.metadata.circuitBreakerActive).toBe(true);
     });
 
@@ -325,9 +319,8 @@ describe('PriceOracleValidator', () => {
 
       const result = validator.validatePriceUpdate(update);
       
-      expect(result.warnings).toContain(
-        expect.stringContaining('stale')
-      );
+      expect(result.warnings.length).toBeGreaterThan(0);
+      expect(result.warnings.some(w => w.includes('stale'))).toBe(true);
     });
 
     it('should track stale prices in statistics', () => {
