@@ -100,7 +100,7 @@ class SecurityAuditor {
     }
 
     // IMPORTANT: Check if these are used in production
-    console.log('  ✓ Found 3 HIGH severity dependency vulnerabilities');
+    console.log(`  ✓ Found ${vulnerableDeps.length} HIGH severity dependency vulnerabilities`);
     console.log('  ℹ️  All vulnerabilities are in Bitcoin puzzle scripts only (non-production)');
     console.log('  ℹ️  Core MEV/arbitrage code does NOT use these libraries\n');
   }
@@ -244,6 +244,8 @@ class SecurityAuditor {
 
     // Check tithe distribution logic
     if (content.includes('_distributeProfits') || content.includes('tithe')) {
+      // Match _distributeProfits function body until next function or end of file
+      // This captures the entire function to check if it has try-catch error handling
       const titheLogic = content.match(/_distributeProfits[\s\S]*?(?=function|$)/);
       
       if (titheLogic && !titheLogic[0].includes('try')) {
