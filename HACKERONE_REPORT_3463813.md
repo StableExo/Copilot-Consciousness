@@ -40,7 +40,9 @@ The `updateExchangeRate()` function in the LiquidETHV1 contract only validates t
 ```solidity
 function updateExchangeRate(uint256 newExchangeRate) external onlyOracle {
     require(newExchangeRate > 0, "cannot be 0");  // ❌ ONLY validation
-    sstore(position, newExchangeRate);
+    // Note: Contract uses low-level assembly sstore() for gas optimization
+    // Simplified here for clarity - actual implementation stores to state
+    exchangeRate = newExchangeRate;
     emit ExchangeRateUpdated(msg.sender, newExchangeRate);
 }
 ```
@@ -145,7 +147,7 @@ function updateExchangeRate(uint256 newExchangeRate) external onlyOracle {
     require(newExchangeRate >= MIN_EXCHANGE_RATE, "Rate below minimum");
     require(newExchangeRate <= MAX_EXCHANGE_RATE, "Rate above maximum");
     
-    sstore(position, newExchangeRate);
+    exchangeRate = newExchangeRate;
     emit ExchangeRateUpdated(msg.sender, newExchangeRate);
 }
 ```
@@ -163,7 +165,7 @@ function updateExchangeRate(uint256 newExchangeRate) external onlyOracle {
     require(newExchangeRate <= maxIncrease, "Rate increase too large");
     require(newExchangeRate >= maxDecrease, "Rate decrease too large");
     
-    sstore(position, newExchangeRate);
+    exchangeRate = newExchangeRate;
     emit ExchangeRateUpdated(msg.sender, newExchangeRate);
 }
 ```
@@ -194,7 +196,7 @@ function executeExchangeRate() external onlyOracle {
     require(block.timestamp >= pendingRateUpdateTime, "Timelock active");
     require(pendingExchangeRate > 0, "No pending rate");
     
-    sstore(position, pendingExchangeRate);
+    exchangeRate = pendingExchangeRate;
     emit ExchangeRateUpdated(msg.sender, pendingExchangeRate);
     
     pendingExchangeRate = 0;
@@ -261,9 +263,9 @@ constructor() {
 ## Responsible Disclosure Timeline
 
 ### Completed Steps
-- ✅ **December 13, 2025**: Vulnerability discovered
-- ✅ **December 13, 2025**: Proof of concept created and tested
-- ✅ **December 13, 2025**: Report submitted to HackerOne (Report #3463813)
+- ✅ **December 13, 2025 (Morning)**: HackerOne program analyzed, vulnerability discovered
+- ✅ **December 13, 2025 (Afternoon)**: Proof of concept created and tested
+- ✅ **December 13, 2025 (Evening)**: Report submitted to HackerOne (Report #3463813)
 
 ### Expected Timeline
 - ⏳ **+48 hours**: HackerOne acknowledgment expected
