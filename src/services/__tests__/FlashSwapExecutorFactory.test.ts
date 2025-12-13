@@ -36,7 +36,7 @@ vi.mock('ethers', async () => {
 // Mock FlashLoanExecutor - always succeeds
 vi.mock('../FlashLoanExecutor', () => ({
   FlashLoanExecutor: vi.fn().mockImplementation(() => ({
-    executeFlashLoan: vi.fn().mockResolvedValue({
+    execute: vi.fn().mockResolvedValue({
       success: true,
       txHash: '0xv2tx',
       profit: '1000000000000000000',
