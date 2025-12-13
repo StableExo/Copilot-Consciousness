@@ -156,6 +156,12 @@ export const FLASH_LOAN_FEES: Record<FlashLoanSource, number> = {
 };
 
 /**
+ * Constants for calculations
+ */
+const BASIS_POINTS_DIVISOR = 10000n;
+const DEFAULT_FEE_BPS = 3000; // 0.3% default fee
+
+/**
  * FlashSwapV3 Executor
  */
 export class FlashSwapV3Executor {
@@ -265,13 +271,13 @@ export class FlashSwapV3Executor {
 
       // Calculate minOut with slippage
       const slippage = this.config.defaultSlippage;
-      const minOut = (BigInt(Math.floor(swap.expectedOutput)) * BigInt(Math.floor((1 - slippage) * 10000))) / 10000n;
+      const minOut = (BigInt(Math.floor(swap.expectedOutput)) * BigInt(Math.floor((1 - slippage) * 10000))) / BASIS_POINTS_DIVISOR;
 
       steps.push({
         pool: swap.poolAddress,
         tokenIn: swap.tokenIn,
         tokenOut: swap.tokenOut,
-        fee: swap.feeBps || 3000, // Default 0.3%
+        fee: swap.feeBps || DEFAULT_FEE_BPS,
         minOut,
         dexType,
       });

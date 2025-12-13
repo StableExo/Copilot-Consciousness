@@ -104,7 +104,10 @@ class V3ExecutorWrapper implements IFlashSwapExecutor {
     const path = this.executor.constructSwapPath(opportunity);
     
     // Get the first token in the path as the borrow token
-    const borrowToken = opportunity.flashLoanToken || opportunity.tokenAddresses[0];
+    const borrowToken = opportunity.flashLoanToken || opportunity.tokenAddresses?.[0];
+    if (!borrowToken) {
+      throw new Error('No borrow token found in opportunity');
+    }
     const borrowAmount = BigInt(Math.floor(opportunity.flashLoanAmount || opportunity.inputAmount));
     
     // Execute with automatic source selection
