@@ -124,6 +124,9 @@
     "migrate:supabase:dry-run": "node --import tsx scripts/migrate-to-supabase-complete.ts --dry-run",
     "migrate:supabase:verbose": "node --import tsx scripts/migrate-to-supabase-complete.ts --verbose",
     "test:supabase:connection": "node --import tsx scripts/test-supabase-connection.ts",
+    "cognitive-ledger:migrate": "node --import tsx scripts/apply-cognitive-ledger-migration.ts",
+    "cognitive-ledger:test": "node --import tsx scripts/test-cognitive-ledger.ts",
+    "test:cognitive-ledger": "node --import tsx scripts/test-cognitive-ledger.ts",
     "demo:scales": "node --import tsx scripts/demo-scales-map.ts"
   },
   "dependencies": {

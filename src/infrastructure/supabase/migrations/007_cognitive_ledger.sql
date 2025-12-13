@@ -322,9 +322,11 @@ COMMENT ON FUNCTION migrate_consciousness_states_to_memory_entries IS 'Safe migr
 -- Uncomment to automatically migrate existing consciousness_states data:
 -- SELECT migrate_consciousness_states_to_memory_entries() AS migrated_entries;
 
-SELECT 'Cognitive Ledger migration (007) completed successfully' AS status;
-SELECT 'Created memory_entries table (immutable ledger)' AS detail;
-SELECT 'Created arbitrage_episodes table (decision engine)' AS detail;
-SELECT 'Created timeline_view (unified event stream)' AS detail;
-SELECT 'Created analytics functions (drift detection, learning effectiveness)' AS detail;
-SELECT 'Migration function available: migrate_consciousness_states_to_memory_entries()' AS detail;
+-- Migration completion summary
+SELECT 
+  'Cognitive Ledger migration (007) completed successfully' AS status,
+  'Created memory_entries table (immutable ledger)' AS step_1,
+  'Created arbitrage_episodes table (decision engine)' AS step_2,
+  'Created timeline_view (unified event stream)' AS step_3,
+  'Created analytics functions (drift detection, learning effectiveness)' AS step_4,
+  'Migration function available: migrate_consciousness_states_to_memory_entries()' AS step_5;

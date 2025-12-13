@@ -123,12 +123,12 @@ export class CognitiveLedgerService {
 
     queryBuilder = queryBuilder.order('created_at', { ascending: false });
 
-    if (query.limit) {
-      queryBuilder = queryBuilder.limit(query.limit);
-    }
-
+    // Handle pagination consistently
+    const limit = query.limit || 10;
     if (query.offset) {
-      queryBuilder = queryBuilder.range(query.offset, query.offset + (query.limit || 10) - 1);
+      queryBuilder = queryBuilder.range(query.offset, query.offset + limit - 1);
+    } else if (query.limit) {
+      queryBuilder = queryBuilder.limit(limit);
     }
 
     const { data, error } = await queryBuilder;
@@ -277,12 +277,12 @@ export class CognitiveLedgerService {
 
     queryBuilder = queryBuilder.order('created_at', { ascending: false });
 
-    if (query.limit) {
-      queryBuilder = queryBuilder.limit(query.limit);
-    }
-
+    // Handle pagination consistently
+    const limit = query.limit || 10;
     if (query.offset) {
-      queryBuilder = queryBuilder.range(query.offset, query.offset + (query.limit || 10) - 1);
+      queryBuilder = queryBuilder.range(query.offset, query.offset + limit - 1);
+    } else if (query.limit) {
+      queryBuilder = queryBuilder.limit(limit);
     }
 
     const { data, error } = await queryBuilder;
@@ -322,12 +322,12 @@ export class CognitiveLedgerService {
 
     queryBuilder = queryBuilder.order('created_at', { ascending: false });
 
-    if (query.limit) {
-      queryBuilder = queryBuilder.limit(query.limit);
-    }
-
+    // Handle pagination consistently  
+    const limit = query.limit || 10;
     if (query.offset) {
-      queryBuilder = queryBuilder.range(query.offset, query.offset + (query.limit || 10) - 1);
+      queryBuilder = queryBuilder.range(query.offset, query.offset + limit - 1);
+    } else if (query.limit) {
+      queryBuilder = queryBuilder.limit(limit);
     }
 
     const { data, error } = await queryBuilder;
