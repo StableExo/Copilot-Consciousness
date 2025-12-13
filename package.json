@@ -18,6 +18,7 @@
     "autonomous:control": "node --import tsx scripts/autonomous-warden-controller.ts",
     "autonomous:consciousness": "node --import tsx scripts/autonomous-consciousness-runner.ts",
     "autonomous:run": "node --import tsx scripts/autonomous-consciousness-runner.ts",
+    "thought:run": "node --import tsx scripts/consciousness/autonomous-thought-run.ts",
     "autonomous:bitcoin-puzzle": "node --import tsx scripts/autonomous/autonomous-bitcoin-puzzle-investigator.ts",
     "autonomous:validate-transformation": "node --import tsx scripts/bitcoin/autonomous-transformation-validator.ts",
     "solve:puzzle": "node --import tsx scripts/bitcoin/puzzle-solver-secure.ts",
