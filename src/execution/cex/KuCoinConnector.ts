@@ -117,44 +117,51 @@ export class KuCoinConnector {
    */
   private async getWebSocketToken(): Promise<void> {
     return new Promise((resolve, reject) => {
-      https.post(
-        this.TOKEN_URL,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      const url = new URL(this.TOKEN_URL);
+      const options = {
+        hostname: url.hostname,
+        port: url.port || 443,
+        path: url.pathname,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        (res) => {
-          let data = '';
+      };
 
-          res.on('data', (chunk) => {
-            data += chunk;
-          });
+      const req = https.request(options, (res: any) => {
+        let data = '';
 
-          res.on('end', () => {
-            try {
-              const response: KuCoinTokenResponse = JSON.parse(data);
-              
-              if (response.code !== '200000') {
-                reject(new Error(`KuCoin token request failed: ${response.code}`));
-                return;
-              }
+        res.on('data', (chunk: any) => {
+          data += chunk;
+        });
 
-              this.wsToken = response.data.token;
-              const server = response.data.instanceServers[0];
-              this.wsEndpoint = `${server.endpoint}?token=${this.wsToken}`;
-              this.pingInterval = server.pingInterval;
-              
-              console.log('[KuCoinConnector] WebSocket token obtained');
-              resolve();
-            } catch (error) {
-              reject(error);
+        res.on('end', () => {
+          try {
+            const response: KuCoinTokenResponse = JSON.parse(data);
+            
+            if (response.code !== '200000') {
+              reject(new Error(`KuCoin token request failed: ${response.code}`));
+              return;
             }
-          });
-        }
-      ).on('error', (error) => {
+
+            this.wsToken = response.data.token;
+            const server = response.data.instanceServers[0];
+            this.wsEndpoint = `${server.endpoint}?token=${this.wsToken}`;
+            this.pingInterval = server.pingInterval;
+            
+            console.log('[KuCoinConnector] WebSocket token obtained');
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
+        });
+      });
+
+      req.on('error', (error: any) => {
         reject(error);
-      }).end();
+      });
+
+      req.end();
     });
   }
 
