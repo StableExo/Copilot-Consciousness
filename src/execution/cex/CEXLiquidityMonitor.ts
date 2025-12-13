@@ -4,7 +4,7 @@
  * Aggregates real-time liquidity data from multiple centralized exchanges.
  * Enables CEX-DEX arbitrage detection and cross-venue price monitoring.
  * 
- * Supports: Binance, Coinbase, OKX, Bybit, Kraken
+ * Supports: Binance, Coinbase, OKX, Bybit, Kraken, Bitfinex, KuCoin, Gate.io, MEXC
  */
 
 import { BinanceConnector } from './BinanceConnector.js';
@@ -12,6 +12,10 @@ import { CoinbaseConnector } from './CoinbaseConnector.js';
 import { OKXConnector } from './OKXConnector.js';
 import { BybitConnector } from './BybitConnector.js';
 import { KrakenConnector } from './KrakenConnector.js';
+import { BitfinexConnector } from './BitfinexConnector.js';
+import { KuCoinConnector } from './KuCoinConnector.js';
+import { GateConnector } from './GateConnector.js';
+import { MEXCConnector } from './MEXCConnector.js';
 import {
   CEXExchange,
   CEXMonitorConfig,
@@ -115,6 +119,38 @@ export class CEXLiquidityMonitor {
 
         case CEXExchange.KRAKEN:
           connector = new KrakenConnector(config, {
+            onOrderBook: this.handleOrderBook.bind(this),
+            onTicker: this.handleTicker.bind(this),
+            onError: this.config.onError,
+          });
+          break;
+
+        case CEXExchange.BITFINEX:
+          connector = new BitfinexConnector(config, {
+            onOrderBook: this.handleOrderBook.bind(this),
+            onTicker: this.handleTicker.bind(this),
+            onError: this.config.onError,
+          });
+          break;
+
+        case CEXExchange.KUCOIN:
+          connector = new KuCoinConnector(config, {
+            onOrderBook: this.handleOrderBook.bind(this),
+            onTicker: this.handleTicker.bind(this),
+            onError: this.config.onError,
+          });
+          break;
+
+        case CEXExchange.GATE:
+          connector = new GateConnector(config, {
+            onOrderBook: this.handleOrderBook.bind(this),
+            onTicker: this.handleTicker.bind(this),
+            onError: this.config.onError,
+          });
+          break;
+
+        case CEXExchange.MEXC:
+          connector = new MEXCConnector(config, {
             onOrderBook: this.handleOrderBook.bind(this),
             onTicker: this.handleTicker.bind(this),
             onError: this.config.onError,

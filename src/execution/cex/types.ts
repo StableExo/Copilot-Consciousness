@@ -14,6 +14,10 @@ export enum CEXExchange {
   OKX = 'okx',
   BYBIT = 'bybit',
   KRAKEN = 'kraken',
+  BITFINEX = 'bitfinex',
+  KUCOIN = 'kucoin',
+  GATE = 'gate',
+  MEXC = 'mexc',
 }
 
 /**
@@ -62,6 +66,8 @@ export interface CEXConnectionConfig {
   reconnect?: boolean; // Auto-reconnect on disconnect
   reconnectDelay?: number; // Delay between reconnection attempts (ms)
   maxReconnectAttempts?: number; // Max reconnection attempts
+  orderBookDepth?: number; // Order book depth (for exchanges that support it)
+  updateFrequency?: string; // Update frequency (for exchanges that support it, e.g., "1000ms")
 }
 
 /**
