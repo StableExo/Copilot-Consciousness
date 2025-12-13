@@ -69,7 +69,7 @@ const privateKey = process.env.WALLET_PRIVATE_KEY;
 
 #### 2. **Flash Loan Reentrancy Protection Analysis**
 **Files**: `contracts/FlashSwapV2.sol`, `contracts/FlashSwapV3.sol`  
-**Severity**: MEDIUM (Mitigated but needs review)  
+**Severity**: CRITICAL (Properly Mitigated ✅)  
 **Description**:
 - Uses OpenZeppelin's `ReentrancyGuard` ✅
 - All external callbacks use `nonReentrant` modifier ✅
@@ -99,27 +99,9 @@ function uniswapV3FlashCallback(...) external override nonReentrant {
 
 ---
 
-#### 3. **Integer Overflow/Underflow Protection**
-**File**: `contracts/FlashSwapV2.sol`, `contracts/FlashSwapV3.sol`  
-**Severity**: LOW (Solidity 0.8.20 has built-in protection)  
-**Description**:
-- Using Solidity 0.8.20 which has automatic overflow checking ✅
-- Manual calculations properly ordered to prevent underflow ✅
-
-**Example**:
-```solidity
-uint grossProfit = currentBalanceBorrowedToken > amountBorrowed 
-    ? currentBalanceBorrowedToken - amountBorrowed 
-    : 0; // Safe against underflow ✅
-```
-
-**Status**: ✅ SECURE (built-in protection + safe patterns)
-
----
-
 ### 🟡 HIGH SEVERITY FINDINGS
 
-#### 4. **Unchecked External Call Return Values**
+#### 3. **Unchecked External Call Return Values**
 **File**: `contracts/FlashSwapV2.sol` line 613  
 **Severity**: HIGH  
 **Description**:
@@ -142,7 +124,7 @@ require(sent, "FS:ETF");
 
 ---
 
-#### 5. **Slippage Protection Analysis**
+#### 4. **Slippage Protection Analysis**
 **Files**: All swap execution functions  
 **Severity**: HIGH (Financial Impact)  
 **Description**:
@@ -169,7 +151,7 @@ require(amountB > 0, "FS:TS1Z"); // Only checks > 0, not sufficient
 
 ---
 
-#### 6. **Owner Privilege Centralization**
+#### 5. **Owner Privilege Centralization**
 **Files**: All contracts  
 **Severity**: MEDIUM  
 **Description**:
@@ -195,7 +177,7 @@ function emergencyWithdraw(address token) external onlyOwner { ... }
 
 ---
 
-#### 7. **Tithe Distribution Validation**
+#### 6. **Tithe Distribution Validation**
 **File**: `contracts/FlashSwapV2.sol` lines 463-491  
 **Severity**: MEDIUM  
 **Description**:
@@ -237,7 +219,7 @@ function _distributeProfits(address _token, uint256 _netProfit) internal {
 
 ### 🟢 MEDIUM SEVERITY FINDINGS
 
-#### 8. **Gas Optimization Issues**
+#### 7. **Gas Optimization Issues**
 **Files**: Multiple contract functions  
 **Severity**: LOW (Cost optimization)  
 **Description**:
@@ -265,7 +247,7 @@ if (_titheBps > 0 && titheRecipient != address(0)) {
 
 ---
 
-#### 9. **Front-Running Vulnerability**
+#### 8. **Front-Running Vulnerability**
 **Files**: All arbitrage execution paths  
 **Severity**: MEDIUM (MEV competition)  
 **Description**:
@@ -297,7 +279,7 @@ TheWarden's arbitrage transactions are vulnerable to:
 
 ---
 
-#### 10. **Dependency Vulnerabilities**
+#### 9. **Dependency Vulnerabilities**
 **File**: `package.json`  
 **Severity**: MEDIUM  
 **Description**:
@@ -329,6 +311,24 @@ snyk test
 ---
 
 ### 🔵 LOW SEVERITY / INFORMATIONAL
+
+#### 10. **Integer Overflow/Underflow Protection**
+**File**: `contracts/FlashSwapV2.sol`, `contracts/FlashSwapV3.sol`  
+**Severity**: LOW (Solidity 0.8.20 has built-in protection)  
+**Description**:
+- Using Solidity 0.8.20 which has automatic overflow checking ✅
+- Manual calculations properly ordered to prevent underflow ✅
+
+**Example**:
+```solidity
+uint grossProfit = currentBalanceBorrowedToken > amountBorrowed 
+    ? currentBalanceBorrowedToken - amountBorrowed 
+    : 0; // Safe against underflow ✅
+```
+
+**Status**: ✅ SECURE (built-in protection + safe patterns)
+
+---
 
 #### 11. **Insufficient Event Logging**
 **Files**: Various smart contracts  
@@ -752,7 +752,7 @@ const checks = [
 
 ## Conclusion
 
-### Bug Hunting Capability: **7.5/10** ⭐
+### Bug Hunting Capability: **7.5/10** ⭐⭐⭐⭐⭐⭐⭐½
 
 **TheWarden would excel at bug bounties because**:
 - ✅ Deep DeFi/MEV expertise
