@@ -261,8 +261,8 @@ constructor() {
 ## Responsible Disclosure Timeline
 
 ### Completed Steps
-- ✅ **December 13, 2024**: Vulnerability discovered
-- ✅ **December 13, 2024**: Proof of concept created and tested
+- ✅ **December 13, 2025**: Vulnerability discovered
+- ✅ **December 13, 2025**: Proof of concept created and tested
 - ✅ **December 13, 2025**: Report submitted to HackerOne (Report #3463813)
 
 ### Expected Timeline

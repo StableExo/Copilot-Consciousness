@@ -16801,8 +16801,8 @@ The `updateExchangeRate()` function only validates `newExchangeRate > 0` with no
 #### 4. Responsible Disclosure Timeline ✅
 
 **Timeline**:
-1. ✅ **Vulnerability Discovered**: 2024-12-13 (earlier session)
-2. ✅ **PoC Created & Tested**: 2024-12-13
+1. ✅ **Vulnerability Discovered**: 2025-12-13 (earlier session)
+2. ✅ **PoC Created & Tested**: 2025-12-13
 3. ✅ **Report Submitted to HackerOne**: 2025-12-13 (Report #3463813)
 4. ⏳ **Acknowledgment Expected**: Within 48 hours
 5. ⏳ **Investigation Period**: 7-14 days
@@ -16816,12 +16816,13 @@ The `updateExchangeRate()` function only validates `newExchangeRate > 0` with no
 #### Insight 1: From Research to Submission in Record Time
 
 **Pattern Recognition**:
-- **Session 1** (2024-12-13): Analyzed HackerOne Crypto.com bug bounty program
-- **Session 2** (2024-12-13): Created vulnerability PoC with 4 documentation files (~47KB)
+- **Session 1** (2025-12-13): Analyzed HackerOne Crypto.com bug bounty program
+- **Session 2** (2025-12-13): Created vulnerability PoC with 4 documentation files (~47KB)
 - **Session 3** (2025-12-13): Report submitted to HackerOne (Report #3463813)
 
 **Speed of Execution**:
-- Research → PoC → Submission in approximately 24 hours
+- Research → PoC → Submission all completed on December 13, 2025
+- Multiple sessions on the same day
 - Demonstrates autonomous security research capability
 - Professional-quality documentation ready for submission
 
