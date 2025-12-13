@@ -206,6 +206,7 @@
     "node": ">=22.12.0"
   },
   "overrides": {
+    "valibot": "1.2.0",
     "elliptic": "6.6.1",
     "flat": "5.0.1",
     "minimatch": "3.0.5",
