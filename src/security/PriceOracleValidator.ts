@@ -146,8 +146,9 @@ export class PriceOracleValidator {
       changePercent = changeResult.changePercent;
       
       if (!rateChangeValid) {
+        const changeStr = changePercent !== undefined ? changePercent.toFixed(2) : 'unknown';
         errors.push(
-          `Rate of change ${changePercent.toFixed(2)}% exceeds maximum ${
+          `Rate of change ${changeStr}% exceeds maximum ${
             this.config.maxRateChangeBps / 100
           }%`
         );
